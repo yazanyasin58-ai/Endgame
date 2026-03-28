@@ -1,0 +1,33 @@
+{
+  "manifest_version": 3,
+  "name": "Jarvis Lockout",
+  "version": "1.0",
+  "description": "Jarvis trading enforcement — soft and hard lock overlays controlled via local WebSocket",
+  "permissions": ["tabs", "activeTab", "storage"],
+  "host_permissions": [
+    "ws://localhost:7979/*",
+    "*://trader.tradovate.com/*",
+    "*://*.tradovate.com/*",
+    "*://app.tradelocker.com/*",
+    "*://*.tradelocker.com/*",
+    "*://*.topstepx.com/*",
+    "*://*.projectx.com/*",
+    "*://*.tradesea.io/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://trader.tradovate.com/*",
+        "*://app.tradelocker.com/*",
+        "*://*.tradelocker.com/*",
+        "*://*.topstepx.com/*",
+        "*://*.projectx.com/*",
+        "*://*.tradesea.io/*"
+      ],
+      "js": ["content.js"]
+    }
+  ]
+}

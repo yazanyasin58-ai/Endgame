@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" content="#000000" />
+  <title>Jarvis</title>
+  <link rel="manifest" href="/manifest.json" />
+  <style>
+    :root {
+      --bg: #000;
+      --surface: #0f0f0f;
+      --border: #1a1a1a;
+      --text: #f5f5f5;
+      --muted: #555;
+      --green: #22c55e;
+      --amber: #f59e0b;
+      --red: #ef4444;
+      --blue: #3b82f6;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+      min-height: 100vh;
+    }
+    header {
+      padding: 20px 24px 12px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo {
+      font-size: 11px;
+      letter-spacing: 4px;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+    .status-badge {
+      font-size: 10px;
+      letter-spacing: 2px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      background: var(--surface);
+      border: 1px solid var(--border);
+    }
+    .status-badge.armed { color: var(--green); border-color: var(--green); }
+    .status-badge.locked { color: var(--red); border-color: var(--red); }
+    .status-badge.standby { color: var(--muted); }
+
+    nav {
+      display: flex;
+      gap: 0;
+      padding: 0 24px;
+      border-bottom: 1px solid var(--border);
+    }
+    nav button {
+      background: none;
+      border: none;
+      color: var(--muted);
+      padding: 14px 16px;
+      font-size: 13px;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.15s;
+    }
+    nav button.active { color: var(--text); border-bottom-color: var(--text); }
+
+    main { padding: 24px; max-width: 900px; }
+
+    /* Cards */
+    .grid { display: grid; gap: 12px; }
+    .grid-2 { grid-template-columns: 1fr 1fr; }
+    .grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+    .grid-4 { grid-template-columns: repeat(4, 1fr); }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px 20px;
+    }
+    .card-label {
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .card-value {
+      font-size: 28px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+    }
+    .card-value.green { color: var(--green); }
+    .card-value.red { color: var(--red); }
+    .card-value.amber { color: var(--amber); }
+
+    /* P&L bar */
+    .pnl-bar-wrap {
+      margin-top: 8px;
+      height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+    }
+    .pnl-bar {
+      height: 100%;
+      border-radius: 2px;
+      transition: width 0.3s ease;
+    }
+
+    /* Biometric state */
+    .bio-state {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      letter-spacing: 1px;
+      font-weight: 700;
+    }
+    .bio-state.GREEN { background: rgba(34,197,94,0.15); color: var(--green); }
+    .bio-state.AMBER { background: rgba(245,158,11,0.15); color: var(--amber); }
+    .bio-state.RED { background: rgba(239,68,68,0.15); color: var(--red); }
+    .bio-state.UNKNOWN { background: var(--border); color: var(--muted); }
+
+    /* Lockout banner */
+    #lockout-banner {
+      display: none;
+      margin-bottom: 16px;
+      padding: 14px 20px;
+      border-radius: 8px;
+      border: 1px solid var(--red);
+      background: rgba(239,68,68,0.08);
+      color: var(--red);
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    /* Voice button */
+    .voice-btn {
+      width: 56px; height: 56px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      font-size: 22px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.15s;
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+    }
+    .voice-btn.recording { border-color: var(--red); background: rgba(239,68,68,0.15); }
+
+    /* History */
+    .table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .table th {
+      text-align: left; padding: 8px 12px;
+      font-size: 10px; letter-spacing: 1.5px;
+      color: var(--muted); text-transform: uppercase;
+      border-bottom: 1px solid var(--border);
+    }
+    .table td { padding: 10px 12px; border-bottom: 1px solid var(--border); }
+    .table tr:hover td { background: rgba(255,255,255,0.02); }
+    .pnl-pos { color: var(--green); }
+    .pnl-neg { color: var(--red); }
+
+    @media (max-width: 600px) {
+      .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Jarvis</div>
+  <span class="status-badge standby" id="status-badge">Standby</span>
+</header>
+
+<nav>
+  <button class="active" onclick="showView('live')">Live Session</button>
+  <button onclick="showView('history')">History</button>
+</nav>
+
+<main>
+  <!-- Live Session View -->
+  <div id="view-live">
+    <div id="lockout-banner"></div>
+
+    <div class="grid grid-2" style="margin-bottom:12px">
+      <div class="card">
+        <div class="card-label">Account</div>
+        <div id="active-account" style="font-size:16px; font-weight:600; color:var(--text)">—</div>
+      </div>
+      <div class="card">
+        <div class="card-label">Biometric State</div>
+        <div><span class="bio-state UNKNOWN" id="bio-state">UNKNOWN</span></div>
+      </div>
+    </div>
+
+    <div class="grid grid-4" style="margin-bottom:12px">
+      <div class="card">
+        <div class="card-label">Daily P&amp;L</div>
+        <div class="card-value" id="daily-pnl">$0.00</div>
+        <div class="pnl-bar-wrap">
+          <div class="pnl-bar" id="pnl-bar" style="width:0%;background:var(--green)"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-label">Trades</div>
+        <div class="card-value" id="trade-count">0</div>
+      </div>
+      <div class="card">
+        <div class="card-label">Consec. Losses</div>
+        <div class="card-value" id="consec-losses">0</div>
+      </div>
+      <div class="card">
+        <div class="card-label">Overrides</div>
+        <div class="card-value" id="override-count">0</div>
+      </div>
+    </div>
+
+    <div class="grid grid-2">
+      <div class="card">
+        <div class="card-label">Heart Rate</div>
+        <div class="card-value" id="current-hr">—</div>
+        <div style="font-size:11px; color:var(--muted); margin-top:4px">bpm</div>
+      </div>
+      <div class="card">
+        <div class="card-label">HRV</div>
+        <div class="card-value" id="current-hrv">—</div>
+        <div style="font-size:11px; color:var(--muted); margin-top:4px">ms RMSSD</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- History View -->
+  <div id="view-history" style="display:none">
+    <table class="table" id="journal-table">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Instrument</th>
+          <th>Direction</th>
+          <th>P&amp;L</th>
+          <th>Account</th>
+          <th>Biometric</th>
+          <th>Adherence</th>
+        </tr>
+      </thead>
+      <tbody id="journal-body">
+        <tr><td colspan="7" style="color:var(--muted);text-align:center;padding:32px">Loading...</td></tr>
+      </tbody>
+    </table>
+  </div>
+</main>
+
+<!-- Voice button -->
+<button class="voice-btn" id="voice-btn" title="Hold to speak">🎤</button>
+
+<script>
+const BACKEND_WS = (location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host + '/ws/dashboard';
+let ws = null;
+
+// ── WebSocket ────────────────────────────────────────────────────────────────
+
+function connectWS() {
+  ws = new WebSocket(BACKEND_WS);
+  ws.onmessage = (e) => {
+    const msg = JSON.parse(e.data);
+    if (msg.type === 'state_update') updateUI(msg.session);
+  };
+  ws.onclose = () => setTimeout(connectWS, 3000);
+}
+connectWS();
+
+// ── UI Update ────────────────────────────────────────────────────────────────
+
+function updateUI(s) {
+  // Status badge
+  const badge = document.getElementById('status-badge');
+  if (s.lockout_status === 'HARD' || s.lockout_status === 'DAY_DONE') {
+    badge.textContent = 'Locked';
+    badge.className = 'status-badge locked';
+  } else if (s.session_armed) {
+    badge.textContent = 'Armed';
+    badge.className = 'status-badge armed';
+  } else {
+    badge.textContent = 'Standby';
+    badge.className = 'status-badge standby';
+  }
+
+  // Account
+  document.getElementById('active-account').textContent = s.active_account || '—';
+
+  // P&L
+  const pnl = s.daily_pnl || 0;
+  const pnlEl = document.getElementById('daily-pnl');
+  pnlEl.textContent = '$' + Math.abs(pnl).toFixed(2);
+  pnlEl.className = 'card-value ' + (pnl >= 0 ? 'green' : 'red');
+
+  // Trade count
+  document.getElementById('trade-count').textContent = s.trade_count || 0;
+
+  // Consecutive losses
+  const cl = s.consecutive_losses || 0;
+  const clEl = document.getElementById('consec-losses');
+  clEl.textContent = cl;
+  clEl.className = 'card-value ' + (cl >= 2 ? 'red' : cl === 1 ? 'amber' : '');
+
+  // Overrides
+  document.getElementById('override-count').textContent = s.override_count || 0;
+
+  // Biometrics
+  const bState = s.biometric_state || 'UNKNOWN';
+  const bEl = document.getElementById('bio-state');
+  bEl.textContent = bState;
+  bEl.className = 'bio-state ' + bState;
+
+  if (s.current_hr) document.getElementById('current-hr').textContent = s.current_hr;
+  if (s.current_hrv) document.getElementById('current-hrv').textContent = s.current_hrv.toFixed(1);
+
+  // Lockout banner
+  const banner = document.getElementById('lockout-banner');
+  if (s.lockout_status !== 'NONE' && s.lockout_status !== null) {
+    banner.style.display = 'block';
+    banner.textContent = s.lockout_reason || 'Lockout active.';
+  } else {
+    banner.style.display = 'none';
+  }
+}
+
+// ── View switching ────────────────────────────────────────────────────────────
+
+function showView(name) {
+  document.getElementById('view-live').style.display = name === 'live' ? '' : 'none';
+  document.getElementById('view-history').style.display = name === 'history' ? '' : 'none';
+  document.querySelectorAll('nav button').forEach((b, i) => {
+    b.className = (i === 0 && name === 'live') || (i === 1 && name === 'history') ? 'active' : '';
+  });
+  if (name === 'history') loadHistory();
+}
+
+// ── History ──────────────────────────────────────────────────────────────────
+
+async function loadHistory() {
+  const resp = await fetch('/api/journal/entries?limit=50');
+  const data = await resp.json();
+  const tbody = document.getElementById('journal-body');
+  tbody.innerHTML = '';
+  for (const e of (data.entries || [])) {
+    const row = document.createElement('tr');
+    const pnlClass = (e.pnl || 0) >= 0 ? 'pnl-pos' : 'pnl-neg';
+    row.innerHTML = `
+      <td>${e.date || ''}</td>
+      <td>${e.instrument || ''}</td>
+      <td>${e.direction || ''}</td>
+      <td class="${pnlClass}">$${(e.pnl || 0).toFixed(2)}</td>
+      <td style="color:var(--muted);font-size:12px">${(e.account || '').split('(')[0]}</td>
+      <td><span class="bio-state ${e.biometric_state || 'UNKNOWN'}">${e.biometric_state || '—'}</span></td>
+      <td style="font-size:12px;color:var(--muted)">${e.rule_adherence || ''}</td>
+    `;
+    tbody.appendChild(row);
+  }
+  if (!data.entries?.length) {
+    tbody.innerHTML = '<tr><td colspan="7" style="color:var(--muted);text-align:center;padding:32px">No trades logged yet.</td></tr>';
+  }
+}
+</script>
+</body>
+</html>

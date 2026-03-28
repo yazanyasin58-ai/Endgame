@@ -1,0 +1,14 @@
+{
+  "account_id": "tradovate_alpha",
+  "platform": "tradovate",
+  "account_type": "funded",
+  "display_name": "Alpha Futures (Tradovate)",
+  "max_daily_loss": 1500,
+  "max_contracts": 3,
+  "max_lot_size": 0,
+  "max_trades_per_day": 10,
+  "max_consecutive_losses": 3,
+  "restricted_hours": [[9, 30], [9, 45]],
+  "revenge_trade_cooldown_min": 15,
+  "trading_demons": ["overtrading", "revenge trading", "sizing up after losses"]
+}

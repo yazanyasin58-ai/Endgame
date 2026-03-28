@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Jarvis — Locked</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #000;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      color: #fff;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+      overflow: hidden;
+    }
+
+    /* Background image slideshow */
+    #bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background-size: cover;
+      background-position: center;
+      opacity: 0.25;
+      transition: opacity 1s ease;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 580px;
+      text-align: center;
+      padding: 60px 40px;
+    }
+
+    .label {
+      font-size: 10px;
+      letter-spacing: 5px;
+      color: #333;
+      text-transform: uppercase;
+      margin-bottom: 28px;
+    }
+
+    .reason {
+      font-size: 13px;
+      color: #555;
+      margin-bottom: 24px;
+      letter-spacing: 0.5px;
+    }
+
+    .quote {
+      font-size: 19px;
+      font-weight: 300;
+      line-height: 1.8;
+      color: #ccc;
+      font-style: italic;
+      margin-bottom: 52px;
+    }
+
+    .timer-label {
+      font-size: 11px;
+      color: #444;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    #timer {
+      font-size: 56px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      color: #fff;
+      font-variant-numeric: tabular-nums;
+      margin-bottom: 32px;
+    }
+
+    .unlock-note {
+      font-size: 11px;
+      color: #2a2a2a;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+  </style>
+</head>
+<body>
+  <div id="bg"></div>
+
+  <div class="container">
+    <div class="label">LOCKED — JARVIS</div>
+    <div class="reason" id="reason">Hard lockout triggered.</div>
+    <div class="quote" id="quote"></div>
+    <div class="timer-label">Time remaining</div>
+    <div id="timer">--:--</div>
+    <div class="unlock-note">Unlock requires voice check-in + HR check</div>
+  </div>
+
+  <script>
+    const QUOTES = [
+      "Someone right now would trade everything they have just to be in your position.",
+      "Discipline is doing the right thing even when no one is watching. Especially then.",
+      "The market will be here tomorrow. Make sure you are too.",
+      "Allah loves those who are patient. Your rizq is written. No trade will change what is already yours.",
+      "Tawakkul. You have done the preparation. Now let go of the outcome.",
+      "Sabr. This discomfort you feel right now — this is where character is built.",
+      "The traders who made it had the same doubts. The difference is they did not act on them.",
+      "Your account is not a casino. Protect it like it is the only one you will ever get.",
+    ];
+
+    const params = new URLSearchParams(window.location.search);
+    const reason = params.get("reason") || "";
+    const duration = parseInt(params.get("duration") || "900", 10);
+
+    if (reason) document.getElementById("reason").textContent = reason;
+
+    // Pick a random quote
+    const quote = QUOTES[Math.floor(Math.random() * QUOTES.length)];
+    document.getElementById("quote").textContent = `"${quote}"`;
+
+    // Countdown
+    let remaining = duration;
+    const timerEl = document.getElementById("timer");
+
+    function fmt(s) {
+      const m = Math.floor(s / 60).toString().padStart(2, "0");
+      const sec = (s % 60).toString().padStart(2, "0");
+      return `${m}:${sec}`;
+    }
+
+    timerEl.textContent = fmt(remaining);
+
+    const interval = setInterval(() => {
+      remaining--;
+      if (remaining <= 0) {
+        timerEl.textContent = "00:00";
+        document.querySelector(".reason").textContent =
+          "Minimum time elapsed. Waiting for voice check-in with Jarvis.";
+        clearInterval(interval);
+        return;
+      }
+      timerEl.textContent = fmt(remaining);
+    }, 1000);
+  </script>
+</body>
+</html>

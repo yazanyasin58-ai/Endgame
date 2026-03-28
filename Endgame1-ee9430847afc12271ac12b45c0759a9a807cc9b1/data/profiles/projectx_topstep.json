@@ -1,0 +1,14 @@
+{
+  "account_id": "projectx_topstep",
+  "platform": "projectx",
+  "account_type": "funded",
+  "display_name": "Topstep Funded (Project X)",
+  "max_daily_loss": 1000,
+  "max_contracts": 5,
+  "max_lot_size": 0,
+  "max_trades_per_day": 10,
+  "max_consecutive_losses": 3,
+  "restricted_hours": [[9, 30], [9, 45]],
+  "revenge_trade_cooldown_min": 15,
+  "trading_demons": ["chasing", "not taking profits", "trading news"]
+}

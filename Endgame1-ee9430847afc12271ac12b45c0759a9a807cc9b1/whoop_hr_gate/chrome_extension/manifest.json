@@ -1,0 +1,33 @@
+{
+  "manifest_version": 3,
+  "name": "Jarvis WHOOP Gate",
+  "version": "1.3",
+  "permissions": [
+    "tabs",
+    "declarativeNetRequest",
+    "declarativeNetRequestWithHostAccess"
+  ],
+  "host_permissions": [
+    "http://127.0.0.1:8787/*",
+    "http://localhost:8787/*",
+    "*://trader.tradovate.com/*",
+    "*://*.tradovate.com/*",
+    "*://app.tradelocker.com/*",
+    "*://*.tradelocker.com/*",
+    "*://*.topstepx.com/*",
+    "*://*.projectx.com/*",
+    "*://*.tradesea.io/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "declarative_net_request": {
+    "rule_resources": [
+      {
+        "id": "ruleset_1",
+        "enabled": false,
+        "path": "rules.json"
+      }
+    ]
+  }
+}

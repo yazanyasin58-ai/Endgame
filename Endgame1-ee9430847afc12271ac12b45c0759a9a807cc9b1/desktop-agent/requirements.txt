@@ -1,0 +1,9 @@
+mss
+pyobjc-framework-Cocoa
+websockets
+httpx
+bleak
+sounddevice
+pydub
+numpy
+python-dotenv

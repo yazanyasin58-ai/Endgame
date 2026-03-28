@@ -1,0 +1,11 @@
+fastapi
+uvicorn[standard]
+websockets
+httpx
+anthropic
+deepgram-sdk
+elevenlabs
+pydantic
+pydantic-settings
+python-dotenv
+notion-client

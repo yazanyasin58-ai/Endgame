@@ -1,0 +1,37 @@
+# Environment & secrets
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+
+# WHOOP OAuth tokens (contains refresh token — never commit)
+whoop_hr_gate/tokens.json
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+dist/
+build/
+
+# Node / Chrome extension build
+node_modules/
+*.lock
+
+# macOS
+.DS_Store
+.AppleDouble
+
+# Superpowers brainstorm sessions (local only)
+.superpowers/
+
+# Logs
+*.log
+logs/
+
+# IDE
+.vscode/
+.idea/

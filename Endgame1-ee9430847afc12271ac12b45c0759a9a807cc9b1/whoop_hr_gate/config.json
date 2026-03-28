@@ -1,0 +1,70 @@
+{
+  "client_id": "074f0b22-c0cb-47d5-96fd-49e4ccd199a0",
+  "client_secret": "f5b6a74c178988f2798913e7570b0ea63e015ecf3c5e4f056381c7810b0a9229",
+  "redirect_uri": "http://localhost:8787/callback",
+  "poll_seconds": 10,
+  "log_file": "gate_log.csv",
+  "event_log_file": "gate_events.csv",
+  "log_sample_seconds": 5,
+  "cooldown_required_seconds": 15,
+  "cooldown_breaths_required": 6,
+  "cooldown_breath_seconds_per_breath": 5,
+  "timezone": "America/New_York",
+  "time_windows": [
+    {
+      "days": [
+        "MON",
+        "TUE",
+        "WED",
+        "THU",
+        "FRI"
+      ],
+      "start": "01:00",
+      "end": "11:30"
+    },
+    {
+      "days": [
+        "MON",
+        "TUE",
+        "WED",
+        "THU",
+        "FRI"
+      ],
+      "start": "13:30",
+      "end": "15:55"
+    }
+  ],
+  "hr_smoothing_seconds": 10,
+  "block_hold_seconds": 15,
+  "base_threshold_bpm": 120,
+  "modes": {
+    "normal": {
+      "threshold_offset": 0
+    },
+    "caffeine": {
+      "threshold_offset": 10
+    },
+    "adderall": {
+      "threshold_offset": 20
+    },
+    "poor_sleep": {
+      "threshold_offset": 5
+    }
+  },
+  "mode": "normal",
+  "mode_max_duration_minutes": 240,
+  "mode_expires_at_unix": null,
+  "use_workout_if_available": true,
+  "session_enabled": true,
+  "session_auto_timeout_minutes": 240,
+  "block_urls": [
+    "*://trader.tradovate.com/*",
+    "*://*.tradovate.com/*",
+    "*://app.tradelocker.com/*",
+    "*://*.tradelocker.com/*",
+    "*://*.topstepx.com/*",
+    "*://*.projectx.com/*",
+    "*://*.tradesea.io/*"
+  ],
+  "session_enabled_at_unix": 1765781739
+}
