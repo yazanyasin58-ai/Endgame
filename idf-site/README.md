@@ -57,11 +57,22 @@ The first two render as `Blocked` slots in the footer of every version.
 
 ### Imagery
 
-No imagery is generated, sourced, or faked. Every image slot is a flat CSS stand-in in
-that version's palette, at the correct aspect ratio, visibly labelled — hero 16:9, project
-card 4:3, project detail 3:2, before/after 1:1, owner portrait 4:5. Typography and negative
-space are sized as if the real photograph were already in place, so real project
-photography drops in with zero layout change.
+No photography is generated, sourced, or faked. Every image slot is a reserved stand-in at
+the correct aspect ratio, visibly labelled — hero 16:9, project card 4:3, project detail
+3:2, before/after 1:1, owner portrait 4:5. Typography and negative space are sized as if
+the real photograph were already in place, so real project photography drops in with zero
+layout change.
+
+The five hero slots additionally render a **vector comp** (`src/components/CompScene.astro`):
+flat architectural massing — dusk and daylight exteriors, a night exterior, an interior
+wall-and-floor — drawn in the version's palette. These exist so hero composition can be
+judged at the right visual weight before real photography exists. They are deliberately
+flat vector illustration, never an imitation of a photograph, and their slots stay labelled
+`Comp — …`.
+
+**These comps do not ship.** They are a design-review aid. Replacing a comp with a real
+photograph is a one-line change: drop the `scene` prop and pass the image. Before launch,
+every `scene` prop must be gone.
 
 The client's existing logo illustration is not used. Each version carries a text-only
 wordmark lockup pairing the name with CONSTRUCTION & REMODELING.

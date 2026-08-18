@@ -50,6 +50,17 @@ body {
   border-top: 1px solid var(--ph-fg, var(--stone));
   opacity: 0.18;
 }
+.comp {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+/* a slot showing a comp does not need the abstract horizon rule */
+.ph--scene::after {
+  display: none;
+}
 .ph-label {
   position: absolute;
   z-index: 2;

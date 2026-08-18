@@ -1,24 +1,34 @@
 ---
 /**
- * Flat CSS stand-in for a real photograph (§6 image protocol).
- * Reserves the exact slot at the correct aspect ratio, visibly labelled.
- * No imagery is generated or sourced — real photography drops in later
- * with zero layout change.
+ * Reserved image slot (§6 image protocol).
+ *
+ * Holds the exact space a real photograph will occupy, at the correct
+ * aspect ratio, visibly labelled. No photography is generated or sourced.
+ *
+ * Passing `scene` draws a flat vector comp behind the label — architectural
+ * massing in the version's palette, so composition can be judged at the
+ * right visual weight. It never imitates a photograph, and real project
+ * photography drops in later with zero layout change.
  */
+import CompScene from './CompScene.astro';
+
 interface Props {
   ratio: string; // CSS aspect-ratio value, e.g. "16 / 9"
   label: string;
+  scene?: 'exterior-dusk' | 'exterior-day' | 'exterior-night' | 'interior';
   class?: string;
 }
 
-const { ratio, label, class: className = '' } = Astro.props;
+const { ratio, label, scene, class: className = '' } = Astro.props;
+const sceneId = `s${Math.random().toString(36).slice(2, 9)}`;
 ---
 
 <div
-  class:list={['ph', className]}
+  class:list={['ph', className, { 'ph--scene': scene }]}
   style={`aspect-ratio: ${ratio};`}
   role="img"
   aria-label={`Reserved image slot: ${label}`}
 >
+  {scene && <CompScene kind={scene} id={sceneId} />}
   <span class="ph-label" aria-hidden="true">{label}</span>
 </div>

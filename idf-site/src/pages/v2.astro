@@ -48,7 +48,8 @@ const fonts =
       <div class="v2-hero-frame">
         <Placeholder
           ratio="16 / 9"
-          label="Placeholder — hero · project exterior · 16:9 · 2400px"
+          label="Comp — hero · project exterior · 16:9 · 2400px"
+          scene="exterior-day"
           class="v2-ph v2-hero-ph ph--label-tr"
         />
         <span class="v2-hero-wordmark" aria-hidden="true">Interior Design Flooring</span>
@@ -326,7 +327,8 @@ const fonts =
     letter-spacing: -0.005em;
     text-transform: uppercase;
     white-space: nowrap;
-    color: var(--paper);
+    /* ink, not paper — it sits over the bright upper sky of the comp */
+    color: var(--ink);
     pointer-events: none;
   }
   .v2-hero-copy {
