@@ -2,13 +2,17 @@
 /**
  * Reserved image slot (§6 image protocol).
  *
- * Holds the exact space a real photograph will occupy, at the correct
- * aspect ratio, visibly labelled. No photography is generated or sourced.
+ * Holds the exact space a real photograph will occupy, at the correct aspect
+ * ratio, always visibly marked. Three states, in order of fidelity:
  *
- * Passing `scene` draws a flat vector comp behind the label — architectural
- * massing in the version's palette, so composition can be judged at the
- * right visual weight. It never imitates a photograph, and real project
- * photography drops in later with zero layout change.
+ *   src   — a comp photograph is present and is rendered
+ *   scene — a flat vector comp stands in (architectural massing, not a photo)
+ *   plain — a tonal field holds the space
+ *
+ * Nothing here is real client photography. Every state carries a visible
+ * marker so no slot can ship by accident. When the owner's project photos
+ * arrive they replace `src` and the marker comes off — the layout does not
+ * move in any of these states.
  */
 import CompScene from './CompScene.astro';
 
@@ -16,19 +20,22 @@ interface Props {
   ratio: string; // CSS aspect-ratio value, e.g. "16 / 9"
   label: string;
   scene?: 'exterior-dusk' | 'exterior-day' | 'exterior-night' | 'interior';
+  src?: string;
+  alt?: string;
   class?: string;
 }
 
-const { ratio, label, scene, class: className = '' } = Astro.props;
+const { ratio, label, scene, src, alt = '', class: className = '' } = Astro.props;
 const sceneId = `s${Math.random().toString(36).slice(2, 9)}`;
 ---
 
 <div
-  class:list={['ph', className, { 'ph--scene': scene }]}
+  class:list={['ph', className, { 'ph--scene': scene || src, 'ph--photo': src }]}
   style={`aspect-ratio: ${ratio};`}
-  role="img"
-  aria-label={`Reserved image slot: ${label}`}
+  role={src ? undefined : 'img'}
+  aria-label={src ? undefined : `Reserved image slot: ${label}`}
 >
-  {scene && <CompScene kind={scene} id={sceneId} />}
+  {src ? <img class="ph-img" src={src} alt={alt} loading="lazy" decoding="async" /> : null}
+  {!src && scene ? <CompScene kind={scene} id={sceneId} /> : null}
   <span class="ph-label" aria-hidden="true">{label}</span>
 </div>

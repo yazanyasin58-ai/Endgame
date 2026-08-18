@@ -25,12 +25,15 @@ import {
 const fonts =
   'https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,500;12..96,700&family=Space+Mono:wght@400;700&display=swap';
 
-// Tile grid: nine cells, three swapped for the pillar cards (positions 2, 6, 9)
+// Tile grid: nine cells. Three are swapped for the pillar cards, and the
+// centre cell carries work in progress — the grid reads as finished work
+// surrounding an active job site, which is the general-contracting claim.
 const cardPositions = new Map([
   [1, pillars[0]],
   [5, pillars[1]],
   [8, pillars[2]],
 ]);
+const CONSTRUCTION_CELL = 4;
 const tiles = Array.from({ length: 9 }, (_, i) => cardPositions.get(i) ?? null);
 ---
 
@@ -93,6 +96,14 @@ const tiles = Array.from({ length: 9 }, (_, i) => cardPositions.get(i) ?? null);
                   +
                 </a>
               </article>
+            ) : i === CONSTRUCTION_CELL ? (
+              <div class="v5-tile v5-tile--work">
+                <Placeholder
+                  ratio="4 / 3"
+                  label="Comp — work in progress · 4:3"
+                  class="v5-ph"
+                />
+              </div>
             ) : (
               <div class:list={['v5-tile', `v5-tile--${(i % 3) + 1}`]}>
                 <Placeholder ratio="4 / 3" label="Placeholder — project tile · 4:3" class="v5-ph" />
