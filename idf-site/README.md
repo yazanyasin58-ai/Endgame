@@ -70,9 +70,27 @@ judged at the right visual weight before real photography exists. They are delib
 flat vector illustration, never an imitation of a photograph, and their slots stay labelled
 `Comp — …`.
 
-**These comps do not ship.** They are a design-review aid. Replacing a comp with a real
-photograph is a one-line change: drop the `scene` prop and pass the image. Before launch,
-every `scene` prop must be gone.
+**These comps do not ship.** They are a design-review aid. Before launch, every `scene`
+prop must be gone and every slot must carry real project photography.
+
+#### Dropping images in
+
+Image slots resolve at build time via `src/lib/images.ts`. A slot uses a photograph only
+if the file actually exists in `/public`, otherwise it falls back to its vector comp — so
+adding artwork is a file operation, not a code change, and a missing file can never ship
+as a broken image. Expected filenames:
+
+| File in `public/img/` | Slot |
+|---|---|
+| `v1-hero-dusk.webp` | v1 hero, 16:9 |
+| `v2-hero-day.webp` | v2 hero, 16:9 |
+| `v3-hero-vertical.webp` | v3 hero, 3:4 |
+| `v4-hero-interior.webp` | v4 hero, 16:9 — upper two thirds must stay quiet, the headline sits on it |
+| `v5-hero-night.webp` | v5 hero, 16:9 |
+| `work-in-progress.webp` | v5 tile grid, centre cell, 4:3 |
+
+Slots carrying a comp photograph keep a discreet corner marker. That marker comes off only
+when the owner's real project photography replaces the comps.
 
 The client's existing logo illustration is not used. Each version carries a text-only
 wordmark lockup pairing the name with CONSTRUCTION & REMODELING.

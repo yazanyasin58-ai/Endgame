@@ -20,9 +20,12 @@ import {
   processSteps,
   cta,
 } from '../content/idf';
+import { optionalImage, heroImages } from '../lib/images';
 
 const fonts =
   'https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap';
+
+const heroSrc = optionalImage(heroImages.v3);
 ---
 
 <Base
@@ -49,6 +52,8 @@ const fonts =
           ratio="3 / 4"
           label="Comp — hero crop · 3:4 vertical · residential exterior"
           scene="exterior-day"
+          src={heroSrc}
+          alt="A custom home exterior in late afternoon sun"
           class="v3-ph v3-hero-ph"
         />
         <p class="v3-hero-project">Great Falls Project</p>

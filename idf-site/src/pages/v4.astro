@@ -20,9 +20,12 @@ import {
   processSteps,
   cta,
 } from '../content/idf';
+import { optionalImage, heroImages } from '../lib/images';
 
 const fonts =
   'https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Source+Sans+3:wght@400;600&display=swap';
+
+const heroSrc = optionalImage(heroImages.v4);
 ---
 
 <Base
@@ -50,6 +53,8 @@ const fonts =
           ratio="16 / 9"
           label="Comp — hero · interior, quiet upper wall · 16:9 · 2400px"
           scene="interior"
+          src={heroSrc}
+          alt="A finished living space with daylight falling across a quiet wall"
           class="v4-ph v4-hero-ph ph--label-tl"
         />
 

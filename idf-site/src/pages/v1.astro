@@ -21,9 +21,12 @@ import {
   processSteps,
   cta,
 } from '../content/idf';
+import { optionalImage, heroImages } from '../lib/images';
 
 const fonts =
   'https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300&family=Public+Sans:wght@400;500;600&display=swap';
+
+const heroSrc = optionalImage(heroImages.v1);
 ---
 
 <Base
@@ -50,6 +53,8 @@ const fonts =
         ratio="16 / 9"
         label="Comp — hero · dusk exterior · 16:9 · 2400px"
         scene="exterior-dusk"
+        src={heroSrc}
+        alt="A custom home at dusk, warm light in the windows"
         class="v1-ph v1-hero-ph ph--label-tr"
       />
 

@@ -21,6 +21,7 @@ import {
   processSteps,
   cta,
 } from '../content/idf';
+import { optionalImage, heroImages } from '../lib/images';
 
 const fonts =
   'https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,500;12..96,700&family=Space+Mono:wght@400;700&display=swap';
@@ -35,6 +36,8 @@ const cardPositions = new Map([
 ]);
 const CONSTRUCTION_CELL = 4;
 const tiles = Array.from({ length: 9 }, (_, i) => cardPositions.get(i) ?? null);
+
+const heroSrc = optionalImage(heroImages.v5);
 ---
 
 <Base
@@ -60,6 +63,8 @@ const tiles = Array.from({ length: 9 }, (_, i) => cardPositions.get(i) ?? null);
         ratio="16 / 9"
         label="Comp — hero · project exterior · 16:9 · 2400px"
         scene="exterior-night"
+        src={heroSrc}
+        alt="A custom home exterior at night with warm lit windows"
         class="v5-ph v5-hero-ph ph--label-tr"
       />
       <div class="v5-hero-inner">
@@ -101,6 +106,8 @@ const tiles = Array.from({ length: 9 }, (_, i) => cardPositions.get(i) ?? null);
                 <Placeholder
                   ratio="4 / 3"
                   label="Comp — work in progress · 4:3"
+                  src={optionalImage(heroImages.work)}
+                  alt="A home addition under construction, new framing against the existing house"
                   class="v5-ph"
                 />
               </div>

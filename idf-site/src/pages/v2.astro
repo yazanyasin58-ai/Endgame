@@ -20,9 +20,12 @@ import {
   processSteps,
   cta,
 } from '../content/idf';
+import { optionalImage, heroImages } from '../lib/images';
 
 const fonts =
   'https://fonts.googleapis.com/css2?family=Anton&family=IBM+Plex+Sans:wght@400;500;600&display=swap';
+
+const heroSrc = optionalImage(heroImages.v2);
 ---
 
 <Base
@@ -50,6 +53,8 @@ const fonts =
           ratio="16 / 9"
           label="Comp — hero · project exterior · 16:9 · 2400px"
           scene="exterior-day"
+          src={heroSrc}
+          alt="A contemporary residential addition photographed square to the facade"
           class="v2-ph v2-hero-ph ph--label-tr"
         />
         <span class="v2-hero-wordmark" aria-hidden="true">Interior Design Flooring</span>
