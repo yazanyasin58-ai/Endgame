@@ -75,19 +75,22 @@ prop must be gone and every slot must carry real project photography.
 
 #### Dropping images in
 
-Image slots resolve at build time via `src/lib/images.ts`. A slot uses a photograph only
-if the file actually exists in `/public`, otherwise it falls back to its vector comp — so
-adding artwork is a file operation, not a code change, and a missing file can never ship
-as a broken image. Expected filenames:
+Image slots resolve at build time via `src/lib/images.ts`. A slot uses a file only if it
+actually exists in `/public`, otherwise it falls back to its vector comp — so adding
+artwork is a file operation, not a code change, and a missing file can never ship as a
+broken image.
 
-| File in `public/img/` | Slot |
+Names are given without an extension; `.webp`, `.avif`, `.png`, `.jpg` and `.jpeg` are all
+picked up, best format first. Drop a file into `public/img/` using one of these names:
+
+| Base name in `public/img/` | Slot |
 |---|---|
-| `v1-hero-dusk.webp` | v1 hero, 16:9 |
-| `v2-hero-day.webp` | v2 hero, 16:9 |
-| `v3-hero-vertical.webp` | v3 hero, 3:4 |
-| `v4-hero-interior.webp` | v4 hero, 16:9 — upper two thirds must stay quiet, the headline sits on it |
-| `v5-hero-night.webp` | v5 hero, 16:9 |
-| `work-in-progress.webp` | v5 tile grid, centre cell, 4:3 |
+| `v1-hero-dusk` | v1 hero, 16:9 |
+| `v2-hero-day` | v2 hero, 16:9 |
+| `v3-hero-vertical` | v3 hero, 3:4 |
+| `v4-hero-interior` | v4 hero, 16:9 — upper two thirds must stay quiet, the headline sits on it |
+| `v5-hero-night` | v5 hero, 16:9 |
+| `work-in-progress` | v5 tile grid, centre cell, 4:3 |
 
 Slots carrying a comp photograph keep a discreet corner marker. That marker comes off only
 when the owner's real project photography replaces the comps.
