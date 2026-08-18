@@ -1,0 +1,59 @@
+---
+/**
+ * Estimate request form — UI only this phase (§9). Submission is wired in a
+ * later phase; the note below keeps that visible so nothing ships by accident.
+ */
+import { cta, formFields } from '../content/idf';
+
+interface Props {
+  idPrefix?: string;
+}
+
+const { idPrefix = 'ef' } = Astro.props;
+const f = (name: string) => `${idPrefix}-${name}`;
+---
+
+<form class="ef" novalidate>
+  <div class="ef-grid">
+    <div class="ef-field">
+      <label class="ef-label" for={f('name')}>Name <span aria-hidden="true">*</span></label>
+      <input class="ef-input" type="text" id={f('name')} name="name" autocomplete="name" required />
+    </div>
+    <div class="ef-field">
+      <label class="ef-label" for={f('phone')}>Phone <span aria-hidden="true">*</span></label>
+      <input class="ef-input" type="tel" id={f('phone')} name="phone" autocomplete="tel" required />
+    </div>
+    <div class="ef-field">
+      <label class="ef-label" for={f('email')}>Email <span aria-hidden="true">*</span></label>
+      <input class="ef-input" type="email" id={f('email')} name="email" autocomplete="email" required />
+    </div>
+    <div class="ef-field">
+      <label class="ef-label" for={f('address')}>Project address <span aria-hidden="true">*</span></label>
+      <input
+        class="ef-input"
+        type="text"
+        id={f('address')}
+        name="address"
+        placeholder="City or ZIP at minimum"
+        required
+      />
+    </div>
+    <div class="ef-field ef-field--full">
+      <label class="ef-label" for={f('type')}>Type of work <span aria-hidden="true">*</span></label>
+      <select class="ef-input ef-select" id={f('type')} name="type" required>
+        <option value="" selected disabled>Select one</option>
+        {formFields.typeOfWork.map((t) => <option value={t}>{t}</option>)}
+      </select>
+    </div>
+    <div class="ef-field ef-field--full">
+      <label class="ef-label" for={f('details')}>Project details</label>
+      <textarea class="ef-input ef-textarea" id={f('details')} name="details" rows="4"></textarea>
+    </div>
+    <div class="ef-field ef-field--full">
+      <label class="ef-label" for={f('source')}>How did you hear about us? <span class="ef-optional">(optional)</span></label>
+      <input class="ef-input" type="text" id={f('source')} name="source" />
+    </div>
+  </div>
+  <button class="ef-submit" type="submit">{cta.primary}</button>
+  <p class="ef-note">Form UI only — submission is wired in a later phase</p>
+</form>

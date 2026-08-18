@@ -1,0 +1,24 @@
+---
+/**
+ * Flat CSS stand-in for a real photograph (§6 image protocol).
+ * Reserves the exact slot at the correct aspect ratio, visibly labelled.
+ * No imagery is generated or sourced — real photography drops in later
+ * with zero layout change.
+ */
+interface Props {
+  ratio: string; // CSS aspect-ratio value, e.g. "16 / 9"
+  label: string;
+  class?: string;
+}
+
+const { ratio, label, class: className = '' } = Astro.props;
+---
+
+<div
+  class:list={['ph', className]}
+  style={`aspect-ratio: ${ratio};`}
+  role="img"
+  aria-label={`Reserved image slot: ${label}`}
+>
+  <span class="ph-label" aria-hidden="true">{label}</span>
+</div>

@@ -1,0 +1,752 @@
+---
+/**
+ * V1 — Monumental Dusk
+ * Architectural editorial × cinematic. Oversized display wordmark seated on
+ * the building line, near-black ground, one warm accent, everything else
+ * whisper-small. Fraunces display / Public Sans body.
+ */
+import Base from '../layouts/Base.astro';
+import Placeholder from '../components/Placeholder.astro';
+import VersionSwitcher from '../components/VersionSwitcher.astro';
+import StickyCallBar from '../components/StickyCallBar.astro';
+import EstimateForm from '../components/EstimateForm.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import {
+  business,
+  trustBar,
+  pillars,
+  wedge,
+  projects,
+  homepageReviews,
+  processSteps,
+  cta,
+} from '../content/idf';
+
+const fonts =
+  'https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300&family=Public+Sans:wght@400;500;600&display=swap';
+---
+
+<Base
+  title="Interior Design Flooring — V1 Monumental Dusk"
+  description="Homepage direction V1: architectural editorial. Custom homes, additions, and remodeling in Northern Virginia — Class A contractor, owner-run since 1989."
+  fontsHref={fonts}
+  bodyClass="v1"
+  withCallbar
+>
+  <VersionSwitcher current="v1" />
+
+  <header class="v1-nav">
+    <p class="v1-nav-brand">
+      <span>{business.name}</span>
+      <span class="v1-nav-lockup">{business.lockup}</span>
+    </p>
+    <a class="v1-nav-phone" href={business.phonePrimaryHref}>{business.phonePrimary}</a>
+  </header>
+
+  <main>
+    <!-- 1 · HERO -->
+    <section class="v1-hero" aria-label="Introduction">
+      <div class="v1-hero-media">
+        <Placeholder ratio="16 / 9" label="Placeholder — hero · dusk exterior · 16:9 · 2400px" class="v1-ph" />
+        <div class="v1-hero-col">
+          <p class="v1-label v1-label--gold">
+            Class A Contractor &middot; Since 1989 &middot; Northern Virginia
+          </p>
+          <p class="v1-hero-line">The home you planned, built by the people you hired.</p>
+          <p class="v1-hero-body">
+            Custom homes, additions, and full remodels — one owner-run team from the first call to
+            the final walkthrough. Estimate within 24 hours of the site visit.
+          </p>
+          <div class="v1-hero-ctas">
+            <a class="v1-btn" href="#estimate">{cta.primary}</a>
+            <a class="v1-call" href={business.phonePrimaryHref}>or call {business.phonePrimary}</a>
+          </div>
+        </div>
+      </div>
+      <h1 class="v1-wordmark">
+        <span class="v1-wordmark-line">Interior Design</span>
+        <span class="v1-wordmark-line">Flooring</span>
+        <span class="v1-wordmark-lockup">{business.lockup} — Sterling, Virginia</span>
+      </h1>
+    </section>
+
+    <!-- 2 · TRUST BAR -->
+    <section class="v1-trust" aria-label="Credentials">
+      <ul>
+        {trustBar.map((item) => <li>{item}</li>)}
+      </ul>
+    </section>
+
+    <!-- 3 · THREE PILLARS -->
+    <section class="v1-section" aria-labelledby="v1-pillars-h">
+      <p class="v1-label v1-label--gold">What we build</p>
+      <h2 id="v1-pillars-h" class="v1-visually-hidden">Services</h2>
+      <div class="v1-pillars">
+        {
+          pillars.map((p) => (
+            <article class="v1-pillar">
+              <span class="v1-pillar-num">{p.number}</span>
+              <h3 class="v1-pillar-title">{p.title}</h3>
+              <ul class="v1-pillar-list">
+                {p.services.map((s) => (
+                  <li>{s}</li>
+                ))}
+              </ul>
+            </article>
+          ))
+        }
+      </div>
+    </section>
+
+    <!-- 4 · THE WEDGE + figures -->
+    <section class="v1-section v1-wedge" aria-labelledby="v1-wedge-h">
+      <p class="v1-wedge-tagline">{wedge.tagline}</p>
+      <div class="v1-wedge-copy">
+        <h2 id="v1-wedge-h" class="v1-wedge-heading">{wedge.heading}</h2>
+        {wedge.body.map((para) => <p>{para}</p>)}
+      </div>
+      <div class="v1-figures" role="list" aria-label="Key figures">
+        <div class="v1-figure v1-figure--a" role="listitem">
+          <span class="v1-figure-num">1989</span>
+          <span class="v1-label">Established</span>
+        </div>
+        <div class="v1-figure v1-figure--b" role="listitem">
+          <span class="v1-figure-num">37</span>
+          <span class="v1-label">Years owner-run</span>
+        </div>
+        <div class="v1-figure v1-figure--c" role="listitem">
+          <span class="v1-figure-num">24<em>hr</em></span>
+          <span class="v1-label">Estimate turnaround</span>
+        </div>
+        <div class="v1-figure v1-figure--d" role="listitem">
+          <span class="v1-figure-num">A</span>
+          <span class="v1-label">Class A &middot; #2705162130</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5 · FEATURED PROJECTS -->
+    <section class="v1-section" aria-labelledby="v1-projects-h">
+      <p class="v1-label v1-label--gold">Selected work</p>
+      <h2 id="v1-projects-h" class="v1-visually-hidden">Featured projects</h2>
+      <div class="v1-projects">
+        {
+          projects.map((proj) => (
+            <figure class="v1-project">
+              <Placeholder ratio="4 / 3" label="Placeholder — project card · 4:3 · 1200px" class="v1-ph" />
+              <figcaption>
+                {proj.named ? proj.name : <span class="v1-project-tba">Third project — list in progress</span>}
+              </figcaption>
+            </figure>
+          ))
+        }
+      </div>
+    </section>
+
+    <!-- 6 · REVIEWS -->
+    <section class="v1-section" aria-labelledby="v1-reviews-h">
+      <p class="v1-label v1-label--gold">In their words</p>
+      <h2 id="v1-reviews-h" class="v1-visually-hidden">Client reviews</h2>
+      <div class="v1-reviews">
+        {
+          homepageReviews.map((r) => (
+            <blockquote class="v1-review">
+              <p class="v1-review-quote">&ldquo;{r.quote}&rdquo;</p>
+              <footer>
+                <cite>{r.name}</cite>
+                <span class="v1-label">{r.context}</span>
+              </footer>
+            </blockquote>
+          ))
+        }
+      </div>
+    </section>
+
+    <!-- 7 · HOW IT WORKS -->
+    <section class="v1-section" aria-labelledby="v1-process-h">
+      <p class="v1-label v1-label--gold">How it works</p>
+      <h2 id="v1-process-h" class="v1-visually-hidden">Our process</h2>
+      <ol class="v1-steps">
+        {
+          processSteps.map((step) => (
+            <li class:list={['v1-step', { 'v1-step--featured': 'featured' in step && step.featured }]}>
+              <span class="v1-step-num">{step.number}</span>
+              <div>
+                <h3 class="v1-step-title">{step.title}</h3>
+                <p class="v1-step-detail">{step.detail}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+    </section>
+
+    <!-- 8 · FINAL CTA -->
+    <section class="v1-section v1-final" id="estimate" aria-labelledby="v1-final-h">
+      <div class="v1-final-intro">
+        <h2 id="v1-final-h" class="v1-final-heading">Price your project.</h2>
+        <p class="v1-final-sub">
+          Tell us what you're planning. We visit the site, and your written estimate arrives within
+          24 hours.
+        </p>
+        <a class="v1-call v1-call--big" href={business.phonePrimaryHref}>
+          Prefer to talk? {business.phonePrimary}
+        </a>
+      </div>
+      <EstimateForm idPrefix="v1" />
+    </section>
+  </main>
+
+  <SiteFooter />
+  <StickyCallBar />
+</Base>
+
+<style is:global>
+  .v1 {
+    background: var(--ink);
+    color: var(--cream);
+    font-family: 'Public Sans', sans-serif;
+    font-size: 0.9375rem;
+    line-height: 1.65;
+    --v1-hairline: rgb(246 241 231 / 0.14);
+    --ph-bg: #211d16;
+    --ph-fg: #8d8577;
+  }
+  .v1 ::selection {
+    background: var(--gold);
+    color: var(--ink);
+  }
+  .v1-visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+
+  /* labels — letterspaced small caps, the whisper register */
+  .v1-label {
+    font-size: 0.65rem;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--stone);
+  }
+  .v1-label--gold {
+    color: var(--gold-bright);
+  }
+
+  /* nav */
+  .v1-nav {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.1rem clamp(1.25rem, 4vw, 3rem);
+    border-bottom: 1px solid var(--v1-hairline);
+  }
+  .v1-nav-brand {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+  .v1-nav-lockup {
+    display: block;
+    font-weight: 400;
+    color: var(--stone);
+    letter-spacing: 0.24em;
+    font-size: 0.575rem;
+    margin-top: 0.2rem;
+  }
+  .v1-nav-phone {
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    color: var(--gold-bright);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .v1-nav-phone:hover {
+    text-decoration: underline;
+  }
+
+  /* hero */
+  .v1-hero {
+    padding-bottom: clamp(3rem, 7vw, 6rem);
+  }
+  .v1-hero-media {
+    position: relative;
+  }
+  .v1-hero-col {
+    padding: 1.75rem clamp(1.25rem, 4vw, 3rem) 0;
+    max-width: 24rem;
+  }
+  @media (min-width: 1024px) {
+    .v1-hero-col {
+      position: absolute;
+      top: clamp(2rem, 5vw, 4.5rem);
+      right: clamp(1.5rem, 4vw, 3.5rem);
+      width: 19.5rem;
+      max-width: none;
+      padding: 0;
+    }
+  }
+  .v1-hero-line {
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    line-height: 1.8;
+    margin-top: 1rem;
+  }
+  .v1-hero-body {
+    font-size: 0.8125rem;
+    color: var(--stone);
+    margin-top: 0.9rem;
+  }
+  .v1-hero-ctas {
+    margin-top: 1.4rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.9rem;
+  }
+  .v1-btn {
+    display: inline-block;
+    background: var(--gold);
+    color: var(--ink);
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    text-decoration: none;
+    padding: 0.9em 1.8em;
+  }
+  .v1-btn:hover {
+    background: var(--gold-bright);
+  }
+  .v1-call {
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    color: var(--gold-bright);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  /* the monumental wordmark, seated on the building line */
+  .v1-wordmark {
+    position: relative;
+    z-index: 2;
+    margin-top: calc(-0.52em * 1.9);
+    padding-inline: clamp(1.25rem, 4vw, 3rem);
+    font-family: 'Fraunces', serif;
+    font-weight: 300;
+    font-size: clamp(2.8rem, 11.5vw, 11rem);
+    line-height: 0.95;
+    letter-spacing: -0.015em;
+    text-transform: uppercase;
+  }
+  @media (min-width: 1024px) {
+    .v1-wordmark {
+      margin-top: -1.05em;
+    }
+  }
+  .v1-wordmark-line {
+    display: block;
+  }
+  .v1-wordmark-lockup {
+    display: block;
+    font-family: 'Public Sans', sans-serif;
+    font-size: clamp(0.575rem, 0.9vw, 0.7rem);
+    font-weight: 500;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--gold-bright);
+    margin-top: 1.4rem;
+  }
+
+  /* trust bar */
+  .v1-trust {
+    border-block: 1px solid var(--v1-hairline);
+    padding: 1rem clamp(1.25rem, 4vw, 3rem);
+  }
+  .v1-trust ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem 0;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    font-size: 0.625rem;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--stone);
+  }
+  .v1-trust li:not(:last-child)::after {
+    content: '·';
+    color: var(--gold);
+    margin-inline: 1.1rem;
+  }
+
+  /* generic section shell */
+  .v1-section {
+    padding: clamp(3.5rem, 8vw, 7rem) clamp(1.25rem, 4vw, 3rem);
+    border-bottom: 1px solid var(--v1-hairline);
+  }
+
+  /* pillars */
+  .v1-pillars {
+    margin-top: 2.5rem;
+    display: grid;
+  }
+  .v1-pillar {
+    display: grid;
+    grid-template-columns: 3rem 1fr;
+    gap: 0.4rem 1rem;
+    padding-block: 2rem;
+    border-top: 1px solid var(--v1-hairline);
+  }
+  @media (min-width: 768px) {
+    .v1-pillar {
+      grid-template-columns: 5rem 1fr 20rem;
+      align-items: baseline;
+    }
+  }
+  .v1-pillar-num {
+    font-family: 'Fraunces', serif;
+    font-weight: 300;
+    font-size: 1rem;
+    color: var(--gold-bright);
+  }
+  .v1-pillar-title {
+    font-family: 'Fraunces', serif;
+    font-weight: 300;
+    font-size: clamp(2rem, 5vw, 3.75rem);
+    line-height: 1;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+  }
+  .v1-pillar-list {
+    list-style: none;
+    margin: 0.75rem 0 0;
+    padding: 0;
+    font-size: 0.8125rem;
+    color: var(--stone);
+    grid-column: 2;
+  }
+  @media (min-width: 768px) {
+    .v1-pillar-list {
+      grid-column: 3;
+      margin-top: 0;
+    }
+  }
+  .v1-pillar-list li + li {
+    margin-top: 0.3rem;
+  }
+
+  /* wedge */
+  .v1-wedge-tagline {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 300;
+    font-size: clamp(1.6rem, 4.5vw, 3.25rem);
+    line-height: 1.15;
+    max-width: 22ch;
+    color: var(--gold-bright);
+  }
+  .v1-wedge-copy {
+    margin-top: 2.5rem;
+    max-width: 34rem;
+  }
+  .v1-wedge-heading {
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+  .v1-wedge-copy p + p {
+    margin-top: 0.9rem;
+  }
+  .v1-wedge-copy p {
+    font-size: 0.875rem;
+    color: var(--stone);
+  }
+
+  /* scattered figures — off-grid, huge and thin */
+  .v1-figures {
+    margin-top: clamp(3rem, 7vw, 5.5rem);
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2.5rem 1rem;
+  }
+  @media (min-width: 900px) {
+    .v1-figures {
+      grid-template-columns: repeat(12, 1fr);
+    }
+    .v1-figure--a { grid-column: 1 / span 3; }
+    .v1-figure--b { grid-column: 5 / span 2; margin-top: 4.5rem; }
+    .v1-figure--c { grid-column: 8 / span 2; margin-top: 1.5rem; }
+    .v1-figure--d { grid-column: 11 / span 2; margin-top: 6rem; }
+  }
+  .v1-figure-num {
+    display: block;
+    font-family: 'Fraunces', serif;
+    font-weight: 300;
+    font-size: clamp(3.5rem, 8vw, 7rem);
+    line-height: 0.9;
+    margin-bottom: 0.6rem;
+  }
+  .v1-figure-num em {
+    font-style: normal;
+    font-size: 0.35em;
+    color: var(--gold-bright);
+  }
+
+  /* projects */
+  .v1-projects {
+    margin-top: 2.5rem;
+    display: grid;
+    gap: 2.25rem;
+  }
+  @media (min-width: 768px) {
+    .v1-projects {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+  }
+  .v1-project figcaption {
+    margin-top: 0.8rem;
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+  .v1-project-tba {
+    color: var(--stone);
+  }
+
+  /* reviews */
+  .v1-reviews {
+    margin-top: 2.5rem;
+    display: grid;
+    gap: 3.5rem;
+  }
+  @media (min-width: 900px) {
+    .v1-reviews {
+      grid-template-columns: 1.3fr 1fr;
+      gap: 4rem;
+    }
+  }
+  .v1-review {
+    margin: 0;
+  }
+  .v1-review-quote {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 300;
+    font-size: clamp(1.1rem, 2.2vw, 1.45rem);
+    line-height: 1.45;
+  }
+  .v1-review footer {
+    margin-top: 1.4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+  .v1-review cite {
+    font-style: normal;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gold-bright);
+  }
+
+  /* process */
+  .v1-steps {
+    margin: 2.5rem 0 0;
+    padding: 0;
+    list-style: none;
+    max-width: 44rem;
+  }
+  .v1-step {
+    display: grid;
+    grid-template-columns: 3.5rem 1fr;
+    gap: 1rem;
+    padding-block: 1.4rem;
+    border-top: 1px solid var(--v1-hairline);
+  }
+  .v1-step-num {
+    font-family: 'Fraunces', serif;
+    font-weight: 300;
+    font-size: 1.4rem;
+    color: var(--stone);
+  }
+  .v1-step-title {
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .v1-step-detail {
+    font-size: 0.8125rem;
+    color: var(--stone);
+    margin-top: 0.3rem;
+  }
+  .v1-step--featured .v1-step-num,
+  .v1-step--featured .v1-step-title {
+    color: var(--gold-bright);
+  }
+  .v1-step--featured .v1-step-title::after {
+    content: '— the differentiator';
+    margin-left: 0.75em;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    text-transform: none;
+    color: var(--stone);
+  }
+
+  /* final CTA */
+  .v1-final {
+    display: grid;
+    gap: 3rem;
+    border-bottom: 0;
+  }
+  @media (min-width: 1024px) {
+    .v1-final {
+      grid-template-columns: 1fr 1.2fr;
+      gap: 5rem;
+    }
+  }
+  .v1-final-heading {
+    font-family: 'Fraunces', serif;
+    font-weight: 300;
+    font-size: clamp(2.4rem, 5.5vw, 4.5rem);
+    line-height: 1;
+  }
+  .v1-final-sub {
+    margin-top: 1.25rem;
+    font-size: 0.875rem;
+    color: var(--stone);
+    max-width: 34ch;
+  }
+  .v1-call--big {
+    display: inline-block;
+    margin-top: 1.5rem;
+    font-size: 0.85rem;
+  }
+
+  /* form */
+  .v1 .ef-label {
+    font-size: 0.625rem;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--stone);
+  }
+  .v1 .ef-input {
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid rgb(246 241 231 / 0.35);
+    color: var(--cream);
+    font-family: inherit;
+    font-size: 0.9rem;
+    padding: 0.5rem 0.1rem;
+  }
+  .v1 .ef-input:focus {
+    border-bottom-color: var(--gold-bright);
+    outline: none;
+  }
+  .v1 .ef-select {
+    appearance: none;
+    border-radius: 0;
+  }
+  .v1 .ef-select option {
+    color: var(--ink);
+    background: var(--cream);
+  }
+  .v1 .ef-submit {
+    margin-top: 2rem;
+    background: var(--gold);
+    color: var(--ink);
+    border: 0;
+    font-family: inherit;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    padding: 1em 2.2em;
+    cursor: pointer;
+  }
+  .v1 .ef-submit:hover {
+    background: var(--gold-bright);
+  }
+  .v1 .ef-note {
+    margin-top: 1rem;
+    color: var(--stone);
+  }
+  .v1 .ef-optional {
+    text-transform: none;
+    letter-spacing: 0.05em;
+  }
+
+  /* footer */
+  .v1 .foot {
+    border-top: 1px solid var(--v1-hairline);
+    padding: clamp(3rem, 6vw, 4.5rem) clamp(1.25rem, 4vw, 3rem) 2.5rem;
+  }
+  .v1 .foot-wordmark {
+    font-family: 'Fraunces', serif;
+    font-weight: 300;
+    font-size: 1.6rem;
+    text-transform: uppercase;
+  }
+  .v1 .foot-lockup {
+    font-size: 0.6rem;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--gold-bright);
+    margin-top: 0.4rem;
+  }
+  .v1 .foot-cols {
+    margin-top: 2.5rem;
+    display: grid;
+    gap: 2rem;
+    font-size: 0.8125rem;
+    color: var(--stone);
+  }
+  @media (min-width: 768px) {
+    .v1 .foot-cols {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  .v1 .foot-head {
+    font-size: 0.625rem;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--cream);
+    margin-bottom: 0.7rem;
+  }
+  .v1 .foot a {
+    color: inherit;
+    text-decoration: none;
+  }
+  .v1 .foot a:hover {
+    color: var(--gold-bright);
+  }
+  .v1 .foot-blocked {
+    margin-top: 2.5rem;
+    display: grid;
+    gap: 0.75rem;
+    max-width: 40rem;
+  }
+  .v1 .foot-fine {
+    margin-top: 2.5rem;
+    font-size: 0.6875rem;
+    letter-spacing: 0.06em;
+    color: var(--stone);
+  }
+</style>

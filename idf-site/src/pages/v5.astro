@@ -1,0 +1,750 @@
+---
+/**
+ * V5 — Field Grid
+ * Dark ground; the work shown as a tiled grid of project photos with three
+ * cells swapped for solid accent cards carrying the pillars.
+ * Bricolage Grotesque / Space Mono.
+ */
+import Base from '../layouts/Base.astro';
+import Placeholder from '../components/Placeholder.astro';
+import VersionSwitcher from '../components/VersionSwitcher.astro';
+import StickyCallBar from '../components/StickyCallBar.astro';
+import EstimateForm from '../components/EstimateForm.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import {
+  business,
+  trustBar,
+  pillars,
+  wedge,
+  projects,
+  homepageReviews,
+  processSteps,
+  cta,
+} from '../content/idf';
+
+const fonts =
+  'https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,500;12..96,700&family=Space+Mono:wght@400;700&display=swap';
+
+// Tile grid: nine cells, three swapped for the pillar cards (positions 2, 6, 9)
+const cardPositions = new Map([
+  [1, pillars[0]],
+  [5, pillars[1]],
+  [8, pillars[2]],
+]);
+const tiles = Array.from({ length: 9 }, (_, i) => cardPositions.get(i) ?? null);
+---
+
+<Base
+  title="Interior Design Flooring — V5 Field Grid"
+  description="Homepage direction V5: field grid. Custom homes, additions, and remodeling in Northern Virginia — Class A contractor, owner-run since 1989."
+  fontsHref={fonts}
+  bodyClass="v5"
+  withCallbar
+>
+  <VersionSwitcher current="v5" />
+
+  <header class="v5-nav">
+    <p class="v5-nav-brand">
+      {business.name} <span class="v5-nav-lockup">/ {business.lockup}</span>
+    </p>
+    <a class="v5-nav-phone" href={business.phonePrimaryHref}>{business.phonePrimary}</a>
+  </header>
+
+  <main>
+    <!-- 1 · HERO — type band, then the field grid bleeding to both edges -->
+    <section class="v5-hero" aria-label="Introduction">
+      <p class="v5-eyebrow">
+        Class A Contractor &middot; Northern Virginia &middot; Since 1989
+      </p>
+      <h1 class="v5-h1">We build it.<br />You deal with us.</h1>
+      <p class="v5-hero-sub">
+        Custom homes, additions &amp; remodeling — owner-run, estimate within 24 hours of the site
+        visit.
+      </p>
+      <div class="v5-hero-ctas">
+        <a class="v5-btn" href="#estimate">{cta.primary}</a>
+        <a class="v5-btn v5-btn--ghost" href={business.phonePrimaryHref}>{cta.secondaryLabel}</a>
+      </div>
+    </section>
+
+    <!-- 3 · THREE PILLARS live inside the field grid -->
+    <section class="v5-field" aria-label="Our work and services">
+      <div class="v5-grid">
+        {
+          tiles.map((tile, i) =>
+            tile ? (
+              <article class="v5-card">
+                <span class="v5-card-num">{tile.number}</span>
+                <h3 class="v5-card-title">{tile.title}</h3>
+                <ul class="v5-card-list">
+                  {tile.services.map((s) => (
+                    <li>{s}</li>
+                  ))}
+                </ul>
+                <a class="v5-card-plus" href="#estimate" aria-label={`Start a ${tile.title.toLowerCase()} estimate`}>
+                  +
+                </a>
+              </article>
+            ) : (
+              <div class:list={['v5-tile', `v5-tile--${(i % 3) + 1}`]}>
+                <Placeholder ratio="4 / 3" label="Placeholder — project tile · 4:3" class="v5-ph" />
+              </div>
+            )
+          )
+        }
+      </div>
+    </section>
+
+    <!-- 2 · TRUST BAR -->
+    <section class="v5-trust" aria-label="Credentials">
+      <ul>
+        {trustBar.map((item) => <li>{item}</li>)}
+      </ul>
+    </section>
+
+    <!-- 4 · THE WEDGE -->
+    <section class="v5-section v5-wedge" aria-labelledby="v5-wedge-h">
+      <p class="v5-mono-label">No middlemen</p>
+      <p class="v5-wedge-tagline">{wedge.tagline}</p>
+      <div class="v5-wedge-grid">
+        <h2 id="v5-wedge-h" class="v5-wedge-heading">{wedge.heading}</h2>
+        <div class="v5-wedge-copy">
+          {wedge.body.map((para) => <p>{para}</p>)}
+        </div>
+      </div>
+    </section>
+
+    <!-- 5 · FEATURED PROJECTS -->
+    <section class="v5-section" aria-labelledby="v5-projects-h">
+      <p class="v5-mono-label">Selected work</p>
+      <h2 id="v5-projects-h" class="v5-h2">Named projects</h2>
+      <div class="v5-projects">
+        {
+          projects.map((proj) => (
+            <figure class="v5-project">
+              <Placeholder ratio="4 / 3" label="Placeholder — project card · 4:3 · 1200px" class="v5-ph" />
+              <figcaption>
+                {proj.named ? proj.name : <span class="v5-muted">To be announced — list in progress</span>}
+              </figcaption>
+            </figure>
+          ))
+        }
+      </div>
+    </section>
+
+    <!-- 6 · REVIEWS -->
+    <section class="v5-section" aria-labelledby="v5-reviews-h">
+      <p class="v5-mono-label">Client record</p>
+      <h2 id="v5-reviews-h" class="v5-h2">What they said</h2>
+      <div class="v5-reviews">
+        {
+          homepageReviews.map((r) => (
+            <blockquote class="v5-review">
+              <p class="v5-review-quote">&ldquo;{r.quote}&rdquo;</p>
+              <footer>
+                <cite>{r.name}</cite>
+                <span class="v5-review-context">{r.context}</span>
+              </footer>
+            </blockquote>
+          ))
+        }
+      </div>
+    </section>
+
+    <!-- 7 · HOW IT WORKS -->
+    <section class="v5-section" aria-labelledby="v5-process-h">
+      <p class="v5-mono-label">Sequence</p>
+      <h2 id="v5-process-h" class="v5-h2">Call to contract, five steps</h2>
+      <ol class="v5-steps">
+        {
+          processSteps.map((step) => (
+            <li class:list={['v5-step', { 'v5-step--featured': 'featured' in step && step.featured }]}>
+              <span class="v5-step-num">{step.number}</span>
+              <h3 class="v5-step-title">{step.title}</h3>
+              <p class="v5-step-detail">{step.detail}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </section>
+
+    <!-- 8 · FINAL CTA -->
+    <section class="v5-section v5-final" id="estimate" aria-labelledby="v5-final-h">
+      <div class="v5-final-grid">
+        <div>
+          <p class="v5-mono-label">Start here</p>
+          <h2 id="v5-final-h" class="v5-final-heading">Get your number<br />in 24 hours.</h2>
+          <p class="v5-final-sub">
+            Describe the work, give us the address, and we take it from there — site visit, then a
+            written estimate within a day.
+          </p>
+          <a class="v5-call" href={business.phonePrimaryHref}>
+            Or call {business.phonePrimary}
+          </a>
+        </div>
+        <div class="v5-final-form">
+          <EstimateForm idPrefix="v5" />
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <SiteFooter />
+  <StickyCallBar />
+</Base>
+
+<style is:global>
+  .v5 {
+    background: var(--ink);
+    color: var(--cream);
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    --v5-hairline: rgb(246 241 231 / 0.13);
+    --ph-bg: #1f1b15;
+    --ph-fg: #837b6d;
+  }
+  .v5 ::selection {
+    background: var(--gold-bright);
+    color: var(--ink);
+  }
+  .v5-mono-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.625rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold-bright);
+  }
+
+  /* nav */
+  .v5-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+    padding: 1rem clamp(1rem, 3vw, 2rem);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6875rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .v5-nav-lockup {
+    color: var(--stone);
+  }
+  .v5-nav-phone {
+    color: var(--gold-bright);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .v5-nav-phone:hover {
+    text-decoration: underline;
+  }
+
+  /* hero band — centred */
+  .v5-hero {
+    text-align: center;
+    padding: clamp(3.5rem, 9vw, 7rem) 1.25rem clamp(2.75rem, 6vw, 4.5rem);
+  }
+  .v5-eyebrow {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6563rem;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--stone);
+  }
+  .v5-h1 {
+    margin-top: 1.5rem;
+    font-weight: 700;
+    font-size: clamp(2.8rem, 9vw, 7rem);
+    line-height: 0.98;
+    letter-spacing: -0.025em;
+    color: var(--gold-bright);
+  }
+  .v5-hero-sub {
+    margin: 1.5rem auto 0;
+    max-width: 44ch;
+    font-size: 0.9063rem;
+    font-weight: 300;
+    color: var(--stone);
+  }
+  .v5-hero-ctas {
+    margin-top: 2rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+  }
+  .v5-btn {
+    display: inline-block;
+    background: var(--gold);
+    color: var(--ink);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-decoration: none;
+    padding: 1em 2em;
+    border: 1px solid var(--gold);
+  }
+  .v5-btn:hover {
+    background: var(--gold-bright);
+    border-color: var(--gold-bright);
+  }
+  .v5-btn--ghost {
+    background: transparent;
+    color: var(--gold-bright);
+    border-color: rgb(226 192 107 / 0.45);
+  }
+  .v5-btn--ghost:hover {
+    background: rgb(226 192 107 / 0.1);
+  }
+
+  /* the field grid — bleeds to both edges */
+  .v5-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2px;
+  }
+  @media (min-width: 900px) {
+    .v5-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  .v5-grid > :last-child {
+    grid-column: 1 / -1;
+  }
+  @media (min-width: 900px) {
+    .v5-grid > :last-child {
+      grid-column: auto;
+    }
+  }
+  .v5-tile--2 .ph {
+    background: #24201a;
+  }
+  .v5-tile--3 .ph {
+    background: #1b1712;
+  }
+  .v5-card {
+    position: relative;
+    background: var(--gold);
+    color: var(--ink);
+    padding: clamp(1.1rem, 2.5vw, 1.75rem);
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+  }
+  @media (min-width: 900px) {
+    .v5-card {
+      aspect-ratio: 4 / 3;
+    }
+  }
+  .v5-card-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6875rem;
+    letter-spacing: 0.2em;
+  }
+  .v5-card-title {
+    margin-top: 0.6rem;
+    font-weight: 700;
+    font-size: clamp(1.4rem, 2.6vw, 2rem);
+    letter-spacing: -0.01em;
+  }
+  .v5-card-list {
+    list-style: none;
+    margin: 0.9rem 0 0;
+    padding: 0;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: rgb(20 17 13 / 0.78);
+    flex: 1;
+  }
+  .v5-card-list li + li {
+    margin-top: 0.25rem;
+  }
+  .v5-card-plus {
+    position: absolute;
+    right: 1rem;
+    bottom: 0.8rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 1.6rem;
+    line-height: 1;
+    color: var(--ink);
+    text-decoration: none;
+    border: 1px solid rgb(20 17 13 / 0.5);
+    width: 2.2rem;
+    height: 2.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .v5-card-plus:hover {
+    background: var(--ink);
+    color: var(--gold-bright);
+  }
+
+  /* trust bar */
+  .v5-trust {
+    border-block: 1px solid var(--v5-hairline);
+    padding: 0.9rem clamp(1rem, 3vw, 2rem);
+    margin-top: 2px;
+  }
+  .v5-trust ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem 0;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.625rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--stone);
+  }
+  .v5-trust li:not(:last-child)::after {
+    content: '/';
+    color: var(--gold);
+    margin-inline: 1.25rem;
+  }
+
+  /* sections */
+  .v5-section {
+    padding: clamp(3.5rem, 8vw, 6.5rem) clamp(1rem, 3vw, 2rem);
+    border-bottom: 1px solid var(--v5-hairline);
+  }
+  .v5-h2 {
+    margin-top: 0.9rem;
+    margin-bottom: 2.25rem;
+    font-weight: 700;
+    font-size: clamp(1.9rem, 4.5vw, 3.25rem);
+    line-height: 1.02;
+    letter-spacing: -0.02em;
+  }
+
+  /* wedge */
+  .v5-wedge-tagline {
+    margin-top: 1rem;
+    font-weight: 700;
+    font-size: clamp(1.8rem, 5.5vw, 4.25rem);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    max-width: 20ch;
+    color: var(--gold-bright);
+  }
+  .v5-wedge-grid {
+    margin-top: 2.5rem;
+    display: grid;
+    gap: 1.5rem;
+    max-width: 58rem;
+  }
+  @media (min-width: 900px) {
+    .v5-wedge-grid {
+      grid-template-columns: 18rem 1fr;
+      gap: 3rem;
+    }
+  }
+  .v5-wedge-heading {
+    font-weight: 500;
+    font-size: 1.05rem;
+    letter-spacing: -0.01em;
+  }
+  .v5-wedge-copy p {
+    font-size: 0.875rem;
+    font-weight: 300;
+    color: var(--stone);
+  }
+  .v5-wedge-copy p + p {
+    margin-top: 0.8rem;
+  }
+
+  /* projects */
+  .v5-projects {
+    display: grid;
+    gap: 1.5rem;
+  }
+  @media (min-width: 900px) {
+    .v5-projects {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+    }
+  }
+  .v5-project {
+    margin: 0;
+  }
+  .v5-project figcaption {
+    margin-top: 0.7rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6875rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .v5-muted {
+    color: var(--stone);
+  }
+
+  /* reviews */
+  .v5-reviews {
+    display: grid;
+    gap: 1.25rem;
+    max-width: 64rem;
+  }
+  @media (min-width: 900px) {
+    .v5-reviews {
+      grid-template-columns: 1.25fr 1fr;
+    }
+  }
+  .v5-review {
+    margin: 0;
+    background: var(--charcoal);
+    padding: 1.75rem;
+    display: flex;
+    flex-direction: column;
+  }
+  .v5-review-quote {
+    font-size: 0.9375rem;
+    font-weight: 300;
+    line-height: 1.65;
+    flex: 1;
+  }
+  .v5-review footer {
+    margin-top: 1.4rem;
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+  }
+  .v5-review cite {
+    font-style: normal;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6875rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gold-bright);
+  }
+  .v5-review-context {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.625rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--stone);
+  }
+
+  /* steps */
+  .v5-steps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 1px;
+    background: var(--v5-hairline);
+    border-block: 1px solid var(--v5-hairline);
+    max-width: 52rem;
+  }
+  .v5-step {
+    display: grid;
+    grid-template-columns: 3.5rem 1fr;
+    grid-template-rows: auto auto;
+    column-gap: 1.25rem;
+    background: var(--ink);
+    padding: 1.25rem 0.5rem;
+  }
+  @media (min-width: 768px) {
+    .v5-step {
+      grid-template-columns: 3.5rem 14rem 1fr;
+      grid-template-rows: auto;
+      align-items: baseline;
+    }
+  }
+  .v5-step-num {
+    grid-row: 1 / span 2;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.8125rem;
+    color: var(--stone);
+  }
+  @media (min-width: 768px) {
+    .v5-step-num {
+      grid-row: auto;
+    }
+  }
+  .v5-step-title {
+    font-weight: 700;
+    font-size: 0.9688rem;
+    letter-spacing: -0.01em;
+  }
+  .v5-step-detail {
+    grid-column: 2;
+    font-size: 0.8125rem;
+    font-weight: 300;
+    color: var(--stone);
+    margin-top: 0.2rem;
+  }
+  @media (min-width: 768px) {
+    .v5-step-detail {
+      grid-column: 3;
+      margin-top: 0;
+    }
+  }
+  .v5-step--featured {
+    background: var(--charcoal);
+  }
+  .v5-step--featured .v5-step-num,
+  .v5-step--featured .v5-step-title {
+    color: var(--gold-bright);
+  }
+
+  /* final */
+  .v5-final {
+    border-bottom: 0;
+  }
+  .v5-final-grid {
+    display: grid;
+    gap: 3rem;
+    max-width: 68rem;
+  }
+  @media (min-width: 1024px) {
+    .v5-final-grid {
+      grid-template-columns: 1fr 1.3fr;
+      gap: 4.5rem;
+    }
+  }
+  .v5-final-heading {
+    margin-top: 1rem;
+    font-weight: 700;
+    font-size: clamp(2.2rem, 5.5vw, 4rem);
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: var(--gold-bright);
+  }
+  .v5-final-sub {
+    margin-top: 1.25rem;
+    font-size: 0.875rem;
+    font-weight: 300;
+    color: var(--stone);
+    max-width: 38ch;
+  }
+  .v5-call {
+    display: inline-block;
+    margin-top: 1.5rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--gold-bright);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+  .v5-final-form {
+    background: var(--charcoal);
+    padding: clamp(1.5rem, 3vw, 2.25rem);
+  }
+
+  /* form */
+  .v5 .ef-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.5938rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--stone);
+  }
+  .v5 .ef-input {
+    background: rgb(20 17 13 / 0.6);
+    border: 1px solid var(--v5-hairline);
+    border-radius: 0;
+    color: var(--cream);
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 0.875rem;
+    padding: 0.6rem 0.7rem;
+  }
+  .v5 .ef-input:focus {
+    outline: none;
+    border-color: var(--gold-bright);
+  }
+  .v5 .ef-select option {
+    color: var(--ink);
+    background: var(--cream);
+  }
+  .v5 .ef-submit {
+    margin-top: 1.5rem;
+    width: 100%;
+    background: var(--gold);
+    color: var(--ink);
+    border: 0;
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 1em 2em;
+    cursor: pointer;
+  }
+  .v5 .ef-submit:hover {
+    background: var(--gold-bright);
+  }
+  .v5 .ef-note {
+    margin-top: 0.8rem;
+    color: var(--stone);
+  }
+  .v5 .ef-optional {
+    text-transform: none;
+  }
+
+  /* footer */
+  .v5 .foot {
+    border-top: 1px solid var(--v5-hairline);
+    padding: clamp(2.5rem, 5vw, 4rem) clamp(1rem, 3vw, 2rem) 2rem;
+  }
+  .v5 .foot-wordmark {
+    font-weight: 700;
+    font-size: 1.4rem;
+    letter-spacing: -0.01em;
+  }
+  .v5 .foot-lockup {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.625rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--gold-bright);
+    margin-top: 0.35rem;
+  }
+  .v5 .foot-cols {
+    margin-top: 2.25rem;
+    display: grid;
+    gap: 1.75rem;
+    font-size: 0.8125rem;
+    font-weight: 300;
+    color: var(--stone);
+  }
+  @media (min-width: 768px) {
+    .v5 .foot-cols {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  .v5 .foot-head {
+    font-family: 'Space Mono', monospace;
+    font-weight: 400;
+    font-size: 0.625rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--cream);
+    margin-bottom: 0.6rem;
+  }
+  .v5 .foot a {
+    color: inherit;
+    text-decoration: none;
+  }
+  .v5 .foot a:hover {
+    color: var(--gold-bright);
+  }
+  .v5 .foot-blocked {
+    margin-top: 2.25rem;
+    display: grid;
+    gap: 0.6rem;
+    max-width: 40rem;
+  }
+  .v5 .foot-fine {
+    margin-top: 2.25rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.625rem;
+    color: var(--stone);
+  }
+</style>

@@ -1,0 +1,728 @@
+---
+/**
+ * V3 — Plan & Elevation
+ * Split screen: left half sells with one photograph, right half is a working
+ * technical panel holding the estimate form. Space Grotesk / JetBrains Mono.
+ */
+import Base from '../layouts/Base.astro';
+import Placeholder from '../components/Placeholder.astro';
+import VersionSwitcher from '../components/VersionSwitcher.astro';
+import StickyCallBar from '../components/StickyCallBar.astro';
+import EstimateForm from '../components/EstimateForm.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import {
+  business,
+  trustBar,
+  pillars,
+  wedge,
+  projects,
+  homepageReviews,
+  processSteps,
+  cta,
+} from '../content/idf';
+
+const fonts =
+  'https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap';
+---
+
+<Base
+  title="Interior Design Flooring — V3 Plan & Elevation"
+  description="Homepage direction V3: plan and elevation. Custom homes, additions, and remodeling in Northern Virginia — Class A contractor, owner-run since 1989."
+  fontsHref={fonts}
+  bodyClass="v3"
+  withCallbar
+>
+  <VersionSwitcher current="v3" />
+
+  <header class="v3-nav">
+    <p class="v3-nav-brand">
+      {business.name}<span class="v3-nav-lockup"> // {business.lockup}</span>
+    </p>
+    <a class="v3-nav-phone" href={business.phonePrimaryHref}>{business.phonePrimary}</a>
+  </header>
+
+  <main>
+    <!-- 1 · HERO — split: photo left, working panel right -->
+    <section class="v3-hero" aria-label="Introduction and estimate request">
+      <div class="v3-hero-photo">
+        <Placeholder ratio="3 / 4" label="Placeholder — hero crop · 3:4 vertical · residential exterior" class="v3-ph v3-hero-ph" />
+        <p class="v3-hero-project">Great Falls Project</p>
+        <p class="v3-hero-figure">
+          <span class="v3-hero-fig-num">24</span>
+          <span class="v3-hero-fig-label">HR // estimate after site visit</span>
+        </p>
+      </div>
+
+      <div class="v3-panel" id="estimate">
+        <p class="v3-mono v3-mono--gold">EST. REQUEST // NO OBLIGATION</p>
+        <h1 class="v3-h1">Talk to the builder, not a project manager.</h1>
+        <p class="v3-panel-sub">
+          Custom homes, additions &amp; remodeling — {business.region}. Owner-run since 1989.
+        </p>
+        <EstimateForm idPrefix="v3" />
+        <a class="v3-panel-call" href={business.phonePrimaryHref}>
+          Prefer the phone? <span>{business.phonePrimary}</span>
+        </a>
+        <div class="v3-readouts" role="list" aria-label="Trust facts">
+          <span role="listitem"><b>LIC</b> Class A #2705162130</span>
+          <span role="listitem"><b>EST</b> 1989</span>
+          <span role="listitem"><b>AREA</b> Northern Virginia</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2 · TRUST BAR -->
+    <section class="v3-trust" aria-label="Credentials">
+      <ul>
+        {trustBar.map((item) => <li><span class="v3-tick" aria-hidden="true">+</span>{item}</li>)}
+      </ul>
+    </section>
+
+    <!-- 3 · THREE PILLARS -->
+    <section class="v3-section" aria-labelledby="v3-pillars-h">
+      <p class="v3-mono v3-mono--gold">INDEX // SCOPE OF WORK</p>
+      <h2 id="v3-pillars-h" class="v3-h2">Three ways we build</h2>
+      <div class="v3-pillars">
+        {
+          pillars.map((p) => (
+            <article class="v3-pillar">
+              <p class="v3-mono">FIG. {p.number}</p>
+              <h3 class="v3-pillar-title">{p.title}</h3>
+              <ul class="v3-pillar-list">
+                {p.services.map((s) => (
+                  <li>{s}</li>
+                ))}
+              </ul>
+            </article>
+          ))
+        }
+      </div>
+    </section>
+
+    <!-- 4 · THE WEDGE -->
+    <section class="v3-section v3-wedge" aria-labelledby="v3-wedge-h">
+      <p class="v3-mono v3-mono--gold">SECTION // ACCOUNTABILITY</p>
+      <p class="v3-wedge-tagline">{wedge.tagline}</p>
+      <div class="v3-wedge-grid">
+        <h2 id="v3-wedge-h" class="v3-wedge-heading">{wedge.heading}</h2>
+        <div class="v3-wedge-copy">
+          {wedge.body.map((para) => <p>{para}</p>)}
+        </div>
+      </div>
+    </section>
+
+    <!-- 5 · FEATURED PROJECTS -->
+    <section class="v3-section" aria-labelledby="v3-projects-h">
+      <p class="v3-mono v3-mono--gold">PLATES // SELECTED WORK</p>
+      <h2 id="v3-projects-h" class="v3-h2">Recent projects</h2>
+      <div class="v3-projects">
+        {
+          projects.map((proj, i) => (
+            <figure class="v3-project">
+              <Placeholder ratio="4 / 3" label="Placeholder — project card · 4:3 · 1200px" class="v3-ph" />
+              <figcaption>
+                <span class="v3-mono">PL.{String(i + 1).padStart(2, '0')}</span>
+                <span class="v3-project-name">
+                  {proj.named ? proj.name : 'To be announced — list in progress'}
+                </span>
+              </figcaption>
+            </figure>
+          ))
+        }
+      </div>
+    </section>
+
+    <!-- 6 · REVIEWS -->
+    <section class="v3-section" aria-labelledby="v3-reviews-h">
+      <p class="v3-mono v3-mono--gold">SITE NOTES // CLIENTS</p>
+      <h2 id="v3-reviews-h" class="v3-h2">On the record</h2>
+      <div class="v3-reviews">
+        {
+          homepageReviews.map((r) => (
+            <blockquote class="v3-review">
+              <p class="v3-mono">{r.context.toUpperCase()}</p>
+              <p class="v3-review-quote">&ldquo;{r.quote}&rdquo;</p>
+              <footer>
+                <cite>{r.name}</cite>
+              </footer>
+            </blockquote>
+          ))
+        }
+      </div>
+    </section>
+
+    <!-- 7 · HOW IT WORKS -->
+    <section class="v3-section" aria-labelledby="v3-process-h">
+      <p class="v3-mono v3-mono--gold">SEQUENCE // FIRST CALL TO CONTRACT</p>
+      <h2 id="v3-process-h" class="v3-h2">How it works</h2>
+      <ol class="v3-steps">
+        {
+          processSteps.map((step) => (
+            <li class:list={['v3-step', { 'v3-step--featured': 'featured' in step && step.featured }]}>
+              <span class="v3-step-num">{step.number}</span>
+              <div>
+                <h3 class="v3-step-title">{step.title}</h3>
+                <p class="v3-step-detail">{step.detail}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+    </section>
+
+    <!-- 8 · FINAL CTA -->
+    <section class="v3-section v3-final" aria-labelledby="v3-final-h">
+      <p class="v3-mono v3-mono--gold">ACTION // START HERE</p>
+      <h2 id="v3-final-h" class="v3-h2">Price your project this week.</h2>
+      <p class="v3-final-sub">
+        Send the estimate request above, or call — we visit the site and your written estimate
+        arrives within 24 hours.
+      </p>
+      <div class="v3-final-ctas">
+        <a class="v3-btn" href="#estimate">{cta.primary}</a>
+        <a class="v3-btn v3-btn--ghost" href={business.phonePrimaryHref}>{cta.secondaryLabel}</a>
+      </div>
+    </section>
+  </main>
+
+  <SiteFooter />
+  <StickyCallBar />
+</Base>
+
+<style is:global>
+  .v3 {
+    background: var(--ink);
+    color: var(--cream);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    --v3-hairline: rgb(246 241 231 / 0.14);
+    --ph-bg: #1e1a14;
+    --ph-fg: #8d8577;
+  }
+  .v3 ::selection {
+    background: var(--gold);
+    color: var(--ink);
+  }
+  .v3-mono {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.625rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--stone);
+  }
+  .v3-mono--gold {
+    color: var(--gold-bright);
+  }
+
+  /* nav */
+  .v3-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+    padding: 1rem clamp(1.25rem, 3.5vw, 2.5rem);
+    border-bottom: 1px solid var(--v3-hairline);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6875rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .v3-nav-lockup {
+    color: var(--stone);
+  }
+  .v3-nav-phone {
+    color: var(--gold-bright);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .v3-nav-phone:hover {
+    text-decoration: underline;
+  }
+
+  /* hero — 50/50 split at ≥1024px, photo then panel on mobile */
+  .v3-hero {
+    display: grid;
+  }
+  @media (min-width: 1024px) {
+    .v3-hero {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  .v3-hero-photo {
+    position: relative;
+  }
+  .v3-hero-ph {
+    height: 100%;
+  }
+  @media (min-width: 1024px) {
+    .v3-hero-ph {
+      aspect-ratio: auto !important;
+      min-height: 100%;
+    }
+  }
+  .v3-hero-project {
+    position: absolute;
+    top: 1.5rem;
+    left: 1.5rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6875rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--cream);
+  }
+  .v3-hero-figure {
+    position: absolute;
+    bottom: 1.5rem;
+    left: 1.5rem;
+  }
+  .v3-hero-fig-num {
+    display: block;
+    font-weight: 300;
+    font-size: clamp(5rem, 10vw, 9rem);
+    line-height: 0.9;
+    color: var(--cream);
+  }
+  .v3-hero-fig-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.625rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold-bright);
+  }
+  .v3-panel {
+    background: var(--charcoal);
+    padding: clamp(1.75rem, 3.5vw, 3rem);
+    display: flex;
+    flex-direction: column;
+    border-left: 1px solid var(--v3-hairline);
+  }
+  .v3-h1 {
+    font-weight: 500;
+    font-size: clamp(1.6rem, 3vw, 2.3rem);
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    margin-top: 1rem;
+    text-wrap: balance;
+  }
+  .v3-panel-sub {
+    margin-top: 0.8rem;
+    margin-bottom: 1.75rem;
+    font-size: 0.8438rem;
+    color: var(--stone);
+  }
+  .v3-panel-call {
+    margin-top: 1.5rem;
+    font-size: 0.8125rem;
+    color: var(--stone);
+    text-decoration: none;
+  }
+  .v3-panel-call span {
+    color: var(--gold-bright);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .v3-readouts {
+    margin-top: 2rem;
+    padding-top: 1.1rem;
+    border-top: 1px solid var(--v3-hairline);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem 1.75rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.625rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--stone);
+  }
+  .v3-readouts b {
+    color: var(--gold-bright);
+    font-weight: 500;
+    margin-right: 0.5em;
+  }
+
+  /* trust bar */
+  .v3-trust {
+    border-block: 1px solid var(--v3-hairline);
+    padding: 0.9rem clamp(1.25rem, 3.5vw, 2.5rem);
+  }
+  .v3-trust ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 2.25rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.625rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--stone);
+  }
+  .v3-tick {
+    color: var(--gold);
+    margin-right: 0.7em;
+  }
+
+  /* sections */
+  .v3-section {
+    padding: clamp(3.5rem, 8vw, 6.5rem) clamp(1.25rem, 3.5vw, 2.5rem);
+    border-bottom: 1px solid var(--v3-hairline);
+  }
+  .v3-h2 {
+    font-weight: 500;
+    font-size: clamp(1.75rem, 4vw, 2.9rem);
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    margin-top: 0.9rem;
+    margin-bottom: 2.25rem;
+  }
+
+  /* pillars — panels with corner ticks */
+  .v3-pillars {
+    display: grid;
+    gap: 1.25rem;
+  }
+  @media (min-width: 900px) {
+    .v3-pillars {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  .v3-pillar {
+    position: relative;
+    border: 1px solid var(--v3-hairline);
+    padding: 1.5rem;
+  }
+  .v3-pillar::before,
+  .v3-pillar::after {
+    content: '';
+    position: absolute;
+    width: 0.6rem;
+    height: 0.6rem;
+    border-color: var(--gold);
+    border-style: solid;
+  }
+  .v3-pillar::before {
+    top: -1px;
+    left: -1px;
+    border-width: 1px 0 0 1px;
+  }
+  .v3-pillar::after {
+    bottom: -1px;
+    right: -1px;
+    border-width: 0 1px 1px 0;
+  }
+  .v3-pillar-title {
+    font-weight: 500;
+    font-size: 1.35rem;
+    letter-spacing: 0.04em;
+    margin-top: 0.75rem;
+  }
+  .v3-pillar-list {
+    list-style: none;
+    margin: 1.1rem 0 0;
+    padding: 0;
+    font-size: 0.8438rem;
+    color: var(--stone);
+  }
+  .v3-pillar-list li {
+    padding-block: 0.45rem;
+    border-top: 1px dashed var(--v3-hairline);
+  }
+
+  /* wedge */
+  .v3-wedge {
+    background: var(--charcoal);
+  }
+  .v3-wedge-tagline {
+    margin-top: 0.9rem;
+    font-weight: 500;
+    font-size: clamp(1.7rem, 4.6vw, 3.4rem);
+    line-height: 1.12;
+    letter-spacing: -0.01em;
+    max-width: 24ch;
+  }
+  .v3-wedge-grid {
+    margin-top: 2.5rem;
+    display: grid;
+    gap: 1.5rem;
+    max-width: 56rem;
+  }
+  @media (min-width: 900px) {
+    .v3-wedge-grid {
+      grid-template-columns: 16rem 1fr;
+      gap: 3rem;
+    }
+  }
+  .v3-wedge-heading {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 500;
+    font-size: 0.6875rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--gold-bright);
+  }
+  .v3-wedge-copy p {
+    font-size: 0.875rem;
+    color: var(--stone);
+  }
+  .v3-wedge-copy p + p {
+    margin-top: 0.8rem;
+  }
+
+  /* projects */
+  .v3-projects {
+    display: grid;
+    gap: 1.75rem;
+  }
+  @media (min-width: 900px) {
+    .v3-projects {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+    }
+  }
+  .v3-project {
+    margin: 0;
+  }
+  .v3-project figcaption {
+    margin-top: 0.75rem;
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+  }
+  .v3-project-name {
+    font-size: 0.8125rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  /* reviews */
+  .v3-reviews {
+    display: grid;
+    gap: 1.5rem;
+    max-width: 62rem;
+  }
+  @media (min-width: 900px) {
+    .v3-reviews {
+      grid-template-columns: 1.25fr 1fr;
+    }
+  }
+  .v3-review {
+    margin: 0;
+    border-left: 2px solid var(--gold);
+    padding-left: 1.5rem;
+  }
+  .v3-review-quote {
+    margin-top: 0.9rem;
+    font-size: 0.9375rem;
+    line-height: 1.65;
+    font-weight: 300;
+  }
+  .v3-review footer {
+    margin-top: 1.1rem;
+  }
+  .v3-review cite {
+    font-style: normal;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6875rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gold-bright);
+  }
+
+  /* steps */
+  .v3-steps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    max-width: 44rem;
+  }
+  .v3-step {
+    display: grid;
+    grid-template-columns: 4rem 1fr;
+    gap: 1.25rem;
+    padding-block: 1.3rem;
+    border-top: 1px solid var(--v3-hairline);
+  }
+  .v3-step-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8125rem;
+    color: var(--stone);
+  }
+  .v3-step-title {
+    font-weight: 500;
+    font-size: 1rem;
+    letter-spacing: 0.02em;
+  }
+  .v3-step-detail {
+    margin-top: 0.3rem;
+    font-size: 0.8438rem;
+    color: var(--stone);
+  }
+  .v3-step--featured {
+    border-top-color: var(--gold);
+    background: linear-gradient(to right, rgb(200 162 74 / 0.09), transparent 70%);
+  }
+  .v3-step--featured .v3-step-num,
+  .v3-step--featured .v3-step-title {
+    color: var(--gold-bright);
+  }
+
+  /* final */
+  .v3-final {
+    border-bottom: 0;
+  }
+  .v3-final-sub {
+    font-size: 0.875rem;
+    color: var(--stone);
+    max-width: 42ch;
+    margin-top: -1.25rem;
+    margin-bottom: 1.75rem;
+  }
+  .v3-final-ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+  .v3-btn {
+    display: inline-block;
+    background: var(--gold);
+    color: var(--ink);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-decoration: none;
+    padding: 0.95em 1.9em;
+    border: 1px solid var(--gold);
+  }
+  .v3-btn:hover {
+    background: var(--gold-bright);
+    border-color: var(--gold-bright);
+  }
+  .v3-btn--ghost {
+    background: transparent;
+    color: var(--gold-bright);
+    border-color: rgb(226 192 107 / 0.5);
+  }
+  .v3-btn--ghost:hover {
+    background: rgb(226 192 107 / 0.1);
+  }
+
+  /* form in panel */
+  .v3 .ef-grid {
+    gap: 1rem;
+  }
+  .v3 .ef-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.5938rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--stone);
+  }
+  .v3 .ef-input {
+    background: rgb(20 17 13 / 0.55);
+    border: 1px solid var(--v3-hairline);
+    border-radius: 0;
+    color: var(--cream);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.875rem;
+    padding: 0.6rem 0.7rem;
+  }
+  .v3 .ef-input:focus {
+    outline: none;
+    border-color: var(--gold-bright);
+  }
+  .v3 .ef-select option {
+    color: var(--ink);
+    background: var(--cream);
+  }
+  .v3 .ef-textarea {
+    min-height: 5.5rem;
+  }
+  .v3 .ef-submit {
+    margin-top: 1.5rem;
+    width: 100%;
+    background: var(--gold);
+    color: var(--ink);
+    border: 0;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 1em 2em;
+    cursor: pointer;
+  }
+  .v3 .ef-submit:hover {
+    background: var(--gold-bright);
+  }
+  .v3 .ef-note {
+    margin-top: 0.8rem;
+    color: var(--stone);
+  }
+  .v3 .ef-optional {
+    text-transform: none;
+  }
+
+  /* footer */
+  .v3 .foot {
+    border-top: 1px solid var(--v3-hairline);
+    padding: clamp(2.5rem, 5vw, 4rem) clamp(1.25rem, 3.5vw, 2.5rem) 2rem;
+  }
+  .v3 .foot-wordmark {
+    font-weight: 500;
+    font-size: 1.3rem;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+  .v3 .foot-lockup {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.625rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold-bright);
+    margin-top: 0.35rem;
+  }
+  .v3 .foot-cols {
+    margin-top: 2.25rem;
+    display: grid;
+    gap: 1.75rem;
+    font-size: 0.8125rem;
+    color: var(--stone);
+  }
+  @media (min-width: 768px) {
+    .v3 .foot-cols {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  .v3 .foot-head {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 500;
+    font-size: 0.625rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--cream);
+    margin-bottom: 0.6rem;
+  }
+  .v3 .foot a {
+    color: inherit;
+    text-decoration: none;
+  }
+  .v3 .foot a:hover {
+    color: var(--gold-bright);
+  }
+  .v3 .foot-blocked {
+    margin-top: 2.25rem;
+    display: grid;
+    gap: 0.6rem;
+    max-width: 40rem;
+  }
+  .v3 .foot-fine {
+    margin-top: 2.25rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.625rem;
+    letter-spacing: 0.06em;
+    color: var(--stone);
+  }
+</style>

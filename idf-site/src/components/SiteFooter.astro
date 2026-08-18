@@ -1,0 +1,42 @@
+---
+import { business, blocked } from '../content/idf';
+import BlockedSlot from './BlockedSlot.astro';
+---
+
+<footer class="foot">
+  <div class="foot-inner">
+    <div class="foot-brand">
+      <p class="foot-wordmark">{business.name}</p>
+      <p class="foot-lockup">{business.lockup} · Est. {business.established}</p>
+    </div>
+
+    <div class="foot-cols">
+      <div class="foot-col">
+        <h3 class="foot-head">Showroom</h3>
+        <p>45431 Ruritan Circle, Suite 160<br />Sterling, VA 20164</p>
+      </div>
+      <div class="foot-col">
+        <h3 class="foot-head">Contact</h3>
+        <p>
+          <a href={business.phonePrimaryHref}>{business.phonePrimary}</a><br />
+          <a href="tel:+15712335133">{business.phoneSecondary}</a><br />
+          <a href={`mailto:${business.email}`}>{business.email}</a><br />
+          Instagram: @interiordesignflooring
+        </p>
+      </div>
+      <div class="foot-col">
+        <h3 class="foot-head">License</h3>
+        <p>{business.license}<br />Licensed &amp; Insured · Residential &amp; Commercial</p>
+      </div>
+    </div>
+
+    <div class="foot-blocked">
+      <BlockedSlot label={blocked.hours} />
+      <BlockedSlot label={blocked.serviceArea} />
+    </div>
+
+    <p class="foot-fine">
+      &copy; 2026 {business.name} · {business.lockup} · Sterling, Virginia
+    </p>
+  </div>
+</footer>

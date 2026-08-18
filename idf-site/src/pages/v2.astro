@@ -1,0 +1,824 @@
+---
+/**
+ * V2 — Spec Sheet
+ * Swiss/objective. Clipped grotesque wordmark, then the page turns strictly
+ * factual — tabular figures doing the persuading. Anton / IBM Plex Sans.
+ */
+import Base from '../layouts/Base.astro';
+import Placeholder from '../components/Placeholder.astro';
+import VersionSwitcher from '../components/VersionSwitcher.astro';
+import StickyCallBar from '../components/StickyCallBar.astro';
+import EstimateForm from '../components/EstimateForm.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import {
+  business,
+  trustBar,
+  pillars,
+  wedge,
+  projects,
+  homepageReviews,
+  processSteps,
+  cta,
+} from '../content/idf';
+
+const fonts =
+  'https://fonts.googleapis.com/css2?family=Anton&family=IBM+Plex+Sans:wght@400;500;600&display=swap';
+---
+
+<Base
+  title="Interior Design Flooring — V2 Spec Sheet"
+  description="Homepage direction V2: Swiss objective. Custom homes, additions, and remodeling in Northern Virginia — Class A contractor, owner-run since 1989."
+  fontsHref={fonts}
+  bodyClass="v2"
+  withCallbar
+>
+  <VersionSwitcher current="v2" />
+
+  <header class="v2-nav">
+    <p class="v2-nav-brand">
+      {business.name} <span class="v2-nav-sep">/</span>
+      <span class="v2-nav-lockup">{business.lockup}</span>
+    </p>
+    <a class="v2-nav-phone" href={business.phonePrimaryHref}>{business.phonePrimary}</a>
+  </header>
+
+  <main>
+    <!-- 1 · HERO -->
+    <section class="v2-hero" aria-label="Introduction">
+      <div class="v2-hero-frame">
+        <Placeholder ratio="16 / 9" label="Placeholder — hero · project exterior · 16:9 · 2400px" class="v2-ph" />
+        <span class="v2-hero-wordmark" aria-hidden="true">Interior Design Flooring</span>
+      </div>
+
+      <!-- spec row, butted directly against the hero's bottom edge -->
+      <div class="v2-specrow" role="list" aria-label="Key specifications">
+        <div class="v2-spec" role="listitem">
+          <svg class="v2-spec-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.25" aria-hidden="true">
+            <rect x="2.5" y="6.5" width="11" height="7" /><path d="M2.5 6.5 8 2l5.5 4.5" />
+          </svg>
+          <span class="v2-spec-fig">1989</span>
+          <span class="v2-spec-label">Established</span>
+        </div>
+        <div class="v2-spec" role="listitem">
+          <svg class="v2-spec-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.25" aria-hidden="true">
+            <circle cx="8" cy="8" r="5.5" /><path d="M8 4.5V8l2.5 1.5" />
+          </svg>
+          <span class="v2-spec-fig">24 <small>HRS</small></span>
+          <span class="v2-spec-label">Estimate turnaround</span>
+        </div>
+        <div class="v2-spec" role="listitem">
+          <svg class="v2-spec-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.25" aria-hidden="true">
+            <path d="M8 1.8 13.5 4v4.2c0 3.2-2.4 5.3-5.5 6.2-3.1-.9-5.5-3-5.5-6.2V4L8 1.8Z" />
+          </svg>
+          <span class="v2-spec-fig">CLASS A</span>
+          <span class="v2-spec-label">Lic. #2705162130</span>
+        </div>
+      </div>
+
+      <div class="v2-hero-copy">
+        <h1 class="v2-h1">
+          Custom homes, additions, and remodels for Northern Virginia — owner-run since 1989,
+          priced straight.
+        </h1>
+        <p class="v2-hero-sub">
+          Virginia Class A general contractor. You deal with the owner from first call to final
+          walkthrough. Written estimate within 24 hours of the site visit.
+        </p>
+        <div class="v2-hero-ctas">
+          <a class="v2-btn" href="#estimate">{cta.primary}</a>
+          <a class="v2-btn v2-btn--ghost" href={business.phonePrimaryHref}>{cta.secondaryLabel}</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2 · TRUST BAR -->
+    <section class="v2-trust" aria-label="Credentials">
+      <ul>
+        {trustBar.map((item) => <li>{item}</li>)}
+      </ul>
+    </section>
+
+    <!-- 3 · THREE PILLARS -->
+    <section class="v2-section" aria-labelledby="v2-pillars-h">
+      <div class="v2-section-head">
+        <h2 id="v2-pillars-h" class="v2-h2">Scope of work</h2>
+        <span class="v2-index">SEC. 01</span>
+      </div>
+      <div class="v2-pillars">
+        {
+          pillars.map((p) => (
+            <article class="v2-pillar">
+              <span class="v2-pillar-num">{p.number}</span>
+              <h3 class="v2-pillar-title">{p.title}</h3>
+              <ul class="v2-pillar-list">
+                {p.services.map((s) => (
+                  <li>{s}</li>
+                ))}
+              </ul>
+            </article>
+          ))
+        }
+      </div>
+      <p class="v2-fineline">
+        Also offered: flooring installation &amp; retail flooring sales · siding, gutters, fascia
+        &amp; trim.
+      </p>
+    </section>
+
+    <!-- 4 · THE WEDGE -->
+    <section class="v2-section" aria-labelledby="v2-wedge-h">
+      <div class="v2-section-head">
+        <h2 id="v2-wedge-h" class="v2-h2">Why one team</h2>
+        <span class="v2-index">SEC. 02</span>
+      </div>
+      <p class="v2-wedge-tagline">{wedge.tagline}</p>
+      <div class="v2-wedge-grid">
+        <div class="v2-wedge-copy">
+          <h3 class="v2-h3">{wedge.heading}</h3>
+          {wedge.body.map((para) => <p>{para}</p>)}
+        </div>
+        <dl class="v2-wedge-table">
+          <div><dt>Owner-operated since</dt><dd>1989</dd></div>
+          <div><dt>Your point of contact</dt><dd>Shawn &amp; Nancy Waziri</dd></div>
+          <div><dt>Middlemen</dt><dd>None</dd></div>
+          <div><dt>Estimate after site visit</dt><dd>Within 24 hrs</dd></div>
+        </dl>
+      </div>
+    </section>
+
+    <!-- 5 · FEATURED PROJECTS -->
+    <section class="v2-section" aria-labelledby="v2-projects-h">
+      <div class="v2-section-head">
+        <h2 id="v2-projects-h" class="v2-h2">Selected projects</h2>
+        <span class="v2-index">SEC. 03</span>
+      </div>
+      <div class="v2-projects">
+        {
+          projects.map((proj, i) => (
+            <figure class="v2-project">
+              <Placeholder ratio="4 / 3" label="Placeholder — project card · 4:3 · 1200px" class="v2-ph" />
+              <figcaption>
+                <span class="v2-project-no">P-{String(i + 1).padStart(2, '0')}</span>
+                <span>{proj.named ? proj.name : 'To be announced — list in progress'}</span>
+              </figcaption>
+            </figure>
+          ))
+        }
+      </div>
+    </section>
+
+    <!-- 6 · REVIEWS -->
+    <section class="v2-section" aria-labelledby="v2-reviews-h">
+      <div class="v2-section-head">
+        <h2 id="v2-reviews-h" class="v2-h2">Field reports</h2>
+        <span class="v2-index">SEC. 04</span>
+      </div>
+      <div class="v2-reviews">
+        {
+          homepageReviews.map((r, i) => (
+            <blockquote class="v2-review">
+              <p class="v2-review-label">Report {String(i + 1).padStart(2, '0')} — {r.context}</p>
+              <p class="v2-review-quote">&ldquo;{r.quote}&rdquo;</p>
+              <footer>
+                <cite>{r.name}</cite>
+              </footer>
+            </blockquote>
+          ))
+        }
+      </div>
+    </section>
+
+    <!-- 7 · HOW IT WORKS -->
+    <section class="v2-section" aria-labelledby="v2-process-h">
+      <div class="v2-section-head">
+        <h2 id="v2-process-h" class="v2-h2">Procedure</h2>
+        <span class="v2-index">SEC. 05</span>
+      </div>
+      <ol class="v2-steps">
+        {
+          processSteps.map((step) => (
+            <li class:list={['v2-step', { 'v2-step--featured': 'featured' in step && step.featured }]}>
+              <span class="v2-step-num">{step.number}</span>
+              <span class="v2-step-title">{step.title}</span>
+              <span class="v2-step-detail">{step.detail}</span>
+            </li>
+          ))
+        }
+      </ol>
+    </section>
+
+    <!-- 8 · FINAL CTA -->
+    <section class="v2-section v2-final" id="estimate" aria-labelledby="v2-final-h">
+      <div class="v2-section-head">
+        <h2 id="v2-final-h" class="v2-h2">Request an estimate</h2>
+        <span class="v2-index">SEC. 06</span>
+      </div>
+      <div class="v2-final-grid">
+        <div class="v2-final-intro">
+          <p>
+            Site visit first, written estimate within 24 hours. No obligation, no pressure —
+            straight numbers from the owner.
+          </p>
+          <a class="v2-btn v2-btn--ghost" href={business.phonePrimaryHref}>{cta.secondaryLabel}</a>
+        </div>
+        <EstimateForm idPrefix="v2" />
+      </div>
+    </section>
+  </main>
+
+  <SiteFooter />
+  <StickyCallBar />
+</Base>
+
+<style is:global>
+  .v2 {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    --v2-rule: rgb(20 17 13 / 0.9);
+    --v2-hairline: rgb(20 17 13 / 0.18);
+    --ph-bg: #e9e1d0;
+    --ph-fg: #7d7666;
+  }
+  .v2 ::selection {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  /* nav */
+  .v2-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+    padding: 0.9rem clamp(1rem, 3vw, 2rem);
+    border-bottom: 1px solid var(--v2-rule);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .v2-nav-sep {
+    color: var(--gold);
+    margin-inline: 0.35rem;
+  }
+  .v2-nav-lockup {
+    font-weight: 400;
+    color: var(--gray);
+  }
+  .v2-nav-phone {
+    color: var(--ink);
+    text-decoration: none;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .v2-nav-phone:hover {
+    text-decoration: underline;
+  }
+
+  /* hero */
+  .v2-hero-frame {
+    position: relative;
+    overflow: hidden;
+    border-bottom: 1px solid var(--v2-rule);
+  }
+  .v2-hero-wordmark {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: 'Anton', sans-serif;
+    font-size: clamp(4rem, 16vw, 15rem);
+    line-height: 1;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--ink);
+    pointer-events: none;
+  }
+  .v2-specrow {
+    display: grid;
+    border-bottom: 1px solid var(--v2-rule);
+  }
+  @media (min-width: 640px) {
+    .v2-specrow {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  .v2-spec {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto auto;
+    column-gap: 0.9rem;
+    align-items: center;
+    padding: 1.1rem clamp(1rem, 3vw, 2rem);
+    border-top: 1px solid var(--v2-hairline);
+  }
+  @media (min-width: 640px) {
+    .v2-spec {
+      border-top: 0;
+    }
+    .v2-spec + .v2-spec {
+      border-left: 1px solid var(--v2-hairline);
+    }
+  }
+  .v2-spec-icon {
+    width: 1rem;
+    height: 1rem;
+    grid-row: 1 / span 2;
+    color: var(--gray);
+  }
+  .v2-spec-fig {
+    font-size: clamp(1.5rem, 3vw, 2.1rem);
+    font-weight: 600;
+    line-height: 1.1;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
+  }
+  .v2-spec-fig small {
+    font-size: 0.55em;
+    font-weight: 500;
+    color: var(--gray);
+  }
+  .v2-spec-label {
+    font-size: 0.625rem;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gray);
+    grid-column: 2;
+  }
+  .v2-hero-copy {
+    padding: clamp(2.25rem, 5vw, 4rem) clamp(1rem, 3vw, 2rem);
+    max-width: 52rem;
+  }
+  .v2-h1 {
+    font-size: clamp(1.35rem, 3.2vw, 2.2rem);
+    font-weight: 600;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+  .v2-hero-sub {
+    margin-top: 1rem;
+    color: var(--gray);
+    max-width: 56ch;
+  }
+  .v2-hero-ctas {
+    margin-top: 1.75rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+  .v2-btn {
+    display: inline-block;
+    background: var(--ink);
+    color: var(--paper);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-decoration: none;
+    padding: 0.95em 1.9em;
+    border: 1px solid var(--ink);
+  }
+  .v2-btn:hover {
+    background: var(--charcoal);
+  }
+  .v2-btn--ghost {
+    background: transparent;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+  }
+  .v2-btn--ghost:hover {
+    background: rgb(20 17 13 / 0.06);
+  }
+
+  /* trust bar */
+  .v2-trust {
+    border-block: 1px solid var(--v2-rule);
+  }
+  .v2-trust ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+  }
+  @media (min-width: 640px) {
+    .v2-trust ul {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+  .v2-trust li {
+    padding: 0.8rem clamp(1rem, 3vw, 2rem);
+    font-size: 0.6563rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    border-top: 1px solid var(--v2-hairline);
+  }
+  @media (min-width: 640px) {
+    .v2-trust li {
+      border-top: 0;
+    }
+    .v2-trust li + li {
+      border-left: 1px solid var(--v2-hairline);
+    }
+  }
+
+  /* sections */
+  .v2-section {
+    padding: clamp(3rem, 7vw, 5.5rem) clamp(1rem, 3vw, 2rem);
+    border-bottom: 1px solid var(--v2-rule);
+  }
+  .v2-section-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    border-bottom: 1px solid var(--v2-rule);
+    padding-bottom: 0.75rem;
+    margin-bottom: 2.25rem;
+  }
+  .v2-h2 {
+    font-family: 'Anton', sans-serif;
+    font-size: clamp(1.5rem, 3.4vw, 2.4rem);
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    font-weight: 400;
+  }
+  .v2-h3 {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+  }
+  .v2-index {
+    font-size: 0.6563rem;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    color: var(--gray);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* pillars — strict three-column grid, visible hairline rules */
+  .v2-pillars {
+    display: grid;
+    border: 1px solid var(--v2-hairline);
+  }
+  @media (min-width: 768px) {
+    .v2-pillars {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  .v2-pillar {
+    padding: 1.5rem;
+    border-top: 1px solid var(--v2-hairline);
+  }
+  .v2-pillar:first-child {
+    border-top: 0;
+  }
+  @media (min-width: 768px) {
+    .v2-pillar {
+      border-top: 0;
+    }
+    .v2-pillar + .v2-pillar {
+      border-left: 1px solid var(--v2-hairline);
+    }
+  }
+  .v2-pillar-num {
+    font-size: 0.6563rem;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    color: var(--gray);
+    font-variant-numeric: tabular-nums;
+  }
+  .v2-pillar-title {
+    font-family: 'Anton', sans-serif;
+    font-weight: 400;
+    font-size: clamp(1.6rem, 2.8vw, 2rem);
+    letter-spacing: 0.02em;
+    margin-top: 0.5rem;
+  }
+  .v2-pillar-list {
+    list-style: none;
+    margin: 1.25rem 0 0;
+    padding: 0;
+    font-size: 0.8438rem;
+  }
+  .v2-pillar-list li {
+    padding-block: 0.55rem;
+    border-top: 1px solid var(--v2-hairline);
+  }
+  .v2-fineline {
+    margin-top: 1.25rem;
+    font-size: 0.75rem;
+    color: var(--gray);
+    letter-spacing: 0.02em;
+  }
+
+  /* wedge */
+  .v2-wedge-tagline {
+    font-family: 'Anton', sans-serif;
+    font-size: clamp(1.75rem, 5.2vw, 3.9rem);
+    line-height: 1.08;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+    max-width: 24ch;
+  }
+  .v2-wedge-grid {
+    margin-top: 2.5rem;
+    display: grid;
+    gap: 2.5rem;
+  }
+  @media (min-width: 900px) {
+    .v2-wedge-grid {
+      grid-template-columns: 1.2fr 1fr;
+      gap: 4rem;
+    }
+  }
+  .v2-wedge-copy p {
+    color: var(--gray);
+    font-size: 0.875rem;
+  }
+  .v2-wedge-copy p + p {
+    margin-top: 0.8rem;
+  }
+  .v2-wedge-table {
+    margin: 0;
+    border-top: 1px solid var(--v2-rule);
+    align-self: start;
+  }
+  .v2-wedge-table > div {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-block: 0.8rem;
+    border-bottom: 1px solid var(--v2-hairline);
+    font-size: 0.8438rem;
+  }
+  .v2-wedge-table dt {
+    color: var(--gray);
+  }
+  .v2-wedge-table dd {
+    margin: 0;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+  }
+
+  /* projects */
+  .v2-projects {
+    display: grid;
+    gap: 1px;
+    background: var(--v2-hairline);
+    border: 1px solid var(--v2-hairline);
+  }
+  @media (min-width: 768px) {
+    .v2-projects {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  .v2-project {
+    margin: 0;
+    background: var(--paper);
+    padding: 1rem;
+  }
+  .v2-project figcaption {
+    margin-top: 0.9rem;
+    display: flex;
+    gap: 0.9rem;
+    font-size: 0.7188rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .v2-project-no {
+    color: var(--gray);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* reviews */
+  .v2-reviews {
+    display: grid;
+    gap: 1.5rem;
+  }
+  @media (min-width: 900px) {
+    .v2-reviews {
+      grid-template-columns: 1.25fr 1fr;
+    }
+  }
+  .v2-review {
+    margin: 0;
+    border: 1px solid var(--v2-hairline);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+  }
+  .v2-review-label {
+    font-size: 0.6563rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gray);
+    border-bottom: 1px solid var(--v2-hairline);
+    padding-bottom: 0.7rem;
+    margin-bottom: 1.1rem;
+  }
+  .v2-review-quote {
+    font-size: 0.9063rem;
+    line-height: 1.65;
+    flex: 1;
+  }
+  .v2-review footer {
+    margin-top: 1.25rem;
+  }
+  .v2-review cite {
+    font-style: normal;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  /* process — numbered table rows */
+  .v2-steps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid var(--v2-rule);
+    counter-reset: none;
+  }
+  .v2-step {
+    display: grid;
+    grid-template-columns: 3rem 1fr;
+    gap: 0.2rem 1.25rem;
+    padding: 1.1rem 0.25rem;
+    border-bottom: 1px solid var(--v2-hairline);
+    align-items: baseline;
+  }
+  @media (min-width: 768px) {
+    .v2-step {
+      grid-template-columns: 4rem 16rem 1fr;
+    }
+  }
+  .v2-step-num {
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    font-size: 0.9375rem;
+    color: var(--gray);
+  }
+  .v2-step-title {
+    font-weight: 600;
+    font-size: 0.9375rem;
+  }
+  .v2-step-detail {
+    grid-column: 2;
+    font-size: 0.8438rem;
+    color: var(--gray);
+  }
+  @media (min-width: 768px) {
+    .v2-step-detail {
+      grid-column: 3;
+    }
+  }
+  .v2-step--featured {
+    background: var(--gold);
+    margin-inline: -0.25rem;
+    padding-inline: 0.5rem;
+    border-bottom-color: var(--v2-rule);
+  }
+  .v2-step--featured .v2-step-num,
+  .v2-step--featured .v2-step-detail {
+    color: rgb(20 17 13 / 0.75);
+  }
+
+  /* final */
+  .v2-final {
+    border-bottom: 0;
+  }
+  .v2-final-grid {
+    display: grid;
+    gap: 2.5rem;
+  }
+  @media (min-width: 900px) {
+    .v2-final-grid {
+      grid-template-columns: 1fr 1.6fr;
+      gap: 4rem;
+    }
+  }
+  .v2-final-intro p {
+    color: var(--gray);
+    font-size: 0.875rem;
+    max-width: 36ch;
+    margin-bottom: 1.5rem;
+  }
+
+  /* form — boxed hairline inputs, square */
+  .v2 .ef-label {
+    font-size: 0.6563rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .v2 .ef-input {
+    border: 1px solid var(--v2-hairline);
+    background: #fff;
+    border-radius: 0;
+    font-family: inherit;
+    font-size: 0.875rem;
+    padding: 0.65rem 0.75rem;
+    color: var(--ink);
+  }
+  .v2 .ef-input:focus {
+    outline: none;
+    border-color: var(--ink);
+  }
+  .v2 .ef-submit {
+    margin-top: 1.75rem;
+    background: var(--ink);
+    color: var(--paper);
+    border: 0;
+    font-family: inherit;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 1em 2.2em;
+    cursor: pointer;
+  }
+  .v2 .ef-submit:hover {
+    background: var(--charcoal);
+  }
+  .v2 .ef-note {
+    margin-top: 0.9rem;
+    color: var(--gray);
+  }
+  .v2 .ef-optional {
+    text-transform: none;
+    letter-spacing: 0.03em;
+    color: var(--gray);
+  }
+
+  /* footer */
+  .v2 .foot {
+    border-top: 1px solid var(--v2-rule);
+    padding: clamp(2.5rem, 5vw, 4rem) clamp(1rem, 3vw, 2rem) 2rem;
+    background: var(--cream);
+  }
+  .v2 .foot-wordmark {
+    font-family: 'Anton', sans-serif;
+    font-size: 1.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+  }
+  .v2 .foot-lockup {
+    font-size: 0.625rem;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--gray);
+    margin-top: 0.3rem;
+  }
+  .v2 .foot-cols {
+    margin-top: 2rem;
+    display: grid;
+    gap: 1.5rem;
+    font-size: 0.8125rem;
+    color: var(--gray);
+  }
+  @media (min-width: 768px) {
+    .v2 .foot-cols {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  .v2 .foot-head {
+    font-size: 0.6563rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink);
+    margin-bottom: 0.5rem;
+  }
+  .v2 .foot a {
+    color: inherit;
+    text-decoration: none;
+  }
+  .v2 .foot a:hover {
+    color: var(--ink);
+    text-decoration: underline;
+  }
+  .v2 .foot-blocked {
+    margin-top: 2rem;
+    display: grid;
+    gap: 0.6rem;
+    max-width: 40rem;
+    --blocked-fg: var(--gray);
+    --blocked-bg: var(--cream);
+  }
+  .v2 .foot-fine {
+    margin-top: 2rem;
+    font-size: 0.6875rem;
+    color: var(--gray);
+  }
+</style>
