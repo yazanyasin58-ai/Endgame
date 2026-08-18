@@ -46,8 +46,29 @@ const fonts =
     <!-- 1 · HERO -->
     <section class="v2-hero" aria-label="Introduction">
       <div class="v2-hero-frame">
-        <Placeholder ratio="16 / 9" label="Placeholder — hero · project exterior · 16:9 · 2400px" class="v2-ph" />
+        <Placeholder
+          ratio="16 / 9"
+          label="Placeholder — hero · project exterior · 16:9 · 2400px"
+          class="v2-ph v2-hero-ph ph--label-tr"
+        />
         <span class="v2-hero-wordmark" aria-hidden="true">Interior Design Flooring</span>
+
+        <div class="v2-hero-copy">
+          <h1 class="v2-h1">
+            Custom homes, additions, and remodels for Northern Virginia — owner-run since 1989,
+            priced straight.
+          </h1>
+          <p class="v2-hero-sub">
+            Virginia Class A general contractor. You deal with the owner from first call to final
+            walkthrough.
+          </p>
+          <div class="v2-hero-ctas">
+            <a class="v2-btn v2-btn--light" href="#estimate">{cta.primary}</a>
+            <a class="v2-btn v2-btn--onphoto" href={business.phonePrimaryHref}>
+              {cta.secondaryLabel}
+            </a>
+          </div>
+        </div>
       </div>
 
       <!-- spec row, butted directly against the hero's bottom edge -->
@@ -72,21 +93,6 @@ const fonts =
           </svg>
           <span class="v2-spec-fig">CLASS A</span>
           <span class="v2-spec-label">Lic. #2705162130</span>
-        </div>
-      </div>
-
-      <div class="v2-hero-copy">
-        <h1 class="v2-h1">
-          Custom homes, additions, and remodels for Northern Virginia — owner-run since 1989,
-          priced straight.
-        </h1>
-        <p class="v2-hero-sub">
-          Virginia Class A general contractor. You deal with the owner from first call to final
-          walkthrough. Written estimate within 24 hours of the site visit.
-        </p>
-        <div class="v2-hero-ctas">
-          <a class="v2-btn" href="#estimate">{cta.primary}</a>
-          <a class="v2-btn v2-btn--ghost" href={business.phonePrimaryHref}>{cta.secondaryLabel}</a>
         </div>
       </div>
     </section>
@@ -278,96 +284,76 @@ const fonts =
     text-decoration: underline;
   }
 
-  /* hero */
+  /* hero — full-bleed field, wordmark clipped by both edges of the frame */
   .v2-hero-frame {
     position: relative;
     overflow: hidden;
-    border-bottom: 1px solid var(--v2-rule);
+    isolation: isolate;
+  }
+  .v2-hero-ph {
+    /* darker field so the clipped wordmark and copy read white over it */
+    --ph-bg: #3b342b;
+    --ph-lo: #1e1a14;
+    --ph-hi: #78684cbf;
+    --ph-fg: #9c9484;
+    --ph-horizon: 64%;
+    min-height: 68vh;
+  }
+  @media (min-width: 1024px) {
+    .v2-hero-ph {
+      min-height: 0;
+      max-height: 88vh;
+    }
+  }
+  .v2-hero-frame::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(to top, rgb(20 17 13 / 0.86) 0%, rgb(20 17 13 / 0.06) 60%);
+    pointer-events: none;
   }
   .v2-hero-wordmark {
     position: absolute;
-    top: 50%;
+    z-index: 2;
+    top: clamp(2.5rem, 7vw, 5.5rem);
     left: 50%;
-    transform: translate(-50%, -50%);
+    transform: translateX(-50%);
     font-family: 'Anton', sans-serif;
-    font-size: clamp(4rem, 16vw, 15rem);
-    line-height: 1;
-    letter-spacing: 0.01em;
+    /* oversized on purpose — the frame clips the first and last letters */
+    font-size: 9.6vw;
+    line-height: 0.86;
+    letter-spacing: -0.005em;
     text-transform: uppercase;
     white-space: nowrap;
-    color: var(--ink);
+    color: var(--paper);
     pointer-events: none;
   }
-  .v2-specrow {
-    display: grid;
-    border-bottom: 1px solid var(--v2-rule);
-  }
-  @media (min-width: 640px) {
-    .v2-specrow {
-      grid-template-columns: repeat(3, 1fr);
-    }
-  }
-  .v2-spec {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    grid-template-rows: auto auto;
-    column-gap: 0.9rem;
-    align-items: center;
-    padding: 1.1rem clamp(1rem, 3vw, 2rem);
-    border-top: 1px solid var(--v2-hairline);
-  }
-  @media (min-width: 640px) {
-    .v2-spec {
-      border-top: 0;
-    }
-    .v2-spec + .v2-spec {
-      border-left: 1px solid var(--v2-hairline);
-    }
-  }
-  .v2-spec-icon {
-    width: 1rem;
-    height: 1rem;
-    grid-row: 1 / span 2;
-    color: var(--gray);
-  }
-  .v2-spec-fig {
-    font-size: clamp(1.5rem, 3vw, 2.1rem);
-    font-weight: 600;
-    line-height: 1.1;
-    font-variant-numeric: tabular-nums;
-    letter-spacing: -0.01em;
-  }
-  .v2-spec-fig small {
-    font-size: 0.55em;
-    font-weight: 500;
-    color: var(--gray);
-  }
-  .v2-spec-label {
-    font-size: 0.625rem;
-    font-weight: 500;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--gray);
-    grid-column: 2;
-  }
   .v2-hero-copy {
-    padding: clamp(2.25rem, 5vw, 4rem) clamp(1rem, 3vw, 2rem);
-    max-width: 52rem;
+    position: absolute;
+    z-index: 2;
+    left: 0;
+    right: 0;
+    bottom: clamp(1.5rem, 4vw, 3rem);
+    padding-inline: clamp(1rem, 3vw, 2rem);
+    max-width: 46rem;
+    color: var(--paper);
   }
   .v2-h1 {
-    font-size: clamp(1.35rem, 3.2vw, 2.2rem);
+    font-size: clamp(1.15rem, 2.5vw, 1.9rem);
     font-weight: 600;
-    line-height: 1.25;
+    line-height: 1.28;
     letter-spacing: -0.01em;
     text-wrap: balance;
   }
   .v2-hero-sub {
-    margin-top: 1rem;
-    color: var(--gray);
-    max-width: 56ch;
+    margin-top: 0.8rem;
+    font-size: 0.875rem;
+    color: rgb(251 248 242 / 0.82);
+    max-width: 52ch;
   }
   .v2-hero-ctas {
-    margin-top: 1.75rem;
+    margin-top: 1.4rem;
     display: flex;
     flex-wrap: wrap;
     gap: 0.75rem;
@@ -392,8 +378,80 @@ const fonts =
     color: var(--ink);
     font-variant-numeric: tabular-nums;
   }
+  /* primary action where it sits on the photograph */
+  .v2-btn--light {
+    background: var(--paper);
+    color: var(--ink);
+    border-color: var(--paper);
+  }
+  .v2-btn--light:hover {
+    background: #fff;
+  }
   .v2-btn--ghost:hover {
     background: rgb(20 17 13 / 0.06);
+  }
+  /* secondary action sitting on the photograph */
+  .v2-btn--onphoto {
+    background: transparent;
+    color: var(--paper);
+    border-color: rgb(251 248 242 / 0.55);
+    font-variant-numeric: tabular-nums;
+  }
+  .v2-btn--onphoto:hover {
+    background: rgb(251 248 242 / 0.14);
+  }
+  .v2-specrow {
+    display: grid;
+    border-bottom: 1px solid var(--v2-rule);
+    background: var(--paper);
+  }
+  @media (min-width: 640px) {
+    .v2-specrow {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  .v2-spec {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto auto;
+    column-gap: 0.9rem;
+    align-items: center;
+    padding: 1.25rem clamp(1rem, 3vw, 2rem);
+    border-top: 1px solid var(--v2-hairline);
+  }
+  @media (min-width: 640px) {
+    .v2-spec {
+      border-top: 0;
+    }
+    .v2-spec + .v2-spec {
+      border-left: 1px solid var(--v2-hairline);
+    }
+  }
+  .v2-spec-icon {
+    width: 1rem;
+    height: 1rem;
+    grid-row: 1 / span 2;
+    color: var(--gray);
+  }
+  .v2-spec-fig {
+    font-size: clamp(1.6rem, 3.2vw, 2.35rem);
+    font-weight: 600;
+    line-height: 1.1;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.015em;
+  }
+  .v2-spec-fig small {
+    font-size: 0.55em;
+    font-weight: 500;
+    color: var(--gray);
+  }
+  .v2-spec-label {
+    font-size: 0.625rem;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gray);
+    grid-column: 2;
   }
 
   /* trust bar */

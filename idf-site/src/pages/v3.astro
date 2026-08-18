@@ -48,8 +48,8 @@ const fonts =
         <Placeholder ratio="3 / 4" label="Placeholder — hero crop · 3:4 vertical · residential exterior" class="v3-ph v3-hero-ph" />
         <p class="v3-hero-project">Great Falls Project</p>
         <p class="v3-hero-figure">
-          <span class="v3-hero-fig-num">24</span>
-          <span class="v3-hero-fig-label">HR // estimate after site visit</span>
+          <span class="v3-hero-fig-num">24<span class="v3-hero-fig-unit">HR</span></span>
+          <span class="v3-hero-fig-label">Estimate after site visit</span>
         </p>
       </div>
 
@@ -247,12 +247,15 @@ const fonts =
   @media (min-width: 1024px) {
     .v3-hero {
       grid-template-columns: 1fr 1fr;
+      min-height: calc(100vh - 3.25rem);
     }
   }
   .v3-hero-photo {
     position: relative;
+    isolation: isolate;
   }
   .v3-hero-ph {
+    min-height: 62vh;
     height: 100%;
   }
   @media (min-width: 1024px) {
@@ -261,10 +264,19 @@ const fonts =
       min-height: 100%;
     }
   }
+  .v3-hero-photo::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(to top, rgb(20 17 13 / 0.85) 0%, rgb(20 17 13 / 0.1) 55%);
+    pointer-events: none;
+  }
   .v3-hero-project {
     position: absolute;
+    z-index: 2;
     top: 1.5rem;
-    left: 1.5rem;
+    left: clamp(1.25rem, 3vw, 2rem);
     font-family: 'JetBrains Mono', monospace;
     font-size: 0.6875rem;
     letter-spacing: 0.22em;
@@ -273,28 +285,42 @@ const fonts =
   }
   .v3-hero-figure {
     position: absolute;
-    bottom: 1.5rem;
-    left: 1.5rem;
+    z-index: 2;
+    bottom: clamp(1.5rem, 3vw, 2.5rem);
+    left: clamp(1.25rem, 3vw, 2rem);
+    right: clamp(1.25rem, 3vw, 2rem);
   }
   .v3-hero-fig-num {
-    display: block;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.12em;
     font-weight: 300;
-    font-size: clamp(5rem, 10vw, 9rem);
-    line-height: 0.9;
+    font-size: clamp(4.75rem, 11vw, 10rem);
+    line-height: 0.82;
+    letter-spacing: -0.03em;
     color: var(--cream);
   }
+  .v3-hero-fig-unit {
+    font-size: 0.26em;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    padding-top: 0.35em;
+  }
   .v3-hero-fig-label {
+    display: block;
+    margin-top: 0.9rem;
     font-family: 'JetBrains Mono', monospace;
     font-size: 0.625rem;
-    letter-spacing: 0.18em;
+    letter-spacing: 0.2em;
     text-transform: uppercase;
     color: var(--gold-bright);
   }
   .v3-panel {
     background: var(--charcoal);
-    padding: clamp(1.75rem, 3.5vw, 3rem);
+    padding: clamp(1.5rem, 2.8vw, 2.25rem);
     display: flex;
     flex-direction: column;
+    justify-content: center;
     border-left: 1px solid var(--v3-hairline);
   }
   .v3-h1 {
@@ -306,8 +332,8 @@ const fonts =
     text-wrap: balance;
   }
   .v3-panel-sub {
-    margin-top: 0.8rem;
-    margin-bottom: 1.75rem;
+    margin-top: 0.7rem;
+    margin-bottom: 1.35rem;
     font-size: 0.8438rem;
     color: var(--stone);
   }
@@ -611,7 +637,7 @@ const fonts =
 
   /* form in panel */
   .v3 .ef-grid {
-    gap: 1rem;
+    gap: 0.8rem;
   }
   .v3 .ef-label {
     font-family: 'JetBrains Mono', monospace;
@@ -638,10 +664,10 @@ const fonts =
     background: var(--cream);
   }
   .v3 .ef-textarea {
-    min-height: 5.5rem;
+    min-height: 4.25rem;
   }
   .v3 .ef-submit {
-    margin-top: 1.5rem;
+    margin-top: 1.1rem;
     width: 100%;
     background: var(--gold);
     color: var(--ink);

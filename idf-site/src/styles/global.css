@@ -30,26 +30,47 @@ body {
 /* ---------- image placeholder protocol (§6) ---------- */
 .ph {
   position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: block;
   overflow: hidden;
-  background: var(--ph-bg, #26221b);
   width: 100%;
+  /* Reserved photographic field. Tonal, not pictorial — it never pretends to
+     be a photograph, it holds the exact space one will occupy. */
+  background:
+    radial-gradient(115% 85% at var(--ph-light-x, 62%) var(--ph-light-y, 20%),
+      var(--ph-hi, #6b5c43b3) 0%, transparent 64%),
+    linear-gradient(178deg, var(--ph-bg, #363028) 0%, var(--ph-lo, #1b1811) 100%);
+}
+/* horizon line — reads as a landscape/architectural plane, keeps the field from
+   looking like an empty div without imitating a picture */
+.ph::after {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  top: var(--ph-horizon, 58%);
+  border-top: 1px solid var(--ph-fg, var(--stone));
+  opacity: 0.18;
 }
 .ph-label {
+  position: absolute;
+  z-index: 2;
+  inset-block-end: 0.9rem;
+  inset-inline-end: 1rem;
   font-family: ui-monospace, 'SFMono-Regular', Menlo, monospace;
-  font-size: 0.625rem;
-  letter-spacing: 0.16em;
+  font-size: 0.5625rem;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--ph-fg, var(--stone));
   border: 1px dashed var(--ph-fg, var(--stone));
-  padding: 0.5em 0.9em;
+  padding: 0.45em 0.8em;
   white-space: nowrap;
-  max-width: calc(100% - 1.5rem);
+  max-width: calc(100% - 2rem);
   overflow: hidden;
   text-overflow: ellipsis;
+  opacity: 0.75;
 }
+.ph--label-tl .ph-label { inset-block: 0.9rem auto; inset-inline: 1rem auto; }
+.ph--label-tr .ph-label { inset-block: 0.9rem auto; inset-inline: auto 1rem; }
+.ph--label-bl .ph-label { inset-block: auto 0.9rem; inset-inline: 1rem auto; }
 
 /* ---------- blocked slots (§2 unconfirmed facts) ---------- */
 .blocked {

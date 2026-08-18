@@ -53,17 +53,24 @@ const tiles = Array.from({ length: 9 }, (_, i) => cardPositions.get(i) ?? null);
   <main>
     <!-- 1 · HERO — type band, then the field grid bleeding to both edges -->
     <section class="v5-hero" aria-label="Introduction">
-      <p class="v5-eyebrow">
-        Class A Contractor &middot; Northern Virginia &middot; Since 1989
-      </p>
-      <h1 class="v5-h1">We build it.<br />You deal with us.</h1>
-      <p class="v5-hero-sub">
-        Custom homes, additions &amp; remodeling — owner-run, estimate within 24 hours of the site
-        visit.
-      </p>
-      <div class="v5-hero-ctas">
-        <a class="v5-btn" href="#estimate">{cta.primary}</a>
-        <a class="v5-btn v5-btn--ghost" href={business.phonePrimaryHref}>{cta.secondaryLabel}</a>
+      <Placeholder
+        ratio="16 / 9"
+        label="Placeholder — hero · project exterior · 16:9 · 2400px"
+        class="v5-ph v5-hero-ph ph--label-tr"
+      />
+      <div class="v5-hero-inner">
+        <p class="v5-eyebrow">
+          Class A Contractor &middot; Northern Virginia &middot; Since 1989
+        </p>
+        <h1 class="v5-h1">We build it.<br />You deal with us.</h1>
+        <p class="v5-hero-sub">
+          Custom homes, additions &amp; remodeling — owner-run, estimate within 24 hours of the
+          site visit.
+        </p>
+        <div class="v5-hero-ctas">
+          <a class="v5-btn" href="#estimate">{cta.primary}</a>
+          <a class="v5-btn v5-btn--ghost" href={business.phonePrimaryHref}>{cta.secondaryLabel}</a>
+        </div>
       </div>
     </section>
 
@@ -240,10 +247,48 @@ const tiles = Array.from({ length: 9 }, (_, i) => cardPositions.get(i) ?? null);
     text-decoration: underline;
   }
 
-  /* hero band — centred */
+  /* hero — full-bleed cover field, type centred over it */
   .v5-hero {
+    position: relative;
+    isolation: isolate;
+  }
+  .v5-hero-ph {
+    --ph-bg: #38312700;
+    --ph-bg: #383127;
+    --ph-lo: #17140e;
+    --ph-hi: #7a684bbf;
+    --ph-fg: #9f9788;
+    --ph-horizon: 60%;
+    min-height: 84vh;
+  }
+  @media (min-width: 1024px) {
+    .v5-hero-ph {
+      min-height: 0;
+      max-height: 90vh;
+    }
+  }
+  .v5-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: radial-gradient(
+      70% 60% at 50% 52%,
+      rgb(20 17 13 / 0.34) 0%,
+      rgb(20 17 13 / 0.76) 100%
+    );
+    pointer-events: none;
+  }
+  .v5-hero-inner {
+    position: absolute;
+    z-index: 2;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     text-align: center;
-    padding: clamp(3.5rem, 9vw, 7rem) 1.25rem clamp(2.75rem, 6vw, 4.5rem);
+    padding: clamp(3rem, 8vw, 5rem) clamp(1.25rem, 4vw, 3rem);
   }
   .v5-eyebrow {
     font-family: 'Space Mono', monospace;
@@ -255,9 +300,9 @@ const tiles = Array.from({ length: 9 }, (_, i) => cardPositions.get(i) ?? null);
   .v5-h1 {
     margin-top: 1.5rem;
     font-weight: 700;
-    font-size: clamp(2.8rem, 9vw, 7rem);
-    line-height: 0.98;
-    letter-spacing: -0.025em;
+    font-size: clamp(3rem, 9.5vw, 7.5rem);
+    line-height: 0.96;
+    letter-spacing: -0.03em;
     color: var(--gold-bright);
   }
   .v5-hero-sub {
@@ -265,10 +310,10 @@ const tiles = Array.from({ length: 9 }, (_, i) => cardPositions.get(i) ?? null);
     max-width: 44ch;
     font-size: 0.9063rem;
     font-weight: 300;
-    color: var(--stone);
+    color: rgb(246 241 231 / 0.8);
   }
   .v5-hero-ctas {
-    margin-top: 2rem;
+    margin-top: 2.25rem;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;

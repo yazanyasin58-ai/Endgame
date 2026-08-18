@@ -46,28 +46,32 @@ const fonts =
   <main>
     <!-- 1 · HERO -->
     <section class="v1-hero" aria-label="Introduction">
-      <div class="v1-hero-media">
-        <Placeholder ratio="16 / 9" label="Placeholder — hero · dusk exterior · 16:9 · 2400px" class="v1-ph" />
-        <div class="v1-hero-col">
-          <p class="v1-label v1-label--gold">
-            Class A Contractor &middot; Since 1989 &middot; Northern Virginia
-          </p>
-          <p class="v1-hero-line">The home you planned, built by the people you hired.</p>
-          <p class="v1-hero-body">
-            Custom homes, additions, and full remodels — one owner-run team from the first call to
-            the final walkthrough. Estimate within 24 hours of the site visit.
-          </p>
-          <div class="v1-hero-ctas">
-            <a class="v1-btn" href="#estimate">{cta.primary}</a>
-            <a class="v1-call" href={business.phonePrimaryHref}>or call {business.phonePrimary}</a>
-          </div>
+      <Placeholder
+        ratio="16 / 9"
+        label="Placeholder — hero · dusk exterior · 16:9 · 2400px"
+        class="v1-ph v1-hero-ph ph--label-tr"
+      />
+
+      <div class="v1-hero-col">
+        <p class="v1-label v1-label--gold">
+          Class A Contractor &middot; Since 1989 &middot; Northern Virginia
+        </p>
+        <p class="v1-hero-line">The home you planned, built by the people you hired.</p>
+        <p class="v1-hero-body">
+          Custom homes, additions, and full remodels — one owner-run team from the first call to
+          the final walkthrough. Estimate within 24 hours of the site visit.
+        </p>
+        <div class="v1-hero-ctas">
+          <a class="v1-btn" href="#estimate">{cta.primary}</a>
+          <a class="v1-call" href={business.phonePrimaryHref}>or call {business.phonePrimary}</a>
         </div>
       </div>
+
       <h1 class="v1-wordmark">
-        <span class="v1-wordmark-line">Interior Design</span>
-        <span class="v1-wordmark-line">Flooring</span>
-        <span class="v1-wordmark-lockup">{business.lockup} — Sterling, Virginia</span>
+        <span>Interior</span> <span>Design</span> <span>Flooring</span>
       </h1>
+      <p class="v1-wordmark-lockup">{business.lockup} — Sterling, Virginia</p>
+      <span class="v1-scroll" aria-hidden="true">Scroll</span>
     </section>
 
     <!-- 2 · TRUST BAR -->
@@ -270,25 +274,59 @@ const fonts =
     text-decoration: underline;
   }
 
-  /* hero */
+  /* hero — full-bleed field, wordmark seated on the building line */
   .v1-hero {
-    padding-bottom: clamp(3rem, 7vw, 6rem);
-  }
-  .v1-hero-media {
     position: relative;
+    isolation: isolate;
+  }
+  .v1-hero-ph {
+    --ph-bg: #3d352b;
+    --ph-lo: #201c15;
+    --ph-hi: #7d6a4dbf;
+    --ph-horizon: 62%;
+    min-height: 76vh;
+  }
+  @media (min-width: 1024px) {
+    .v1-hero-ph {
+      min-height: 0;
+      max-height: 92vh;
+    }
+  }
+  /* the image field carries its own dusk fall-off so type stays legible on it */
+  .v1-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(
+      to top,
+      rgb(20 17 13 / 0.88) 0%,
+      rgb(20 17 13 / 0.32) 40%,
+      rgb(20 17 13 / 0) 72%
+    );
+    pointer-events: none;
+  }
+  /* on narrow screens the hero copy occupies the top of the field, so the
+     placeholder label moves out of its way */
+  @media (max-width: 1023px) {
+    .v1-hero-ph .ph-label {
+      inset-block: auto 0.9rem;
+      inset-inline: 1rem auto;
+    }
   }
   .v1-hero-col {
-    padding: 1.75rem clamp(1.25rem, 4vw, 3rem) 0;
-    max-width: 24rem;
+    position: absolute;
+    z-index: 2;
+    top: clamp(1.75rem, 5vw, 4rem);
+    left: clamp(1.25rem, 4vw, 3rem);
+    right: clamp(1.25rem, 4vw, 3rem);
+    max-width: 22rem;
   }
   @media (min-width: 1024px) {
     .v1-hero-col {
-      position: absolute;
-      top: clamp(2rem, 5vw, 4.5rem);
-      right: clamp(1.5rem, 4vw, 3.5rem);
+      left: auto;
       width: 19.5rem;
       max-width: none;
-      padding: 0;
     }
   }
   .v1-hero-line {
@@ -333,36 +371,66 @@ const fonts =
     text-underline-offset: 3px;
   }
 
-  /* the monumental wordmark, seated on the building line */
+  /* the monumental wordmark — sits over the lower third of the image */
   .v1-wordmark {
-    position: relative;
+    position: absolute;
     z-index: 2;
-    margin-top: calc(-0.52em * 1.9);
+    bottom: clamp(3.25rem, 7vw, 5rem);
+    left: 0;
+    right: 0;
     padding-inline: clamp(1.25rem, 4vw, 3rem);
     font-family: 'Fraunces', serif;
     font-weight: 300;
-    font-size: clamp(2.8rem, 11.5vw, 11rem);
-    line-height: 0.95;
-    letter-spacing: -0.015em;
+    font-size: 15vw;
+    line-height: 0.88;
+    letter-spacing: -0.02em;
     text-transform: uppercase;
+    color: var(--cream);
   }
-  @media (min-width: 1024px) {
+  .v1-wordmark span {
+    display: block;
+  }
+  @media (min-width: 768px) {
+    /* one line spanning the full width, along the base of the image */
     .v1-wordmark {
-      margin-top: -1.05em;
+      white-space: nowrap;
+      font-size: 6.45vw;
+      letter-spacing: -0.012em;
+      line-height: 1;
+    }
+    .v1-wordmark span {
+      display: inline;
     }
   }
-  .v1-wordmark-line {
-    display: block;
-  }
   .v1-wordmark-lockup {
-    display: block;
-    font-family: 'Public Sans', sans-serif;
-    font-size: clamp(0.575rem, 0.9vw, 0.7rem);
+    position: absolute;
+    z-index: 2;
+    bottom: clamp(1.4rem, 3vw, 2.2rem);
+    left: 0;
+    right: 0;
+    padding-inline: clamp(1.25rem, 4vw, 3rem);
+    font-size: clamp(0.55rem, 0.85vw, 0.7rem);
     font-weight: 500;
     letter-spacing: 0.32em;
     text-transform: uppercase;
     color: var(--gold-bright);
-    margin-top: 1.4rem;
+  }
+  .v1-scroll {
+    position: absolute;
+    z-index: 2;
+    right: clamp(1.25rem, 4vw, 3rem);
+    bottom: clamp(1.4rem, 3vw, 2.2rem);
+    font-size: 0.6rem;
+    font-weight: 500;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--stone);
+    display: none;
+  }
+  @media (min-width: 768px) {
+    .v1-scroll {
+      display: block;
+    }
   }
 
   /* trust bar */
