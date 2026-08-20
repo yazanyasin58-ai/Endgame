@@ -1,0 +1,33 @@
+---
+/**
+ * Brand lockup.
+ *
+ * Uses the client's logo file when one is present in /public/img/, otherwise
+ * falls back to the text-only wordmark. The fallback is not a placeholder to
+ * be tolerated — it is a usable lockup in its own right, which matters
+ * because the supplied logo is a raster PNG on a white ground with no vector
+ * source. Until a vector arrives the text lockup is the safer mark.
+ */
+import { optionalImage, heroImages } from '../lib/images';
+import { business } from '../content/idf';
+
+interface Props {
+  class?: string;
+}
+
+const { class: className = '' } = Astro.props;
+const logoSrc = optionalImage(heroImages.logo);
+---
+
+<a class:list={['logo', className]} href="/home/" aria-label={`${business.name} — home`}>
+  {
+    logoSrc ? (
+      <img class="logo-img" src={logoSrc} alt={`${business.name}, construction and remodeling`} />
+    ) : (
+      <span class="logo-text">
+        <span class="logo-name">{business.name}</span>
+        <span class="logo-lockup">{business.lockup} &middot; Est. {business.established}</span>
+      </span>
+    )
+  }
+</a>

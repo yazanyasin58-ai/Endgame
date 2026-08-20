@@ -1,0 +1,117 @@
+---
+/**
+ * Estimate request — its own page, at the client's request.
+ * Every primary CTA across the site points here.
+ */
+import Base from '../layouts/Base.astro';
+import '../styles/home.css';
+import StickyCallBar from '../components/StickyCallBar.astro';
+import EstimateForm from '../components/EstimateForm.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import Logo from '../components/Logo.astro';
+import { business, processSteps, trustBar, promo } from '../content/idf';
+
+const fonts =
+  'https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Source+Sans+3:wght@400;600&display=swap';
+---
+
+<Base
+  title="Request a Free Estimate — Interior Design Flooring"
+  description="Request a free estimate from Interior Design Flooring, a Virginia Class A general contractor in Sterling. Site visit first, written estimate within 24 hours."
+  fontsHref={fonts}
+  bodyClass="hp"
+  withCallbar
+>
+  <header class="hp-nav">
+    <Logo class="hp-logo" />
+    <div class="hp-nav-actions">
+      <a class="hp-nav-phone" href={business.phonePrimaryHref}>{business.phonePrimary}</a>
+      <a class="hp-btn hp-btn--sm" href={business.phonePrimarySms}>Text us</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="hp-est">
+      <div class="hp-est-intro">
+        <h1 class="hp-est-h1">Request a free estimate.</h1>
+        <p class="hp-est-sub hp-italic">
+          Tell us what you're planning. We visit the site, then your written estimate arrives
+          within 24 hours.
+        </p>
+        <p class="hp-est-promo">
+          <strong>{promo.headline}</strong><br />
+          <span>{promo.detail}</span>
+        </p>
+        <ol class="hp-est-steps">
+          {
+            processSteps.map((step) => (
+              <li class:list={[{ 'is-featured': 'featured' in step && step.featured }]}>
+                <span>{step.number}</span> {step.title}
+              </li>
+            ))
+          }
+        </ol>
+        <a class="hp-call" href={business.phonePrimaryHref}>
+          Prefer to talk? {business.phonePrimary}
+        </a>
+      </div>
+
+      <div class="hp-est-form">
+        <EstimateForm idPrefix="est" />
+      </div>
+    </section>
+
+    <section class="hp-trust" aria-label="Credentials">
+      <ul>
+        {trustBar.map((item) => <li>{item}</li>)}
+      </ul>
+    </section>
+  </main>
+
+  <SiteFooter />
+  <StickyCallBar />
+</Base>
+
+<style is:global>
+  .hp-est {
+    display: grid;
+    gap: 3rem;
+    max-width: 68rem;
+    margin-inline: auto;
+    padding: clamp(2.5rem, 6vw, 5rem) clamp(1.25rem, 4vw, 3.5rem);
+  }
+  @media (min-width: 1024px) {
+    .hp-est { grid-template-columns: 1fr 1.2fr; gap: 4.5rem; }
+  }
+  .hp-est-h1 {
+    font-family: 'Instrument Serif', serif; font-weight: 400;
+    font-size: clamp(2.2rem, 5vw, 3.5rem); line-height: 1.05;
+  }
+  .hp-est-sub { font-size: 1.15rem; color: var(--gray); margin-top: 0.9rem; }
+  .hp-est-promo {
+    margin-top: 1.75rem; padding: 1rem 1.25rem;
+    border: 1px solid var(--rule); border-radius: 0.5rem;
+    background: var(--cream); font-size: 0.9375rem;
+  }
+  .hp-est-promo span { color: var(--gray); font-size: 0.8438rem; }
+  .hp-est-steps {
+    list-style: none; margin: 2rem 0 0; padding: 0;
+    font-size: 0.9063rem; color: var(--charcoal);
+  }
+  .hp-est-steps li {
+    padding-block: 0.5rem; border-top: 1px solid var(--rule);
+  }
+  .hp-est-steps li span {
+    font-family: 'Instrument Serif', serif; color: var(--gray); margin-right: 0.6rem;
+  }
+  .hp-est-steps li.is-featured { font-weight: 600; }
+  .hp-est-steps li.is-featured span { color: var(--gold); }
+  .hp-est .hp-call { display: inline-block; margin-top: 1.75rem; }
+  /* form sits on the light ground here, not charcoal */
+  .hp-est-form .ef-label { color: var(--gray); }
+  .hp-est-form .ef-input {
+    background: #fff; border: 1px solid rgb(20 17 13 / 0.18); color: var(--ink);
+  }
+  .hp-est-form .ef-input:focus { border-color: var(--gold); }
+  .hp-est-form .ef-note { color: var(--gray); }
+</style>

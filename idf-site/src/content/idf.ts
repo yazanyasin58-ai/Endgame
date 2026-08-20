@@ -127,10 +127,50 @@ export const cta = {
   secondaryLabel: 'Call 703-430-8129',
 } as const;
 
+/**
+ * Showroom hours — confirmed by the owner (supersedes both the intake form
+ * and the older Google Business Profile figures quoted in the brief).
+ * Must stay identical to the Google Business Profile for NAP consistency.
+ */
+export const hours = [
+  { days: 'Monday – Friday', open: '10:00 AM', close: '7:30 PM' },
+  { days: 'Saturday', open: '10:00 AM', close: '6:00 PM' },
+  { days: 'Sunday', open: '11:00 AM', close: '4:00 PM' },
+] as const;
+
+export const social = [
+  {
+    name: 'Instagram',
+    handle: '@interiordesignflooring',
+    href: 'https://www.instagram.com/interiordesignflooring/',
+  },
+] as const;
+
+/**
+ * The only figures that appear as statistics. Every one is verifiable —
+ * no project counts or customer totals, which cannot be substantiated.
+ */
+export const figures = [
+  { value: '1989', label: 'Established', note: '37 years owner-run' },
+  { value: '4.7', label: 'Google rating', note: 'From verified reviews' },
+  { value: '24 hrs', label: 'Estimate turnaround', note: 'After the site visit' },
+  { value: 'Class A', label: 'Virginia licence', note: '#2705162130' },
+] as const;
+
+/**
+ * Promotional offer. The owner has approved the headline offer; the terms
+ * (cap, eligible work, expiry) are still undefined, so the page directs to a
+ * conversation rather than stating conditions we have not been given.
+ */
+export const promo = {
+  headline: '15% off your first project',
+  detail: 'New customers. Ask us for details when you request your estimate.',
+  cta: 'Request a Free Estimate',
+} as const;
+
 // Slots that exist but are blocked pending client confirmation. Render these
 // visibly as blocked — never soften into publishable copy.
 export const blocked = {
-  hours: 'HOURS — BLOCKED PENDING CLIENT CONFIRMATION',
   serviceArea: 'SERVICE AREA LIST — BLOCKED PENDING CLIENT CONFIRMATION',
 } as const;
 

@@ -1,0 +1,325 @@
+/* ---------------------------------------------------------------
+   Chosen direction — warm light editorial.
+   Cream ground throughout; charcoal is reserved for the closing band
+   and the footer, per the client's "not dark, light" direction.
+   --------------------------------------------------------------- */
+.hp {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 1rem;
+  line-height: 1.7;
+  --rule: rgb(200 162 74 / 0.4);
+  --ph-bg: #e7dcc4;
+  --ph-fg: #857b62;
+}
+.hp ::selection { background: var(--gold); color: var(--ink); }
+.hp-italic { font-family: 'Instrument Serif', serif; font-style: italic; font-weight: 400; }
+.hp-visually-hidden {
+  position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%);
+}
+
+/* ---------- promo bar ---------- */
+.promo {
+  display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+  background: var(--ink); color: var(--cream);
+  padding: 0.7rem clamp(1rem, 4vw, 3.5rem);
+  font-size: 0.875rem;
+}
+.promo[hidden] { display: none; }
+.promo-text { display: flex; gap: 0.6rem; flex-wrap: wrap; align-items: baseline; flex: 1; }
+.promo-text strong { color: var(--gold-bright); }
+.promo-text span { color: rgb(246 241 231 / 0.75); font-size: 0.8125rem; }
+.promo-cta {
+  color: var(--ink); background: var(--gold); text-decoration: none;
+  font-size: 0.75rem; font-weight: 600; padding: 0.5em 1.2em; border-radius: 999px;
+  white-space: nowrap;
+}
+.promo-cta:hover { background: var(--gold-bright); }
+.promo-close {
+  background: none; border: 0; color: var(--stone); font-size: 1.4rem;
+  line-height: 1; cursor: pointer; padding: 0 0.25rem;
+}
+.promo-close:hover { color: var(--cream); }
+
+/* ---------- nav ---------- */
+.hp-nav {
+  display: flex; align-items: center; justify-content: space-between; gap: 1.5rem;
+  padding: 1.1rem clamp(1rem, 4vw, 3.5rem);
+  border-bottom: 1px solid var(--rule);
+  flex-wrap: wrap;
+}
+.logo { text-decoration: none; color: inherit; display: block; }
+.logo-img { display: block; height: 3.1rem; width: auto; }
+.logo-name {
+  display: block; font-family: 'Instrument Serif', serif; font-size: 1.3rem; line-height: 1.1;
+}
+.logo-lockup {
+  display: block; font-size: 0.5938rem; font-weight: 600; letter-spacing: 0.2em;
+  text-transform: uppercase; color: var(--gray); margin-top: 0.2rem;
+}
+.hp-nav-links { display: none; gap: 1.75rem; }
+@media (min-width: 900px) { .hp-nav-links { display: flex; } }
+.hp-nav-links a {
+  color: var(--charcoal); text-decoration: none; font-size: 0.9375rem;
+  padding-bottom: 2px; border-bottom: 1px solid transparent;
+}
+.hp-nav-links a:hover { border-bottom-color: var(--gold); }
+.hp-nav-actions { display: flex; align-items: center; gap: 1rem; }
+.hp-nav-phone {
+  color: var(--ink); text-decoration: none; font-size: 0.9375rem; font-weight: 600;
+  white-space: nowrap;
+}
+.hp-nav-phone:hover { color: var(--gold); }
+
+/* ---------- buttons ---------- */
+.hp-btn {
+  display: inline-block; background: var(--gold); color: var(--ink);
+  font-size: 0.875rem; font-weight: 600; letter-spacing: 0.03em;
+  text-decoration: none; padding: 0.9em 2.1em; border-radius: 999px; white-space: nowrap;
+}
+.hp-btn:hover { background: var(--gold-bright); }
+.hp-btn--sm { font-size: 0.8125rem; padding: 0.7em 1.5em; }
+.hp-call {
+  font-size: 0.875rem; color: var(--charcoal);
+  text-decoration: underline; text-underline-offset: 3px;
+}
+.hp-textlink {
+  display: inline-block; margin-top: 2rem; font-size: 0.9375rem; color: var(--charcoal);
+  text-decoration: underline; text-underline-offset: 4px;
+}
+
+/* ---------- hero ---------- */
+.hp-hero { padding: 0 clamp(0.75rem, 2.5vw, 2rem); }
+.hp-hero-frame { position: relative; }
+.hp-hero-ph {
+  --ph-bg: #ece5d6; --ph-lo: #d8cfbc; --ph-hi: #f7f2e79c; --ph-fg: #8a806c;
+  --ph-horizon: 66%;
+  min-height: 80vh;
+}
+@media (min-width: 1024px) { .hp-hero-ph { min-height: 0; max-height: 88vh; } }
+/* legibility floor for the copy, without a heavy scrim over the photograph */
+.hp-hero-frame::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(to top, rgb(20 17 13 / 0.68) 0%, rgb(20 17 13 / 0.2) 40%, transparent 64%);
+}
+.hp-hero-copy {
+  position: absolute; z-index: 2; left: 0; right: 0;
+  bottom: clamp(1.5rem, 4vw, 3.5rem);
+  padding-inline: clamp(1.25rem, 4vw, 3.5rem);
+  color: var(--cream);
+}
+.hp-eyebrow {
+  font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.24em; text-transform: uppercase;
+  color: var(--gold-bright);
+}
+.hp-h1 {
+  font-family: 'Instrument Serif', serif; font-weight: 400;
+  font-size: clamp(2.5rem, 6.5vw, 5.5rem); line-height: 1.03;
+  letter-spacing: -0.015em; margin-top: 0.7rem; max-width: 18ch; text-wrap: balance;
+}
+.hp-hero-italic {
+  font-family: 'Instrument Serif', serif; font-style: italic;
+  font-size: clamp(1.05rem, 2vw, 1.5rem); color: rgb(246 241 231 / 0.9); margin-top: 0.5rem;
+}
+.hp-hero-actions {
+  margin-top: 1.75rem; display: flex; flex-wrap: wrap; align-items: center; gap: 1.25rem;
+}
+.hp-hero-actions .hp-call { color: var(--cream); }
+
+/* ---------- trust bar ---------- */
+.hp-trust {
+  margin-top: clamp(2rem, 5vw, 3.5rem);
+  border-block: 1px solid var(--rule);
+  padding: 1.1rem clamp(1rem, 4vw, 3.5rem);
+}
+.hp-trust ul {
+  list-style: none; margin: 0; padding: 0;
+  display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem 0;
+  font-size: 0.7rem; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--gray);
+}
+.hp-trust li:not(:last-child)::after {
+  content: '\00B7'; color: var(--gold); margin-inline: 1.4rem;
+}
+
+/* ---------- sections ---------- */
+.hp-section { padding: clamp(3.5rem, 8vw, 6.5rem) clamp(1.25rem, 4vw, 3.5rem); }
+.hp-h2 {
+  font-family: 'Instrument Serif', serif; font-weight: 400;
+  font-size: clamp(2rem, 4.5vw, 3.25rem); line-height: 1.05; text-align: center;
+}
+.hp-sub {
+  text-align: center; font-size: clamp(1.05rem, 1.8vw, 1.3rem);
+  color: var(--gray); margin-top: 0.7rem;
+}
+.hp-muted { color: var(--gray); font-style: italic; }
+
+/* ---------- figures ---------- */
+.hp-figures-wrap { background: var(--cream); padding-block: clamp(2.5rem, 5vw, 4rem); }
+.hp-figures {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem 1rem;
+  max-width: 64rem; margin-inline: auto; text-align: center;
+}
+@media (min-width: 860px) { .hp-figures { grid-template-columns: repeat(4, 1fr); } }
+.hp-figure-value {
+  display: block; font-family: 'Instrument Serif', serif;
+  font-size: clamp(2.4rem, 5vw, 3.5rem); line-height: 1; color: var(--ink);
+}
+.hp-figure-label {
+  display: block; margin-top: 0.6rem; font-size: 0.6875rem; font-weight: 600;
+  letter-spacing: 0.18em; text-transform: uppercase; color: var(--charcoal);
+}
+.hp-figure-note { display: block; margin-top: 0.3rem; font-size: 0.8125rem; color: var(--gray); }
+
+/* ---------- pillars ---------- */
+.hp-pillars {
+  margin-top: 3rem; display: grid; gap: 2.5rem; max-width: 62rem; margin-inline: auto;
+}
+@media (min-width: 768px) { .hp-pillars { grid-template-columns: repeat(3, 1fr); gap: 3rem; } }
+.hp-pillar { text-align: center; border-top: 1px solid var(--rule); padding-top: 1.75rem; }
+.hp-pillar-title { font-family: 'Instrument Serif', serif; font-weight: 400; font-size: 1.75rem; }
+.hp-pillar-list { list-style: none; margin: 1rem 0 0; padding: 0; font-size: 0.9063rem; color: var(--gray); }
+.hp-pillar-list li + li { margin-top: 0.35rem; }
+.hp-pillar-link {
+  display: inline-block; margin-top: 1.1rem; font-size: 0.8125rem; font-weight: 600;
+  letter-spacing: 0.06em; color: var(--charcoal);
+  text-decoration: underline; text-underline-offset: 4px;
+}
+
+/* ---------- why one team ---------- */
+.hp-wedge { background: var(--cream); text-align: center; }
+.hp-wedge-tagline {
+  font-size: clamp(1.5rem, 4vw, 2.75rem); line-height: 1.25; max-width: 26ch;
+  margin: 2rem auto 0; color: var(--charcoal);
+}
+.hp-wedge-copy { max-width: 38rem; margin: 2.5rem auto 0; }
+.hp-wedge-heading {
+  font-size: 0.8125rem; font-weight: 600; letter-spacing: 0.18em;
+  text-transform: uppercase; color: var(--gray); margin-bottom: 1.1rem;
+}
+.hp-wedge-copy p { font-size: 0.9688rem; color: var(--charcoal); }
+.hp-wedge-copy p + p { margin-top: 0.9rem; }
+
+/* ---------- projects ---------- */
+.hp-projects { margin-top: 3rem; display: grid; gap: 2.25rem; }
+@media (min-width: 768px) { .hp-projects { grid-template-columns: repeat(3, 1fr); gap: 1.75rem; } }
+.hp-project { margin: 0; }
+.hp-project figcaption {
+  margin-top: 0.9rem; font-family: 'Instrument Serif', serif; font-size: 1.2rem; text-align: center;
+}
+.hp-section > .hp-textlink { display: block; text-align: center; }
+
+/* ---------- reviews ---------- */
+.hp-reviews-wrap { background: var(--cream); }
+.hp-reviews {
+  margin-top: 3rem; display: grid; gap: 3.5rem; max-width: 60rem; margin-inline: auto;
+}
+@media (min-width: 900px) { .hp-reviews { grid-template-columns: 1.25fr 1fr; gap: 4rem; } }
+.hp-review { margin: 0; position: relative; padding-top: 1.5rem; }
+.hp-review-mark {
+  position: absolute; top: -0.75rem; left: -0.4rem;
+  font-family: 'Instrument Serif', serif; font-size: 4.5rem; line-height: 1; color: var(--gold);
+}
+.hp-review-quote { font-size: clamp(1.1rem, 2vw, 1.35rem); line-height: 1.55; color: var(--charcoal); }
+.hp-review footer { margin-top: 1.25rem; display: flex; align-items: baseline; gap: 0.9rem; }
+.hp-review cite {
+  font-style: normal; font-size: 0.8125rem; font-weight: 600;
+  letter-spacing: 0.1em; text-transform: uppercase;
+}
+.hp-review-context { font-size: 0.75rem; color: var(--gray); }
+
+/* ---------- how it works ---------- */
+.hp-steps { list-style: none; margin: 3rem auto 0; padding: 0; max-width: 40rem; }
+.hp-step {
+  display: grid; grid-template-columns: 3.25rem 1fr; gap: 1.25rem;
+  padding-block: 1.4rem; border-top: 1px solid var(--rule);
+}
+.hp-step-num { font-family: 'Instrument Serif', serif; font-size: 1.5rem; color: var(--gray); }
+.hp-step-title { font-size: 1rem; font-weight: 600; }
+.hp-step-detail { font-size: 0.9063rem; color: var(--gray); margin-top: 0.25rem; }
+.hp-step--featured .hp-step-num {
+  display: flex; align-items: center; justify-content: center;
+  width: 2.4rem; height: 2.4rem; border-radius: 999px;
+  background: var(--gold); color: var(--ink); font-size: 1.15rem;
+}
+.hp-step--featured .hp-step-title::after {
+  content: ' — our promise'; font-family: 'Instrument Serif', serif; font-style: italic;
+  font-weight: 400; color: var(--gray);
+}
+
+/* ---------- price your project ---------- */
+.hp-final {
+  background: var(--charcoal); color: var(--cream);
+  padding: clamp(3.5rem, 8vw, 6.5rem) clamp(1.25rem, 4vw, 3.5rem);
+}
+.hp-final-inner { display: grid; gap: 3rem; max-width: 66rem; margin-inline: auto; }
+@media (min-width: 1024px) { .hp-final-inner { grid-template-columns: 1fr 1.3fr; gap: 5rem; } }
+.hp-final-heading {
+  font-family: 'Instrument Serif', serif; font-weight: 400;
+  font-size: clamp(2.2rem, 5vw, 3.75rem); line-height: 1.05;
+}
+.hp-final-sub { font-size: 1.15rem; color: var(--gold-bright); margin-top: 1rem; }
+.hp-call--light { display: inline-block; margin-top: 1.5rem; color: var(--cream); }
+.hp-final-social { margin-top: 2rem; }
+
+/* ---------- social ---------- */
+.social { list-style: none; margin: 0; padding: 0; display: flex; gap: 1rem; }
+.social a {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  color: inherit; text-decoration: none; font-size: 0.875rem;
+}
+.social a:hover { color: var(--gold); }
+.social svg { width: 1.15rem; height: 1.15rem; }
+
+/* ---------- form on charcoal ---------- */
+.hp .ef-label {
+  font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--stone);
+}
+.hp .ef-input {
+  background: rgb(251 248 242 / 0.06); border: 1px solid rgb(251 248 242 / 0.25);
+  border-radius: 0.4rem; color: var(--cream); font-family: inherit;
+  font-size: 0.9375rem; padding: 0.65rem 0.8rem;
+}
+.hp .ef-input:focus { outline: none; border-color: var(--gold-bright); }
+.hp .ef-select option { color: var(--ink); background: var(--cream); }
+.hp .ef-submit {
+  margin-top: 1.75rem; background: var(--gold); color: var(--ink); border: 0;
+  border-radius: 999px; font-family: inherit; font-size: 0.875rem; font-weight: 600;
+  letter-spacing: 0.05em; padding: 0.95em 2.4em; cursor: pointer;
+}
+.hp .ef-submit:hover { background: var(--gold-bright); }
+.hp .ef-note { margin-top: 1rem; color: var(--stone); }
+.hp .ef-optional { text-transform: none; letter-spacing: 0.02em; }
+
+/* ---------- footer ---------- */
+.hp .foot {
+  background: var(--charcoal); color: var(--stone);
+  border-top: 1px solid rgb(251 248 242 / 0.14);
+  padding: clamp(2.5rem, 5vw, 4rem) clamp(1.25rem, 4vw, 3.5rem) 2rem;
+}
+.hp .foot-wordmark { font-family: 'Instrument Serif', serif; font-size: 1.5rem; color: var(--cream); }
+.hp .foot-lockup {
+  font-size: 0.625rem; font-weight: 600; letter-spacing: 0.22em;
+  text-transform: uppercase; color: var(--gold-bright); margin-top: 0.35rem;
+}
+.hp .foot-cols { margin-top: 2.25rem; display: grid; gap: 1.75rem; font-size: 0.875rem; }
+@media (min-width: 768px) { .hp .foot-cols { grid-template-columns: repeat(3, 1fr); } }
+.hp .foot-head {
+  font-size: 0.6563rem; font-weight: 600; letter-spacing: 0.2em;
+  text-transform: uppercase; color: var(--cream); margin-bottom: 0.6rem;
+}
+.hp .foot-head--spaced { margin-top: 1.5rem; }
+.hp .foot-hours { list-style: none; margin: 0; padding: 0; font-size: 0.8438rem; }
+.hp .foot-hours li {
+  display: flex; justify-content: space-between; gap: 1rem; padding-block: 0.2rem;
+  max-width: 18rem;
+}
+.hp .foot a { color: inherit; text-decoration: none; }
+.hp .foot a:hover { color: var(--gold-bright); }
+.hp .foot-blocked {
+  margin-top: 2.25rem; display: grid; gap: 0.6rem; max-width: 40rem;
+  --blocked-bg: var(--charcoal);
+}
+.hp .foot-fine { margin-top: 2.25rem; font-size: 0.75rem; }

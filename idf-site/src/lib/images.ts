@@ -35,4 +35,5 @@ export const heroImages = {
   v4: 'img/v4-hero-interior',
   v5: 'img/v5-hero-night',
   work: 'img/work-in-progress',
+  logo: 'img/logo',
 } as const;

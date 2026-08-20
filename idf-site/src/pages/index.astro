@@ -20,6 +20,21 @@ const fonts =
       skeleton. Same nine sections in each — only the treatment changes.
     </p>
 
+    <a class="idx-chosen" href="/home/">
+      <span class="idx-chosen-tag">Chosen direction</span>
+      <span class="idx-chosen-name">Homepage — warm light editorial</span>
+      <span class="idx-chosen-blurb">
+        V4's light system carrying V1's monumental hero. Verified figures, why one team,
+        selected projects, how it works, price your project.
+      </span>
+    </a>
+    <a class="idx-chosen idx-chosen--alt" href="/estimate/">
+      <span class="idx-chosen-tag">Page</span>
+      <span class="idx-chosen-name">Request an estimate</span>
+      <span class="idx-chosen-blurb">The primary CTA target, on its own page.</span>
+    </a>
+
+    <p class="idx-eyebrow idx-eyebrow--spaced">The five original directions</p>
     <ol class="idx-list">
       {
         versions.map((v) => (
@@ -73,6 +88,40 @@ const fonts =
     font-size: 0.9375rem;
     line-height: 1.6;
   }
+  .idx-chosen {
+    display: block;
+    margin-top: 2.5rem;
+    padding: 1.5rem 1.75rem;
+    border: 1px solid var(--gold);
+    background: rgb(200 162 74 / 0.07);
+    text-decoration: none;
+    color: inherit;
+  }
+  .idx-chosen:hover { background: rgb(200 162 74 / 0.14); }
+  .idx-chosen--alt { margin-top: 0.75rem; border-color: rgb(246 241 231 / 0.25); background: none; }
+  .idx-chosen-tag {
+    display: block;
+    font-family: ui-monospace, Menlo, monospace;
+    font-size: 0.625rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold-bright);
+  }
+  .idx-chosen-name {
+    display: block;
+    font-family: 'Fraunces', serif;
+    font-size: 1.6rem;
+    margin-top: 0.4rem;
+  }
+  .idx-chosen-blurb {
+    display: block;
+    color: var(--stone);
+    font-size: 0.8125rem;
+    line-height: 1.6;
+    margin-top: 0.4rem;
+    max-width: 56ch;
+  }
+  .idx-eyebrow--spaced { margin-top: 3rem; margin-bottom: 0 !important; }
   .idx-list {
     margin-top: 3.5rem;
     display: grid;
