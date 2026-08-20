@@ -1,14 +1,16 @@
 ---
 /**
- * Variant A — Open Editorial
- * Centred and airy. Instrument Serif over Source Sans 3, generous
- * whitespace, symmetry throughout. The lightest of the three.
+ * Variant B — Editorial Column
+ * Left-aligned and asymmetric. Fraunces over Public Sans, hairline rules
+ * under each heading, numbered pillars as full-width rows. Reads like a
+ * printed feature rather than a brochure.
  *
  * Shares HomeSections with the other variants; only the stylesheet and the
  * type pairing differ, so content cannot drift between them.
  */
 import Base from '../layouts/Base.astro';
 import '../styles/home.css';
+import '../styles/variant-b.css';
 import SiteNav from '../components/SiteNav.astro';
 import PromoBar from '../components/PromoBar.astro';
 import HomeSections from '../components/HomeSections.astro';
@@ -16,17 +18,17 @@ import SiteFooter from '../components/SiteFooter.astro';
 import StickyCallBar from '../components/StickyCallBar.astro';
 import VariantSwitcher from '../components/VariantSwitcher.astro';
 
-const fonts = 'https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Source+Sans+3:wght@400;600&display=swap';
+const fonts = 'https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,600&family=Public+Sans:wght@400;500;600&display=swap';
 ---
 
 <Base
   title="Interior Design Flooring — Custom Homes, Additions & Remodeling in Northern Virginia"
   description="Virginia Class A general contractor, owner-run since 1989. Custom homes, additions and remodeling in Northern Virginia. Written estimate within 24 hours of the site visit."
   fontsHref={fonts}
-  bodyClass="hp va"
+  bodyClass="hp vb"
   withCallbar
 >
-  <VariantSwitcher current="a" />
+  <VariantSwitcher current="b" />
   <PromoBar />
   <SiteNav current="home" />
   <HomeSections />

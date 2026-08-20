@@ -4,8 +4,12 @@ Website for Interior Design Flooring (Sterling, VA), a Virginia Class A general
 contractor, owner-operated since 1989.
 
 The five exploratory directions have been cut. The client chose V4's warm light system
-and asked for V1's monumental hero, so that combination is now the site itself and the
-alternates have been removed rather than carried as dead weight.
+and asked for V1's monumental hero, so that combination is now the site itself.
+
+Three variants of that direction are open for review. All three are the same warm light
+family on the same content — they differ in type pairing, alignment and layout rhythm,
+not in aesthetic. A switcher at top right flips between them; it is review chrome and
+comes out before launch.
 
 ## Running it
 
@@ -22,9 +26,26 @@ Deploy target is Cloudflare Pages.
 
 | Route | Page |
 |---|---|
-| `/` | Home |
+| `/` | Home — variant A, Open Editorial |
+| `/b` | Home — variant B, Editorial Column |
+| `/c` | Home — variant C, Panelled |
 | `/estimate` | Request an estimate — the target of every primary CTA |
 | `/projects` | Projects completed |
+
+### The three variants
+
+| | A — Open Editorial | B — Editorial Column | C — Panelled |
+|---|---|---|---|
+| Display | Instrument Serif | Fraunces | Newsreader |
+| Body | Source Sans 3 | Public Sans | IBM Plex Sans |
+| Alignment | Centred, symmetric | Left, asymmetric | Centred in cards |
+| Pillars | Three equal columns | Full-width numbered rows | Raised cards |
+| Wedge | Centred block | Two-column feature | Raised panel |
+| Process | Ruled list | Ruled list, left | Connected timeline |
+| Character | Lightest and airiest | Reads like print | Easiest to scan |
+
+All three share `HomeSections.astro`, so the markup and content are identical and a copy
+change lands in all three at once. Only the stylesheet and the fonts differ.
 
 Still to build: `/services`, `/about`, `/contact` (with the showroom map) and
 `/service-area`. The header links to on-page anchors wherever a page does not exist yet,
@@ -138,7 +159,7 @@ No other palette values were changed.
 
 ## Typography
 
-Instrument Serif for display, Source Sans 3 for body. Google Fonts only.
+One pairing per variant, all Google Fonts. See the variant table above.
 
 ## Known state
 

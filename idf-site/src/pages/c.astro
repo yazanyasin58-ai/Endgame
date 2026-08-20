@@ -1,14 +1,16 @@
 ---
 /**
- * Variant A — Open Editorial
- * Centred and airy. Instrument Serif over Source Sans 3, generous
- * whitespace, symmetry throughout. The lightest of the three.
+ * Variant C — Panelled
+ * Structured cards on cream. Newsreader over IBM Plex Sans, bordered
+ * panels with soft shadow, the process drawn as a connected timeline.
+ * The most product-like and the easiest to scan.
  *
  * Shares HomeSections with the other variants; only the stylesheet and the
  * type pairing differ, so content cannot drift between them.
  */
 import Base from '../layouts/Base.astro';
 import '../styles/home.css';
+import '../styles/variant-c.css';
 import SiteNav from '../components/SiteNav.astro';
 import PromoBar from '../components/PromoBar.astro';
 import HomeSections from '../components/HomeSections.astro';
@@ -16,17 +18,17 @@ import SiteFooter from '../components/SiteFooter.astro';
 import StickyCallBar from '../components/StickyCallBar.astro';
 import VariantSwitcher from '../components/VariantSwitcher.astro';
 
-const fonts = 'https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Source+Sans+3:wght@400;600&display=swap';
+const fonts = 'https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;1,6..72,300&family=IBM+Plex+Sans:wght@400;500;600&display=swap';
 ---
 
 <Base
   title="Interior Design Flooring — Custom Homes, Additions & Remodeling in Northern Virginia"
   description="Virginia Class A general contractor, owner-run since 1989. Custom homes, additions and remodeling in Northern Virginia. Written estimate within 24 hours of the site visit."
   fontsHref={fonts}
-  bodyClass="hp va"
+  bodyClass="hp vc"
   withCallbar
 >
-  <VariantSwitcher current="a" />
+  <VariantSwitcher current="c" />
   <PromoBar />
   <SiteNav current="home" />
   <HomeSections />

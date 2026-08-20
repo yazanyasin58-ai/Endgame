@@ -1,0 +1,107 @@
+/* ---------------------------------------------------------------
+   Variant B — Editorial Column
+   Left-aligned, asymmetric, hairline-ruled. Fraunces / Public Sans.
+   Same warm light ground as A; the difference is rhythm and alignment.
+   --------------------------------------------------------------- */
+.vb { font-family: 'Public Sans', sans-serif; font-size: 0.9688rem; }
+.vb .hp-italic,
+.vb .logo-name,
+.vb .foot-wordmark { font-family: 'Fraunces', serif; }
+
+/* headings sit left with a rule beneath, not centred */
+.vb .hp-h2 {
+  font-family: 'Fraunces', serif;
+  font-weight: 300;
+  text-align: left;
+  font-size: clamp(2rem, 4.6vw, 3.4rem);
+  letter-spacing: -0.015em;
+  padding-bottom: 0.9rem;
+  border-bottom: 1px solid var(--rule);
+}
+.vb .hp-sub { text-align: left; margin-top: 1rem; max-width: 46ch; }
+
+/* hero type larger and tighter */
+.vb .hp-h1 {
+  font-family: 'Fraunces', serif;
+  font-weight: 300;
+  font-size: clamp(2.6rem, 7vw, 6rem);
+  letter-spacing: -0.02em;
+  max-width: 16ch;
+}
+.vb .hp-eyebrow { letter-spacing: 0.3em; }
+
+/* figures become a ruled row rather than four centred blocks */
+.vb .hp-figures { text-align: left; gap: 0; }
+.vb .hp-figure {
+  padding: 1.25rem 1.5rem;
+  border-left: 1px solid var(--rule);
+}
+.vb .hp-figure:first-child { border-left: 0; padding-left: 0; }
+.vb .hp-figure-value { font-family: 'Fraunces', serif; font-weight: 300; }
+
+/* pillars as full-width numbered rows */
+.vb .hp-pillars { grid-template-columns: 1fr; gap: 0; margin-top: 2.5rem; max-width: none; }
+.vb .hp-pillar {
+  display: grid;
+  grid-template-columns: 4rem 1fr;
+  gap: 0.4rem 1.5rem;
+  text-align: left;
+  border-top: 1px solid var(--rule);
+  padding: 2rem 0;
+}
+@media (min-width: 820px) {
+  .vb .hp-pillar { grid-template-columns: 4rem 18rem 1fr auto; align-items: baseline; }
+}
+.vb .hp-pillar-num {
+  display: block;
+  font-family: 'Fraunces', serif;
+  font-weight: 300;
+  font-size: 1.1rem;
+  color: var(--gold);
+}
+.vb .hp-pillar-title {
+  font-family: 'Fraunces', serif;
+  font-weight: 300;
+  font-size: clamp(1.75rem, 3.4vw, 2.5rem);
+  text-transform: none;
+}
+.vb .hp-pillar-list { margin-top: 0; grid-column: 2; }
+@media (min-width: 820px) { .vb .hp-pillar-list { grid-column: 3; } }
+.vb .hp-pillar-link { grid-column: 2; margin-top: 0.9rem; }
+@media (min-width: 820px) { .vb .hp-pillar-link { grid-column: 4; margin-top: 0; } }
+
+/* the wedge runs as a two-column feature, not a centred block */
+.vb .hp-wedge { text-align: left; }
+.vb .hp-wedge-tagline {
+  font-size: clamp(1.7rem, 4.4vw, 3.2rem);
+  margin: 2rem 0 0;
+  max-width: 22ch;
+  color: var(--ink);
+}
+.vb .hp-wedge-copy { max-width: none; margin-top: 2.5rem; }
+@media (min-width: 860px) {
+  .vb .hp-wedge-copy { columns: 2; column-gap: 3rem; }
+  .vb .hp-wedge-heading { column-span: all; }
+}
+.vb .hp-wedge-copy p { break-inside: avoid; }
+
+/* projects: first card runs wide */
+@media (min-width: 900px) {
+  .vb .hp-projects { grid-template-columns: 1.6fr 1fr 1fr; }
+}
+.vb .hp-project figcaption {
+  font-family: 'Fraunces', serif; text-align: left; font-size: 1.1rem;
+}
+
+/* reviews as ruled columns */
+.vb .hp-reviews { margin-inline: 0; }
+.vb .hp-review { padding-top: 0; border-top: 1px solid var(--rule); padding-block: 1.75rem 0; }
+.vb .hp-review-mark { display: none; }
+.vb .hp-review-quote { font-size: clamp(1.05rem, 1.9vw, 1.25rem); }
+
+/* steps left-aligned, full width */
+.vb .hp-steps { margin-inline: 0; max-width: 46rem; }
+.vb .hp-step-num { font-family: 'Fraunces', serif; }
+
+.vb .hp-final-heading { font-family: 'Fraunces', serif; font-weight: 300; }
+.vb .hp-textlink { text-align: left; }
