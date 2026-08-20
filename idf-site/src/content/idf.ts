@@ -173,11 +173,3 @@ export const promo = {
 export const blocked = {
   serviceArea: 'SERVICE AREA LIST — BLOCKED PENDING CLIENT CONFIRMATION',
 } as const;
-
-export const versions = [
-  { id: 'v1', path: '/v1/', label: 'Monumental Dusk', blurb: 'Architectural editorial — oversized wordmark on a near-black ground, one warm accent.' },
-  { id: 'v2', path: '/v2/', label: 'Spec Sheet', blurb: 'Swiss and objective — clipped grotesque wordmark, tabular figures doing the persuading.' },
-  { id: 'v3', path: '/v3/', label: 'Plan & Elevation', blurb: 'Split screen — one photograph sells on the left, a working technical panel captures the lead on the right.' },
-  { id: 'v4', path: '/v4/', label: 'Warm Cream Editorial', blurb: 'Warm and generous — cream ground, serif display, a single gold action.' },
-  { id: 'v5', path: '/v5/', label: 'Field Grid', blurb: 'Dark ground — the work as a tiled grid, three cells swapped for the service pillars.' },
-] as const;

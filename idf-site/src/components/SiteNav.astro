@@ -1,0 +1,72 @@
+---
+/**
+ * Site header.
+ *
+ * The dropdown at top right holds the standalone pages, so the estimate
+ * request and the completed-projects portfolio are reachable from anywhere.
+ * Built on <details>/<summary> so it opens, closes and takes keyboard focus
+ * without any JavaScript; the small script below only adds the conveniences
+ * a native disclosure lacks — closing on Escape or an outside click.
+ */
+import Logo from './Logo.astro';
+import { business } from '../content/idf';
+
+interface Props {
+  /** Marks the current page so the nav can indicate location. */
+  current?: 'home' | 'estimate' | 'projects';
+}
+
+const { current } = Astro.props;
+---
+
+<header class="hp-nav">
+  <Logo class="hp-logo" />
+
+  <nav class="hp-nav-links" aria-label="Main">
+    <a href="/" aria-current={current === 'home' ? 'page' : undefined}>Home</a>
+    <a href="/#what-we-build">Services</a>
+    <a href="/#why-one-team">Why one team</a>
+
+    <details class="hp-menu">
+      <summary aria-label="More pages">
+        Pages
+        <svg viewBox="0 0 12 8" aria-hidden="true"><path d="M1 1.5 6 6.5l5-5" fill="none" stroke="currentColor" stroke-width="1.6" /></svg>
+      </summary>
+      <div class="hp-menu-panel">
+        <a href="/estimate/" aria-current={current === 'estimate' ? 'page' : undefined}>
+          <strong>Request an Estimate</strong>
+          <span>Site visit, then a written estimate in 24 hours</span>
+        </a>
+        <a href="/projects/" aria-current={current === 'projects' ? 'page' : undefined}>
+          <strong>Projects Completed</strong>
+          <span>Work we have finished</span>
+        </a>
+        <hr />
+        <a href="/#how-it-works">How it works</a>
+        <a href="/#estimate">Contact</a>
+      </div>
+    </details>
+  </nav>
+
+  <div class="hp-nav-actions">
+    <a class="hp-nav-phone" href={business.phonePrimaryHref}>{business.phonePrimary}</a>
+    <a class="hp-btn hp-btn--sm" href="/estimate/">Free Estimate</a>
+  </div>
+</header>
+
+<script>
+  // Native <details> handles open/close and keyboard on its own. This adds
+  // only what it lacks: dismissal on Escape or a click elsewhere.
+  const menu = document.querySelector('.hp-menu');
+  if (menu instanceof HTMLDetailsElement) {
+    document.addEventListener('click', (e) => {
+      if (menu.open && !menu.contains(e.target as Node)) menu.open = false;
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && menu.open) {
+        menu.open = false;
+        menu.querySelector('summary')?.focus();
+      }
+    });
+  }
+</script>

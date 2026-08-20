@@ -1,11 +1,11 @@
-# Interior Design Flooring — homepage design directions
+# Interior Design Flooring
 
-Phase-one design exploration for Interior Design Flooring (Sterling, VA), a Virginia
-Class A general contractor, owner-operated since 1989.
+Website for Interior Design Flooring (Sterling, VA), a Virginia Class A general
+contractor, owner-operated since 1989.
 
-**Scope: homepage only, five times.** The six-page sitemap in the build brief comes after
-a direction is chosen. `/services`, `/projects`, `/about`, `/contact`, and `/service-area`
-are deliberately not built yet.
+The five exploratory directions have been cut. The client chose V4's warm light system
+and asked for V1's monumental hero, so that combination is now the site itself and the
+alternates have been removed rather than carried as dead weight.
 
 ## Running it
 
@@ -20,17 +20,19 @@ Deploy target is Cloudflare Pages.
 
 ## Routes
 
-| Route | Direction | Character |
-|---|---|---|
-| `/` | Index | Links to all five with a one-line description |
-| `/v1` | Monumental Dusk | Architectural editorial; oversized wordmark on near-black |
-| `/v2` | Spec Sheet | Swiss and objective; tabular figures do the persuading |
-| `/v3` | Plan & Elevation | Split screen; lead capture lives inside the hero |
-| `/v4` | Warm Cream Editorial | Cream ground, serif display, one gold action |
-| `/v5` | Field Grid | Dark ground; work as a tiled grid, three cells are pillar cards |
+| Route | Page |
+|---|---|
+| `/` | Home |
+| `/estimate` | Request an estimate — the target of every primary CTA |
+| `/projects` | Projects completed |
 
-A sticky version switcher sits on every page so the five can be flipped between on one
-screen. It is review chrome, not part of any design, and comes out before launch.
+Still to build: `/services`, `/about`, `/contact` (with the showroom map) and
+`/service-area`. The header links to on-page anchors wherever a page does not exist yet,
+so nothing 404s.
+
+The header carries a dropdown at top right holding the standalone pages, built on
+`<details>`/`<summary>` so it opens, closes and takes keyboard focus without JavaScript.
+A small script adds only dismissal on Escape or an outside click.
 
 ## Content integrity
 
@@ -42,18 +44,26 @@ or customer quotes beyond what the build brief supplies.
 Only two of the four approved reviews appear on the homepage, per the brief. High Quality
 Motors leads on every version.
 
-### Deliberately blocked
+### Confirmed since the brief
 
-Three things are visibly marked as blocked rather than softened and published:
+- **Hours** are published, from the owner's Google Business Profile: Mon–Fri 10:00–7:30,
+  Sat 10:00–6:00, Sun 11:00–4:00. These are a third variant, differing from both the
+  intake form and the figures quoted in the brief, and must stay in step with the live
+  Google profile for NAP consistency.
+- **Instagram** is the only social account.
+- **Figures** are limited to what can be verified: established 1989, 4.7 Google rating,
+  24-hour estimate turnaround, Class A licence. No project counts or customer totals.
+- **The first-project offer** runs as a dismissible bar, not an entry overlay, because
+  intrusive interstitials are demoted on mobile. Its terms — cap, eligible work, expiry —
+  are still undefined, so the page states none.
 
-- **Business hours** — the intake form and the Google Business Profile disagree.
+### Still blocked
+
 - **Service-area geography** — the intake form says DC/VA/MD; the client's own marketing
-  says "Serving Northern Virginia."
+  says "Serving Northern Virginia." Renders as a `Blocked` slot in the footer.
 - **Real estate services** — omitted entirely pending Virginia license verification.
   Advertising brokerage services without a license is a regulatory violation, so this is
   an omission rather than a blocked slot.
-
-The first two render as `Blocked` slots in the footer of every version.
 
 ### Imagery
 
@@ -85,12 +95,13 @@ picked up, best format first. Drop a file into `public/img/` using one of these 
 
 | Base name in `public/img/` | Slot |
 |---|---|
-| `v1-hero-dusk` | v1 hero, 16:9 |
-| `v2-hero-day` | v2 hero, 16:9 |
-| `v3-hero-vertical` | v3 hero, 3:4 |
-| `v4-hero-interior` | v4 hero, 16:9 — upper two thirds must stay quiet, the headline sits on it |
-| `v5-hero-night` | v5 hero, 16:9 |
-| `work-in-progress` | v5 tile grid, centre cell, 4:3 |
+| `v1-hero-dusk` | Homepage hero, 16:9 |
+| `v4-hero-interior` | Homepage hero fallback, 16:9 |
+| `work-in-progress` | Selected projects, second card, 4:3 |
+| `logo` | Header lockup — replaces the text wordmark when present |
+
+The `v`-prefixed names are kept from the exploration phase so files already downloaded
+under those names keep working.
 
 Slots carrying a comp photograph keep a discreet corner marker. That marker comes off only
 when the owner's real project photography replaces the comps.
@@ -127,13 +138,7 @@ No other palette values were changed.
 
 ## Typography
 
-Each version has its own pairing so they do not converge. Google Fonts only.
-
-- v1 Fraunces + Public Sans
-- v2 Anton + IBM Plex Sans (tabular figures in the spec row)
-- v3 Space Grotesk + JetBrains Mono
-- v4 Instrument Serif + Source Sans 3
-- v5 Bricolage Grotesque + Space Mono
+Instrument Serif for display, Source Sans 3 for body. Google Fonts only.
 
 ## Known state
 

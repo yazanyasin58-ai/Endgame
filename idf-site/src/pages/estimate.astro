@@ -8,7 +8,7 @@ import '../styles/home.css';
 import StickyCallBar from '../components/StickyCallBar.astro';
 import EstimateForm from '../components/EstimateForm.astro';
 import SiteFooter from '../components/SiteFooter.astro';
-import Logo from '../components/Logo.astro';
+import SiteNav from '../components/SiteNav.astro';
 import { business, processSteps, trustBar, promo } from '../content/idf';
 
 const fonts =
@@ -22,13 +22,7 @@ const fonts =
   bodyClass="hp"
   withCallbar
 >
-  <header class="hp-nav">
-    <Logo class="hp-logo" />
-    <div class="hp-nav-actions">
-      <a class="hp-nav-phone" href={business.phonePrimaryHref}>{business.phonePrimary}</a>
-      <a class="hp-btn hp-btn--sm" href={business.phonePrimarySms}>Text us</a>
-    </div>
-  </header>
+  <SiteNav current="estimate" />
 
   <main>
     <section class="hp-est">

@@ -1,183 +1,212 @@
 ---
+/**
+ * The chosen direction — consolidated homepage.
+ *
+ * V4's warm light system (the client's stated preference) carrying V1's
+ * monumental hero photograph. Light throughout: charcoal appears only in the
+ * closing CTA band. Section names follow the client's own vocabulary —
+ * "Why one team", "Selected projects", "How it works", "Price your project".
+ */
 import Base from '../layouts/Base.astro';
-import { business, versions } from '../content/idf';
+import '../styles/home.css';
+import Placeholder from '../components/Placeholder.astro';
+import StickyCallBar from '../components/StickyCallBar.astro';
+import EstimateForm from '../components/EstimateForm.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import PromoBar from '../components/PromoBar.astro';
+import SiteNav from '../components/SiteNav.astro';
+import SocialLinks from '../components/SocialLinks.astro';
+import {
+  business,
+  trustBar,
+  pillars,
+  wedge,
+  projects,
+  homepageReviews,
+  processSteps,
+  figures,
+  cta,
+} from '../content/idf';
+import { optionalImage, heroImages } from '../lib/images';
 
 const fonts =
-  'https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400&family=Public+Sans:wght@400;500;600&display=swap';
+  'https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Source+Sans+3:wght@400;600&display=swap';
+
+const heroSrc = optionalImage(heroImages.hero) ?? optionalImage(heroImages.heroAlt);
 ---
 
 <Base
-  title="Interior Design Flooring — Homepage Design Directions"
-  description="Five homepage design directions for Interior Design Flooring, Sterling VA — internal design review index."
+  title="Interior Design Flooring — Custom Homes, Additions & Remodeling in Northern Virginia"
+  description="Virginia Class A general contractor, owner-run since 1989. Custom homes, additions and remodeling in Northern Virginia. Written estimate within 24 hours of the site visit."
   fontsHref={fonts}
-  bodyClass="idx"
+  bodyClass="hp"
+  withCallbar
 >
-  <main class="mx-auto max-w-3xl px-6 py-16 md:py-24">
-    <p class="idx-eyebrow">Design review — homepage only, phase one</p>
-    <h1 class="idx-title">{business.name}</h1>
-    <p class="idx-sub">
-      {business.lockup} · Sterling, Virginia · Five homepage directions, one approved content
-      skeleton. Same nine sections in each — only the treatment changes.
-    </p>
+  <PromoBar />
 
-    <a class="idx-chosen" href="/home/">
-      <span class="idx-chosen-tag">Chosen direction</span>
-      <span class="idx-chosen-name">Homepage — warm light editorial</span>
-      <span class="idx-chosen-blurb">
-        V4's light system carrying V1's monumental hero. Verified figures, why one team,
-        selected projects, how it works, price your project.
-      </span>
-    </a>
-    <a class="idx-chosen idx-chosen--alt" href="/estimate/">
-      <span class="idx-chosen-tag">Page</span>
-      <span class="idx-chosen-name">Request an estimate</span>
-      <span class="idx-chosen-blurb">The primary CTA target, on its own page.</span>
-    </a>
+  <SiteNav current="home" />
 
-    <p class="idx-eyebrow idx-eyebrow--spaced">The five original directions</p>
-    <ol class="idx-list">
-      {
-        versions.map((v) => (
-          <li>
-            <a class="idx-card" href={v.path}>
-              <span class="idx-num">{v.id.toUpperCase()}</span>
-              <span class="idx-body">
-                <span class="idx-name">{v.label}</span>
-                <span class="idx-blurb">{v.blurb}</span>
-              </span>
-              <span class="idx-arrow" aria-hidden="true">&rarr;</span>
-            </a>
-          </li>
-        ))
-      }
-    </ol>
+  <main>
+    <!-- HERO — one monumental photograph, headline in its quiet upper field -->
+    <section class="hp-hero" aria-label="Introduction">
+      <div class="hp-hero-frame">
+        <Placeholder
+          ratio="16 / 9"
+          label="Comp — hero · custom home · 16:9 · 2400px"
+          scene="exterior-dusk"
+          src={heroSrc}
+          alt="A custom home built by Interior Design Flooring"
+          class="hp-ph hp-hero-ph ph--label-tr"
+        />
+        <div class="hp-hero-copy">
+          <p class="hp-eyebrow">
+            Class A Contractor &middot; Since 1989 &middot; Northern Virginia
+          </p>
+          <h1 class="hp-h1">A home built the way you asked for it.</h1>
+          <p class="hp-hero-italic">Custom homes, additions &amp; remodeling</p>
+          <div class="hp-hero-actions">
+            <a class="hp-btn" href="/estimate/">{cta.primary}</a>
+            <a class="hp-call" href={business.phonePrimaryHref}>or call {business.phonePrimary}</a>
+          </div>
+        </div>
+      </div>
+    </section>
 
-    <p class="idx-note">
-      All imagery slots are labelled CSS placeholders — real project photography arrives in a later
-      phase. Hours and the service-area list are blocked pending client confirmation and are marked
-      as such on every version.
-    </p>
+    <!-- TRUST BAR -->
+    <section class="hp-trust" aria-label="Credentials">
+      <ul>
+        {trustBar.map((item) => <li>{item}</li>)}
+      </ul>
+    </section>
+
+    <!-- THE FIGURES — every one verifiable -->
+    <section class="hp-section hp-figures-wrap" aria-labelledby="hp-figures-h">
+      <h2 id="hp-figures-h" class="hp-visually-hidden">By the numbers</h2>
+      <div class="hp-figures">
+        {
+          figures.map((f) => (
+            <div class="hp-figure">
+              <span class="hp-figure-value">{f.value}</span>
+              <span class="hp-figure-label">{f.label}</span>
+              <span class="hp-figure-note">{f.note}</span>
+            </div>
+          ))
+        }
+      </div>
+    </section>
+
+    <!-- WHAT WE BUILD -->
+    <section class="hp-section" id="what-we-build" aria-labelledby="hp-pillars-h">
+      <h2 id="hp-pillars-h" class="hp-h2">What we build</h2>
+      <p class="hp-sub hp-italic">Three ways to start, one team throughout.</p>
+      <div class="hp-pillars">
+        {
+          pillars.map((p) => (
+            <article class="hp-pillar">
+              <h3 class="hp-pillar-title">{p.title.charAt(0) + p.title.slice(1).toLowerCase()}</h3>
+              <ul class="hp-pillar-list">
+                {p.services.map((s) => (
+                  <li>{s}</li>
+                ))}
+              </ul>
+              <a class="hp-pillar-link" href="/estimate/">Start an estimate</a>
+            </article>
+          ))
+        }
+      </div>
+    </section>
+
+    <!-- WHY ONE TEAM — the client's own section name -->
+    <section class="hp-section hp-wedge" id="why-one-team" aria-labelledby="hp-wedge-h">
+      <h2 id="hp-wedge-h" class="hp-h2">Why one team</h2>
+      <p class="hp-wedge-tagline hp-italic">&ldquo;{wedge.tagline}&rdquo;</p>
+      <div class="hp-wedge-copy">
+        <h3 class="hp-wedge-heading">{wedge.heading}</h3>
+        {wedge.body.map((para) => <p>{para}</p>)}
+      </div>
+    </section>
+
+    <!-- SELECTED PROJECTS -->
+    <section class="hp-section" id="selected-projects" aria-labelledby="hp-projects-h">
+      <h2 id="hp-projects-h" class="hp-h2">Selected projects</h2>
+      <p class="hp-sub hp-italic">Real work, photographed as it was finished.</p>
+      <div class="hp-projects">
+        {
+          projects.map((proj, i) => (
+            <figure class="hp-project">
+              <Placeholder
+                ratio="4 / 3"
+                label={i === 1 ? 'Comp — work in progress · 4:3' : 'Placeholder — project card · 4:3'}
+                src={i === 1 ? optionalImage(heroImages.work) : undefined}
+                alt={i === 1 ? 'A home addition under construction, new framing against the existing house' : ''}
+                class="hp-ph"
+              />
+              <figcaption>
+                {proj.named ? proj.name : <span class="hp-muted">Third project — list in progress</span>}
+              </figcaption>
+            </figure>
+          ))
+        }
+      </div>
+      <a class="hp-textlink" href="/estimate/">Ask about a project like yours</a>
+    </section>
+
+    <!-- REVIEWS -->
+    <section class="hp-section hp-reviews-wrap" aria-labelledby="hp-reviews-h">
+      <h2 id="hp-reviews-h" class="hp-h2">What clients say</h2>
+      <div class="hp-reviews">
+        {
+          homepageReviews.map((r) => (
+            <blockquote class="hp-review">
+              <span class="hp-review-mark" aria-hidden="true">&ldquo;</span>
+              <p class="hp-review-quote hp-italic">{r.quote}</p>
+              <footer>
+                <cite>{r.name}</cite>
+                <span class="hp-review-context">{r.context}</span>
+              </footer>
+            </blockquote>
+          ))
+        }
+      </div>
+    </section>
+
+    <!-- HOW IT WORKS -->
+    <section class="hp-section" id="how-it-works" aria-labelledby="hp-process-h">
+      <h2 id="hp-process-h" class="hp-h2">How it works</h2>
+      <p class="hp-sub hp-italic">Five steps, one of them unusually fast.</p>
+      <ol class="hp-steps">
+        {
+          processSteps.map((step) => (
+            <li class:list={['hp-step', { 'hp-step--featured': 'featured' in step && step.featured }]}>
+              <span class="hp-step-num">{step.number}</span>
+              <div>
+                <h3 class="hp-step-title">{step.title}</h3>
+                <p class="hp-step-detail">{step.detail}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+    </section>
+
+    <!-- PRICE YOUR PROJECT — the only charcoal band -->
+    <section class="hp-final" id="estimate" aria-labelledby="hp-final-h">
+      <div class="hp-final-inner">
+        <div class="hp-final-intro">
+          <h2 id="hp-final-h" class="hp-final-heading">Price your project this week.</h2>
+          <p class="hp-final-sub hp-italic">
+            A site visit first, then a written estimate within 24 hours.
+          </p>
+          <a class="hp-call hp-call--light" href={business.phonePrimaryHref}>
+            Prefer to talk? {business.phonePrimary}
+          </a>
+          <SocialLinks class="hp-final-social" />
+        </div>
+        <EstimateForm idPrefix="hp" />
+      </div>
+    </section>
   </main>
-</Base>
 
-<style is:global>
-  .idx {
-    background: var(--ink);
-    color: var(--cream);
-    font-family: 'Public Sans', sans-serif;
-  }
-  .idx-eyebrow {
-    font-family: ui-monospace, Menlo, monospace;
-    font-size: 0.6875rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--gold-bright);
-    margin-bottom: 1.5rem;
-  }
-  .idx-title {
-    font-family: 'Fraunces', serif;
-    font-weight: 300;
-    font-size: clamp(2.5rem, 7vw, 4.5rem);
-    line-height: 1.02;
-    letter-spacing: -0.01em;
-  }
-  .idx-sub {
-    color: var(--stone);
-    max-width: 46ch;
-    margin-top: 1.25rem;
-    font-size: 0.9375rem;
-    line-height: 1.6;
-  }
-  .idx-chosen {
-    display: block;
-    margin-top: 2.5rem;
-    padding: 1.5rem 1.75rem;
-    border: 1px solid var(--gold);
-    background: rgb(200 162 74 / 0.07);
-    text-decoration: none;
-    color: inherit;
-  }
-  .idx-chosen:hover { background: rgb(200 162 74 / 0.14); }
-  .idx-chosen--alt { margin-top: 0.75rem; border-color: rgb(246 241 231 / 0.25); background: none; }
-  .idx-chosen-tag {
-    display: block;
-    font-family: ui-monospace, Menlo, monospace;
-    font-size: 0.625rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--gold-bright);
-  }
-  .idx-chosen-name {
-    display: block;
-    font-family: 'Fraunces', serif;
-    font-size: 1.6rem;
-    margin-top: 0.4rem;
-  }
-  .idx-chosen-blurb {
-    display: block;
-    color: var(--stone);
-    font-size: 0.8125rem;
-    line-height: 1.6;
-    margin-top: 0.4rem;
-    max-width: 56ch;
-  }
-  .idx-eyebrow--spaced { margin-top: 3rem; margin-bottom: 0 !important; }
-  .idx-list {
-    margin-top: 3.5rem;
-    display: grid;
-    gap: 1px;
-    background: rgb(246 241 231 / 0.16);
-    border-block: 1px solid rgb(246 241 231 / 0.16);
-  }
-  .idx-card {
-    display: flex;
-    align-items: baseline;
-    gap: 1.5rem;
-    padding: 1.5rem 0.5rem;
-    background: var(--ink);
-    text-decoration: none;
-    color: inherit;
-    transition: background 0.15s ease;
-  }
-  .idx-card:hover {
-    background: var(--charcoal);
-  }
-  .idx-num {
-    font-family: ui-monospace, Menlo, monospace;
-    font-size: 0.75rem;
-    color: var(--gold-bright);
-    flex: none;
-    width: 2.25rem;
-  }
-  .idx-body {
-    display: block;
-    flex: 1;
-  }
-  .idx-name {
-    display: block;
-    font-family: 'Fraunces', serif;
-    font-size: 1.5rem;
-    font-weight: 400;
-  }
-  .idx-blurb {
-    display: block;
-    color: var(--stone);
-    font-size: 0.8125rem;
-    line-height: 1.5;
-    margin-top: 0.35rem;
-    max-width: 52ch;
-  }
-  .idx-arrow {
-    color: var(--gold);
-  }
-  .idx-note {
-    margin-top: 3rem;
-    font-family: ui-monospace, Menlo, monospace;
-    font-size: 0.6875rem;
-    line-height: 1.7;
-    letter-spacing: 0.04em;
-    color: var(--stone);
-    border: 1px dashed rgb(169 162 150 / 0.5);
-    padding: 1rem 1.25rem;
-  }
-</style>
+  <SiteFooter />
+  <StickyCallBar />
+</Base>

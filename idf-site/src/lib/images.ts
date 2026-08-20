@@ -24,16 +24,18 @@ export function optionalImage(baseName: string): string | undefined {
 }
 
 /**
- * Slots the homepage directions expect, as base names without extension.
- * Drop a file into /public/img/ using one of these names in any supported
- * format and the slot picks it up on the next build.
+ * Image slots, as base names without extension. Drop a file into
+ * /public/img/ using one of these names in any supported format and the slot
+ * picks it up on the next build.
+ *
+ * The v-prefixed names are kept from the exploration phase so files already
+ * downloaded under those names keep working; only the hero, its alternate,
+ * the work-in-progress shot and the logo are still referenced.
  */
 export const heroImages = {
-  v1: 'img/v1-hero-dusk',
-  v2: 'img/v2-hero-day',
-  v3: 'img/v3-hero-vertical',
-  v4: 'img/v4-hero-interior',
-  v5: 'img/v5-hero-night',
+  /** Homepage hero. Falls back to the interior frame if this is absent. */
+  hero: 'img/v1-hero-dusk',
+  heroAlt: 'img/v4-hero-interior',
   work: 'img/work-in-progress',
   logo: 'img/logo',
 } as const;
