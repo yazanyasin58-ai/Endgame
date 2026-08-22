@@ -1,15 +1,11 @@
 # Interior Design Flooring
 
 Website for Interior Design Flooring (Sterling, VA), a Virginia Class A general
-contractor, owner-operated since 1989.
+contractor, owner-operated since 1989 by Shawn and Nancy Waziri.
 
-The five exploratory directions have been cut. The client chose V4's warm light system
-and asked for V1's monumental hero, so that combination is now the site itself.
-
-Three variants of that direction are open for review. All three are the same warm light
-family on the same content — they differ in type pairing, alignment and layout rhythm,
-not in aesthetic. A switcher at top right flips between them; it is review chrome and
-comes out before launch.
+The five exploratory directions and the three variants that followed have all been cut.
+The owner chose V4's warm light system with V1's monumental hero, then variant B —
+Editorial Column — of that direction. That combination is now the site itself, at `/`.
 
 ## Running it
 
@@ -19,58 +15,63 @@ npm run dev      # http://localhost:4321
 npm run build    # static output to dist/
 ```
 
-Astro 5 + Tailwind CSS 4, static output, no client-side JavaScript on any page.
-Deploy target is Cloudflare Pages.
+Astro 5 + Tailwind CSS 4, static output, deploy target Cloudflare Pages. No client-side
+JavaScript beyond two inline scripts: dismissing the promo bar, and closing the nav
+dropdown on Escape or an outside click.
 
 ## Routes
 
 | Route | Page |
 |---|---|
-| `/` | Home — variant A, Open Editorial |
-| `/b` | Home — variant B, Editorial Column |
-| `/c` | Home — variant C, Panelled |
-| `/estimate` | Request an estimate — the target of every primary CTA |
-| `/projects` | Projects completed |
+| `/` | Home |
+| `/about/` | About — the owners, the history, how the company works |
+| `/services/` | Services — remodeling, interior/exterior, commercial, restoration, permits |
+| `/custom-homes/` | Custom homes — what we build and the five-stage process |
+| `/projects/` | Projects completed |
+| `/real-estate/` | **Gated off.** Renders a blocked notice only. See below. |
+| `/investors/` | Investor programme |
+| `/financing/` | Financing — routes to the lender, no application on this site |
+| `/contact/` | Contact — showroom, hours, phone, intake form |
+| `/estimate/` | Request an estimate — the target of every primary CTA |
 
-### The three variants
+The nine main-menu items live in `nav` in `src/content/idf.ts`. The header shows the full
+row at 1280px and above and collapses to a `<details>` dropdown below that, so it opens,
+closes and takes keyboard focus without JavaScript.
 
-| | A — Open Editorial | B — Editorial Column | C — Panelled |
-|---|---|---|---|
-| Display | Instrument Serif | Fraunces | Newsreader |
-| Body | Source Sans 3 | Public Sans | IBM Plex Sans |
-| Alignment | Centred, symmetric | Left, asymmetric | Centred in cards |
-| Pillars | Three equal columns | Full-width numbered rows | Raised cards |
-| Wedge | Centred block | Two-column feature | Raised panel |
-| Process | Ruled list | Ruled list, left | Connected timeline |
-| Character | Lightest and airiest | Reads like print | Easiest to scan |
+Non-home pages share `src/layouts/Page.astro`; the homepage body is
+`src/components/HomeSections.astro`.
 
-All three share `HomeSections.astro`, so the markup and content are identical and a copy
-change lands in all three at once. Only the stylesheet and the fonts differ.
+## Feature gates
 
-Still to build: `/services`, `/about`, `/contact` (with the showroom map) and
-`/service-area`. The header links to on-page anchors wherever a page does not exist yet,
-so nothing 404s.
+`features` in `src/content/idf.ts` controls content that cannot be published yet. A gated
+item is **absent from the build output**, not hidden with CSS, and is filtered out of the
+navigation. A comment in a file is not a strong enough safeguard against copy shipping by
+accident.
 
-The header carries a dropdown at top right holding the standalone pages, built on
-`<details>`/`<summary>` so it opens, closes and takes keyboard focus without JavaScript.
-A small script adds only dismissal on Escape or an outside click.
+| Gate | State | Why |
+|---|---|---|
+| `realEstate` | off | Virginia requires the *advertising entity* to hold a real estate **firm** licence. Agents licensed under another brokerage is not sufficient, and ads must carry the licensed brokerage name. Needs the firm licence number. The proposed renovation discount for clients who use the in-house realtor needs separate review — a thing of value for referring settlement-service business engages federal affiliated-business-arrangement rules. |
+| `financeApplication` | off | A pre-approval form collects income and identity data. That belongs on the lender's own secured portal, not on a static site with no backend. The Financing page links out instead. |
+
+Do not open either gate on a verbal assurance. `realEstate` needs the firm licence number
+and, for the discount, a real estate attorney's sign-off. `financeApplication` stays off
+permanently — when the lender is named it becomes an outbound link, not a hosted form.
 
 ## Content integrity
 
 All approved facts, services, reviews, and process steps live in `src/content/idf.ts`.
-Every version imports from it, so no direction can drift from approved text. Nothing on
-any page is invented: no statistics, project counts, awards, certifications, team members,
-or customer quotes beyond what the build brief supplies.
+Every page imports from it, so no page can drift from approved text. Nothing on any page
+is invented: no statistics, project counts, awards, certifications, team members, or
+customer quotes beyond what the build brief supplies.
 
 Only two of the four approved reviews appear on the homepage, per the brief. High Quality
-Motors leads on every version.
+Motors leads.
 
 ### Confirmed since the brief
 
-- **Hours** are published, from the owner's Google Business Profile: Mon–Fri 10:00–7:30,
-  Sat 10:00–6:00, Sun 11:00–4:00. These are a third variant, differing from both the
-  intake form and the figures quoted in the brief, and must stay in step with the live
-  Google profile for NAP consistency.
+- **Hours**, from the owner's Google Business Profile: Mon–Fri 10:00–7:30, Sat 10:00–6:00,
+  Sun 11:00–4:00. These differ from both the intake form and the figures quoted in the
+  brief, and must stay in step with the live Google profile for NAP consistency.
 - **Instagram** is the only social account.
 - **Figures** are limited to what can be verified: established 1989, 4.7 Google rating,
   24-hour estimate turnaround, Class A licence. No project counts or customer totals.
@@ -81,12 +82,21 @@ Motors leads on every version.
 ### Still blocked
 
 - **Service-area geography** — the intake form says DC/VA/MD; the client's own marketing
-  says "Serving Northern Virginia." Renders as a `Blocked` slot in the footer.
-- **Real estate services** — omitted entirely pending Virginia license verification.
-  Advertising brokerage services without a license is a regulatory violation, so this is
-  an omission rather than a blocked slot.
+  says "Serving Northern Virginia." Renders as a `Blocked` slot in the footer and on
+  Contact.
+- **Real estate services** — see the gate table above.
+- **Lender name and application link** — Financing describes the arrangement and routes to
+  a conversation; the outbound link is a blocked slot until the lender is named.
+- **Embedded map** — blocked slot on Contact until the domain is live. "Open in Google
+  Maps" works now.
+- **File upload on the intake form** — needs a form backend with file storage, scanning and
+  size limits. The form gives the working route instead: text or email photos.
+- **Investor programme terms** — described as benefits with no percentages or dollar
+  figures, because none have been set.
+- **Budget bands on the intake form** — provisional. They are qualifying ranges, not price
+  claims, but the owner should confirm the edges before launch.
 
-### Imagery
+## Imagery
 
 No photography is generated, sourced, or faked. Every image slot is a reserved stand-in at
 the correct aspect ratio, visibly labelled — hero 16:9, project card 4:3, project detail
@@ -94,25 +104,22 @@ the correct aspect ratio, visibly labelled — hero 16:9, project card 4:3, proj
 the real photograph were already in place, so real project photography drops in with zero
 layout change.
 
-The five hero slots additionally render a **vector comp** (`src/components/CompScene.astro`):
-flat architectural massing — dusk and daylight exteriors, a night exterior, an interior
-wall-and-floor — drawn in the version's palette. These exist so hero composition can be
-judged at the right visual weight before real photography exists. They are deliberately
-flat vector illustration, never an imitation of a photograph, and their slots stay labelled
-`Comp — …`.
+Hero slots additionally render a **vector comp** (`src/components/CompScene.astro`): flat
+architectural massing drawn in the palette, so hero composition can be judged at the right
+visual weight before real photography exists. These are deliberately flat illustration,
+never an imitation of a photograph, and their slots stay labelled `Comp — …`.
 
-**These comps do not ship.** They are a design-review aid. Before launch, every `scene`
-prop must be gone and every slot must carry real project photography.
+**The comps do not ship.** Before launch, every `scene` prop must be gone and every slot
+must carry real project photography.
 
-#### Dropping images in
+### Dropping images in
 
 Image slots resolve at build time via `src/lib/images.ts`. A slot uses a file only if it
-actually exists in `/public`, otherwise it falls back to its vector comp — so adding
-artwork is a file operation, not a code change, and a missing file can never ship as a
-broken image.
+exists in `/public`, otherwise it falls back to its vector comp — so adding artwork is a
+file operation, not a code change, and a missing file can never ship as a broken image.
 
 Names are given without an extension; `.webp`, `.avif`, `.png`, `.jpg` and `.jpeg` are all
-picked up, best format first. Drop a file into `public/img/` using one of these names:
+picked up, best format first. Drop a file into `public/img/`:
 
 | Base name in `public/img/` | Slot |
 |---|---|
@@ -124,16 +131,12 @@ picked up, best format first. Drop a file into `public/img/` using one of these 
 The `v`-prefixed names are kept from the exploration phase so files already downloaded
 under those names keep working.
 
-Slots carrying a comp photograph keep a discreet corner marker. That marker comes off only
-when the owner's real project photography replaces the comps.
-
-The client's existing logo illustration is not used. Each version carries a text-only
-wordmark lockup pairing the name with CONSTRUCTION & REMODELING.
+The client's existing logo illustration is not used. The header carries a text-only
+wordmark pairing the name with CONSTRUCTION & REMODELING.
 
 ## Accessibility — measured contrast
 
-Every colour pairing used across the five versions, measured against WCAG 2.1 (4.5:1 for
-body text, 3:1 for large and interactive elements):
+Measured against WCAG 2.1 (4.5:1 for body text, 3:1 for large and interactive elements):
 
 | Pairing | Ratio | Result |
 |---|---|---|
@@ -150,22 +153,21 @@ body text, 3:1 for large and interactive elements):
 | gray `#6B6660` on paper `#FBF8F2` | 5.36:1 | Passes AA body |
 | gray `#6B6660` on cream `#F6F1E7` | 5.05:1 | Passes AA body |
 | ink `#14110D` on paper `#FBF8F2` | 17.76:1 | Passes AA body |
-| service text on gold card (v5) | 4.73:1 | Passes AA body |
 
-The brief's starting `--gray #6B6660` fails AA as body text on the dark grounds (2.9:1 on
-ink). Rather than lighten the client's gray, a `--stone #A9A296` token was added for muted
-text on dark; `--gray` is kept exactly as specified for its intended use on light grounds.
-No other palette values were changed.
+The brief's starting `--gray #6B6660` fails AA as body text on dark grounds (2.9:1 on ink).
+Rather than lighten the client's gray, a `--stone #A9A296` token was added for muted text
+on dark; `--gray` is kept exactly as specified for its intended use on light grounds. No
+other palette values were changed.
 
 ## Typography
 
-One pairing per variant, all Google Fonts. See the variant table above.
+Fraunces (display) over Public Sans (body), both Google Fonts.
 
 ## Known state
 
-- The estimate form is **UI only**. Submission is not wired; each form carries a visible
+- The intake form is **UI only**. Submission is not wired; each form carries a visible
   note saying so. Routing to `interiordesignflooring@gmail.com` comes in the build phase.
-- Pages carry `noindex` while this is design exploration.
-- Lighthouse has **not** been run yet — the brief requires reporting actual scores, so no
-  score is claimed. It belongs to the build phase once a direction is chosen.
+- Pages carry `noindex` while this is design review.
+- Lighthouse has **not** been run — the brief requires reporting actual scores, so no
+  score is claimed. It belongs to the build phase.
 - Verified visually at 375px and 1440px. The sticky call/text bar appears below 768px.

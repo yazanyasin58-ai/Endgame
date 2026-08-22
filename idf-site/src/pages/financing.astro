@@ -1,0 +1,69 @@
+---
+/**
+ * Financing.
+ *
+ * Informational only. No rates, APRs, terms or monthly figures appear —
+ * advertising credit terms triggers Truth in Lending disclosure rules, and we
+ * have been given no figures to disclose. The application is deliberately not
+ * hosted here: it collects income and identity data and belongs on the
+ * lender's secured portal. See features.financeApplication.
+ */
+import Page from '../layouts/Page.astro';
+import BlockedSlot from '../components/BlockedSlot.astro';
+import { business, features, cta } from '../content/idf';
+---
+
+<Page
+  title="Financing — Interior Design Flooring"
+  description="Financing options are available for qualified renovation and construction clients. Ask about financing when you request your estimate."
+  heading="Financing"
+  standfirst="Options are available for qualified renovation and construction clients."
+  current="/financing/"
+>
+  <section class="hp-section hp-section--tight">
+    <div class="inv-intro">
+      <p>
+        Not every project needs to be paid for up front. We work with a lending partner who
+        handles renovation and construction financing, and we can introduce you when you
+        request your estimate.
+      </p>
+      <p>
+        Approval, rates and terms are set by the lender, not by us. We do not take a
+        decision on your application and we do not see your financial information.
+      </p>
+      <p class="inv-note">
+        Ask about financing when you request your estimate and we will connect you with the
+        lender directly.
+      </p>
+    </div>
+
+    {
+      !features.financeApplication && (
+        <div class="fin-blocked">
+          <BlockedSlot label="LENDER NAME AND APPLICATION LINK — AWAITING CLIENT DETAIL" />
+          <p class="fin-blocked-note">
+            The pre-approval application is intentionally not hosted on this site. It
+            collects income and identity data, which belongs on the lender's own secured
+            portal — this is a static site with no backend to receive or protect it. Once
+            the lender is named, this becomes an outbound link to their application.
+          </p>
+        </div>
+      )
+    }
+  </section>
+
+  <section class="hp-final">
+    <div class="hp-final-inner hp-final-inner--single">
+      <div>
+        <h2 class="hp-final-heading">Ask about financing.</h2>
+        <p class="hp-final-sub hp-italic">Mention it on your estimate request.</p>
+        <div class="hp-hero-actions">
+          <a class="hp-btn" href="/estimate/">{cta.primary}</a>
+          <a class="hp-call hp-call--light" href={business.phonePrimaryHref}>
+            or call {business.phonePrimary}
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</Page>

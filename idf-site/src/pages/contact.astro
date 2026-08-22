@@ -1,0 +1,58 @@
+---
+import Page from '../layouts/Page.astro';
+import BlockedSlot from '../components/BlockedSlot.astro';
+import EstimateForm from '../components/EstimateForm.astro';
+import SocialLinks from '../components/SocialLinks.astro';
+import { business, hours, blocked } from '../content/idf';
+---
+
+<Page
+  title="Contact — Interior Design Flooring"
+  description="Call, text or visit the Interior Design Flooring showroom at 45431 Ruritan Circle, Suite 160, Sterling, VA 20164. Open seven days."
+  heading="Contact"
+  standfirst="Call, text, or come by the showroom."
+  current="/contact/"
+>
+  <section class="hp-section hp-section--tight">
+    <div class="ct-grid">
+      <div class="ct-details">
+        <h2 class="ab-h3">Showroom</h2>
+        <p>
+          45431 Ruritan Circle, Suite 160<br />Sterling, VA 20164
+        </p>
+        <a
+          class="hp-pillar-link"
+          href="https://www.google.com/maps/search/?api=1&query=45431+Ruritan+Circle+Suite+160+Sterling+VA+20164"
+          target="_blank"
+          rel="noopener noreferrer">Open in Google Maps</a
+        >
+
+        <h2 class="ab-h3">Hours</h2>
+        <ul class="ct-hours">
+          {hours.map((h) => (<li><span>{h.days}</span><span>{h.open} – {h.close}</span></li>))}
+        </ul>
+
+        <h2 class="ab-h3">Phone &amp; email</h2>
+        <p>
+          <a href={business.phonePrimaryHref}>{business.phonePrimary}</a> &middot;
+          <a href={business.phonePrimarySms}>text us</a><br />
+          <a href="tel:+15712335133">{business.phoneSecondary}</a><br />
+          <a href={`mailto:${business.email}`}>{business.email}</a>
+        </p>
+
+        <h2 class="ab-h3">Follow</h2>
+        <SocialLinks />
+
+        <div class="ct-blocked">
+          <BlockedSlot label="EMBEDDED MAP — ADD ONCE THE DOMAIN IS LIVE" />
+          <BlockedSlot label={blocked.serviceArea} />
+        </div>
+      </div>
+
+      <div class="ct-form">
+        <h2 class="ab-h3">Send us the details</h2>
+        <EstimateForm idPrefix="ct" />
+      </div>
+    </div>
+  </section>
+</Page>

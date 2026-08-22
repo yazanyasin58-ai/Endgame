@@ -1,0 +1,49 @@
+---
+/**
+ * Real estate.
+ *
+ * GATED. While features.realEstate is false this page renders only the
+ * blocked notice — none of the marketing copy exists in the output, and the
+ * nav omits the link entirely. See the gate definition in content/idf.ts for
+ * why. Do not open the gate without a Virginia real estate FIRM licence
+ * number for the advertising entity.
+ */
+import Page from '../layouts/Page.astro';
+import BlockedSlot from '../components/BlockedSlot.astro';
+import { features } from '../content/idf';
+---
+
+<Page
+  title="Real Estate — Interior Design Flooring"
+  description="Real estate services page, pending licence verification."
+  heading="Real estate"
+  standfirst="This page is not cleared for publication."
+  current="/real-estate/"
+>
+  <section class="hp-section hp-section--tight">
+    {
+      features.realEstate ? (
+        <p>Real estate content goes here once the gate is opened.</p>
+      ) : (
+        <div class="fin-blocked">
+          <BlockedSlot label="REAL ESTATE SERVICES — BLOCKED PENDING FIRM LICENCE VERIFICATION" />
+          <p class="fin-blocked-note">
+            Advertising brokerage services in Virginia requires the advertising entity to
+            hold a real estate <strong>firm</strong> licence. Individual agents holding
+            licences under another brokerage is not sufficient, and advertisements must
+            carry the licensed brokerage name.
+          </p>
+          <p class="fin-blocked-note">
+            The proposed renovation discount for clients who use the in-house realtor needs
+            separate review: a thing of value offered in exchange for referring settlement
+            service business can engage federal rules on affiliated business arrangements.
+          </p>
+          <p class="fin-blocked-note">
+            Neither point is a design decision. Both need the firm licence number and, for
+            the discount, a real estate attorney's sign-off before this page can exist.
+          </p>
+        </div>
+      )
+    }
+  </section>
+</Page>

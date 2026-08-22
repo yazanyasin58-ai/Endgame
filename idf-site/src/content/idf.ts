@@ -120,6 +120,27 @@ export const formFields = {
     'Flooring',
     'Other',
   ],
+  /**
+   * Budget bands. These are qualifying ranges for the intake form, not price
+   * claims — nothing on the site states what any kind of work costs. The
+   * owner has not set the band edges yet, so these are provisional and must
+   * be confirmed before launch.
+   */
+  budget: [
+    'Under $25,000',
+    '$25,000 – $75,000',
+    '$75,000 – $150,000',
+    '$150,000 – $400,000',
+    'Over $400,000',
+    'Not sure yet',
+  ],
+  timeframe: [
+    'As soon as possible',
+    'Within 1–3 months',
+    'Within 3–6 months',
+    '6 months or more',
+    'Still planning',
+  ],
 } as const;
 
 export const cta = {
@@ -173,3 +194,106 @@ export const promo = {
 export const blocked = {
   serviceArea: 'SERVICE AREA LIST — BLOCKED PENDING CLIENT CONFIRMATION',
 } as const;
+
+/* ------------------------------------------------------------------
+   Feature gates.
+
+   A gated section renders nothing but a blocked notice until the gate
+   is opened, and is omitted from navigation. This is deliberate: some
+   of the owner's requested content cannot be published until a legal
+   question is settled, and a comment in a file is not a strong enough
+   safeguard against it shipping by accident.
+   ------------------------------------------------------------------ */
+export const features = {
+  /**
+   * Real estate / brokerage services.
+   *
+   * BLOCKED. Advertising brokerage services in Virginia requires the
+   * advertising entity to hold a real estate FIRM licence — it is not
+   * enough for individual agents to be licensed elsewhere, and ads must
+   * carry the licensed brokerage name. Until we have the firm licence
+   * number, this stays off. Do not open this gate on verbal assurance.
+   */
+  realEstate: false,
+
+  /**
+   * On-site finance application.
+   *
+   * BLOCKED. A pre-approval form collects income and identity data. That
+   * belongs on the lender's own secured portal, not on a static marketing
+   * site with no backend. The Financing page links out instead.
+   */
+  financeApplication: false,
+} as const;
+
+/** Main navigation, in the owner's requested order. */
+export const nav = [
+  { label: 'Home', href: '/' },
+  { label: 'About', href: '/about/' },
+  { label: 'Services', href: '/services/' },
+  { label: 'Custom Homes', href: '/custom-homes/' },
+  { label: 'Projects', href: '/projects/' },
+  { label: 'Real Estate', href: '/real-estate/', gated: 'realEstate' },
+  { label: 'Investors', href: '/investors/' },
+  { label: 'Financing', href: '/financing/' },
+  { label: 'Contact', href: '/contact/' },
+] as const;
+
+/** Services, grouped as the owner listed them. */
+export const serviceGroups = [
+  {
+    id: 'remodeling',
+    title: 'Remodeling',
+    items: ['Kitchens', 'Bathrooms', 'Basements', 'Additions', 'Full home renovations'],
+  },
+  {
+    id: 'interior-exterior',
+    title: 'Interior & exterior',
+    items: ['Flooring', 'Interior finishes', 'Siding, gutters, fascia and trim', 'Exterior remodeling'],
+  },
+  {
+    id: 'commercial',
+    title: 'Commercial',
+    items: ['Commercial renovations', 'Tenant fit-outs', 'Retail and office spaces'],
+  },
+  {
+    id: 'restoration',
+    title: 'Restoration',
+    items: ['Mold remediation', 'Water and structural repair', 'Bringing work up to code'],
+  },
+  {
+    id: 'permits',
+    title: 'Permits & inspections',
+    items: ['Permit applications', 'Scheduling inspections', 'Code compliance'],
+  },
+] as const;
+
+/** Custom home process, in the owner's sequence. */
+export const customHomeSteps = [
+  { number: '01', title: 'Design & planning', detail: 'Layout, scope and budget agreed before anything is ordered.' },
+  { number: '02', title: 'Permits', detail: 'We file the applications and carry the approvals.' },
+  { number: '03', title: 'Ground up construction', detail: 'Foundation through framing, systems and envelope.' },
+  { number: '04', title: 'Material selections', detail: 'Chosen with you, at the showroom or on site.' },
+  { number: '05', title: 'Completion & walkthrough', detail: 'Finished, inspected and handed over.' },
+] as const;
+
+export const customHomeOffers = [
+  { title: 'Building from the ground up', detail: 'Full custom homes, start to finish, on your timeline.' },
+  { title: 'Build on your lot', detail: 'Already own land? We build on it.' },
+  { title: 'Townhomes & duplexes', detail: 'Multi-unit residential construction.' },
+] as const;
+
+/**
+ * Investor programme. These are commercial terms the owner has asked to
+ * offer. No specific percentages or dollar figures appear until he sets
+ * them — the page describes the benefit and routes to a conversation.
+ */
+export const investorBenefits = [
+  { title: 'Preferred, volume-based pricing', detail: 'Pricing improves as your volume with us grows.' },
+  { title: 'Multi-property discounts', detail: 'Better rates when you bring more than one property.' },
+  { title: 'Renovation packages', detail: 'Scoped packages built around investor work.' },
+  { title: 'Fix-and-flip packages', detail: 'Turnaround work priced and scheduled for resale timelines.' },
+  { title: 'Rental turnover pricing', detail: 'Fast, repeatable pricing between tenants.' },
+  { title: 'Priority scheduling', detail: 'Repeat investors go to the front of the schedule.' },
+  { title: 'Faster estimating', detail: 'Quicker turnaround than our standard 24 hours where we already know the property type.' },
+] as const;

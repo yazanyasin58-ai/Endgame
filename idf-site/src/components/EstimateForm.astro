@@ -3,7 +3,8 @@
  * Estimate request form — UI only this phase (§9). Submission is wired in a
  * later phase; the note below keeps that visible so nothing ships by accident.
  */
-import { cta, formFields } from '../content/idf';
+import { business, cta, formFields } from '../content/idf';
+import BlockedSlot from './BlockedSlot.astro';
 
 interface Props {
   idPrefix?: string;
@@ -45,9 +46,32 @@ const f = (name: string) => `${idPrefix}-${name}`;
         {formFields.typeOfWork.map((t) => <option value={t}>{t}</option>)}
       </select>
     </div>
+    <div class="ef-field">
+      <label class="ef-label" for={f('budget')}>Budget range <span class="ef-optional">(optional)</span></label>
+      <select class="ef-input ef-select" id={f('budget')} name="budget">
+        <option value="" selected>Select one</option>
+        {formFields.budget.map((b) => <option value={b}>{b}</option>)}
+      </select>
+    </div>
+    <div class="ef-field">
+      <label class="ef-label" for={f('timeframe')}>Timeframe <span class="ef-optional">(optional)</span></label>
+      <select class="ef-input ef-select" id={f('timeframe')} name="timeframe">
+        <option value="" selected>Select one</option>
+        {formFields.timeframe.map((t) => <option value={t}>{t}</option>)}
+      </select>
+    </div>
     <div class="ef-field ef-field--full">
       <label class="ef-label" for={f('details')}>Project details</label>
       <textarea class="ef-input ef-textarea" id={f('details')} name="details" rows="4"></textarea>
+    </div>
+    <div class="ef-field ef-field--full">
+      <p class="ef-label">Photos or plans</p>
+      <p class="ef-hint">
+        Text photos to <a href={business.phonePrimarySms}>{business.phonePrimary}</a> or email them
+        to <a href={`mailto:${business.email}`}>{business.email}</a> and we will match them to your
+        request.
+      </p>
+      <BlockedSlot label="FILE UPLOAD — NEEDS A FORM BACKEND WITH FILE STORAGE" />
     </div>
     <div class="ef-field ef-field--full">
       <label class="ef-label" for={f('source')}>How did you hear about us? <span class="ef-optional">(optional)</span></label>
