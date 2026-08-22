@@ -15,7 +15,10 @@ import { promo } from '../content/idf';
     <strong>{promo.headline}</strong>
     <span>{promo.detail}</span>
   </p>
-  <a class="promo-cta" href="/estimate/">{promo.cta}</a>
+  <a class="promo-cta" href="/estimate/">
+    <span class="promo-cta-full">{promo.cta}</span>
+    <span class="promo-cta-short">{promo.ctaShort}</span>
+  </a>
   <button class="promo-close" type="button" aria-label="Dismiss offer">&times;</button>
 </div>
 

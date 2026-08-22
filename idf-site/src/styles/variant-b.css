@@ -65,10 +65,13 @@
   font-size: clamp(1.75rem, 3.4vw, 2.5rem);
   text-transform: none;
 }
-.vb .hp-pillar-list { margin-top: 0; grid-column: 2; }
-@media (min-width: 820px) { .vb .hp-pillar-list { grid-column: 3; } }
-.vb .hp-pillar-link { grid-column: 2; margin-top: 0.9rem; }
-@media (min-width: 820px) { .vb .hp-pillar-link { grid-column: 4; margin-top: 0; } }
+/* Grid placement is scoped to the pillar row itself. .hp-pillar-link is reused
+   as a plain link style on other pages, and an unscoped grid-column drags an
+   implicit two-column grid into every layout that borrows it. */
+.vb .hp-pillar .hp-pillar-list { margin-top: 0; grid-column: 2; }
+@media (min-width: 820px) { .vb .hp-pillar .hp-pillar-list { grid-column: 3; } }
+.vb .hp-pillar .hp-pillar-link { grid-column: 2; margin-top: 0.9rem; }
+@media (min-width: 820px) { .vb .hp-pillar .hp-pillar-link { grid-column: 4; margin-top: 0; } }
 
 /* the wedge runs as a two-column feature, not a centred block */
 .vb .hp-wedge { text-align: left; }

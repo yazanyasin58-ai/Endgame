@@ -187,6 +187,9 @@ export const promo = {
   headline: '15% off your first project',
   detail: 'New customers. Ask us for details when you request your estimate.',
   cta: 'Request a Free Estimate',
+  // Phone label. The bar sits above the fold and the full label crowds the
+  // headline off the line at 375px.
+  ctaShort: 'Free estimate',
 } as const;
 
 // Slots that exist but are blocked pending client confirmation. Render these

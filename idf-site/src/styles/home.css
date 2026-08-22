@@ -36,11 +36,28 @@
   white-space: nowrap;
 }
 .promo-cta:hover { background: var(--gold-bright); }
+.promo-cta-short { display: none; }
 .promo-close {
   background: none; border: 0; color: var(--stone); font-size: 1.4rem;
   line-height: 1; cursor: pointer; padding: 0 0.25rem;
 }
 .promo-close:hover { color: var(--cream); }
+/* On a phone the bar sits above everything and must not eat the fold. The
+   detail line and the pill both come out; the headline links to the same
+   place the pill did, so nothing is lost but the height. */
+@media (max-width: 719px) {
+  .promo { flex-wrap: nowrap; gap: 0.5rem; padding: 0.55rem 1rem; font-size: 0.8125rem; }
+  .promo-text { flex: 1; min-width: 0; }
+  .promo-text span { display: none; }
+  .promo-text strong { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .promo-cta {
+    background: none; color: var(--gold-bright); padding: 0; border-radius: 0;
+    font-size: 0.75rem; text-decoration: underline; text-underline-offset: 3px;
+  }
+  .promo-cta:hover { background: none; color: var(--cream); }
+  .promo-cta-full { display: none; }
+  .promo-cta-short { display: inline; }
+}
 
 /* ---------- nav ---------- */
 .hp-nav {
@@ -71,6 +88,13 @@
   white-space: nowrap;
 }
 .hp-nav-phone:hover { color: var(--gold); }
+/* Below 768px the sticky bar already carries call and text, so the header
+   repeats them for no gain and wraps onto a second row doing it. Drop both and
+   the header is one line: wordmark and menu. */
+@media (max-width: 767px) {
+  .hp-nav { flex-wrap: nowrap; padding-block: 0.9rem; }
+  .hp-nav-phone, .hp-nav-actions .hp-btn { display: none; }
+}
 
 /* ---------- buttons ---------- */
 .hp-btn {
@@ -418,11 +442,12 @@
   display: grid; gap: 0.6rem 2rem; padding: 2rem 0; border-top: 1px solid var(--rule);
 }
 @media (min-width: 820px) {
-  .sv-group { grid-template-columns: 18rem 1fr auto; align-items: baseline; }
+  .sv-group { grid-template-columns: 22rem 1fr auto; align-items: baseline; }
 }
 .sv-title {
   font-family: 'Fraunces', serif; font-weight: 300;
   font-size: clamp(1.6rem, 3vw, 2.2rem);
+  text-wrap: balance;
 }
 .sv-items {
   list-style: none; margin: 0; padding: 0; columns: 2; column-gap: 2rem;
