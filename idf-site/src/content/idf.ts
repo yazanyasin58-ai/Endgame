@@ -278,6 +278,103 @@ export const serviceGroups = [
 ] as const;
 
 /**
+ * Project gallery.
+ *
+ * One entry per photograph the owner supplied. `slot` is the base filename in
+ * public/img/ — src/lib/images.ts resolves it at build time, so an entry whose
+ * file is not present falls back to its reserved placeholder and can never ship
+ * as a broken image.
+ *
+ * Captions describe only what is visible in the photograph. No addresses, no
+ * client names, no budgets, no square footage, no dates — none of that has been
+ * supplied and none of it is guessed. `alt` is written for a screen reader
+ * describing the same thing.
+ */
+export const gallery = [
+  {
+    slot: 'project-kitchen-cream-wide',
+    caption: 'Kitchen remodel',
+    detail: 'Raised-panel cabinetry, granite counters and a full appliance run.',
+    alt: 'A remodelled kitchen with cream raised-panel cabinets, speckled light granite counters, black wall ovens and a centre island under pendant lights.',
+    ratio: '4 / 3',
+    tags: ['Remodeling'],
+  },
+  {
+    slot: 'project-kitchen-cream',
+    caption: 'Kitchen remodel, island and range wall',
+    detail: 'The same kitchen seen from the adjoining room.',
+    alt: 'A cream-cabinet kitchen viewed through a wide doorway, with a granite-topped island in the foreground and pendant lights above it.',
+    ratio: '4 / 3',
+    tags: ['Remodeling'],
+  },
+  {
+    slot: 'project-island-blue-quartz',
+    caption: 'Kitchen island, waterfall quartz',
+    detail: 'Blue base cabinetry, mitred waterfall edge, integrated cooktop and beverage fridge.',
+    alt: 'A large kitchen island with deep blue cabinets and a thick white quartz top with grey veining running down the side to the floor.',
+    ratio: '4 / 3',
+    tags: ['Remodeling'],
+  },
+  {
+    slot: 'project-tile-install',
+    caption: 'Large-format tile going in',
+    detail: 'Marble-look porcelain with a black inlay band, set and grouted on site.',
+    alt: 'Four installers working on a floor of large white marble-look tiles with black inlay strips, with a wet saw and vacuum beside them.',
+    ratio: '4 / 3',
+    tags: ['Flooring', 'In progress'],
+    inProgress: true,
+  },
+  {
+    slot: 'project-floor-medallion',
+    caption: 'Compass medallion inlay',
+    detail: 'Cut-stone medallion set into the surrounding tile field.',
+    alt: 'A circular compass-rose medallion of cut stone set into a polished marble-look tile floor.',
+    ratio: '1 / 1',
+    tags: ['Flooring'],
+  },
+  {
+    slot: 'project-staircase',
+    caption: 'Staircase and millwork',
+    detail: 'Curved stair, wrought-iron balusters, raised-panel wainscoting and hardwood.',
+    alt: 'A curved staircase with dark wood treads and handrail, scrolled wrought-iron balusters, white raised-panel wainscoting and a dark hardwood floor.',
+    ratio: '3 / 4',
+    tags: ['Interior finishes'],
+  },
+  {
+    slot: 'project-bath-freestanding',
+    caption: 'Primary bath',
+    detail: 'Freestanding tub, floor-mounted filler, marble-look tile surround.',
+    alt: 'A white freestanding oval bathtub with a floor-mounted chrome filler, set in front of three windows against a marble-look tiled wall.',
+    ratio: '4 / 3',
+    tags: ['Remodeling'],
+  },
+  {
+    slot: 'project-siding',
+    caption: 'Siding and exterior work',
+    detail: 'Two-storey siding replacement over a screened porch and deck.',
+    alt: 'Two workers on extension ladders installing siding on the upper storey of a house above a screened porch and deck.',
+    ratio: '4 / 3',
+    tags: ['Exterior', 'In progress'],
+    inProgress: true,
+  },
+  {
+    slot: 'project-bath-vanity',
+    caption: 'Bathroom, tub surround and vanity',
+    detail: 'Drop-in tub in a tiled surround, wood vanity, patterned floor border.',
+    alt: 'A bathroom with a drop-in tub set into a tiled surround, a medium-wood vanity with a large mirror, and a tile floor with a patterned inlay border.',
+    ratio: '4 / 3',
+    tags: ['Remodeling'],
+    /**
+     * Flagged for the owner. This photograph reads as a different era and
+     * finish quality from the rest of the set. Confirm it is our own completed
+     * work before it goes live — the brief bars stock imagery, and a photo we
+     * cannot source is not worth the risk on a portfolio page.
+     */
+    confirm: true,
+  },
+] as const;
+
+/**
  * Insurance restoration.
  *
  * The owner's instruction is explicit: do not advertise that we negotiate or

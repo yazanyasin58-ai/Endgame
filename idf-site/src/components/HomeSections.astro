@@ -14,15 +14,29 @@ import {
   trustBar,
   pillars,
   wedge,
-  projects,
+  gallery,
   homepageReviews,
   processSteps,
   figures,
   cta,
 } from '../content/idf';
-import { optionalImage, heroImages } from '../lib/images';
+import { optionalImage, firstImage, heroImages } from '../lib/images';
 
-const heroSrc = optionalImage(heroImages.hero) ?? optionalImage(heroImages.heroAlt);
+const heroSrc = firstImage(
+  heroImages.hero,
+  heroImages.heroAlt,
+  heroImages.heroAlt2,
+  heroImages.heroAlt3,
+);
+
+/**
+ * Three cards for the homepage strip: a finished kitchen to lead, the tile
+ * crew mid-install so the page shows work actually happening, and the
+ * waterfall island. The owner asked for a construction shot in the set.
+ */
+const homeCards = ['project-kitchen-cream-wide', 'project-tile-install', 'project-island-blue-quartz']
+  .map((slot) => gallery.find((g) => g.slot === slot)!)
+  .map((g) => ({ ...g, src: optionalImage(`img/${g.slot}`) }));
 ---
 
 <main>
@@ -108,18 +122,17 @@ const heroSrc = optionalImage(heroImages.hero) ?? optionalImage(heroImages.heroA
     <p class="hp-sub hp-italic">Real work, photographed as it was finished.</p>
     <div class="hp-projects">
       {
-        projects.map((proj, i) => (
+        homeCards.map((card) => (
           <figure class="hp-project">
             <Placeholder
               ratio="4 / 3"
-              label={i === 1 ? 'Comp — work in progress · 4:3' : 'Placeholder — project card · 4:3'}
-              src={i === 1 ? optionalImage(heroImages.work) : undefined}
-              alt={i === 1 ? 'A home addition under construction, new framing against the existing house' : ''}
+              label={`Reserved — ${card.caption.toLowerCase()}`}
+              src={card.src}
+              alt={card.alt}
+              real
               class="hp-ph"
             />
-            <figcaption>
-              {proj.named ? proj.name : <span class="hp-muted">Third project — list in progress</span>}
-            </figcaption>
+            <figcaption>{card.caption}</figcaption>
           </figure>
         ))
       }

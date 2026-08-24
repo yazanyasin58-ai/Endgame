@@ -28,14 +28,31 @@ export function optionalImage(baseName: string): string | undefined {
  * /public/img/ using one of these names in any supported format and the slot
  * picks it up on the next build.
  *
- * The v-prefixed names are kept from the exploration phase so files already
- * downloaded under those names keep working; only the hero, its alternate,
- * the work-in-progress shot and the logo are still referenced.
+ * Project photographs are not listed here — each gallery entry in the content
+ * module carries its own slot name. The v-prefixed names below are kept from
+ * the exploration phase so files already downloaded under those names keep
+ * working as hero fallbacks.
  */
 export const heroImages = {
-  /** Homepage hero. Falls back to the interior frame if this is absent. */
-  hero: 'img/v1-hero-dusk',
-  heroAlt: 'img/v4-hero-interior',
-  work: 'img/work-in-progress',
+  /**
+   * Homepage hero, tried in order. `img/hero` is the slot for a wide shot made
+   * for the purpose; below it are the exploration-phase names, then the widest
+   * of the owner's supplied photographs so the hero lights up as soon as any
+   * one of them is in place.
+   */
+  hero: 'img/hero',
+  heroAlt: 'img/v1-hero-dusk',
+  heroAlt2: 'img/v4-hero-interior',
+  heroAlt3: 'img/project-kitchen-cream-wide',
+  work: 'img/project-tile-install',
   logo: 'img/logo',
 } as const;
+
+/** First slot in the list that has a file behind it. */
+export function firstImage(...baseNames: string[]): string | undefined {
+  for (const name of baseNames) {
+    const found = optionalImage(name);
+    if (found) return found;
+  }
+  return undefined;
+}

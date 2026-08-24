@@ -456,9 +456,41 @@
 @media (max-width: 560px) { .sv-items { columns: 1; } }
 .sv-items li { padding-block: 0.25rem; break-inside: avoid; }
 
+/* ---------- project gallery ---------- */
+.gal { display: grid; gap: 2.5rem 2rem; grid-template-columns: 1fr; }
+@media (min-width: 640px) { .gal { grid-template-columns: 1fr 1fr; } }
+@media (min-width: 1060px) { .gal { grid-template-columns: repeat(3, 1fr); } }
+/* The portrait shot keeps its proportion rather than being cropped square. */
+@media (min-width: 640px) { .gal-item--tall { grid-row: span 2; } }
+.gal-ph { border-radius: 0.35rem; }
+.gal-cap { display: grid; gap: 0.3rem; margin-top: 0.9rem; }
+.gal-cap-name {
+  font-family: 'Fraunces', serif; font-weight: 300; font-size: 1.2rem; line-height: 1.3;
+}
+.gal-cap-detail { font-size: 0.875rem; line-height: 1.6; color: var(--gray); }
+.gal-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.35rem; }
+.gal-tag {
+  font-size: 0.625rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--gray); border: 1px solid var(--rule); border-radius: 999px;
+  padding: 0.3em 0.7em;
+}
+.hp-note code {
+  font-family: ui-monospace, 'SFMono-Regular', Menlo, monospace; font-size: 0.85em;
+}
+.pr-named {
+  list-style: none; margin: 1.75rem 0 0; padding: 0; max-width: 46rem;
+}
+.pr-named li {
+  font-family: 'Fraunces', serif; font-weight: 300; font-size: 1.3rem;
+  padding: 1rem 0; border-top: 1px solid var(--rule);
+}
+
 /* ---------- insurance restoration ---------- */
 .ir-section { border-top: 1px solid var(--rule); }
-.ir-intro { max-width: 46rem; margin-top: 2rem; display: grid; gap: 1rem; }
+.ir-lede { display: grid; gap: 2rem; margin-top: 2rem; align-items: start; }
+@media (min-width: 900px) { .ir-lede { grid-template-columns: 1.15fr 1fr; gap: 3.5rem; } }
+.ir-intro { max-width: 46rem; display: grid; gap: 1rem; }
+.ir-figure { margin: 0; display: grid; gap: 0.7rem; }
 .ir-intro p { color: var(--gray); line-height: 1.75; }
 .ir-items {
   list-style: none; margin: 2.75rem 0 0; padding: 0;

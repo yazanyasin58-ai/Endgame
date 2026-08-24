@@ -2,112 +2,98 @@
 /**
  * Projects Completed.
  *
- * Only two projects are named by the owner — Great Falls and Maryland. The
- * rest of the grid is reserved, labelled space rather than invented work:
- * no fabricated project names, locations, budgets, square footage or dates.
+ * Driven by `gallery` in the content module — one entry per photograph the
+ * owner supplied. Each entry resolves its own file at build time and falls
+ * back to a reserved slot if the file is not in public/img/ yet, so this page
+ * is correct whether none, some, or all of the photography is in place.
+ *
+ * Captions describe the visible work only. The owner has named two projects,
+ * Great Falls and Maryland; nothing here invents a name, location, budget,
+ * square footage or date to sit under a photograph.
  */
-import Base from '../layouts/Base.astro';
-import '../styles/home.css';
-import SiteNav from '../components/SiteNav.astro';
-import StickyCallBar from '../components/StickyCallBar.astro';
-import SiteFooter from '../components/SiteFooter.astro';
+import Page from '../layouts/Page.astro';
 import Placeholder from '../components/Placeholder.astro';
-import { business, projects, trustBar, cta } from '../content/idf';
-import { optionalImage, heroImages } from '../lib/images';
+import { business, gallery, projects, trustBar, cta } from '../content/idf';
+import { optionalImage } from '../lib/images';
 
-const fonts =
-  'https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Source+Sans+3:wght@400;600&display=swap';
-
-// Named work first, then reserved slots for the list the owner is compiling.
 const named = projects.filter((p) => p.named);
-const reservedSlots = 4;
+const items = gallery.map((g) => ({ ...g, src: optionalImage(`img/${g.slot}`) }));
+const awaiting = items.filter((i) => !i.src).length;
 ---
 
-<Base
+<Page
   title="Projects Completed — Interior Design Flooring"
-  description="Completed custom homes, additions and remodeling projects by Interior Design Flooring, a Virginia Class A general contractor serving Northern Virginia since 1989."
-  fontsHref={fonts}
-  bodyClass="hp"
-  withCallbar
+  description="Completed kitchens, baths, flooring, millwork and exterior work by Interior Design Flooring, a Virginia Class A general contractor serving Northern Virginia since 1989."
+  heading="Projects completed"
+  standfirst="Kitchens, baths, flooring, millwork and exterior work across Northern Virginia."
+  current="/projects/"
 >
-  <SiteNav current="projects" />
+  <section class="hp-section hp-section--tight" aria-label="Completed projects">
+    <div class="gal">
+      {
+        items.map((item) => (
+          <figure class:list={['gal-item', { 'gal-item--tall': item.ratio === '3 / 4' }]}>
+            <Placeholder
+              ratio={item.ratio}
+              label={`Reserved — ${item.caption.toLowerCase()}`}
+              src={item.src}
+              alt={item.alt}
+              real
+              class="gal-ph"
+            />
+            <figcaption class="gal-cap">
+              <span class="gal-cap-name">{item.caption}</span>
+              <span class="gal-cap-detail">{item.detail}</span>
+              <span class="gal-tags">
+                {item.tags.map((t) => <span class="gal-tag">{t}</span>)}
+              </span>
+            </figcaption>
+          </figure>
+        ))
+      }
+    </div>
 
-  <main>
-    <section class="hp-section hp-pagehead">
-      <h1 class="hp-h2">Projects completed</h1>
-      <p class="hp-sub hp-italic">
-        Custom homes, additions and remodels across Northern Virginia.
-      </p>
-    </section>
+    {
+      awaiting > 0 && (
+        <p class="hp-note">
+          {awaiting} of {items.length} photographs are not yet in the build. Each one holds
+          its space at the right proportion and appears the moment the file is dropped into
+          <code> public/img/</code>.
+        </p>
+      )
+    }
+  </section>
 
-    <section class="hp-section hp-section--tight" aria-label="Completed projects">
-      <div class="hp-grid">
-        {
-          named.map((proj) => (
-            <figure class="hp-project">
-              <Placeholder ratio="4 / 3" label="Placeholder — project · 4:3 · 1200px" class="hp-ph" />
-              <figcaption>
-                <span class="hp-project-name">{proj.name}</span>
-              </figcaption>
-            </figure>
-          ))
-        }
+  <section class="hp-section hp-section--tight" aria-labelledby="pr-named-h">
+    <h2 id="pr-named-h" class="hp-h2">Named projects</h2>
+    <p class="hp-sub">
+      Two projects the owner has confirmed by name. The fuller list is being compiled.
+    </p>
+    <ul class="pr-named">
+      {named.map((proj) => <li>{proj.name}</li>)}
+    </ul>
+  </section>
 
-        <figure class="hp-project">
-          <Placeholder
-            ratio="4 / 3"
-            label="Comp — work in progress · 4:3"
-            src={optionalImage(heroImages.work)}
-            alt="A home addition under construction, new framing against the existing house"
-            class="hp-ph"
-          />
-          <figcaption>
-            <span class="hp-project-name">Addition in progress</span>
-          </figcaption>
-        </figure>
+  <section class="hp-trust" aria-label="Credentials">
+    <ul>
+      {trustBar.map((item) => <li>{item}</li>)}
+    </ul>
+  </section>
 
-        {
-          Array.from({ length: reservedSlots }, (_, i) => (
-            <figure class="hp-project hp-project--reserved">
-              <Placeholder ratio="4 / 3" label="Reserved — awaiting project photography" class="hp-ph" />
-              <figcaption>
-                <span class="hp-muted">Project {i + 4} — details to be confirmed</span>
-              </figcaption>
-            </figure>
-          ))
-        }
-      </div>
-
-      <p class="hp-note">
-        More projects are being added as photography is collected. Nothing on this page is
-        listed until the owner has confirmed it.
-      </p>
-    </section>
-
-    <section class="hp-trust" aria-label="Credentials">
-      <ul>
-        {trustBar.map((item) => <li>{item}</li>)}
-      </ul>
-    </section>
-
-    <section class="hp-final" aria-labelledby="pr-cta-h">
-      <div class="hp-final-inner hp-final-inner--single">
-        <div>
-          <h2 id="pr-cta-h" class="hp-final-heading">Want something like this?</h2>
-          <p class="hp-final-sub hp-italic">
-            A site visit first, then a written estimate within 24 hours.
-          </p>
-          <div class="hp-hero-actions">
-            <a class="hp-btn" href="/estimate/">{cta.primary}</a>
-            <a class="hp-call hp-call--light" href={business.phonePrimaryHref}>
-              or call {business.phonePrimary}
-            </a>
-          </div>
+  <section class="hp-final" aria-labelledby="pr-cta-h">
+    <div class="hp-final-inner hp-final-inner--single">
+      <div>
+        <h2 id="pr-cta-h" class="hp-final-heading">Want something like this?</h2>
+        <p class="hp-final-sub hp-italic">
+          A site visit first, then a written estimate within 24 hours.
+        </p>
+        <div class="hp-hero-actions">
+          <a class="hp-btn" href="/estimate/">{cta.primary}</a>
+          <a class="hp-call hp-call--light" href={business.phonePrimaryHref}>
+            or call {business.phonePrimary}
+          </a>
         </div>
       </div>
-    </section>
-  </main>
-
-  <SiteFooter />
-  <StickyCallBar />
-</Base>
+    </div>
+  </section>
+</Page>

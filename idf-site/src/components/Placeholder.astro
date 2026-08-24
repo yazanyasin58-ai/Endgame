@@ -23,19 +23,26 @@ interface Props {
   src?: string;
   alt?: string;
   class?: string;
+  /**
+   * The file in this slot is the owner's own project photography, not a comp.
+   * Drops the corner marker — the marker exists to stop a stand-in shipping by
+   * accident, and real client work is not a stand-in.
+   */
+  real?: boolean;
 }
 
-const { ratio, label, scene, src, alt = '', class: className = '' } = Astro.props;
+const { ratio, label, scene, src, alt = '', class: className = '', real = false } = Astro.props;
+const marked = !(real && src);
 const sceneId = `s${Math.random().toString(36).slice(2, 9)}`;
 ---
 
 <div
-  class:list={['ph', className, { 'ph--scene': scene || src, 'ph--photo': src }]}
+  class:list={['ph', className, { 'ph--scene': scene || src, 'ph--photo': src && !real }]}
   style={`aspect-ratio: ${ratio};`}
   role={src ? undefined : 'img'}
   aria-label={src ? undefined : `Reserved image slot: ${label}`}
 >
   {src ? <img class="ph-img" src={src} alt={alt} loading="lazy" decoding="async" /> : null}
   {!src && scene ? <CompScene kind={scene} id={sceneId} /> : null}
-  <span class="ph-label" aria-hidden="true">{label}</span>
+  {marked ? <span class="ph-label" aria-hidden="true">{label}</span> : null}
 </div>

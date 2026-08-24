@@ -1,6 +1,13 @@
 ---
 import Page from '../layouts/Page.astro';
-import { business, serviceGroups, insuranceRestoration, cta } from '../content/idf';
+import Placeholder from '../components/Placeholder.astro';
+import { business, serviceGroups, insuranceRestoration, gallery, cta } from '../content/idf';
+import { optionalImage } from '../lib/images';
+
+// Exterior work under way — the closest of the supplied photographs to what a
+// storm or water loss actually looks like being repaired.
+const irPhoto = gallery.find((g) => g.slot === 'project-siding')!;
+const irSrc = optionalImage(`img/${irPhoto.slot}`);
 ---
 
 <Page
@@ -30,8 +37,21 @@ import { business, serviceGroups, insuranceRestoration, cta } from '../content/i
     <h2 class="hp-h2">{insuranceRestoration.title}</h2>
     <p class="hp-sub hp-italic">{insuranceRestoration.standfirst}</p>
 
-    <div class="ir-intro">
-      {insuranceRestoration.intro.map((para) => <p>{para}</p>)}
+    <div class="ir-lede">
+      <div class="ir-intro">
+        {insuranceRestoration.intro.map((para) => <p>{para}</p>)}
+      </div>
+      <figure class="ir-figure">
+        <Placeholder
+          ratio="4 / 3"
+          label="Reserved — exterior repair under way"
+          src={irSrc}
+          alt={irPhoto.alt}
+          real
+          class="gal-ph"
+        />
+        <figcaption class="gal-cap-detail">{irPhoto.detail}</figcaption>
+      </figure>
     </div>
 
     <ol class="ir-items">
