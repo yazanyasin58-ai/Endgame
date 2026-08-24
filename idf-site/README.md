@@ -25,7 +25,7 @@ dropdown on Escape or an outside click.
 |---|---|
 | `/` | Home |
 | `/about/` | About — the owners, the history, how the company works |
-| `/services/` | Services — remodeling, interior/exterior, commercial, restoration, permits |
+| `/services/` | Services — remodeling, interior/exterior, commercial, restoration, permits, plus the insurance restoration section at `#insurance-restoration` |
 | `/custom-homes/` | Custom homes — what we build and the five-stage process |
 | `/projects/` | Projects completed |
 | `/real-estate/` | **Gated off.** Renders a blocked notice only. See below. |
@@ -95,6 +95,26 @@ Motors leads.
   figures, because none have been set.
 - **Budget bands on the intake form** — provisional. They are qualifying ranges, not price
   claims, but the owner should confirm the edges before launch.
+
+## Insurance restoration
+
+Lives as a section on `/services/`, anchored at `#insurance-restoration`. It covers damage
+documentation, repair estimates written for an insurance file, communication about our own
+estimate, remediation, and reconstruction.
+
+The owner's instruction was not to advertise that we negotiate or settle claims. That is
+also the legal line: acting for a policyholder in negotiating or settling a claim is public
+adjusting, which Virginia licenses separately under Title 38.2. So the section states the
+limit on the page — "we are a licensed contractor, not a public adjuster" — rather than
+leaving a homeowner to assume otherwise.
+
+Three things must never be added to this section, and the reason is in a comment above
+`insuranceRestoration` in `src/content/idf.ts`:
+
+- any claim to negotiate, settle, handle, maximise or fight a claim
+- any offer to waive, discount or absorb a deductible — insurance fraud in Virginia,
+  regardless of intent
+- any promise about what the insurer will cover or pay
 
 ## Imagery
 

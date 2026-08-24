@@ -262,7 +262,13 @@ export const serviceGroups = [
   {
     id: 'restoration',
     title: 'Restoration',
-    items: ['Mold remediation', 'Water and structural repair', 'Bringing work up to code'],
+    items: [
+      'Insurance restoration',
+      'Mold remediation',
+      'Water and structural repair',
+      'Fire and storm damage repair',
+      'Bringing work up to code',
+    ],
   },
   {
     id: 'permits',
@@ -270,6 +276,68 @@ export const serviceGroups = [
     items: ['Permit applications', 'Scheduling inspections', 'Code compliance'],
   },
 ] as const;
+
+/**
+ * Insurance restoration.
+ *
+ * The owner's instruction is explicit: do not advertise that we negotiate or
+ * settle insurance claims. That instruction also happens to be the legal line.
+ * Acting for a policyholder in negotiating or settling a claim is public
+ * adjusting, which Virginia licenses separately (Title 38.2). A contractor who
+ * does it unlicensed is exposed, and so is the homeowner's claim.
+ *
+ * So the scope here is repair work and our own paperwork, and the limit is
+ * stated on the page rather than left to inference. Three things must never be
+ * added to this section:
+ *   - any claim to negotiate, settle, handle, maximise or fight a claim
+ *   - any offer to waive, discount, absorb or "work around" a deductible,
+ *     which is insurance fraud in Virginia regardless of intent
+ *   - any promise about what the insurer will cover or pay
+ */
+export const insuranceRestoration = {
+  title: 'Insurance restoration',
+  standfirst: 'Repairs after water, mold, fire, storm and other property damage.',
+  intro: [
+    'When a loss damages your property, we handle the repair side of it: documenting what was affected, writing a detailed repair estimate for your insurance file, doing the remediation, and rebuilding the areas that were damaged.',
+    'One licensed contractor from the documentation through to the final finish, so the scope that gets written is the scope that gets built.',
+  ],
+  items: [
+    {
+      title: 'Damage documentation',
+      detail:
+        'Photographs and a written record of the affected areas and materials, taken while the damage is still visible.',
+    },
+    {
+      title: 'Detailed repair estimates',
+      detail:
+        'A line-item estimate of the repair scope, itemised so it can go into your insurance file.',
+    },
+    {
+      title: 'Communication about our estimate',
+      detail:
+        'If your adjuster has questions about our scope or our pricing, we explain and stand behind our own figures.',
+    },
+    {
+      title: 'Restoration and remediation',
+      detail:
+        'Mold remediation, water and structural repair, and bringing the affected area back to a state where it can be rebuilt.',
+    },
+    {
+      title: 'Complete reconstruction',
+      detail:
+        'Full rebuild of the damaged areas, finished by the same licensed contractor who wrote the estimate.',
+    },
+  ],
+  /**
+   * Published on the page, deliberately. Stating the limit plainly is better
+   * for the owner than leaving a homeowner to assume we will run their claim.
+   */
+  limit: {
+    title: 'What we do not do',
+    body:
+      'We are a licensed contractor, not a public adjuster. We do not negotiate your claim, settle it, or represent you to your insurer — those are separately licensed activities in Virginia. What your policy covers and what your insurer pays is between you and your insurance company.',
+  },
+} as const;
 
 /** Custom home process, in the owner's sequence. */
 export const customHomeSteps = [

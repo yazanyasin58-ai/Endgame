@@ -1,6 +1,6 @@
 ---
 import Page from '../layouts/Page.astro';
-import { business, serviceGroups, cta } from '../content/idf';
+import { business, serviceGroups, insuranceRestoration, cta } from '../content/idf';
 ---
 
 <Page
@@ -24,6 +24,34 @@ import { business, serviceGroups, cta } from '../content/idf';
         ))
       }
     </div>
+  </section>
+
+  <section class="hp-section hp-section--tight ir-section" id="insurance-restoration">
+    <h2 class="hp-h2">{insuranceRestoration.title}</h2>
+    <p class="hp-sub hp-italic">{insuranceRestoration.standfirst}</p>
+
+    <div class="ir-intro">
+      {insuranceRestoration.intro.map((para) => <p>{para}</p>)}
+    </div>
+
+    <ol class="ir-items">
+      {
+        insuranceRestoration.items.map((item, i) => (
+          <li class="ir-item">
+            <span class="ir-num">{String(i + 1).padStart(2, '0')}</span>
+            <h3 class="ir-item-title">{item.title}</h3>
+            <p class="ir-item-detail">{item.detail}</p>
+          </li>
+        ))
+      }
+    </ol>
+
+    <aside class="ir-limit">
+      <h3 class="ir-limit-title">{insuranceRestoration.limit.title}</h3>
+      <p>{insuranceRestoration.limit.body}</p>
+    </aside>
+
+    <a class="hp-textlink" href="/estimate/">Request an estimate for damage repair</a>
   </section>
 
   <section class="hp-final">
