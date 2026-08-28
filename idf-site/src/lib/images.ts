@@ -41,9 +41,11 @@ export const heroImages = {
    * one of them is in place.
    */
   hero: 'img/hero',
-  heroAlt: 'img/v1-hero-dusk',
-  heroAlt2: 'img/v4-hero-interior',
-  heroAlt3: 'img/project-kitchen-cream-wide',
+  heroAlt: 'img/hero-oak',
+  heroAlt2: 'img/v1-hero-dusk',
+  heroAlt3: 'img/v4-hero-interior',
+  /** Narrow-screen hero. The wide frame loses its darker floor to the crop. */
+  heroMobile: 'img/hero-walnut',
   work: 'img/project-tile-install',
   logo: 'img/logo',
 } as const;

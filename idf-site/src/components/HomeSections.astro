@@ -32,6 +32,7 @@ const heroSrc = firstImage(
   heroImages.heroAlt2,
   heroImages.heroAlt3,
 );
+const heroSrcMobile = optionalImage(heroImages.heroMobile);
 
 /**
  * Three cards for the homepage strip: a finished kitchen to lead, the tile
@@ -52,7 +53,9 @@ const homeCards = ['project-kitchen-cream-wide', 'project-tile-install', 'projec
         label="Comp — hero · custom home · 16:9 · 2400px"
         scene="exterior-dusk"
         src={heroSrc}
-        alt="A custom home built by Interior Design Flooring"
+        srcMobile={heroSrcMobile}
+        alt="Wide-plank hardwood flooring in a finished interior"
+        real={Boolean(heroSrc)}
         class="hp-ph hp-hero-ph ph--label-tr"
       />
       <div class="hp-hero-copy">

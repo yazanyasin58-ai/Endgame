@@ -122,6 +122,15 @@
   min-height: 80vh;
 }
 @media (min-width: 1024px) { .hp-hero-ph { min-height: 0; max-height: 88vh; } }
+/* Narrow screens load the walnut frame, and a 16:9 picture crops to roughly a
+   square there. Centred, the crop lands on bare floor and plaster; pushed right
+   it picks up the side table, the sofa edge and the backlit window, which is
+   the half of the room worth showing. Contrast passes at any position here —
+   50% measures 10.35:1 and 95% measures 9.67:1 — so this is composition, not
+   legibility. */
+@media (max-width: 767px) {
+  .hp-hero-ph .ph-img { object-position: 95% center; }
+}
 /* Legibility floor for the copy.
    Tuned against bright photography, not the dark vector comp this originally
    sat on. The gold eyebrow needs 4.5:1 and the headline 3:1, and over a pale
