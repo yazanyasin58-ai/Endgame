@@ -87,7 +87,7 @@
   color: var(--ink); text-decoration: none; font-size: 0.9375rem; font-weight: 600;
   white-space: nowrap;
 }
-.hp-nav-phone:hover { color: var(--gold); }
+.hp-nav-phone:hover { color: var(--gold-deep); }
 /* Below 768px the sticky bar already carries call and text, so the header
    repeats them for no gain and wraps onto a second row doing it. Drop both and
    the header is one line: wordmark and menu. */
@@ -164,7 +164,7 @@
   color: var(--gray);
 }
 .hp-trust li:not(:last-child)::after {
-  content: '\00B7'; color: var(--gold); margin-inline: 1.4rem;
+  content: '\00B7'; color: var(--gold-deep); margin-inline: 1.4rem;
 }
 
 /* ---------- sections ---------- */
@@ -297,6 +297,9 @@
 .social svg { width: 1.15rem; height: 1.15rem; }
 
 /* ---------- form on charcoal ---------- */
+/* The form's base styling assumes the charcoal ground it sits on for the
+   homepage; a blocked slot inside it has to opt into the dark palette too. */
+.hp .ef { --blocked-fg: var(--stone); --blocked-bg: var(--charcoal); }
 .hp .ef-label {
   font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.14em;
   text-transform: uppercase; color: var(--stone);
@@ -319,7 +322,9 @@
 .hp .ef-hint {
   margin: 0.15rem 0 0.6rem; font-size: 0.8438rem; line-height: 1.6; color: var(--stone);
 }
-.hp .ef-hint a { color: var(--gold-bright); text-underline-offset: 3px; }
+.hp .ef-hint a {
+  color: var(--gold-bright); text-decoration: underline; text-underline-offset: 3px;
+}
 
 /* ---------- footer ---------- */
 .hp .foot {
@@ -346,9 +351,22 @@
 }
 .hp .foot a { color: inherit; text-decoration: none; }
 .hp .foot a:hover { color: var(--gold-bright); }
+/* Footer links sit in running text on stone. gold-bright against stone is
+   1.44:1, so colour alone cannot tell them apart from the copy around them. */
+.hp .foot a {
+  color: var(--gold-bright); text-decoration: underline; text-underline-offset: 3px;
+  /* Phone and email stack one per line in the footer. As inline links each was
+     16px tall with no gap, under the 24px minimum for a touch target. */
+  display: inline-block; padding-block: 0.3rem;
+}
+.hp .foot-col p { line-height: 1.9; }
+.hp .foot a:hover { color: var(--cream); }
 .hp .foot-blocked {
   margin-top: 2.25rem; display: grid; gap: 0.6rem; max-width: 40rem;
-  --blocked-bg: var(--charcoal);
+  /* The footer is charcoal, so it opts into --stone (6.41:1 there). The
+     component default is --gray, which is right for the light pages and
+     would fail here. */
+  --blocked-fg: var(--stone); --blocked-bg: var(--charcoal);
 }
 .hp .foot-fine { margin-top: 2.25rem; font-size: 0.75rem; }
 
@@ -501,7 +519,7 @@
 .ir-item { padding: 1.6rem 0; border-top: 1px solid var(--rule); }
 .ir-num {
   display: block; font-family: 'Fraunces', serif; font-size: 0.875rem;
-  color: var(--gold); margin-bottom: 0.5rem;
+  color: var(--gold-deep); margin-bottom: 0.5rem;
 }
 .ir-item-title {
   font-family: 'Fraunces', serif; font-weight: 300; font-size: 1.3rem; line-height: 1.25;
@@ -533,7 +551,7 @@
 @media (min-width: 1080px) { .inv-grid { grid-template-columns: repeat(3, 1fr); } }
 .inv-card { border-top: 1px solid var(--rule); padding-top: 1.25rem; }
 .inv-num {
-  font-family: 'Fraunces', serif; font-size: 0.9rem; color: var(--gold);
+  font-family: 'Fraunces', serif; font-size: 0.9rem; color: var(--gold-deep);
 }
 .inv-title {
   font-family: 'Fraunces', serif; font-weight: 400;
@@ -554,17 +572,29 @@
 /* ---------- contact ---------- */
 .ct-grid { display: grid; gap: 3rem; }
 @media (min-width: 900px) { .ct-grid { grid-template-columns: 1fr 1.2fr; gap: 4rem; } }
-.ct-details p { color: var(--charcoal); }
-.ct-details a { color: var(--charcoal); }
+.ct-details p { color: var(--gray); }
+/* Underlined, not colour-only. These sit inside running text, and a colour
+   difference alone was 2.85:1 against the surrounding copy — below the 3:1
+   that lets a link be told apart without relying on colour perception. */
+.ct-details a {
+  color: var(--charcoal); text-decoration: underline; text-underline-offset: 3px;
+}
+.ct-details a:hover { color: var(--gold-deep); }
 .ct-hours { list-style: none; margin: 0; padding: 0; font-size: 0.9063rem; }
 .ct-hours li {
   display: flex; justify-content: space-between; gap: 1rem;
   padding-block: 0.3rem; border-bottom: 1px solid var(--rule); max-width: 22rem;
 }
+.ct-map {
+  margin-top: 1rem; border: 1px solid var(--rule); border-radius: 0.35rem;
+  overflow: hidden; aspect-ratio: 4 / 3; max-width: 34rem;
+}
+.ct-map iframe { display: block; width: 100%; height: 100%; border: 0; }
 .ct-blocked { margin-top: 2.5rem; display: grid; gap: 0.75rem; }
 .ct-form .ef-label { color: var(--gray); }
 .ct-form .ef-input { background: #fff; border: 1px solid rgb(20 17 13 / 0.18); color: var(--ink); }
 .ct-form .ef-input:focus { border-color: var(--gold); }
 .ct-form .ef-note { color: var(--gray); }
+.ct-form .ef { --blocked-fg: var(--gray); --blocked-bg: var(--paper); }
 .ct-form .ef-hint { color: var(--gray); }
 .ct-form .ef-hint a { color: var(--charcoal); }

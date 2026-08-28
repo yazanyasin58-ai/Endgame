@@ -19,7 +19,7 @@ const { class: className = '' } = Astro.props;
 const logoSrc = optionalImage(heroImages.logo);
 ---
 
-<a class:list={['logo', className]} href="/home/" aria-label={`${business.name} — home`}>
+<a class:list={['logo', className]} href="/">
   {
     logoSrc ? (
       <img class="logo-img" src={logoSrc} alt={`${business.name}, construction and remodeling`} />

@@ -11,6 +11,11 @@
   --paper: #fbf8f2;
   --gold: #c8a24a;
   --gold-bright: #e2c06b;
+  /* Gold for text on the light grounds. --gold is 2.27:1 on paper, which fails
+     AA badly; this is the same hue taken down until it clears 4.5:1 on both
+     paper (5.01) and cream (4.72). --gold itself is unchanged and still used
+     for buttons, rules and anything on a dark ground. */
+  --gold-deep: #856719;
 }
 
 html {
@@ -104,18 +109,21 @@ body {
   display: flex;
   align-items: baseline;
   gap: 0.75rem;
-  border: 1px dashed var(--blocked-fg, var(--stone));
+  border: 1px dashed var(--blocked-fg, var(--gray));
   padding: 0.75rem 1rem;
   font-family: ui-monospace, 'SFMono-Regular', Menlo, monospace;
   font-size: 0.6875rem;
   letter-spacing: 0.08em;
-  color: var(--blocked-fg, var(--stone));
+  /* Defaults to --gray, which passes on the light grounds these mostly sit on.
+     --stone is 2.38:1 on paper; it is only safe on ink or charcoal, so dark
+     contexts set --blocked-fg themselves. */
+  color: var(--blocked-fg, var(--gray));
 }
 .blocked-tag {
   flex: none;
   font-weight: 700;
-  background: var(--blocked-fg, var(--stone));
-  color: var(--blocked-bg, var(--ink));
+  background: var(--blocked-fg, var(--gray));
+  color: var(--blocked-bg, var(--paper));
   padding: 0.15em 0.5em;
 }
 

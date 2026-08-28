@@ -139,14 +139,45 @@ exists in `/public`, otherwise it falls back to its vector comp — so adding ar
 file operation, not a code change, and a missing file can never ship as a broken image.
 
 Names are given without an extension; `.webp`, `.avif`, `.png`, `.jpg` and `.jpeg` are all
-picked up, best format first. Drop a file into `public/img/`:
+picked up, best format first.
 
-| Base name in `public/img/` | Slot |
+**Uploading from the browser.** Open `idf-site/public/img/` on github.com, use
+**Add file → Upload files**, drag the photographs in and commit. Cloudflare rebuilds and
+the preview link updates a minute or two later. No terminal, no local clone.
+
+#### The hero
+
+| Base name | Slot |
 |---|---|
-| `v1-hero-dusk` | Homepage hero, 16:9 |
-| `v4-hero-interior` | Homepage hero fallback, 16:9 |
-| `work-in-progress` | Selected projects, second card, 4:3 |
-| `logo` | Header lockup — replaces the text wordmark when present |
+| `hero` | Homepage hero, full width — wins over everything below |
+| `v1-hero-dusk` | Fallback, kept from the exploration phase |
+| `v4-hero-interior` | Fallback |
+| `project-kitchen-cream-wide` | Final fallback — the gallery kitchen doubles as the hero |
+
+The hero is a wide banner, so a tall or square photograph gets cropped hard top and bottom.
+Prefer a landscape shot with room around the subject.
+
+#### Gallery
+
+| Base name | Photograph |
+|---|---|
+| `project-kitchen-cream-wide` | Cream kitchen, wide view with island and pendants |
+| `project-kitchen-cream` | Cream kitchen seen through the doorway |
+| `project-island-blue-quartz` | Blue island with white waterfall quartz |
+| `project-tile-install` | Crew laying the marble-look tile |
+| `project-floor-medallion` | Compass medallion set into the floor |
+| `project-staircase` | Curved staircase with iron balusters |
+| `project-bath-freestanding` | Freestanding oval tub at the windows |
+| `project-siding` | Two workers on ladders doing the siding |
+| `project-bath-vanity` | Bathroom with wood vanity and tiled tub surround |
+
+#### Not yet supplied
+
+| Base name | Photograph | Page |
+|---|---|---|
+| `owner-portrait` | Shawn and Nancy | About |
+| `project-custom-home` | A completed custom home, exterior | Custom Homes |
+| `logo` | Logo artwork — replaces the text wordmark | Header |
 
 The `v`-prefixed names are kept from the exploration phase so files already downloaded
 under those names keep working.

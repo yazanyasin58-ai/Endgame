@@ -4,6 +4,14 @@ import BlockedSlot from '../components/BlockedSlot.astro';
 import EstimateForm from '../components/EstimateForm.astro';
 import SocialLinks from '../components/SocialLinks.astro';
 import { business, hours, blocked } from '../content/idf';
+
+/**
+ * Google Maps embed, built from business.address so the pin and the printed
+ * address cannot drift apart. This is the keyless embed endpoint — no API key,
+ * no billing account, nothing to rotate. It loads lazily, so it costs nothing
+ * until the visitor scrolls to it.
+ */
+const mapEmbed = `https://maps.google.com/maps?q=${encodeURIComponent(business.address)}&z=15&output=embed`;
 ---
 
 <Page
@@ -43,8 +51,17 @@ import { business, hours, blocked } from '../content/idf';
         <h2 class="ab-h3">Follow</h2>
         <SocialLinks />
 
+        <h2 class="ab-h3">Find us</h2>
+        <div class="ct-map">
+          <iframe
+            title="Map showing Interior Design Flooring at 45431 Ruritan Circle, Suite 160, Sterling, VA 20164"
+            src={mapEmbed}
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+            allowfullscreen></iframe>
+        </div>
+
         <div class="ct-blocked">
-          <BlockedSlot label="EMBEDDED MAP — ADD ONCE THE DOMAIN IS LIVE" />
           <BlockedSlot label={blocked.serviceArea} />
         </div>
       </div>
