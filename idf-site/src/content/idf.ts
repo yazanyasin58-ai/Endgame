@@ -296,6 +296,20 @@ export const serviceGroups = [
 ] as const;
 
 /**
+ * DO NOT USE THE YELP PHOTOGRAPHS.
+ *
+ * The nine images originally catalogued here were saved from the company's
+ * Yelp listing, and the owner has confirmed they were posted by customers.
+ * Photographs posted by a customer belong to that customer — not to the
+ * business the review is about — so Interior Design Flooring cannot publish
+ * them on its own site, at any resolution. Yelp's own terms do not grant that
+ * right either.
+ *
+ * Everything below therefore describes slots waiting on replacement imagery
+ * from footage and photographs the company itself owns. If a file named
+ * project-1.jpg through project-9.jpg turns up in public/img/, it is almost
+ * certainly one of the Yelp saves and must not be committed.
+ *
  * Project gallery.
  *
  * One entry per photograph the owner supplied. `slot` is the base filename in

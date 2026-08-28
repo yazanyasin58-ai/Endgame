@@ -125,6 +125,14 @@ Three things must never be added to this section, and the reason is in a comment
 
 ## Imagery
 
+> **The Yelp photographs cannot be used.** Nine project images were originally
+> sourced from the company's Yelp listing. The owner has since confirmed they were
+> posted by customers, and a photograph posted by a customer belongs to that
+> customer, not to the business being reviewed. They are out regardless of
+> resolution, and no file named `project-1.jpg` … `project-9.jpg` should be
+> committed. Replacement imagery comes from the company's own video footage and
+> photographs.
+
 No photography is generated, sourced, or faked. Every image slot is a reserved stand-in at
 the correct aspect ratio, visibly labelled — hero 16:9, project card 4:3, project detail
 3:2, before/after 1:1, owner portrait 4:5. Typography and negative space are sized as if
