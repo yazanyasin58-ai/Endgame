@@ -193,9 +193,27 @@ export const promo = {
 } as const;
 
 // Slots that exist but are blocked pending client confirmation. Render these
-// visibly as blocked — never soften into publishable copy.
-export const blocked = {
-  serviceArea: 'SERVICE AREA LIST — BLOCKED PENDING CLIENT CONFIRMATION',
+// visibly as blocked — never soften into publishable copy. Empty for now: the
+// service area was the last entry and has been confirmed.
+export const blocked = {} as const;
+
+/**
+ * Service area — confirmed as the DMV, resolving the contradiction between the
+ * intake form (DC/VA/MD) and the older marketing line ("Serving Northern
+ * Virginia"). The intake form was right.
+ *
+ * OPEN QUESTION, raised with the owner and not settled here. The company holds
+ * a Virginia Class A licence, which is the only licence number on this site.
+ * Contracting in the other two jurisdictions is licensed separately —
+ * Maryland through the MHIC, the District through its own home improvement
+ * contractor licence. Advertising work in a jurisdiction without holding its
+ * licence is the same class of exposure as the real estate page. If those
+ * licences do not exist, this should come back to Virginia only.
+ */
+export const serviceArea = {
+  short: 'Washington DC, Maryland & Virginia',
+  regions: ['Washington, DC', 'Maryland', 'Virginia'],
+  detail: 'Serving the greater DMV area from our Sterling showroom.',
 } as const;
 
 /* ------------------------------------------------------------------

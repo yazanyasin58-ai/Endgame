@@ -326,6 +326,50 @@
   color: var(--gold-bright); text-decoration: underline; text-underline-offset: 3px;
 }
 
+/* ---------- showroom band (homepage, above the footer) ---------- */
+.hp-showroom {
+  background: var(--cream);
+  border-top: 1px solid var(--rule);
+  padding: clamp(3rem, 6vw, 5rem) clamp(1.25rem, 4vw, 3.5rem);
+}
+.hp-showroom-inner { display: grid; gap: 2.5rem; align-items: start; }
+@media (min-width: 900px) {
+  .hp-showroom-inner { grid-template-columns: 1fr 1.1fr; gap: 4rem; }
+}
+.hp-showroom-addr {
+  font-style: normal; margin-top: 2rem; font-size: 1.0625rem; line-height: 1.7;
+  color: var(--charcoal);
+}
+.hp-showroom-hours {
+  list-style: none; margin: 1.5rem 0 0; padding: 0; font-size: 0.9063rem;
+  max-width: 22rem; color: var(--gray);
+}
+.hp-showroom-hours li {
+  display: flex; justify-content: space-between; gap: 1rem;
+  padding-block: 0.3rem; border-bottom: 1px solid var(--rule);
+}
+.hp-showroom-area {
+  margin-top: 1.75rem; font-size: 0.9063rem; line-height: 1.7; color: var(--gray);
+}
+.hp-showroom-area strong { color: var(--charcoal); }
+.hp-showroom-map {
+  border: 1px solid var(--rule); border-radius: 0.35rem; overflow: hidden;
+  aspect-ratio: 4 / 3;
+}
+.hp-showroom-map iframe { display: block; width: 100%; height: 100%; border: 0; }
+
+/* ---------- footer service area ---------- */
+.hp .foot-area { margin-top: 2.25rem; }
+.hp .foot-regions {
+  list-style: none; margin: 0.5rem 0 0; padding: 0;
+  display: flex; flex-wrap: wrap; gap: 0.4rem 1.25rem; font-size: 0.875rem;
+}
+.ct-regions {
+  list-style: none; margin: 0.5rem 0 0; padding: 0;
+  display: flex; flex-wrap: wrap; gap: 0.4rem 1.25rem;
+  font-size: 0.9063rem; color: var(--gray);
+}
+
 /* ---------- footer ---------- */
 .hp .foot {
   background: var(--charcoal); color: var(--stone);

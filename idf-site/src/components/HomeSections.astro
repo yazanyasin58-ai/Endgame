@@ -19,8 +19,12 @@ import {
   processSteps,
   figures,
   cta,
+  hours,
+  serviceArea,
 } from '../content/idf';
 import { optionalImage, firstImage, heroImages } from '../lib/images';
+
+const mapEmbed = `https://maps.google.com/maps?q=${encodeURIComponent(business.address)}&z=15&output=embed`;
 
 const heroSrc = firstImage(
   heroImages.hero,
@@ -192,6 +196,46 @@ const homeCards = ['project-kitchen-cream-wide', 'project-tile-install', 'projec
         <SocialLinks class="hp-final-social" />
       </div>
       <EstimateForm idPrefix="hp" />
+    </div>
+  </section>
+
+  <!-- SHOWROOM -->
+  <section class="hp-showroom" aria-labelledby="hp-showroom-h">
+    <div class="hp-showroom-inner">
+      <div class="hp-showroom-text">
+        <h2 id="hp-showroom-h" class="hp-h2">Visit the showroom</h2>
+        <p class="hp-sub">
+          Contracts are signed here, and selections are made here. Open seven days.
+        </p>
+
+        <address class="hp-showroom-addr">
+          45431 Ruritan Circle, Suite 160<br />Sterling, VA 20164
+        </address>
+
+        <ul class="hp-showroom-hours">
+          {hours.map((h) => (<li><span>{h.days}</span><span>{h.open} – {h.close}</span></li>))}
+        </ul>
+
+        <p class="hp-showroom-area">
+          <strong>{serviceArea.short}</strong><br />{serviceArea.detail}
+        </p>
+
+        <a
+          class="hp-textlink"
+          href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(business.address)}`}
+          target="_blank"
+          rel="noopener noreferrer">Get directions</a
+        >
+      </div>
+
+      <div class="hp-showroom-map">
+        <iframe
+          title="Map showing Interior Design Flooring at 45431 Ruritan Circle, Suite 160, Sterling, VA 20164"
+          src={mapEmbed}
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          allowfullscreen></iframe>
+      </div>
     </div>
   </section>
 </main>

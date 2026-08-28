@@ -1,6 +1,5 @@
 ---
-import { business, blocked, hours } from '../content/idf';
-import BlockedSlot from './BlockedSlot.astro';
+import { business, hours, serviceArea } from '../content/idf';
 import SocialLinks from './SocialLinks.astro';
 ---
 
@@ -43,8 +42,12 @@ import SocialLinks from './SocialLinks.astro';
       </div>
     </div>
 
-    <div class="foot-blocked">
-      <BlockedSlot label={blocked.serviceArea} />
+    <div class="foot-area">
+      <h3 class="foot-head">Service area</h3>
+      <p>{serviceArea.detail}</p>
+      <ul class="foot-regions">
+        {serviceArea.regions.map((r) => <li>{r}</li>)}
+      </ul>
     </div>
 
     <p class="foot-fine">

@@ -81,9 +81,16 @@ Motors leads.
 
 ### Still blocked
 
-- **Service-area geography** — the intake form says DC/VA/MD; the client's own marketing
-  says "Serving Northern Virginia." Renders as a `Blocked` slot in the footer and on
-  Contact.
+- **Service-area geography — resolved, with a caveat.** Confirmed as the DMV: Washington
+  DC, Maryland and Virginia. The intake form was right and the older "Serving Northern
+  Virginia" line was stale.
+
+  The caveat has not been resolved. The company holds a **Virginia** Class A licence, and
+  that is the only licence number on the site. Contracting in the other two jurisdictions
+  is licensed separately — Maryland through the MHIC, the District through its own home
+  improvement contractor licence. Advertising work in a jurisdiction without holding its
+  licence is the same class of exposure as the real estate page. Confirm both licences
+  exist; if they do not, the service area comes back to Virginia only.
 - **Real estate services** — see the gate table above.
 - **Lender name and application link** — Financing describes the arrangement and routes to
   a conversation; the outbound link is a blocked slot until the lender is named.
