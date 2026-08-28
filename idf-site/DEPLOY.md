@@ -17,9 +17,15 @@ pick `yazanyasin58-ai/Endgame`, then set:
 | **Root directory** | **`idf-site`** |
 
 The root directory is the one that catches people out — the site is not at the
-top of the repository, and the build fails without it.
+top of the repository, and the build fails without it. The failure is immediate
+and reads as a missing `package.json` or a build command that produced nothing,
+because Cloudflare is looking at the top of the repo where there is no site.
+If a build fails right after a settings change, check this field first.
 
-Node version comes from `.nvmrc`. Nothing else needs configuring.
+Node version comes from `idf-site/.nvmrc`. Nothing else needs configuring — but
+if a build ever reports a Node version error out of Astro, which needs
+`18.20.8 || ^20.3.0 || >=22.0.0`, set `NODE_VERSION = 22` under
+**Settings → Variables and Secrets**. That overrides everything else.
 
 Set the production branch to the working branch, not `master`. `master` has no
 site on it, so a build from there produces nothing.
