@@ -1,9 +1,15 @@
 name: Build
 
+# Push is limited to the default branch. A branch with an open pull request
+# would otherwise match both triggers and build twice for the same commit.
 on:
   push:
-    branches: ['**']
+    branches: [master]
   pull_request:
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
@@ -12,8 +18,8 @@ jobs:
       run:
         working-directory: idf-site
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version-file: idf-site/.nvmrc
           cache: npm
@@ -25,7 +31,17 @@ jobs:
       # unfilled slots are the expected state, so a gate here would be red on
       # every run. Turn this into a failing check at launch, when every slot
       # should carry real photography.
+      #
+      # Two numbers, because they answer different questions: renders is how
+      # many places on the site are still holding space, slots is how many
+      # distinct labelled slots exist. One photograph can fill several renders
+      # — the kitchen appears on both the homepage and the gallery — and a
+      # couple of slots share a file, so slots is an upper bound on the
+      # photographs outstanding, not an exact count.
       - name: Report unfilled image slots
         run: |
-          reserved=$(grep -o 'Reserved image slot' -r dist --include=*.html | wc -l)
-          echo "Unfilled image slots in build output: $reserved"
+          renders=$(grep -oh 'Reserved image slot' -r dist --include=*.html | wc -l)
+          slots=$(grep -oh 'Reserved image slot: Reserved — [^"<]*' -r dist --include=*.html \
+                  | sort -u | wc -l)
+          echo "Slot renders still holding space: $renders"
+          echo "Distinct labelled slots:          $slots"
