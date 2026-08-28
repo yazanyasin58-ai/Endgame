@@ -207,8 +207,25 @@ Measured against WCAG 2.1 (4.5:1 for body text, 3:1 for large and interactive el
 
 The brief's starting `--gray #6B6660` fails AA as body text on dark grounds (2.9:1 on ink).
 Rather than lighten the client's gray, a `--stone #A9A296` token was added for muted text
-on dark; `--gray` is kept exactly as specified for its intended use on light grounds. No
-other palette values were changed.
+on dark; `--gray` is kept exactly as specified for its intended use on light grounds.
+
+A second token, `--gold-deep #856719`, was added for the same reason in the other
+direction. The table above was measured pairing by pairing, but it did not cover every
+combination that actually shipped: `--gold` on `--paper` is **2.27:1**, and that pairing
+was live on the numbered pillars, the trust-bar separators and the section numerals.
+Lighthouse caught it, not the table. `--gold-deep` is the same hue taken down until it
+clears 4.5:1 on both light grounds; `--gold` is unchanged, still used for buttons, rules
+and anything on a dark ground.
+
+| Added pairing | Ratio | Result |
+|---|---|---|
+| gold-deep `#856719` on paper `#FBF8F2` | 5.01:1 | Passes AA body |
+| gold-deep `#856719` on cream `#F6F1E7` | 4.72:1 | Passes AA body |
+| gray `#6B6660` on charcoal `#23201B` | 2.85:1 | **Fails** — blocked slots on dark set `--stone` |
+
+A table of measured pairings only proves what it lists. Run the audit.
+
+No client palette values were changed.
 
 ## Typography
 
@@ -219,6 +236,26 @@ Fraunces (display) over Public Sans (body), both Google Fonts.
 - The intake form is **UI only**. Submission is not wired; each form carries a visible
   note saying so. Routing to `interiordesignflooring@gmail.com` comes in the build phase.
 - Pages carry `noindex` while this is design review.
-- Lighthouse has **not** been run — the brief requires reporting actual scores, so no
-  score is claimed. It belongs to the build phase.
+- **Lighthouse, measured.** Run against a local production build, mobile preset:
+
+  | Page | Performance | Accessibility | Best practices | SEO |
+  |---|---|---|---|---|
+  | `/` | 90 | 100 | 96 | 60 |
+  | `/contact/` | 90 | 100 | 96 | 60 |
+  | `/projects/` | — | 100 | — | — |
+
+  Two of those are artefacts of where the run happened, not of the site:
+
+  - **SEO 60** is entirely `is-crawlable` — every page carries `noindex` while this is in
+    review. Removing it at launch clears the category; nothing else in it fails.
+  - **Best practices 96** is entirely `errors-in-console`, and the only console error is
+    the Google Fonts request failing: the build sandbox has no outbound access to
+    `fonts.googleapis.com`. It will not occur on a real host.
+  - **Performance 90** was measured with those font requests failing, so first paint and
+    speed index are not representative. Re-run against the deployed URL before quoting a
+    performance number to anyone.
+
+  Accessibility is the figure that is clean and real: 100, after fixing a contrast
+  failure, an accessible-name mismatch, two colour-only link treatments and an
+  undersized touch target.
 - Verified visually at 375px and 1440px. The sticky call/text bar appears below 768px.
