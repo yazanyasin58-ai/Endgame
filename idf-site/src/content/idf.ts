@@ -91,10 +91,16 @@ export const projects = [
  * the quote without stars rather than assuming five.
  */
 export interface Review {
+  /** The reviewer's name exactly as they published it. */
   name: string;
+  /** What the job was, in a few words. Ours, not theirs. */
   context: string;
+  /** The review, word for word. Never edited, never shortened. */
   quote: string;
+  /** The stars they actually gave. Omit rather than guess. */
   rating?: 1 | 2 | 3 | 4 | 5;
+  /** Where it was published. Shown on the card, so it has to be accurate. */
+  source?: 'Google' | 'Facebook' | 'Houzz' | 'Yelp';
 }
 
 export const reviews: Review[] = [
@@ -131,6 +137,24 @@ export const reviewsPending = [
   'Carlos Henao',
   'Sam Smith',
 ] as const;
+
+/*
+ * To add a review, copy this into the `reviews` array above and fill it in.
+ * No other change is needed — the carousel picks it up, shows the stars if
+ * `rating` is set and the source label if `source` is set.
+ *
+ *   {
+ *     name: 'Jeremy Smith',
+ *     context: 'Kitchen remodel',        // what the job was, in a few words
+ *     rating: 5,                          // the stars they actually gave
+ *     source: 'Google',
+ *     quote: 'Paste the review here, word for word, exactly as published.',
+ *   },
+ *
+ * The one rule: `quote` is transcription, not writing. If the text is not to
+ * hand, leave the reviewer in `reviewsPending` — an empty slot costs nothing,
+ * an invented quote attributed to a real person is a false endorsement.
+ */
 
 
 // The real five-step sequence. "Estimate within 24 hours" is the differentiator.

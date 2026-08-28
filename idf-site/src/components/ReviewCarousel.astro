@@ -72,7 +72,10 @@ const {
           </div>
           <footer class="rc-foot">
             <cite class="rc-name">{r.name}</cite>
-            <span class="rc-context">{r.context}</span>
+            <span class="rc-context">
+              {r.context}
+              {r.source && <span class="rc-source">{r.source} review</span>}
+            </span>
           </footer>
         </blockquote>
       ))
@@ -101,13 +104,18 @@ const {
       const quote = box.querySelector<HTMLElement>('.rc-quote');
       if (!quote) return;
 
-      // Collapse first, then ask whether it actually overflowed. Measuring
-      // before collapsing would always say no.
+      /*
+       * Decide from the text's own height against the clamp limit, not
+       * against the box's height. The box is a flex child that grows to fill
+       * the card, and card height is set by the tallest card in the row — so
+       * measuring the box meant a long review sitting beside another long one
+       * reported "it fits", dropped its Read more, and ran the whole row tall.
+       */
+      const maxLines = 6;
+      const lineHeight = parseFloat(getComputedStyle(quote).lineHeight);
+      if (!lineHeight || quote.scrollHeight <= lineHeight * maxLines + 2) return;
+
       box.classList.add('is-clamped');
-      if (quote.scrollHeight <= box.clientHeight + 2) {
-        box.classList.remove('is-clamped');
-        return;
-      }
 
       const toggle = document.createElement('button');
       toggle.type = 'button';

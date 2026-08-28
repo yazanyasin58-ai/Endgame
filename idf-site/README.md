@@ -99,7 +99,25 @@ the FTC's consumer-review rule took effect in 2024 that carries civil penalties 
 violation, on top of the ordinary defamation and right-of-publicity exposure.
 
 `rating` is optional for the same reason — a card with no recorded rating renders without
-stars rather than assuming five.
+stars rather than assuming five. `source` is optional too and prints as "Google review" on
+the card, so it has to be where the review was actually published.
+
+Adding one is copy-paste, no code change. There is a filled-in template in the comment
+under `reviewsPending`.
+
+**Getting the text.** This build environment cannot reach `google.com` or the review
+aggregators — the network egress proxy blocks them — so the reviews have to be brought in
+by hand. Three ways, fastest first:
+
+1. **Google Business Profile** — the owner signs in, opens Reviews, and copies each one.
+   This is the only place the full set lives.
+2. **Screenshots** — send images of the reviews and they can be transcribed from those.
+3. **Google Places API** — `place_details` returns up to five reviews per place with
+   author, rating and text, which is the sanctioned programmatic route. Needs an API key
+   and only ever returns five, so it does not replace option 1.
+
+Scraping the Maps page is not one of the options: it breaks Google's terms, and the page
+is client-rendered so there is nothing in the HTML to read anyway.
 
 `reviewsPending` lists five reviewers the owner has asked to add by name only. They stay
 there until someone supplies each review's verbatim text and star rating, at which point

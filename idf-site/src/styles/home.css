@@ -774,6 +774,9 @@
   overflow: hidden; clip-path: inset(50%); white-space: nowrap;
 }
 .rc-quote-box { flex: 1 1 auto; }
+/* A clamped box must not also grow to fill the card, or the clamp has no
+   effect on the height the card actually takes. */
+.rc-quote-box.is-clamped { flex: 0 0 auto; }
 .rc-quote-box.is-clamped .rc-quote {
   display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 6;
   line-clamp: 6; overflow: hidden;
@@ -788,6 +791,7 @@
 .rc-foot { display: flex; flex-direction: column; gap: 0.15rem; margin-top: auto; }
 .rc-name { font-style: normal; font-weight: 600; color: var(--ink); }
 .rc-context { font-size: 0.8125rem; color: var(--gray); }
+.rc-source::before { content: '·'; margin: 0 0.4em; }
 
 @media (prefers-reduced-motion: reduce) {
   .rc-track { scroll-behavior: auto; }
