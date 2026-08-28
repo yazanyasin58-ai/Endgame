@@ -112,6 +112,14 @@ function extensionOf(name: string): string {
   return dot === -1 ? '' : name.slice(dot + 1).toLowerCase();
 }
 
+/** A short single-line subject, whatever the customer typed. */
+function subjectLine(name: string, type: string, reference: string): string {
+  const clean = (v: string, max: number) => v.replace(/\s+/g, ' ').trim().slice(0, max);
+  const who = clean(name, 60) || 'New enquiry';
+  const what = clean(type, 40);
+  return what ? `Estimate request — ${who} — ${what}` : `Estimate request — ${who} — ${reference}`;
+}
+
 function escapeHtml(value: string): string {
   return value
     .replace(/&/g, '&amp;')
@@ -301,7 +309,10 @@ const handlePost = async (context: PagesContext): Promise<Response> => {
         from,
         to: [to],
         reply_to: fields.email,
-        subject: `Estimate request — ${fields.name} — ${fields.type}`,
+        // Fields are capped at 4000 characters for the body; a subject line is
+        // not the place for that, and long subjects get truncated or flagged
+        // by mail clients. Collapse whitespace and keep it short.
+        subject: subjectLine(fields.name, fields.type, reference),
         html:
           `<div style="font-family:system-ui,sans-serif;font-size:15px;line-height:1.5">` +
           `<p style="color:#6B6660;font-size:13px;margin:0 0 14px">Reference ${reference} · ${now.toUTCString()}</p>` +
