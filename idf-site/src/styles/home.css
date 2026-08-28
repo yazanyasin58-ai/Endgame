@@ -729,3 +729,187 @@
 .ct-form .ef-status { border-left-color: var(--gray); color: var(--gray); }
 .ct-form .ef-status[data-kind='ok'] { border-left-color: var(--gold-deep); color: var(--ink); }
 .ct-form .ef-status[data-kind='error'] { border-left-color: #A84420; color: var(--ink); }
+
+/* ---------- reviews carousel ---------- */
+.rc-head {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  gap: 1.5rem; flex-wrap: wrap; margin-bottom: 1.6rem;
+}
+.rc-head .hp-h2 { margin-bottom: 0.2rem; }
+.rc-head .hp-sub { margin: 0; }
+.rc-controls { display: flex; gap: 0.6rem; flex: none; }
+.rc-arrow {
+  width: 2.75rem; height: 2.75rem; border-radius: 50%;
+  border: 1px solid var(--rule); background: transparent; color: var(--ink);
+  display: grid; place-items: center; cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
+}
+.rc-arrow svg { width: 0.7rem; height: 1.1rem; }
+.rc-arrow:hover:not(:disabled) { background: var(--cream); border-color: var(--gold); }
+.rc-arrow:disabled { opacity: 0.3; cursor: default; }
+
+/* The track is the scroller. Cards are sized in percentages of it so the
+   paging step (0.9 of the visible width) always lands on a card edge. */
+.rc-track {
+  display: grid; grid-auto-flow: column; grid-auto-columns: 85%;
+  gap: 1.25rem; overflow-x: auto; scroll-snap-type: x mandatory;
+  padding-bottom: 0.5rem; scrollbar-width: thin;
+  /* room for the focus ring, which a clipping scroller would cut off */
+  padding-inline: 3px; margin-inline: -3px;
+}
+@media (min-width: 700px) { .rc-track { grid-auto-columns: 46%; } }
+@media (min-width: 1060px) { .rc-track { grid-auto-columns: 31.5%; } }
+.rc-track:focus-visible { outline: 2px solid var(--gold-deep); outline-offset: 4px; }
+
+.rc-card {
+  scroll-snap-align: start; margin: 0;
+  display: flex; flex-direction: column; gap: 0.9rem;
+  padding: 1.6rem 1.5rem; background: var(--paper);
+  border: 1px solid var(--rule); border-radius: 3px;
+}
+.rc-stars { margin: 0; line-height: 1; }
+.rc-stars-mark { color: var(--gold-deep); font-size: 1.05rem; letter-spacing: 0.12em; }
+.rc-sr {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip-path: inset(50%); white-space: nowrap;
+}
+.rc-quote-box { flex: 1 1 auto; }
+.rc-quote-box.is-clamped .rc-quote {
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 6;
+  line-clamp: 6; overflow: hidden;
+}
+.rc-quote { margin: 0; color: var(--charcoal); line-height: 1.6; }
+.rc-more {
+  align-self: flex-start; background: none; border: 0; padding: 0;
+  font: inherit; font-size: 0.875rem; font-weight: 600; cursor: pointer;
+  color: var(--gold-deep); border-bottom: 1px solid currentColor;
+}
+.rc-more:hover { color: var(--ink); }
+.rc-foot { display: flex; flex-direction: column; gap: 0.15rem; margin-top: auto; }
+.rc-name { font-style: normal; font-weight: 600; color: var(--ink); }
+.rc-context { font-size: 0.8125rem; color: var(--gray); }
+
+@media (prefers-reduced-motion: reduce) {
+  .rc-track { scroll-behavior: auto; }
+}
+
+/* ---------- list your home band ---------- */
+.lyh-band {
+  display: grid; gap: 1.6rem; align-items: center;
+  padding: clamp(2rem, 5vw, 3.25rem) clamp(1.25rem, 4vw, 3rem);
+  background: var(--cream); border: 1px solid var(--rule); border-radius: 3px;
+}
+@media (min-width: 860px) { .lyh-band { grid-template-columns: auto 1fr auto; gap: 2rem; } }
+.lyh-icon {
+  width: 3.5rem; height: 3.5rem; flex: none; color: var(--gold-deep);
+  display: grid; place-items: center;
+  border: 1px solid var(--gold); border-radius: 50%; background: var(--paper);
+}
+.lyh-icon svg { width: 1.75rem; height: 1.75rem; }
+.lyh-band h2 {
+  margin: 0 0 0.35rem; font-family: 'Fraunces', 'Instrument Serif', serif;
+  font-weight: 400; font-size: clamp(1.35rem, 2.6vw, 1.75rem); color: var(--ink);
+}
+.lyh-band p { margin: 0; color: var(--charcoal); max-width: 52ch; }
+.lyh-band .hp-btn { flex: none; white-space: nowrap; }
+
+/* ---------- preview notice ---------- */
+.pv-notice {
+  margin: 0 0 2rem; padding: 1.1rem 1.25rem;
+  border: 1px solid var(--gold); border-left-width: 4px; border-radius: 3px;
+  background: var(--cream);
+}
+.pv-notice p { margin: 0 0 0.5rem; color: var(--charcoal); font-size: 0.9375rem; }
+.pv-notice p:last-child { margin-bottom: 0; }
+.pv-notice strong { color: var(--ink); }
+
+/* ---------- real estate ---------- */
+.re-grid { display: grid; gap: 1.25rem; }
+@media (min-width: 720px) { .re-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1080px) { .re-grid { grid-template-columns: repeat(3, 1fr); } }
+.re-item {
+  padding: 1.4rem 1.35rem; background: var(--paper);
+  border: 1px solid var(--rule); border-radius: 3px;
+}
+.re-item h3 { margin: 0 0 0.4rem; font-size: 1.0625rem; color: var(--ink); }
+.re-item p { margin: 0; color: var(--charcoal); font-size: 0.9375rem; line-height: 1.55; }
+.re-offer {
+  padding: clamp(1.6rem, 4vw, 2.4rem); background: var(--cream);
+  border: 1px solid var(--gold); border-radius: 3px;
+}
+.re-offer h2 { margin: 0 0 0.7rem; }
+.re-offer p { margin: 0 0 0.7rem; color: var(--charcoal); max-width: 68ch; line-height: 1.6; }
+.re-offer p:last-of-type { margin-bottom: 1.25rem; }
+.re-licence {
+  margin-top: 2.5rem; padding-top: 1.25rem; border-top: 1px solid var(--rule);
+  font-size: 0.8125rem; color: var(--gray);
+}
+
+/* ---------- list your home page ---------- */
+.lyh-points { list-style: none; margin: 2rem 0 1.5rem; padding: 0; display: grid; gap: 1.25rem; }
+.lyh-points li { padding-left: 1.1rem; border-left: 2px solid var(--gold); }
+.lyh-points h2 { margin: 0 0 0.25rem; font-size: 1.0625rem; color: var(--ink); }
+.lyh-points p { margin: 0; color: var(--charcoal); font-size: 0.9375rem; line-height: 1.55; }
+.lyh-area { margin: 0 0 1.5rem; color: var(--gray); font-size: 0.9375rem; }
+
+/* Body copy for pages that are mostly prose. Sized between the standfirst and
+   the small print, which nothing else on the site covered. */
+.hp-lede {
+  max-width: 44rem; margin: 0 0 1rem; color: var(--charcoal);
+  font-size: 1.0625rem; line-height: 1.65;
+}
+.hp-lede:last-child { margin-bottom: 0; }
+.hp-lede a { color: var(--ink); text-decoration: underline; text-underline-offset: 2px; }
+.hp-lede a:hover { color: var(--gold-deep); }
+
+/* The real-estate page stacks several short prose sections; the default
+   section rhythm leaves a gap between them big enough to read as a break in
+   the page. Pull the prose-only ones together. */
+.re-prose { padding-top: 0; padding-bottom: clamp(1.5rem, 3vw, 2.25rem); }
+.re-prose .pv-notice { max-width: 52rem; }
+
+/* ---------- intake pages (estimate, list your home) ----------
+   These lived in a page-scoped <style is:global> on the estimate page, which
+   meant the second page built on the same layout rendered unstyled. Shared
+   here so any intake page picks them up. */
+.hp-est {
+    display: grid;
+    gap: 3rem;
+    max-width: 68rem;
+    margin-inline: auto;
+    padding: clamp(2.5rem, 6vw, 5rem) clamp(1.25rem, 4vw, 3.5rem);
+  }
+  @media (min-width: 1024px) {
+    .hp-est { grid-template-columns: 1fr 1.2fr; gap: 4.5rem; }
+  }
+  .hp-est-h1 {
+    font-family: 'Instrument Serif', serif; font-weight: 400;
+    font-size: clamp(2.2rem, 5vw, 3.5rem); line-height: 1.05;
+  }
+  .hp-est-sub { font-size: 1.15rem; color: var(--gray); margin-top: 0.9rem; }
+  .hp-est-promo {
+    margin-top: 1.75rem; padding: 1rem 1.25rem;
+    border: 1px solid var(--rule); border-radius: 0.5rem;
+    background: var(--cream); font-size: 0.9375rem;
+  }
+  .hp-est-promo span { color: var(--gray); font-size: 0.8438rem; }
+  .hp-est-steps {
+    list-style: none; margin: 2rem 0 0; padding: 0;
+    font-size: 0.9063rem; color: var(--charcoal);
+  }
+  .hp-est-steps li {
+    padding-block: 0.5rem; border-top: 1px solid var(--rule);
+  }
+  .hp-est-steps li span {
+    font-family: 'Instrument Serif', serif; color: var(--gray); margin-right: 0.6rem;
+  }
+  .hp-est-steps li.is-featured { font-weight: 600; }
+  .hp-est-steps li.is-featured span { color: var(--gold); }
+  .hp-est .hp-call { display: inline-block; margin-top: 1.75rem; }
+  /* form sits on the light ground here, not charcoal */
+  .hp-est-form .ef-label { color: var(--gray); }
+  .hp-est-form .ef-input {
+    background: #fff; border: 1px solid rgb(20 17 13 / 0.18); color: var(--ink);
+  }
+  .hp-est-form .ef-input:focus { border-color: var(--gold); }
+  .hp-est-form .ef-note { color: var(--gray); }

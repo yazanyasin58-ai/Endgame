@@ -1,0 +1,72 @@
+---
+/**
+ * List your home.
+ *
+ * Its own page rather than a section, so the homepage call-to-action has
+ * somewhere to land and the realtor has a URL to hand out. Structured like
+ * the estimate page on purpose: a customer who has seen one already knows
+ * how this one works.
+ */
+import Base from '../layouts/Base.astro';
+import '../styles/home.css';
+import '../styles/variant-b.css';
+import PromoBar from '../components/PromoBar.astro';
+import SiteNav from '../components/SiteNav.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import StickyCallBar from '../components/StickyCallBar.astro';
+import ListingForm from '../components/ListingForm.astro';
+import { business, listing, serviceArea, trustBar } from '../content/idf';
+
+const fonts =
+  'https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,600&family=Public+Sans:wght@400;500;600&display=swap';
+---
+
+<Base
+  title="List Your Home — Interior Design Flooring"
+  description="List your home with Interior Design Flooring. Our in-house realtors handle sales and rentals across DC, Maryland and Virginia, with the renovation team in the same building."
+  fontsHref={fonts}
+  bodyClass="hp vb"
+  withCallbar
+>
+  <PromoBar />
+  <SiteNav />
+
+  <main>
+    <section class="hp-est">
+      <div class="hp-est-intro">
+        <h1 class="hp-est-h1">{listing.heading}</h1>
+        <p class="hp-est-sub hp-italic">{listing.standfirst}</p>
+
+        <ul class="lyh-points">
+          {
+            listing.points.map((point) => (
+              <li>
+                <h2>{point.title}</h2>
+                <p>{point.detail}</p>
+              </li>
+            ))
+          }
+        </ul>
+
+        <p class="lyh-area">{serviceArea.detail}</p>
+
+        <a class="hp-call" href={business.phonePrimaryHref}>
+          Prefer to talk? {business.phonePrimary}
+        </a>
+      </div>
+
+      <div class="hp-est-form">
+        <ListingForm idPrefix="lyh" />
+      </div>
+    </section>
+
+    <section class="hp-trust" aria-label="Credentials">
+      <ul>
+        {trustBar.map((item) => <li>{item}</li>)}
+      </ul>
+    </section>
+  </main>
+
+  <SiteFooter />
+  <StickyCallBar />
+</Base>

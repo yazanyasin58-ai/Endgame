@@ -76,23 +76,62 @@ export const projects = [
   },
 ] as const;
 
-// The only four approved reviews. Homepage shows two; High Quality Motors leads.
-export const reviews = {
-  highQualityMotors: {
+/**
+ * Customer reviews.
+ *
+ * Every entry here is a real review, quoted verbatim, with the reviewer's own
+ * name as they published it. Nothing in this array may be written, softened,
+ * lengthened or invented — a testimonial attributed to a named person who did
+ * not say it is a false endorsement, and since the FTC's rule on consumer
+ * reviews took effect in 2024 it carries civil penalties per violation as well
+ * as the ordinary defamation and right-of-publicity exposure.
+ *
+ * `rating` is the star rating the reviewer actually gave. It is optional
+ * precisely so that it is never guessed: a card with no recorded rating shows
+ * the quote without stars rather than assuming five.
+ */
+export interface Review {
+  name: string;
+  context: string;
+  quote: string;
+  rating?: 1 | 2 | 3 | 4 | 5;
+}
+
+export const reviews: Review[] = [
+  {
     name: 'High Quality Motors',
     context: 'Commercial remodel',
     quote:
-      'Interior Design Flooring did my whole car dealership remodel. They really took their time. They explained everything to me. I cannot be happier. They exceeded my expectations. I had a lot of contractors come out trying to overcharge me $75,000–$100,000. Interior Design did that in half the cost, but also kept the same quality. Do not go to any other contractor.',
+      'Interior Design Flooring did my whole car dealership remodel. They really took their time. They explained everything to me. I cannot be happier. They exceeded my expectations. I had a lot of contractors come out trying to overcharge me $75,000\u2013$100,000. Interior Design did that in half the cost, but also kept the same quality. Do not go to any other contractor.',
   },
-  suzannaJenkins: {
+  {
     name: 'Suzanna Jenkins',
     context: 'Hardwood and railing',
     quote:
       'Amazing outcome. I worked with Shawn and Nancy on putting hardwoods and railing on my stairs, catwalk, and into my family room. They were able to match the wood from my original floors and they did an excellent job. Shawn and Nancy stayed with our budget and we are very pleased.',
   },
-} as const;
+];
 
-export const homepageReviews = [reviews.highQualityMotors, reviews.suzannaJenkins];
+/**
+ * Reviewers the owner has asked to add, by name only.
+ *
+ * These five are held here rather than in `reviews` because a name is not a
+ * review: publishing a quote next to one of these names means writing words
+ * that person never said. The carousel is built and will show them the moment
+ * the verbatim text arrives - paste each review exactly as published,
+ * along with the star rating given, and move the entry into `reviews` above.
+ *
+ * Source them from the Google Business Profile, which is where the owner
+ * reads them: Google Business Profile > Reviews > copy the text.
+ */
+export const reviewsPending = [
+  'Jeremy Smith',
+  'Samantha Scott',
+  'Justin Drunagel',
+  'Carlos Henao',
+  'Sam Smith',
+] as const;
+
 
 // The real five-step sequence. "Estimate within 24 hours" is the differentiator.
 export const processSteps = [
@@ -141,6 +180,108 @@ export const formFields = {
     '6 months or more',
     'Still planning',
   ],
+} as const;
+
+/**
+ * "List your home" intake.
+ *
+ * A separate form from the estimate request because it asks a different
+ * question and reaches a different desk. It posts to the same endpoint with
+ * `enquiry` set, so the notification email says which one arrived.
+ *
+ * Note what this form does NOT collect: no income, no employment, no date of
+ * birth, no social security number, nothing that would make an inbox a
+ * liability. Name, how to reach them, the address, and what they want to do
+ * with it is enough to start a conversation.
+ */
+export const listing = {
+  heading: 'List your home with Interior Design Flooring.',
+  standfirst:
+    'One team to list it, sell it or rent it, and renovate it. Tell us about the property and our in-house realtor will call you back.',
+  intent: [
+    'Sell my home',
+    'Rent out my property',
+    'Buy a home',
+    'Find a rental',
+    'Sell commercial property',
+    'Rent out commercial property',
+    'Sell land',
+    'Buy land',
+    'Not sure yet',
+  ],
+  propertyType: [
+    'Single-family home',
+    'Townhouse',
+    'Condominium',
+    'Multi-family',
+    'Commercial',
+    'Land',
+    'Other',
+  ],
+  timeline: [
+    'As soon as possible',
+    'Within 1-3 months',
+    'Within 3-6 months',
+    '6 months or more',
+    'Just exploring',
+  ],
+  points: [
+    {
+      title: 'One team, start to finish',
+      detail:
+        'The realtor who lists your property and the contractor who prepares it work for the same company, so nothing falls between them.',
+    },
+    {
+      title: 'We know what work pays back',
+      detail:
+        'Thirty-five years of renovation work behind the listing advice, so the recommendation is what actually needs doing rather than a wish list.',
+    },
+    {
+      title: 'Renovation credit for qualifying clients',
+      detail:
+        'Buy or sell through our in-house realtor and use us for the work, and you may qualify for a renovation discount or credit. Terms are confirmed in writing before the project begins.',
+    },
+  ],
+} as const;
+
+/**
+ * Real estate.
+ *
+ * COPY APPROVED BY THE OWNER, NOT YET CLEARED TO PUBLISH. See the
+ * `features.realEstate` gate for what is missing and why. Everything below is
+ * written from the owner's own list of services and says nothing about
+ * outcomes, prices, timescales or market conditions.
+ *
+ * Two lines are deliberately absent and must not be added:
+ *   - any claim about what a property will sell or rent for
+ *   - any stated commission rate or discount percentage, until the owner
+ *     supplies the actual terms in writing
+ */
+export const realEstate = {
+  standfirst:
+    'Buy, sell, rent, build and renovate through one team.',
+  intro: [
+    'Our in-house realtors handle the property side of the work, so the same company that renovates a house can also list it, sell it, or find it a tenant.',
+    'That matters most when the two are connected: a listing that needs work before it goes up, an investment property bought for what it could become, or a piece of land bought to build on.',
+  ],
+  services: [
+    { title: 'List and sell homes', detail: 'Residential listings, from preparing the property to closing.' },
+    { title: 'List rental properties and find tenants', detail: 'Marketing the property and placing a tenant in it.' },
+    { title: 'Help buyers purchase homes', detail: 'Representing buyers through search, offer and settlement.' },
+    { title: 'Help renters find homes', detail: 'Finding and securing a rental for tenants.' },
+    { title: 'Residential and commercial', detail: 'Sales and rentals on both sides of the market.' },
+    { title: 'Land purchases and sales', detail: 'Buying and selling raw and improved land.' },
+    { title: 'Investment properties and fixer-uppers', detail: 'Properties bought for the work they need rather than the state they are in.' },
+    { title: 'Land for custom home construction', detail: 'Finding a site to build on, with the builder already at the table.' },
+    { title: 'Renovation and development potential', detail: 'Helping investors identify properties worth taking on.' },
+  ],
+  discount: {
+    title: 'Renovation credit for qualifying clients',
+    body: [
+      'Clients who buy or sell through our in-house realtor and use Interior Design Flooring for the renovation or construction work may qualify for a renovation discount or credit.',
+      'Terms, eligibility and the amount are confirmed in writing before any project begins. Ask us about it when you call.',
+    ],
+  },
 } as const;
 
 export const cta = {
@@ -229,13 +370,24 @@ export const features = {
   /**
    * Real estate / brokerage services.
    *
-   * BLOCKED. Advertising brokerage services in Virginia requires the
-   * advertising entity to hold a real estate FIRM licence — it is not
-   * enough for individual agents to be licensed elsewhere, and ads must
-   * carry the licensed brokerage name. Until we have the firm licence
-   * number, this stays off. Do not open this gate on verbal assurance.
+   * Three states, not two:
+   *   false     - the page renders a blocked notice and nothing else
+   *   'preview' - the full page renders for review, carries a notice saying
+   *               it is not cleared, stays out of the nav and out of search
+   *   true      - published: page renders clean and appears in the nav
+   *
+   * Currently 'preview' so the owner can read and approve the copy, which is
+   * what they asked for, without the site advertising brokerage services it
+   * cannot yet lawfully advertise.
+   *
+   * To reach `true`, one thing is needed: the Virginia real estate FIRM
+   * licence number of the entity doing the advertising, set as
+   * `realEstateLicence` below. Virginia requires the licensed firm's name in
+   * advertising, and individual agents licensed under some other brokerage
+   * does not satisfy it. Do not open this gate on verbal assurance; the
+   * licence number is the assurance.
    */
-  realEstate: false,
+  realEstate: 'preview' as false | 'preview' | true,
 
   /**
    * On-site finance application.
@@ -245,6 +397,16 @@ export const features = {
    * site with no backend. The Financing page links out instead.
    */
   financeApplication: false,
+} as const;
+
+/**
+ * The advertising disclosure Virginia requires on real estate advertising:
+ * the licensed firm's name, and the licence number with it. Empty until the
+ * owner supplies it, which is what holds `features.realEstate` at 'preview'.
+ */
+export const realEstateLicence = {
+  firmName: '',
+  licenceNumber: '',
 } as const;
 
 /** Main navigation, in the owner's requested order. */

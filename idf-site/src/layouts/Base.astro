@@ -7,9 +7,29 @@ interface Props {
   fontsHref: string;
   bodyClass?: string;
   withCallbar?: boolean;
+  /**
+   * Keep this page out of search indexes permanently, independently of the
+   * site-wide pre-launch block below. Set on pages that must stay unindexed
+   * even after launch — so that removing the site-wide tag at launch cannot
+   * quietly expose them.
+   */
+  noindex?: boolean;
 }
 
-const { title, description, fontsHref, bodyClass = '', withCallbar = false } = Astro.props;
+const {
+  title,
+  description,
+  fontsHref,
+  bodyClass = '',
+  withCallbar = false,
+  noindex = false,
+} = Astro.props;
+
+/**
+ * Site-wide pre-launch block. AT LAUNCH: delete this constant and the
+ * `preLaunch ||` below, leaving pages that pass `noindex` still blocked.
+ */
+const preLaunch = true;
 ---
 
 <!doctype html>
@@ -19,8 +39,11 @@ const { title, description, fontsHref, bodyClass = '', withCallbar = false } = A
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
-    <!-- Design exploration phase — keep out of search indexes until launch -->
-    <meta name="robots" content="noindex, nofollow" />
+    {
+      preLaunch || noindex ? (
+        <meta name="robots" content="noindex, nofollow" />
+      ) : null
+    }
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

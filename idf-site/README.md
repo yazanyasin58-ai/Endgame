@@ -33,15 +33,22 @@ configured in the dashboard before it does anything.
 | `/services/` | Services — remodeling, interior/exterior, commercial, restoration, permits, plus the insurance restoration section at `#insurance-restoration` |
 | `/custom-homes/` | Custom homes — what we build and the five-stage process |
 | `/projects/` | Projects completed |
-| `/real-estate/` | **Gated off.** Renders a blocked notice only. See below. |
+| `/real-estate/` | **Preview.** Full page renders for owner review; kept out of the menu and out of search. See below. |
 | `/investors/` | Investor programme |
 | `/financing/` | Financing — routes to the lender, no application on this site |
 | `/contact/` | Contact — showroom, hours, phone, intake form |
 | `/estimate/` | Request an estimate — the target of every primary CTA |
+| `/list-your-home/` | List your home — the in-house realtor intake form |
 
 The nine main-menu items live in `nav` in `src/content/idf.ts`. The header shows the full
-row at 1280px and above and collapses to a `<details>` dropdown below that, so it opens,
-closes and takes keyboard focus without JavaScript.
+row at 1340px and above and collapses to a `<details>` dropdown below that, so it opens,
+closes and takes keyboard focus without JavaScript. The breakpoint is 1340 rather than a
+rounder number because that is where nine links, the phone number and the button stop
+fitting beside the logo; below it they wrapped onto a second row.
+
+`/list-your-home/` is deliberately not a tenth menu item — the header has no room for one.
+It is reached from the homepage band, the footer, the collapsed menu and the real estate
+page.
 
 Non-home pages share `src/layouts/Page.astro`; the homepage body is
 `src/components/HomeSections.astro`.
@@ -55,12 +62,53 @@ accident.
 
 | Gate | State | Why |
 |---|---|---|
-| `realEstate` | off | Virginia requires the *advertising entity* to hold a real estate **firm** licence. Agents licensed under another brokerage is not sufficient, and ads must carry the licensed brokerage name. Needs the firm licence number. The proposed renovation discount for clients who use the in-house realtor needs separate review — a thing of value for referring settlement-service business engages federal affiliated-business-arrangement rules. |
+| `realEstate` | `'preview'` | Virginia requires the *advertising entity* to hold a real estate **firm** licence. Agents licensed under another brokerage is not sufficient, and ads must carry the licensed brokerage name. Needs the firm licence number and the firm name as licensed, both set in `realEstateLicence`. |
 | `financeApplication` | off | A pre-approval form collects income and identity data. That belongs on the lender's own secured portal, not on a static site with no backend. The Financing page links out instead. |
 
-Do not open either gate on a verbal assurance. `realEstate` needs the firm licence number
-and, for the discount, a real estate attorney's sign-off. `financeApplication` stays off
-permanently — when the lender is named it becomes an outbound link, not a hosted form.
+`realEstate` has three states rather than two:
+
+| State | Page | Menu | Search |
+|---|---|---|---|
+| `false` | Blocked notice only | omitted | blocked |
+| `'preview'` | Renders in full, with a notice saying it is not published | omitted | blocked |
+| `true` | Renders in full, clean | listed | indexable |
+
+`'preview'` exists so the owner can read and approve copy that is not yet cleared to
+publish, without the site advertising it. Reaching `true` needs `realEstateLicence.firmName`
+and `realEstateLicence.licenceNumber` filled in — the page renders the required advertising
+disclosure from them.
+
+An earlier version of this file said the renovation credit engages federal
+affiliated-business-arrangement rules. That was overstated: RESPA governs referrals of
+*settlement* services, and general contracting is not one. What the copy does avoid is a
+stated percentage or any promise of eligibility, since the owner has not supplied terms.
+
+`financeApplication` stays off permanently — when the lender is named it becomes an
+outbound link, not a hosted form.
+
+Pages that must stay out of search even after launch pass `noindex` to the layout. The
+site-wide pre-launch block is the `preLaunch` constant in `src/layouts/Base.astro`; delete
+it at launch and the per-page flags keep working.
+
+## Reviews
+
+`reviews` in `src/content/idf.ts` holds real reviews, quoted verbatim, with the reviewer's
+own name. **Nothing in that array may be written, paraphrased, lengthened or invented.** A
+testimonial attributed to a named person who did not say it is a false endorsement; since
+the FTC's consumer-review rule took effect in 2024 that carries civil penalties per
+violation, on top of the ordinary defamation and right-of-publicity exposure.
+
+`rating` is optional for the same reason — a card with no recorded rating renders without
+stars rather than assuming five.
+
+`reviewsPending` lists five reviewers the owner has asked to add by name only. They stay
+there until someone supplies each review's verbatim text and star rating, at which point
+the entry moves into `reviews` and appears in the carousel with no code change.
+
+The carousel (`src/components/ReviewCarousel.astro`) scrolls with CSS scroll-snap, so it
+is readable and swipeable before its script runs. The arrows, the swipe hint and the
+Read more controls are all added by script and hidden until then — a truncated review with
+no way to open it would misrepresent what someone wrote.
 
 ## Content integrity
 

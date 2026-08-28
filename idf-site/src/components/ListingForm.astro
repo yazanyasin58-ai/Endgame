@@ -1,31 +1,22 @@
 ---
 /**
- * Estimate request form.
+ * "List your home" intake.
  *
- * Posts to /api/estimate — a Cloudflare Pages Function in `functions/api/`,
- * the only server-side code on the site. Photographs go up with the rest of
- * the form and land in R2. See CLOUDFLARE.md for what has to be configured in
- * the dashboard before this endpoint does anything.
- *
- * The endpoint is not required for the form to be useful: with no JavaScript,
- * or before the bindings exist, the phone and email routes are on the page in
- * plain text and the form reports what went wrong rather than pretending.
+ * Posts to the same /api/estimate endpoint as the estimate form, with a
+ * hidden `enquiry` field so the notification email says which desk it is for.
+ * One endpoint rather than two because the validation, the upload limits, the
+ * spam handling and the R2 write are identical — a second copy of that would
+ * be a second thing to keep in step.
  */
-import { business, cta, formFields } from '../content/idf';
+import { business, cta, listing } from '../content/idf';
 
 interface Props {
   idPrefix?: string;
-  /**
-   * Turnstile site key. Public by design — safe in the HTML. Defaults to
-   * PUBLIC_TURNSTILE_SITE_KEY so it is set once in the Pages project rather
-   * than passed down from every page. With no key the widget does not render
-   * and the Function does not enforce it; the form still works.
-   */
   turnstileSiteKey?: string;
 }
 
 const {
-  idPrefix = 'ef',
+  idPrefix = 'lf',
   turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY,
 } = Astro.props;
 const f = (name: string) => `${idPrefix}-${name}`;
@@ -37,8 +28,10 @@ const f = (name: string) => `${idPrefix}-${name}`;
   action="/api/estimate"
   enctype="multipart/form-data"
   novalidate
-  data-ef-success="Thank you — your request is in. Reference {reference}. We will call to arrange the site visit, and your written estimate follows within 24 hours."
+  data-ef-success="Thank you — we have your property details. Reference {reference}. One of our realtors will call you back."
 >
+  <input type="hidden" name="enquiry" value="Property listing" />
+
   <div class="ef-grid">
     <div class="ef-field">
       <label class="ef-label" for={f('name')}>Name <span aria-hidden="true">*</span></label>
@@ -53,44 +46,54 @@ const f = (name: string) => `${idPrefix}-${name}`;
       <input class="ef-input" type="email" id={f('email')} name="email" autocomplete="email" required />
     </div>
     <div class="ef-field">
-      <label class="ef-label" for={f('address')}>Project address <span aria-hidden="true">*</span></label>
+      <label class="ef-label" for={f('address')}>Property address <span aria-hidden="true">*</span></label>
       <input
         class="ef-input"
         type="text"
         id={f('address')}
         name="address"
-        placeholder="City or ZIP at minimum"
+        autocomplete="street-address"
+        placeholder="Street, city or ZIP"
         required
       />
     </div>
     <div class="ef-field ef-field--full">
-      <label class="ef-label" for={f('type')}>Type of work <span aria-hidden="true">*</span></label>
+      <label class="ef-label" for={f('type')}>What would you like to do? <span aria-hidden="true">*</span></label>
       <select class="ef-input ef-select" id={f('type')} name="type" required>
         <option value="" selected disabled>Select one</option>
-        {formFields.typeOfWork.map((t) => <option value={t}>{t}</option>)}
+        {listing.intent.map((i) => <option value={i}>{i}</option>)}
       </select>
     </div>
     <div class="ef-field">
-      <label class="ef-label" for={f('budget')}>Budget range <span class="ef-optional">(optional)</span></label>
-      <select class="ef-input ef-select" id={f('budget')} name="budget">
+      <label class="ef-label" for={f('propertyType')}>
+        Property type <span class="ef-optional">(optional)</span>
+      </label>
+      <select class="ef-input ef-select" id={f('propertyType')} name="propertyType">
         <option value="" selected>Select one</option>
-        {formFields.budget.map((b) => <option value={b}>{b}</option>)}
+        {listing.propertyType.map((t) => <option value={t}>{t}</option>)}
       </select>
     </div>
     <div class="ef-field">
       <label class="ef-label" for={f('timeframe')}>Timeframe <span class="ef-optional">(optional)</span></label>
       <select class="ef-input ef-select" id={f('timeframe')} name="timeframe">
         <option value="" selected>Select one</option>
-        {formFields.timeframe.map((t) => <option value={t}>{t}</option>)}
+        {listing.timeline.map((t) => <option value={t}>{t}</option>)}
       </select>
     </div>
     <div class="ef-field ef-field--full">
-      <label class="ef-label" for={f('details')}>Project details</label>
-      <textarea class="ef-input ef-textarea" id={f('details')} name="details" rows="4"></textarea>
+      <label class="ef-label" for={f('details')}>
+        Anything else about the property? <span class="ef-optional">(optional)</span>
+      </label>
+      <textarea
+        class="ef-input ef-textarea"
+        id={f('details')}
+        name="details"
+        rows="4"
+        placeholder="Condition, work you are considering before listing, tenancy, anything we should know."></textarea>
     </div>
     <div class="ef-field ef-field--full">
       <label class="ef-label" for={f('photos')}>
-        Photos or plans <span class="ef-optional">(optional)</span>
+        Photos <span class="ef-optional">(optional)</span>
       </label>
       <input
         class="ef-file"
@@ -103,18 +106,19 @@ const f = (name: string) => `${idPrefix}-${name}`;
       />
       <p class="ef-hint" id={f('photos-hint')}>
         Up to 8 files, 10 MB each. Or text them to
-        <a href={business.phonePrimarySms}>{business.phonePrimary}</a> and we will match them to
-        your request.
+        <a href={business.phonePrimarySms}>{business.phonePrimary}</a>.
       </p>
       <p class="ef-filelist" data-ef-filelist hidden></p>
     </div>
     <div class="ef-field ef-field--full">
-      <label class="ef-label" for={f('source')}>How did you hear about us? <span class="ef-optional">(optional)</span></label>
+      <label class="ef-label" for={f('source')}>
+        How did you hear about us? <span class="ef-optional">(optional)</span>
+      </label>
       <input class="ef-input" type="text" id={f('source')} name="source" />
     </div>
   </div>
 
-  {/* Honeypot. Off-screen rather than display:none, which some bots detect. */}
+  {/* Honeypot, matching the estimate form. */}
   <div class="ef-hp" aria-hidden="true">
     <label for={f('company')}>Company</label>
     <input type="text" id={f('company')} name="company" tabindex="-1" autocomplete="off" />
@@ -126,7 +130,7 @@ const f = (name: string) => `${idPrefix}-${name}`;
     )
   }
 
-  <button class="ef-submit" type="submit">{cta.primary}</button>
+  <button class="ef-submit" type="submit">Send my property details</button>
 
   <p class="ef-status" data-ef-status role="status" aria-live="polite" hidden></p>
   <noscript>

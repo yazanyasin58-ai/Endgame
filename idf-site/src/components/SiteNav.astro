@@ -18,7 +18,13 @@ interface Props {
 }
 
 const { current } = Astro.props;
-const items = nav.filter((i) => !('gated' in i) || features[i.gated as keyof typeof features]);
+/**
+ * A gated entry appears only when its gate is exactly `true`. The real estate
+ * gate also has a 'preview' state, which is truthy but must NOT put the link
+ * in the nav: preview means the owner can read the page at its URL, not that
+ * the site advertises it.
+ */
+const items = nav.filter((i) => !('gated' in i) || features[i.gated as keyof typeof features] === true);
 ---
 
 <header class="hp-nav">
@@ -53,6 +59,7 @@ const items = nav.filter((i) => !('gated' in i) || features[i.gated as keyof typ
         }
         <hr />
         <a href="/estimate/"><strong>Request an Estimate</strong></a>
+        <a href="/list-your-home/"><strong>List Your Home</strong></a>
       </div>
     </details>
   </div>

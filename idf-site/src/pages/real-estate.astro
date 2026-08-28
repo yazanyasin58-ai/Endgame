@@ -2,29 +2,94 @@
 /**
  * Real estate.
  *
- * GATED. While features.realEstate is false this page renders only the
- * blocked notice — none of the marketing copy exists in the output, and the
- * nav omits the link entirely. See the gate definition in content/idf.ts for
- * why. Do not open the gate without a Virginia real estate FIRM licence
- * number for the advertising entity.
+ * Gated on features.realEstate, which has three states — see the gate
+ * definition in content/idf.ts. In 'preview' the full page renders so the
+ * owner can read and approve the copy, carrying a notice that says it is not
+ * cleared, staying out of the nav and out of search. Only `true` publishes it,
+ * and `true` requires the Virginia real estate FIRM licence number in
+ * `realEstateLicence`.
+ *
+ * The gate is not decoration. Virginia requires real estate advertising to
+ * carry the licensed firm's name; individual agents licensed under some other
+ * brokerage does not satisfy it. Publishing without that is the kind of thing
+ * that costs a licence, not a redesign.
  */
 import Page from '../layouts/Page.astro';
 import BlockedSlot from '../components/BlockedSlot.astro';
-import { features } from '../content/idf';
+import { business, features, realEstate, realEstateLicence, serviceArea } from '../content/idf';
+
+const preview = features.realEstate === 'preview';
+const live = features.realEstate === true;
+const licensed = realEstateLicence.firmName !== '' && realEstateLicence.licenceNumber !== '';
 ---
 
 <Page
   title="Real Estate — Interior Design Flooring"
-  description="Real estate services page, pending licence verification."
+  description="In-house realtors for sales, rentals, land and investment property across DC, Maryland and Virginia — with the renovation team under the same roof."
   heading="Real estate"
-  standfirst="This page is not cleared for publication."
+  standfirst={live || preview ? realEstate.standfirst : 'This page is not cleared for publication.'}
   current="/real-estate/"
+  noindex={!live}
 >
-  <section class="hp-section hp-section--tight">
-    {
-      features.realEstate ? (
-        <p>Real estate content goes here once the gate is opened.</p>
-      ) : (
+  {
+    live || preview ? (
+      <>
+        <section class="hp-section hp-section--tight re-prose">
+          {preview && (
+            <div class="pv-notice">
+              <p><strong>Preview — not published.</strong> This page is here for you to read
+              and approve. It is left out of the site menu and out of search engines, and
+              nobody reaches it without this link.</p>
+              <p>
+                One thing turns it on: the Virginia real estate <strong>firm</strong> licence
+                number of the business that will be advertising these services, and the firm
+                name exactly as it is licensed. Virginia requires both in real estate
+                advertising, and agents licensed under a different brokerage does not cover
+                it. Send those two and this goes live as it stands.
+              </p>
+            </div>
+          )}
+          {realEstate.intro.map((para) => <p class="hp-lede">{para}</p>)}
+        </section>
+
+        <section class="hp-section" aria-labelledby="re-services-h">
+          <h2 id="re-services-h" class="hp-h2">What our realtors handle</h2>
+          <div class="re-grid">
+            {realEstate.services.map((s) => (
+              <article class="re-item">
+                <h3>{s.title}</h3>
+                <p>{s.detail}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section class="hp-section" aria-labelledby="re-offer-h">
+          <div class="re-offer">
+            <h2 id="re-offer-h" class="hp-h2">{realEstate.discount.title}</h2>
+            {realEstate.discount.body.map((para) => <p>{para}</p>)}
+            <a class="hp-btn" href="/list-your-home/">List My Home</a>
+          </div>
+        </section>
+
+        <section class="hp-section hp-section--tight re-prose">
+          <p class="hp-lede">
+            Buying, selling, renting, building or renovating — it is one call either way.
+            Reach us on <a href={business.phonePrimaryHref}>{business.phonePrimary}</a>.
+          </p>
+          <p class="re-licence">
+            {serviceArea.detail}
+            {licensed && (
+              <>
+                {' '}Real estate services offered by {realEstateLicence.firmName}, Virginia
+                real estate firm licence {realEstateLicence.licenceNumber}.
+              </>
+            )}
+          </p>
+        </section>
+      </>
+    ) : (
+      <section class="hp-section hp-section--tight">
         <div class="fin-blocked">
           <BlockedSlot label="REAL ESTATE SERVICES — BLOCKED PENDING FIRM LICENCE VERIFICATION" />
           <p class="fin-blocked-note">
@@ -33,17 +98,8 @@ import { features } from '../content/idf';
             licences under another brokerage is not sufficient, and advertisements must
             carry the licensed brokerage name.
           </p>
-          <p class="fin-blocked-note">
-            The proposed renovation discount for clients who use the in-house realtor needs
-            separate review: a thing of value offered in exchange for referring settlement
-            service business can engage federal rules on affiliated business arrangements.
-          </p>
-          <p class="fin-blocked-note">
-            Neither point is a design decision. Both need the firm licence number and, for
-            the discount, a real estate attorney's sign-off before this page can exist.
-          </p>
         </div>
-      )
-    }
-  </section>
+      </section>
+    )
+  }
 </Page>

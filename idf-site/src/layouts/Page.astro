@@ -17,15 +17,17 @@ interface Props {
   heading: string;
   standfirst?: string;
   current?: string;
+  /** Passed through to Base — see the note on its `noindex` prop. */
+  noindex?: boolean;
 }
 
-const { title, description, heading, standfirst, current } = Astro.props;
+const { title, description, heading, standfirst, current, noindex } = Astro.props;
 
 const fonts =
   'https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,600&family=Public+Sans:wght@400;500;600&display=swap';
 ---
 
-<Base title={title} description={description} fontsHref={fonts} bodyClass="hp vb" withCallbar>
+<Base title={title} description={description} fontsHref={fonts} bodyClass="hp vb" withCallbar noindex={noindex}>
   <PromoBar />
   <SiteNav current={current} />
   <main>

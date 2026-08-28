@@ -59,11 +59,16 @@ const ALLOWED_EXTENSIONS = new Set(['jpg', 'jpeg', 'png', 'webp', 'heic', 'heif'
 
 /** Fields the form posts. Anything else in the body is ignored. */
 const TEXT_FIELDS = [
+  // Which form this came from. The estimate form omits it; the listing form
+  // sets it. Anything else a client sends is ignored, as with every field
+  // here — the allowlist is what stops an arbitrary POST filling the email.
+  'enquiry',
   'name',
   'phone',
   'email',
   'address',
   'type',
+  'propertyType',
   'budget',
   'timeframe',
   'details',
@@ -73,14 +78,16 @@ const TEXT_FIELDS = [
 const REQUIRED_FIELDS = ['name', 'phone', 'email', 'address', 'type'] as const;
 
 const LABELS: Record<string, string> = {
+  enquiry: 'Enquiry type',
   name: 'Name',
   phone: 'Phone',
   email: 'Email',
-  address: 'Project address',
+  address: 'Address',
   type: 'Type of work',
+  propertyType: 'Property type',
   budget: 'Budget range',
   timeframe: 'Timeframe',
-  details: 'Project details',
+  details: 'Details',
   source: 'Heard about us via',
 };
 
@@ -112,12 +119,18 @@ function extensionOf(name: string): string {
   return dot === -1 ? '' : name.slice(dot + 1).toLowerCase();
 }
 
-/** A short single-line subject, whatever the customer typed. */
-function subjectLine(name: string, type: string, reference: string): string {
+/**
+ * A short single-line subject, whatever the customer typed.
+ *
+ * The lead word tells the reader which form it came from before they open it:
+ * an estimate request and a property listing go to different people.
+ */
+function subjectLine(fields: Record<string, string>, reference: string): string {
   const clean = (v: string, max: number) => v.replace(/\s+/g, ' ').trim().slice(0, max);
-  const who = clean(name, 60) || 'New enquiry';
-  const what = clean(type, 40);
-  return what ? `Estimate request — ${who} — ${what}` : `Estimate request — ${who} — ${reference}`;
+  const kind = clean(fields.enquiry, 30) || 'Estimate request';
+  const who = clean(fields.name, 60) || 'New enquiry';
+  const what = clean(fields.type, 40);
+  return what ? `${kind} — ${who} — ${what}` : `${kind} — ${who} — ${reference}`;
 }
 
 function escapeHtml(value: string): string {
@@ -312,7 +325,7 @@ const handlePost = async (context: PagesContext): Promise<Response> => {
         // Fields are capped at 4000 characters for the body; a subject line is
         // not the place for that, and long subjects get truncated or flagged
         // by mail clients. Collapse whitespace and keep it short.
-        subject: subjectLine(fields.name, fields.type, reference),
+        subject: subjectLine(fields, reference),
         html:
           `<div style="font-family:system-ui,sans-serif;font-size:15px;line-height:1.5">` +
           `<p style="color:#6B6660;font-size:13px;margin:0 0 14px">Reference ${reference} · ${now.toUTCString()}</p>` +

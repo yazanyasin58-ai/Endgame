@@ -7,6 +7,7 @@
  * drift between variants and a copy change lands in all three at once.
  */
 import Placeholder from './Placeholder.astro';
+import ReviewCarousel from './ReviewCarousel.astro';
 import EstimateForm from './EstimateForm.astro';
 import SocialLinks from './SocialLinks.astro';
 import {
@@ -15,7 +16,7 @@ import {
   pillars,
   wedge,
   gallery,
-  homepageReviews,
+  reviews,
   processSteps,
   figures,
   cta,
@@ -150,21 +151,31 @@ const homeCards = ['project-kitchen-blue-island', 'project-framing-interior', 'p
   </section>
 
   <!-- REVIEWS -->
-  <section class="hp-section hp-reviews-wrap" aria-labelledby="hp-reviews-h">
-    <h2 id="hp-reviews-h" class="hp-h2">What clients say</h2>
-    <div class="hp-reviews">
-      {
-        homepageReviews.map((r) => (
-          <blockquote class="hp-review">
-            <span class="hp-review-mark" aria-hidden="true">&ldquo;</span>
-            <p class="hp-review-quote hp-italic">{r.quote}</p>
-            <footer>
-              <cite>{r.name}</cite>
-              <span class="hp-review-context">{r.context}</span>
-            </footer>
-          </blockquote>
-        ))
-      }
+  <ReviewCarousel
+    reviews={reviews}
+    headingId="hp-reviews-h"
+    standfirst="Swipe, or use the arrows, to read more."
+  />
+
+  <!-- LIST YOUR HOME -->
+  <section class="hp-section" aria-labelledby="hp-lyh-h">
+    <div class="lyh-band">
+      <span class="lyh-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+             stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 10.5 12 3l9 7.5" />
+          <path d="M5.5 9.5V20a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1V9.5" />
+          <path d="M9.5 21v-6h5v6" />
+        </svg>
+      </span>
+      <div>
+        <h2 id="hp-lyh-h">List your home with Interior Design Flooring</h2>
+        <p>
+          Our in-house realtors sell and rent property across the DMV — and the team that
+          renovates it works in the same building.
+        </p>
+      </div>
+      <a class="hp-btn" href="/list-your-home/">List My Home</a>
     </div>
   </section>
 
