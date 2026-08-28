@@ -127,7 +127,8 @@ appears in the carousel with no code change.
 Four reviews are published, transcribed from the client intake form. Three things about
 them were left exactly as the reviewers wrote them and should not be "corrected":
 
-- Carlos Henao spells the owner's name **Sean** throughout. That is his text.
+- Carlos Henao spells the owner's name **Sean** throughout. That is his text, and the
+  owner has confirmed it stays as written.
 - High Quality Motors wrote **KEPT THE SAME QUALITY** in capitals. That is their emphasis.
 - Justin Drunagel names a **Home Depot contractor** as the team that did not finish. That
   is his account of his own job.

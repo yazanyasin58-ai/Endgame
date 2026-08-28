@@ -119,6 +119,9 @@ export const reviews: Review[] = [
   {
     name: 'Carlos Henao',
     context: 'Bathroom renovation, then siding and gutters',
+    // "Sean" is how this reviewer spelled the owner's name, four times. It is
+    // not a typo in this file and the owner has confirmed it stays. Respelling
+    // it to "Shawn" would be editing a quoted person's words.
     quote:
       'We’ve worked with Sean and Nancy on two different occasions. First time was to renovate ' +
       'our bathroom. Sean is good at listening to your needs and making suggestions to improve ' +
