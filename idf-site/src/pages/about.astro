@@ -6,6 +6,9 @@
 import Page from '../layouts/Page.astro';
 import Placeholder from '../components/Placeholder.astro';
 import { business, wedge, figures, processSteps, cta } from '../content/idf';
+import { optionalImage } from '../lib/images';
+
+const portrait = optionalImage('img/owner-portrait');
 ---
 
 <Page
@@ -32,8 +35,17 @@ import { business, wedge, figures, processSteps, cta } from '../content/idf';
         </p>
       </div>
       <div class="ab-portrait">
-        <Placeholder ratio="4 / 5" label="Reserved — owner portrait · 4:5 · 1200px" class="hp-ph" />
-        <p class="ab-caption">{business.owners}</p>
+        <Placeholder
+          ratio="4 / 5"
+          label="Reserved — owner portrait · 4:5 · 1200px"
+          src={portrait}
+          alt="Shawn Waziri on site in a hard hat, reading plans, with a crane and new framing behind him"
+          real
+          class="hp-ph"
+        />
+        {/* Names only who is actually in the frame. The body copy above carries
+            both owners; a caption that says otherwise is simply wrong. */}
+        <p class="ab-caption">Shawn Waziri on site</p>
       </div>
     </div>
   </section>
