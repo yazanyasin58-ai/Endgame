@@ -352,6 +352,43 @@
   color: var(--gold-bright); text-decoration: underline; text-underline-offset: 3px;
 }
 
+/* File input. Browsers will not style the native button consistently, so the
+   button half is restyled through ::file-selector-button and the field itself
+   is left transparent — a bordered box around a bordered button reads as two
+   controls. */
+.hp .ef-file {
+  font-family: inherit; font-size: 0.875rem; color: var(--stone);
+  width: 100%; padding: 0.35rem 0;
+}
+.hp .ef-file::file-selector-button {
+  margin-right: 0.9rem; padding: 0.55em 1.3em; cursor: pointer;
+  background: transparent; color: var(--gold-bright);
+  border: 1px solid var(--gold); border-radius: 999px;
+  font-family: inherit; font-size: 0.8125rem; font-weight: 600;
+  letter-spacing: 0.05em;
+}
+.hp .ef-file::file-selector-button:hover { background: rgb(200 162 74 / 0.14); }
+.hp .ef-file:focus-visible { outline: 2px solid var(--gold-bright); outline-offset: 3px; }
+.hp .ef-filelist { margin: 0.5rem 0 0; font-size: 0.8438rem; color: var(--gold-bright); }
+
+/* Honeypot: off-screen rather than hidden, so a bot that checks for
+   display:none still fills it in. */
+.ef-hp {
+  position: absolute; left: -9999px; width: 1px; height: 1px;
+  overflow: hidden;
+}
+
+/* Submission result. Uses a left rule rather than colour alone, so the
+   success and failure states are distinguishable without colour vision. */
+.hp .ef-status {
+  margin-top: 1.1rem; padding-left: 0.9rem; font-size: 0.9063rem; line-height: 1.6;
+  border-left: 3px solid var(--stone); color: var(--stone);
+}
+.hp .ef-status[data-kind='ok'] { border-left-color: var(--gold); color: var(--cream); }
+.hp .ef-status[data-kind='error'] { border-left-color: #E08A6B; color: var(--cream); }
+
+.hp .cf-turnstile { margin-top: 1.5rem; }
+
 /* ---------- showroom band (homepage, above the footer) ---------- */
 .hp-showroom {
   background: var(--cream);
@@ -668,3 +705,9 @@
 .ct-form .ef { --blocked-fg: var(--gray); --blocked-bg: var(--paper); }
 .ct-form .ef-hint { color: var(--gray); }
 .ct-form .ef-hint a { color: var(--charcoal); }
+.ct-form .ef-file { color: var(--gray); }
+.ct-form .ef-file::file-selector-button { color: var(--gold-deep); border-color: var(--gold-deep); }
+.ct-form .ef-filelist { color: var(--gold-deep); }
+.ct-form .ef-status { border-left-color: var(--gray); color: var(--gray); }
+.ct-form .ef-status[data-kind='ok'] { border-left-color: var(--gold-deep); color: var(--ink); }
+.ct-form .ef-status[data-kind='error'] { border-left-color: #A84420; color: var(--ink); }

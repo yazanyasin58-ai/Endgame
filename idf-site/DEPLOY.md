@@ -49,7 +49,8 @@ seen as unfinished:
   lender name, the embedded map.
 - The Real Estate page renders a notice and nothing else, and is absent from
   the menu.
-- Forms do not submit and say so on the page.
+- The estimate form submits only once the R2 and email bindings exist — see
+  `CLOUDFLARE.md`. Until then it reports the failure rather than silently accepting.
 
 Worth one line to the client so none of it reads as a bug.
 
@@ -68,5 +69,6 @@ licence number and showroom address before launch.
 1. Drop the photographs into `public/img/` — see the table in `README.md`.
 2. Remove every `scene` prop, so no vector comp ships.
 3. Remove `noindex` from `src/layouts/Base.astro`.
-4. Wire the form to a real endpoint.
+4. Work through `CLOUDFLARE.md` — R2 bucket, Resend key, Turnstile — and move
+   `NOTIFY_FROM` onto the verified real domain.
 5. Point the real domain at the Pages project and run Lighthouse against it.

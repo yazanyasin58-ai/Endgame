@@ -15,9 +15,14 @@ npm run dev      # http://localhost:4321
 npm run build    # static output to dist/
 ```
 
-Astro 5 + Tailwind CSS 4, static output, deploy target Cloudflare Pages. No client-side
-JavaScript beyond two inline scripts: dismissing the promo bar, and closing the nav
-dropdown on Escape or an outside click.
+Astro 5 + Tailwind CSS 4, static output, deploy target Cloudflare Pages. Client-side
+JavaScript is limited to three things: dismissing the promo bar, closing the nav dropdown
+on Escape or an outside click, and submitting the estimate form without a page reload.
+
+One route is not static. `functions/api/estimate.ts` is a Cloudflare Pages Function
+serving `POST /api/estimate` — the estimate form's backend, including photo upload to R2.
+It is the only server-side code on the site. See `CLOUDFLARE.md` for what has to be
+configured in the dashboard before it does anything.
 
 ## Routes
 
@@ -96,8 +101,11 @@ Motors leads.
   a conversation; the outbound link is a blocked slot until the lender is named.
 - **Embedded map** — blocked slot on Contact until the domain is live. "Open in Google
   Maps" works now.
-- **File upload on the intake form** — needs a form backend with file storage, scanning and
-  size limits. The form gives the working route instead: text or email photos.
+- **Virus scanning on uploads.** The endpoint enforces a type allowlist (images and PDF),
+  8 files, 10 MB each and 40 MB total, and stores to a private bucket that never serves
+  the files back over the web — so an uploaded file is never executed or re-served. It
+  does not scan contents. Anyone opening an attachment is doing so on their own machine,
+  which is the same exposure as the emailed photographs the form previously asked for.
 - **Investor programme terms** — described as benefits with no percentages or dollar
   figures, because none have been set.
 - **Budget bands on the intake form** — provisional. They are qualifying ranges, not price
@@ -248,8 +256,12 @@ Fraunces (display) over Public Sans (body), both Google Fonts.
 
 ## Known state
 
-- The intake form is **UI only**. Submission is not wired; each form carries a visible
-  note saying so. Routing to `interiordesignflooring@gmail.com` comes in the build phase.
+- The intake form **submits**, to `/api/estimate`. Photographs go to R2 and the owner is
+  emailed at `interiordesignflooring@gmail.com` with the photographs attached and
+  reply-to set to the customer. None of it works until the bindings in `CLOUDFLARE.md`
+  exist in the Pages project — the endpoint degrades one service at a time rather than
+  failing whole, and refuses a submission carrying files it cannot store rather than
+  accepting it and dropping them.
 - Pages carry `noindex` while this is design review.
 - **Lighthouse, measured.** Run against a local production build, mobile preset:
 
