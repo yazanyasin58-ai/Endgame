@@ -61,19 +61,32 @@
 
 /* ---------- nav ---------- */
 .hp-nav {
-  display: flex; align-items: center; justify-content: space-between; gap: 1.5rem;
-  padding: 1.1rem clamp(1rem, 4vw, 3.5rem);
+  display: flex; align-items: center; justify-content: space-between; gap: 1.25rem;
+  padding: 1.1rem clamp(1rem, 3vw, 3rem);
   border-bottom: 1px solid var(--rule);
   flex-wrap: wrap;
 }
-.logo { text-decoration: none; color: inherit; display: block; }
-.logo-img { display: block; height: 3.1rem; width: auto; }
+.logo {
+  text-decoration: none; color: inherit;
+  display: flex; align-items: center; gap: 0.6rem;
+}
+.logo-mark { display: block; height: 2.3rem; width: auto; flex: none; }
 .logo-name {
-  display: block; font-family: 'Instrument Serif', serif; font-size: 1.3rem; line-height: 1.1;
+  display: block; font-family: 'Instrument Serif', serif; font-size: 1.18rem; line-height: 1.1;
 }
 .logo-lockup {
-  display: block; font-size: 0.5938rem; font-weight: 600; letter-spacing: 0.2em;
+  display: block; font-size: 0.5625rem; font-weight: 600; letter-spacing: 0.16em;
   text-transform: uppercase; color: var(--gray); margin-top: 0.2rem;
+}
+/* On a narrow header the mark, the name and the strapline cannot all sit on
+   one line: the strapline wraps and the bar grows to 81px, crowding the menu
+   button. The mark carries the strapline's own type anyway, so below 768px
+   the name alone rides beside it and the strapline drops. */
+@media (max-width: 767px) {
+  .logo { gap: 0.55rem; }
+  .logo-mark { height: 2.15rem; }
+  .logo-name { font-size: 1.05rem; }
+  .logo-lockup { display: none; }
 }
 .hp-nav-links { display: none; gap: 1.75rem; }
 @media (min-width: 900px) { .hp-nav-links { display: flex; } }
@@ -82,7 +95,7 @@
   padding-bottom: 2px; border-bottom: 1px solid transparent;
 }
 .hp-nav-links a:hover { border-bottom-color: var(--gold); }
-.hp-nav-actions { display: flex; align-items: center; gap: 1rem; }
+.hp-nav-actions { display: flex; align-items: center; gap: 0.85rem; }
 .hp-nav-phone {
   color: var(--ink); text-decoration: none; font-size: 0.9375rem; font-weight: 600;
   white-space: nowrap;
@@ -536,13 +549,18 @@
 .hp .foot-social a:hover { color: var(--gold-bright); }
 
 /* ---------- full main menu (nine items) ---------- */
-.hp-nav-links { display: none; gap: 1.35rem; flex-wrap: wrap; }
-@media (min-width: 1280px) { .hp-nav-links { display: flex; } }
+.hp-nav-links { display: none; gap: 1.1rem; flex-wrap: nowrap; }
+/* Nine links, a phone number and a call-to-action need ~1300px beside the
+   logo. Below that the row wrapped onto a second line with the phone and the
+   button stranded under the mark, so the full row waits for 1340px and the
+   Menu disclosure — which carries the same nine pages — covers everything
+   narrower. */
+@media (min-width: 1340px) { .hp-nav-links { display: flex; } }
 .hp-nav-links a { font-size: 0.875rem; white-space: nowrap; }
 .hp-nav-links a[aria-current='page'] { border-bottom-color: var(--gold); }
 /* the collapsed menu button replaces the row below the breakpoint */
 .hp-menu { display: block; }
-@media (min-width: 1280px) { .hp-menu { display: none; } }
+@media (min-width: 1340px) { .hp-menu { display: none; } }
 .hp-menu > summary { gap: 0.5rem; }
 .hp-menu > summary svg { width: 1rem; height: 0.75rem; }
 .hp-menu-label { font-size: 0.875rem; }

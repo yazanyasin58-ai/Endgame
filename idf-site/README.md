@@ -200,13 +200,39 @@ Prefer a landscape shot with room around the subject.
 |---|---|---|
 | `owner-portrait` | Shawn and Nancy | About |
 | `project-custom-home` | A completed custom home, exterior | Custom Homes |
-| `logo` | Logo artwork — replaces the text wordmark | Header |
 
 The `v`-prefixed names are kept from the exploration phase so files already downloaded
 under those names keep working.
 
-The client's existing logo illustration is not used. The header carries a text-only
-wordmark pairing the name with CONSTRUCTION & REMODELING.
+### Logo
+
+The client supplied `logo-white-bg.png` — a 1409x614 raster of the full stacked lockup
+(house mark above three lines of type) on a baked-in white background, with no alpha
+channel and no vector source. Two derived files live in `public/img/`:
+
+| File | What it is | Used by |
+|---|---|---|
+| `logo-mark.webp` | The house mark alone, 485x160, transparent | Header |
+| `logo.webp` | The complete stacked lockup, transparent | Held for print and social |
+
+Transparency was recovered by un-premultiplying against white (`a = 255 - min(R,G,B)`,
+then `F = (P - (1-a)*255) / a`) rather than keying out white, which would leave light
+fringes on the anti-aliased edges. The originals are archived in `source-images/logo/`.
+
+Two things to know before reusing it:
+
+- The header shows the mark beside the name set in Instrument Serif, not the supplied
+  lockup. At the ~50px a header bar allows, the lockup's two tagline lines are
+  unreadable and the mark shrinks to fit the smallest element rather than the most
+  important one.
+- The mark's navy reads cleanly on `--paper` and `--cream` but is close to invisible
+  on `--ink` and `--charcoal`. It is a light-backgrounds-only asset. The footer uses a
+  text wordmark, so nothing currently puts it on a dark ground — but a reversed
+  (white or gold) version would be needed before it could go there.
+
+That navy is also not part of the approved palette (ink / charcoal / gold / cream).
+It is confined to the mark itself and does not appear anywhere else in the design; if
+the client wants strict palette consistency, that is a decision for them to make.
 
 ## Accessibility — measured contrast
 

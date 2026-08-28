@@ -8,26 +8,32 @@
  * because the supplied logo is a raster PNG on a white ground with no vector
  * source. Until a vector arrives the text lockup is the safer mark.
  */
-import { optionalImage, heroImages } from '../lib/images';
+import { optionalImage } from '../lib/images';
 import { business } from '../content/idf';
+
+/**
+ * The supplied logo is a stacked lockup: house mark above three lines of type.
+ * In a horizontal header bar it can only be about 50px tall, and at that size
+ * its two tagline lines are unreadable — the mark shrinks to fit the smallest
+ * element rather than the most important one.
+ *
+ * So the header pairs the real house mark with the name set in the site's own
+ * face. Same brand, legible at header size. The complete stacked lockup stays
+ * available as `logo` for anywhere with the room to show it properly.
+ */
 
 interface Props {
   class?: string;
 }
 
 const { class: className = '' } = Astro.props;
-const logoSrc = optionalImage(heroImages.logo);
+const markSrc = optionalImage('img/logo-mark');
 ---
 
 <a class:list={['logo', className]} href="/">
-  {
-    logoSrc ? (
-      <img class="logo-img" src={logoSrc} alt={`${business.name}, construction and remodeling`} />
-    ) : (
-      <span class="logo-text">
-        <span class="logo-name">{business.name}</span>
-        <span class="logo-lockup">{business.lockup} &middot; Est. {business.established}</span>
-      </span>
-    )
-  }
+  {markSrc && <img class="logo-mark" src={markSrc} alt="" />}
+  <span class="logo-text">
+    <span class="logo-name">{business.name}</span>
+    <span class="logo-lockup">{business.lockup} &middot; Est. {business.established}</span>
+  </span>
 </a>
