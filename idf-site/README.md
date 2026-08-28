@@ -119,9 +119,21 @@ by hand. Three ways, fastest first:
 Scraping the Maps page is not one of the options: it breaks Google's terms, and the page
 is client-rendered so there is nothing in the HTML to read anyway.
 
-`reviewsPending` lists five reviewers the owner has asked to add by name only. They stay
-there until someone supplies each review's verbatim text and star rating, at which point
-the entry moves into `reviews` and appears in the carousel with no code change.
+`reviewsPending` lists reviewers the owner has asked to add but whose text has not arrived.
+Currently Jeremy Smith, Samantha Scott and Sam Smith. They stay there until someone
+supplies each review's verbatim text, at which point the entry moves into `reviews` and
+appears in the carousel with no code change.
+
+Four reviews are published, transcribed from the client intake form. Three things about
+them were left exactly as the reviewers wrote them and should not be "corrected":
+
+- Carlos Henao spells the owner's name **Sean** throughout. That is his text.
+- High Quality Motors wrote **KEPT THE SAME QUALITY** in capitals. That is their emphasis.
+- Justin Drunagel names a **Home Depot contractor** as the team that did not finish. That
+  is his account of his own job.
+
+None of the four came with a star rating, so no card shows stars, and none is labelled with
+a `source` because the intake form does not record which platform each was published on.
 
 The carousel (`src/components/ReviewCarousel.astro`) scrolls with CSS scroll-snap, so it
 is readable and swipeable before its script runs. The arrows, the swipe hint and the
@@ -135,8 +147,9 @@ Every page imports from it, so no page can drift from approved text. Nothing on 
 is invented: no statistics, project counts, awards, certifications, team members, or
 customer quotes beyond what the build brief supplies.
 
-Only two of the four approved reviews appear on the homepage, per the brief. High Quality
-Motors leads.
+All four approved reviews appear on the homepage carousel, High Quality Motors leading.
+The brief's original "show two" instruction is superseded: the owner asked for more than
+two, and the carousel is what makes that fit.
 
 ### Confirmed since the brief
 

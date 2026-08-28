@@ -108,13 +108,46 @@ export const reviews: Review[] = [
     name: 'High Quality Motors',
     context: 'Commercial remodel',
     quote:
-      'Interior Design Flooring did my whole car dealership remodel. They really took their time. They explained everything to me. I cannot be happier. They exceeded my expectations. I had a lot of contractors come out trying to overcharge me $75,000\u2013$100,000. Interior Design did that in half the cost, but also kept the same quality. Do not go to any other contractor.',
+      'Interior design flooring did my whole car dealership remodel. They really took their ' +
+      'time. They explained everything to me. I cannot be happier. They exceeded my ' +
+      'expectations!!! I love the fact that they are very honest about the pricing I had a lot ' +
+      'of contractors come out trying to overcharge me $75,000–$100,000. Interior design did ' +
+      'that in half the cost, but also KEPT THE SAME QUALITY. Do not go to any other ' +
+      'contractor. I recommend everyone from the DC Maryland, Virginia area and all my family ' +
+      'and friends to go through Interior Design Flooring.',
+  },
+  {
+    name: 'Carlos Henao',
+    context: 'Bathroom renovation, then siding and gutters',
+    quote:
+      'We’ve worked with Sean and Nancy on two different occasions. First time was to renovate ' +
+      'our bathroom. Sean is good at listening to your needs and making suggestions to improve ' +
+      'on them. We are very pleased how our bathroom turned out. The process was fairly ' +
+      'painless with a few hiccups along the way but Sean was able to work through them. Second ' +
+      'time, they replaced our siding, gutters, fascia and painted the window trims. Again, ' +
+      'very easy process, all we had to do was select the colors and get HOA approval. They ' +
+      'found 12 pieces of rotted plywood, which Sean communicated to us, they also added a ' +
+      'vapor barrier to bring the home up to code. Both times prices were very reasonable and ' +
+      'work was good quality. I recommend them to anyone looking to renovate their home.',
+  },
+  {
+    name: 'Justin Drunagel',
+    context: 'Flooring install',
+    quote:
+      'Nancy, Shawn, and the team at Interior Design Flooring did a great job on our small ' +
+      'flooring install project. They picked up the slack where another team (Home Depot ' +
+      'contractor) was unable or unwilling to finish the job they started. They were able to ' +
+      'step in and finish the job for us on a quick turnaround which was a huge help.',
   },
   {
     name: 'Suzanna Jenkins',
     context: 'Hardwood and railing',
     quote:
-      'Amazing outcome. I worked with Shawn and Nancy on putting hardwoods and railing on my stairs, catwalk, and into my family room. They were able to match the wood from my original floors and they did an excellent job. Shawn and Nancy stayed with our budget and we are very pleased.',
+      'Amazing outcome. I worked with Shawn and Nancy on putting hardwoods and railing on my ' +
+      'stairs, catwalk, and into my family room. They were able to match the wood from my ' +
+      'original floors and they did an excellent job. Shawn and Nancy stayed with our budget ' +
+      'and we are very pleased. They were very professional and communicative throughout the ' +
+      'whole job. Definitely will recommend to friends and family.',
   },
 ];
 
@@ -130,13 +163,7 @@ export const reviews: Review[] = [
  * Source them from the Google Business Profile, which is where the owner
  * reads them: Google Business Profile > Reviews > copy the text.
  */
-export const reviewsPending = [
-  'Jeremy Smith',
-  'Samantha Scott',
-  'Justin Drunagel',
-  'Carlos Henao',
-  'Sam Smith',
-] as const;
+export const reviewsPending = ['Jeremy Smith', 'Samantha Scott', 'Sam Smith'] as const;
 
 /*
  * To add a review, copy this into the `reviews` array above and fill it in.
