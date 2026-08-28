@@ -46,7 +46,6 @@ export const heroImages = {
   heroAlt3: 'img/v4-hero-interior',
   /** Narrow-screen hero. The wide frame loses its darker floor to the crop. */
   heroMobile: 'img/hero-walnut',
-  work: 'img/project-tile-install',
   logo: 'img/logo',
 } as const;
 

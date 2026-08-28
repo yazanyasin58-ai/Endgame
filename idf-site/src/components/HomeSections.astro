@@ -35,12 +35,14 @@ const heroSrc = firstImage(
 const heroSrcMobile = optionalImage(heroImages.heroMobile);
 
 /**
- * Three cards for the homepage strip: a finished kitchen to lead, the tile
- * crew mid-install so the page shows work actually happening, and the
- * waterfall island. The owner asked for a construction shot in the set.
+ * Three cards for the homepage strip, chosen to show the whole job rather than
+ * three versions of the same thing: a finished kitchen, framing going in, and
+ * a crew on ladders outside. The owner asked for work actually in progress to
+ * appear alongside the finished rooms.
  */
-const homeCards = ['project-kitchen-cream-wide', 'project-tile-install', 'project-island-blue-quartz']
-  .map((slot) => gallery.find((g) => g.slot === slot)!)
+const homeCards = ['project-kitchen-blue-island', 'project-framing-interior', 'project-siding-crew']
+  .map((slot) => gallery.find((g) => g.slot === slot))
+  .filter((g): g is (typeof gallery)[number] => Boolean(g))
   .map((g) => ({ ...g, src: optionalImage(`img/${g.slot}`) }));
 ---
 
@@ -126,7 +128,7 @@ const homeCards = ['project-kitchen-cream-wide', 'project-tile-install', 'projec
   <!-- SELECTED PROJECTS -->
   <section class="hp-section" id="selected-projects" aria-labelledby="hp-projects-h">
     <h2 id="hp-projects-h" class="hp-h2">Selected projects</h2>
-    <p class="hp-sub hp-italic">Real work, photographed as it was finished.</p>
+    <p class="hp-sub hp-italic">Real work, from the framing through to the finish.</p>
     <div class="hp-projects">
       {
         homeCards.map((card) => (

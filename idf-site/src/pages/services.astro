@@ -4,10 +4,11 @@ import Placeholder from '../components/Placeholder.astro';
 import { business, serviceGroups, insuranceRestoration, gallery, cta } from '../content/idf';
 import { optionalImage } from '../lib/images';
 
-// Exterior work under way — the closest of the supplied photographs to what a
-// storm or water loss actually looks like being repaired.
-const irPhoto = gallery.find((g) => g.slot === 'project-siding')!;
-const irSrc = optionalImage(`img/${irPhoto.slot}`);
+// Exterior work under way — the closest of the photographs to what a storm or
+// water loss actually looks like being repaired. Optional on purpose: a
+// renamed slot should leave a reserved slot behind, not fail the build.
+const irPhoto = gallery.find((g) => g.slot === 'project-siding-crew');
+const irSrc = irPhoto ? optionalImage(`img/${irPhoto.slot}`) : undefined;
 ---
 
 <Page
@@ -46,11 +47,11 @@ const irSrc = optionalImage(`img/${irPhoto.slot}`);
           ratio="4 / 3"
           label="Reserved — exterior repair under way"
           src={irSrc}
-          alt={irPhoto.alt}
+          alt={irPhoto?.alt ?? ''}
           real
           class="gal-ph"
         />
-        <figcaption class="gal-cap-detail">{irPhoto.detail}</figcaption>
+        {irPhoto && <figcaption class="gal-cap-detail">{irPhoto.detail}</figcaption>}
       </figure>
     </div>
 

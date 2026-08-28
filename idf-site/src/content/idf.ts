@@ -296,113 +296,182 @@ export const serviceGroups = [
 ] as const;
 
 /**
- * DO NOT USE THE YELP PHOTOGRAPHS.
- *
- * The nine images originally catalogued here were saved from the company's
- * Yelp listing, and the owner has confirmed they were posted by customers.
- * Photographs posted by a customer belong to that customer — not to the
- * business the review is about — so Interior Design Flooring cannot publish
- * them on its own site, at any resolution. Yelp's own terms do not grant that
- * right either.
- *
- * Everything below therefore describes slots waiting on replacement imagery
- * from footage and photographs the company itself owns. If a file named
- * project-1.jpg through project-9.jpg turns up in public/img/, it is almost
- * certainly one of the Yelp saves and must not be committed.
- *
  * Project gallery.
  *
- * One entry per photograph the owner supplied. `slot` is the base filename in
- * public/img/ — src/lib/images.ts resolves it at build time, so an entry whose
- * file is not present falls back to its reserved placeholder and can never ship
- * as a broken image.
+ * These are the company's own photographs, taken from the "By owner" tab of
+ * its Google Maps listing — the filter that separates what the business
+ * uploaded from what visitors posted. Owner uploads are the company's to
+ * publish. The content agrees: crews at work, framing mid-install, job sites.
  *
- * Captions describe only what is visible in the photograph. No addresses, no
- * client names, no budgets, no square footage, no dates — none of that has been
- * supplied and none of it is guessed. `alt` is written for a screen reader
- * describing the same thing.
+ * This replaced an earlier set saved from the company's Yelp listing. Those
+ * were posted by customers, and a photograph posted in a review belongs to
+ * whoever took it — not to the business being reviewed — so they could not be
+ * published here at any resolution. Provenance is the question to ask of any
+ * image before it is added, not after.
+ *
+ * Captions describe only what is visible. No addresses, client names, budgets,
+ * square footage or dates: none were supplied and none are guessed.
  */
 export const gallery = [
   {
-    slot: 'project-kitchen-cream-wide',
+    slot: 'project-kitchen-blue-island',
     caption: 'Kitchen remodel',
-    detail: 'Raised-panel cabinetry, granite counters and a full appliance run.',
-    alt: 'A remodelled kitchen with cream raised-panel cabinets, speckled light granite counters, black wall ovens and a centre island under pendant lights.',
-    ratio: '4 / 3',
+    detail: 'Blue base cabinetry, waterfall quartz, integrated cooktop.',
+    alt: 'A remodelled kitchen with deep blue base cabinets, a thick white quartz island with grey veining, stainless appliances and hardwood floors.',
+    ratio: '3 / 4',
     tags: ['Remodeling'],
+  },
+  {
+    slot: 'project-framing-interior',
+    caption: 'Interior framing',
+    detail: 'New joists and studs going in behind the finishes.',
+    alt: 'A worker on a ladder installing framing, with exposed ceiling joists and new stud walls around him.',
+    ratio: '3 / 4',
+    tags: ['In progress'],
+  },
+  {
+    slot: 'project-siding-crew',
+    caption: 'Exterior siding and trim',
+    detail: 'Two-storey siding and trim work from ladders.',
+    alt: 'Two workers, one on a ladder, replacing siding and trim on the upper storey of a house.',
+    ratio: '4 / 3',
+    tags: ['Exterior'],
   },
   {
     slot: 'project-kitchen-cream',
-    caption: 'Kitchen remodel, island and range wall',
-    detail: 'The same kitchen seen from the adjoining room.',
-    alt: 'A cream-cabinet kitchen viewed through a wide doorway, with a granite-topped island in the foreground and pendant lights above it.',
+    caption: 'Kitchen remodel, cream cabinetry',
+    detail: 'Raised-panel cabinets, granite counters, full appliance run.',
+    alt: 'A kitchen with cream raised-panel cabinets, speckled granite counters, wall ovens and a centre island.',
     ratio: '4 / 3',
     tags: ['Remodeling'],
   },
   {
-    slot: 'project-island-blue-quartz',
-    caption: 'Kitchen island, waterfall quartz',
-    detail: 'Blue base cabinetry, mitred waterfall edge, integrated cooktop and beverage fridge.',
-    alt: 'A large kitchen island with deep blue cabinets and a thick white quartz top with grey veining running down the side to the floor.',
+    slot: 'project-kitchen-cream-wide',
+    caption: 'Kitchen, island and range wall',
+    detail: 'The same kitchen from the adjoining room.',
+    alt: 'A cream-cabinet kitchen seen across a granite-topped island, with pendant lights above.',
     ratio: '4 / 3',
     tags: ['Remodeling'],
   },
   {
-    slot: 'project-tile-install',
-    caption: 'Large-format tile going in',
-    detail: 'Marble-look porcelain with a black inlay band, set and grouted on site.',
-    alt: 'Four installers working on a floor of large white marble-look tiles with black inlay strips, with a wet saw and vacuum beside them.',
-    ratio: '4 / 3',
-    tags: ['Flooring', 'In progress'],
-    inProgress: true,
-  },
-  {
-    slot: 'project-floor-medallion',
-    caption: 'Compass medallion inlay',
-    detail: 'Cut-stone medallion set into the surrounding tile field.',
-    alt: 'A circular compass-rose medallion of cut stone set into a polished marble-look tile floor.',
-    ratio: '1 / 1',
+    slot: 'project-stairs-hardwood',
+    caption: 'Hardwood stairs and landing',
+    detail: 'Treads, risers and a curved landing, finished and sealed.',
+    alt: 'Glossy hardwood stair treads curving up to a landing, with white risers and a painted balustrade.',
+    ratio: '3 / 4',
     tags: ['Flooring'],
   },
   {
-    slot: 'project-staircase',
-    caption: 'Staircase and millwork',
-    detail: 'Curved stair, wrought-iron balusters, raised-panel wainscoting and hardwood.',
-    alt: 'A curved staircase with dark wood treads and handrail, scrolled wrought-iron balusters, white raised-panel wainscoting and a dark hardwood floor.',
+    slot: 'project-bath-shower-marble',
+    caption: 'Shower enclosure',
+    detail: 'Marble-look tile, recessed niche, frameless glass.',
+    alt: 'A tiled shower enclosure in marble-look porcelain with a vertical mosaic niche and a frameless glass door.',
     ratio: '3 / 4',
-    tags: ['Interior finishes'],
+    tags: ['Remodeling'],
   },
   {
-    slot: 'project-bath-freestanding',
-    caption: 'Primary bath',
-    detail: 'Freestanding tub, floor-mounted filler, marble-look tile surround.',
-    alt: 'A white freestanding oval bathtub with a floor-mounted chrome filler, set in front of three windows against a marble-look tiled wall.',
+    slot: 'project-porch-framing',
+    caption: 'Covered porch, framing stage',
+    detail: 'Posts, beams and roof structure set.',
+    alt: 'A new covered porch under construction, its timber posts and gable roof framing complete against a blue sky.',
+    ratio: '4 / 3',
+    tags: ['In progress'],
+  },
+  {
+    slot: 'project-floor-dark-hardwood',
+    caption: 'Dark hardwood flooring',
+    detail: 'Wide boards run through an open plan, daylight across the finish.',
+    alt: 'An empty open-plan room with dark hardwood flooring and square columns, sunlight falling across the boards.',
+    ratio: '4 / 3',
+    tags: ['Flooring'],
+  },
+  {
+    slot: 'project-kitchen-pendants',
+    caption: 'Kitchen, pendants and island',
+    detail: 'Lantern pendants over a quartz island.',
+    alt: 'A finished kitchen with three lantern pendant lights above a white quartz island.',
+    ratio: '3 / 4',
+    tags: ['Remodeling'],
+  },
+  {
+    slot: 'project-counter-quartz',
+    caption: 'Quartz counters and backsplash',
+    detail: 'Veined quartz surface run through to the backsplash.',
+    alt: 'A white quartz countertop with grey veining, continuing up the wall as a matching backsplash.',
     ratio: '4 / 3',
     tags: ['Remodeling'],
   },
   {
-    slot: 'project-siding',
-    caption: 'Siding and exterior work',
-    detail: 'Two-storey siding replacement over a screened porch and deck.',
-    alt: 'Two workers on extension ladders installing siding on the upper storey of a house above a screened porch and deck.',
+    slot: 'project-framing-joists',
+    caption: 'Structural work in progress',
+    detail: 'Ceiling joists and stud walls opened up.',
+    alt: 'An interior stripped to its framing, showing new ceiling joists and stud walls, with a worker at the far end.',
     ratio: '4 / 3',
-    tags: ['Exterior', 'In progress'],
-    inProgress: true,
+    tags: ['In progress'],
   },
   {
-    slot: 'project-bath-vanity',
-    caption: 'Bathroom, tub surround and vanity',
-    detail: 'Drop-in tub in a tiled surround, wood vanity, patterned floor border.',
-    alt: 'A bathroom with a drop-in tub set into a tiled surround, a medium-wood vanity with a large mirror, and a tile floor with a patterned inlay border.',
+    slot: 'project-kitchen-dark-granite',
+    caption: 'Kitchen, dark granite',
+    detail: 'Dark granite counters, tiled backsplash, stainless appliances.',
+    alt: 'A kitchen with dark speckled granite counters, a grey tiled backsplash and stainless steel appliances.',
     ratio: '4 / 3',
     tags: ['Remodeling'],
-    /**
-     * Flagged for the owner. This photograph reads as a different era and
-     * finish quality from the rest of the set. Confirm it is our own completed
-     * work before it goes live — the brief bars stock imagery, and a photo we
-     * cannot source is not worth the risk on a portfolio page.
-     */
-    confirm: true,
+  },
+  {
+    slot: 'project-siding-ladder',
+    caption: 'Siding replacement',
+    detail: 'Upper-storey work above a rear deck.',
+    alt: 'A worker high on an extension ladder replacing siding on the top floor of a house above a deck.',
+    ratio: '3 / 4',
+    tags: ['Exterior'],
+  },
+  {
+    slot: 'project-porch-build',
+    caption: 'Rear addition under construction',
+    detail: 'Structure framed and tied into the existing house.',
+    alt: 'A rear porch addition mid-construction, framing tied into the back of a house, with workers on site.',
+    ratio: '3 / 4',
+    tags: ['In progress'],
+  },
+  {
+    slot: 'project-kitchen-blue-island-wide',
+    caption: 'Kitchen island and range',
+    detail: 'The same island seen from the living side.',
+    alt: 'A kitchen island in blue cabinetry with a white quartz top and gas cooktop, viewed from the adjoining living room.',
+    ratio: '3 / 4',
+    tags: ['Remodeling'],
+  },
+  {
+    slot: 'project-kitchen-cream-ovens',
+    caption: 'Kitchen fit-out in progress',
+    detail: 'Cabinetry and appliances set, finishes under way.',
+    alt: 'A cream-cabinet kitchen with stainless double ovens installed, protective sheeting still on the floor.',
+    ratio: '4 / 3',
+    tags: ['Remodeling','In progress'],
+  },
+  {
+    slot: 'project-soffit-insulation',
+    caption: 'Soffit and insulation work',
+    detail: 'Insulation set into a porch ceiling before boarding.',
+    alt: 'A worker lifting a batt of insulation into the ceiling of a covered porch.',
+    ratio: '3 / 4',
+    tags: ['In progress'],
+  },
+  {
+    slot: 'project-porch-roof',
+    caption: 'Porch roof framing',
+    detail: 'Rafters set against the sky before sheathing.',
+    alt: 'Roof rafters of a new porch structure silhouetted against a bright sky, with a worker on a ladder.',
+    ratio: '3 / 4',
+    tags: ['In progress'],
+  },
+  {
+    slot: 'project-decks-townhomes',
+    caption: 'Decks and railings',
+    detail: 'Balconies and railings across a run of townhomes.',
+    alt: 'A row of townhomes with white-railed balconies and decks above the garages.',
+    ratio: '4 / 3',
+    tags: ['Exterior'],
   },
 ] as const;
 
