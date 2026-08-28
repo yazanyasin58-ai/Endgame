@@ -33,6 +33,59 @@ is the part that cannot be reconstructed if a submission is lost.
 
 ---
 
+## 0. The access gate — who can see the site
+
+The site is closed. `functions/_middleware.ts` runs ahead of every request —
+pages, images, stylesheets and `/api/estimate` alike — and returns 401 until a
+password is supplied. Verified against a local Workers runtime: an unauthorised
+request gets 401 on the homepage, on a CSS bundle, on a logo image, on
+`/real-estate/` and on the API endpoint; a correct one gets 200 and the real page.
+
+**Set this before anyone can get in:**
+
+Pages project → **Settings** → **Variables and Secrets** → add, for **both**
+Production and Preview:
+
+| Name | Value |
+|---|---|
+| `SITE_PASSWORD` | a long random string — it is shared, so make it unguessable |
+| `SITE_USER` | optional, defaults to `idf` |
+
+Then redeploy. The browser shows a standard password prompt; username `idf`
+unless you set `SITE_USER`.
+
+### Why it is built this way
+
+Two switches of different kinds, on purpose:
+
+- `GATE_ENABLED`, a constant **in the file, committed to the repo**
+- `SITE_PASSWORD`, a secret **in the dashboard, never in the repo**
+
+If the secret alone controlled it, losing that variable — a settings change, a
+new environment, a typo — would silently publish the entire site, and nothing in
+the repository would show that anything had changed. Instead a missing password
+with the gate on returns **503**, closed, naming what to set. A gate whose
+failure mode is "open" is not a gate.
+
+**At launch:** set `GATE_ENABLED = false` in a commit. Going public should be a
+reviewable line of code, not a dashboard toggle nobody can find afterwards.
+
+### What it is not
+
+A shared password proves someone knows the password, not who they are. Everyone
+you give it to is indistinguishable in any log, and you cannot revoke one person
+without changing it for everybody.
+
+If you want real per-person access, **Cloudflare Access** (Zero Trust) does it
+properly and is free for small teams: Zero Trust dashboard → Access →
+Applications → Self-hosted, pointed at the Pages hostnames, with a policy
+allowing specific email addresses. People get a one-time PIN by email, you can
+see and revoke each one individually, and Pages has a built-in shortcut for the
+preview URLs under Settings → General → *Preview deployment access*.
+
+**Do not run both.** Two gates means two login prompts. If you set up Access,
+set `GATE_ENABLED = false` and let Access do the work.
+
 ## 1. R2 — where the photographs go
 
 R2 is Cloudflare's file storage. Free tier is 10 GB and no egress charge, which

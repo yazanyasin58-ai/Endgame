@@ -24,6 +24,14 @@ serving `POST /api/estimate` — the estimate form's backend, including photo up
 It is the only server-side code on the site. See `CLOUDFLARE.md` for what has to be
 configured in the dashboard before it does anything.
 
+## The site is closed
+
+`functions/_middleware.ts` gates every request behind a password until launch.
+Set `SITE_PASSWORD` in the Pages project or nobody gets in — including you. Full
+explanation, and the Cloudflare Access alternative, in CLOUDFLARE.md § 0.
+
+At launch, set `GATE_ENABLED = false` in that file in a commit.
+
 ## Routes
 
 | Route | Page |
