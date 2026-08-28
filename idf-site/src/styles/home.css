@@ -122,10 +122,22 @@
   min-height: 80vh;
 }
 @media (min-width: 1024px) { .hp-hero-ph { min-height: 0; max-height: 88vh; } }
-/* legibility floor for the copy, without a heavy scrim over the photograph */
+/* Legibility floor for the copy.
+   Tuned against bright photography, not the dark vector comp this originally
+   sat on. The gold eyebrow needs 4.5:1 and the headline 3:1, and over a pale
+   oak floor the old gradient delivered 1.06:1 — invisible. The ramp is steep
+   and short so the upper two-thirds of the picture stays open. */
 .hp-hero-frame::after {
   content: ''; position: absolute; inset: 0; pointer-events: none;
-  background: linear-gradient(to top, rgb(20 17 13 / 0.68) 0%, rgb(20 17 13 / 0.2) 40%, transparent 64%);
+  background: linear-gradient(
+    to top,
+    rgb(20 17 13 / 0.88) 0%,
+    rgb(20 17 13 / 0.80) 38%,
+    rgb(20 17 13 / 0.62) 54%,
+    rgb(20 17 13 / 0.26) 70%,
+    rgb(20 17 13 / 0.06) 84%,
+    transparent 94%
+  );
 }
 .hp-hero-copy {
   position: absolute; z-index: 2; left: 0; right: 0;
@@ -137,6 +149,11 @@
   font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.24em; text-transform: uppercase;
   color: var(--gold-bright);
 }
+/* In the hero the eyebrow sits over photography rather than a flat ground.
+   At 11px it needs 4.5:1, and gold-bright tops out near 4 even under a heavy
+   scrim — buying that last bit of contrast means darkening the picture until
+   there is no point using a bright one. Cream clears it with room to spare. */
+.hp-hero-copy .hp-eyebrow { color: var(--cream); }
 .hp-h1 {
   font-family: 'Instrument Serif', serif; font-weight: 400;
   font-size: clamp(2.5rem, 6.5vw, 5.5rem); line-height: 1.03;
