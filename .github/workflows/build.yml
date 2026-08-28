@@ -1,0 +1,31 @@
+name: Build
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: idf-site
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: idf-site/.nvmrc
+          cache: npm
+          cache-dependency-path: idf-site/package-lock.json
+      - run: npm ci
+      - run: npm run build
+
+      # Reports only — does not fail the build. While the site is in review,
+      # unfilled slots are the expected state, so a gate here would be red on
+      # every run. Turn this into a failing check at launch, when every slot
+      # should carry real photography.
+      - name: Report unfilled image slots
+        run: |
+          reserved=$(grep -o 'Reserved image slot' -r dist --include=*.html | wc -l)
+          echo "Unfilled image slots in build output: $reserved"
