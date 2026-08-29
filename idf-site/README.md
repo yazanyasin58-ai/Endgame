@@ -24,14 +24,18 @@ serving `POST /api/estimate` — the estimate form's backend, including photo up
 It is the only server-side code on the site. See `CLOUDFLARE.md` for what has to be
 configured in the dashboard before it does anything.
 
-## The site is closed
+## Who can see the site
 
-`functions/_middleware.ts` gates every request behind a password until launch.
-Set `SITE_PASSWORD` in the Pages project or nobody gets in — including you. Full
-explanation, and the Cloudflare Access alternative, in CLOUDFLARE.md § 0.
+**Open preview.** No password: anyone with a link reaches it. The gate in
+`functions/_middleware.ts` exists but is off (`GATE_ENABLED = false`); set it to
+true and add `SITE_PASSWORD` in the Pages project to close it again. See
+CLOUDFLARE.md § 0.
 
-At launch, set `GATE_ENABLED = false` in that file, and `preLaunch = false` in
-`src/lib/site.ts`, in the same commit. A public site behind a password gate, or an
+**Out of search.** `preLaunch` in `src/lib/site.ts` is still true, so every page
+carries noindex and robots.txt disallows everything. Open link, invisible to
+search — the two are independent switches.
+
+At launch, set `preLaunch = false` (and leave the gate off). A public site behind a password gate, or an
 indexed site nobody can open, are both worse than either state alone.
 
 ## Search plumbing

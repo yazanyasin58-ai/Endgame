@@ -35,7 +35,21 @@ is the part that cannot be reconstructed if a submission is lost.
 
 ## 0. The access gate — who can see the site
 
-The site is closed. `functions/_middleware.ts` runs ahead of every request —
+**Currently OFF.** The site is an open preview again at the client's request:
+anyone with a link reaches it, and no password is needed. `SITE_PASSWORD` does
+not need to be set while it is off.
+
+It stays out of search regardless — `preLaunch` in `src/lib/site.ts` is still
+true, so every page carries noindex and robots.txt disallows everything. Open to
+anyone with the link, invisible to search.
+
+To close it again, set `GATE_ENABLED = true` in `functions/_middleware.ts` and
+set `SITE_PASSWORD` in the Pages project. Everything below describes how it
+behaves when on.
+
+---
+
+`functions/_middleware.ts` runs ahead of every request —
 pages, images, stylesheets and `/api/estimate` alike — and returns 401 until a
 password is supplied. Verified against a local Workers runtime: an unauthorised
 request gets 401 on the homepage, on a CSS bundle, on a logo image, on

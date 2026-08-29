@@ -31,7 +31,19 @@
  * Do not run both at once, or visitors are asked to log in twice.
  */
 
-const GATE_ENABLED = true;
+/*
+ * Off. The site is back to an open preview at the client's request, which is
+ * where it was before the gate went in.
+ *
+ * Note what this does NOT change: `preLaunch` in src/lib/site.ts is still
+ * true, so every page keeps its noindex and robots.txt still disallows
+ * everything. Open to anyone with the link, still invisible to search — which
+ * is the state this was in all along.
+ *
+ * Set back to true to close it again; SITE_PASSWORD in the Pages project is
+ * all it needs.
+ */
+const GATE_ENABLED = false;
 
 /** Shown in the browser's password prompt. */
 const REALM = 'Interior Design Flooring — private preview';
