@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import { preLaunch } from '../lib/site';
 
 interface Props {
   title: string;
@@ -26,10 +27,11 @@ const {
 } = Astro.props;
 
 /**
- * Site-wide pre-launch block. AT LAUNCH: delete this constant and the
- * `preLaunch ||` below, leaving pages that pass `noindex` still blocked.
+ * Canonical URL. Emitted only when a real origin is configured — see `site`
+ * in astro.config.mjs. A canonical pointing at the wrong host is worse than
+ * none, so this stays absent until the domain exists.
  */
-const preLaunch = true;
+const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : undefined;
 ---
 
 <!doctype html>
@@ -44,6 +46,7 @@ const preLaunch = true;
         <meta name="robots" content="noindex, nofollow" />
       ) : null
     }
+    {canonical && <link rel="canonical" href={canonical} />}
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

@@ -30,7 +30,25 @@ configured in the dashboard before it does anything.
 Set `SITE_PASSWORD` in the Pages project or nobody gets in — including you. Full
 explanation, and the Cloudflare Access alternative, in CLOUDFLARE.md § 0.
 
-At launch, set `GATE_ENABLED = false` in that file in a commit.
+At launch, set `GATE_ENABLED = false` in that file, and `preLaunch = false` in
+`src/lib/site.ts`, in the same commit. A public site behind a password gate, or an
+indexed site nobody can open, are both worse than either state alone.
+
+## Search plumbing
+
+`robots.txt` and `sitemap.xml` are generated, not static, so they cannot disagree with the
+site's own noindex state. Both read `preLaunch` from `src/lib/site.ts`:
+
+| State | robots.txt | sitemap.xml | canonical |
+|---|---|---|---|
+| pre-launch | `Disallow: /` | empty | absent |
+| launched, no domain | `Disallow: /` | empty | absent |
+| launched, domain set | `Allow: /`, disallows `/real-estate/` | 10 URLs | on every page |
+
+The domain comes from `PUBLIC_SITE_URL` in the Pages project, which feeds `site` in
+`astro.config.mjs`. It is not hardcoded: a canonical tag pointing at the wrong host is
+worse than no canonical tag, so everything stays absent until the real origin exists.
+Verified in both states.
 
 ## Routes
 

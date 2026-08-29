@@ -2,6 +2,18 @@
 import Page from '../layouts/Page.astro';
 import Placeholder from '../components/Placeholder.astro';
 import { business, customHomeSteps, customHomeOffers, cta } from '../content/idf';
+import { optionalImage } from '../lib/images';
+
+/**
+ * Three empty "Reserved" frames are the right thing during review and the
+ * wrong thing on a live site — they read as an unfinished page rather than a
+ * young portfolio. So the section appears only once there is a photograph to
+ * put in it, and drops out entirely until then. Add project-custom-home.webp
+ * (or -2, -3) to public/img and it comes back on the next build, no code.
+ */
+const customHomePhotos = ['img/project-custom-home', 'img/project-custom-home-2', 'img/project-custom-home-3']
+  .map((name) => optionalImage(name))
+  .filter((src): src is string => Boolean(src));
 ---
 
 <Page
@@ -44,19 +56,27 @@ import { business, customHomeSteps, customHomeOffers, cta } from '../content/idf
     </ol>
   </section>
 
-  <section class="hp-section">
-    <h2 class="hp-h2">Completed custom homes</h2>
-    <p class="hp-sub hp-italic">Photography is being collected; nothing is listed until confirmed.</p>
-    <div class="hp-grid">
-      {
-        Array.from({ length: 3 }, () => (
-          <figure class="hp-project">
-            <Placeholder ratio="4 / 3" label="Reserved — completed custom home · 4:3" class="hp-ph" />
-          </figure>
-        ))
-      }
-    </div>
-  </section>
+  {
+    customHomePhotos.length > 0 && (
+      <section class="hp-section">
+        <h2 class="hp-h2">Completed custom homes</h2>
+        <div class="hp-grid">
+          {customHomePhotos.map((src) => (
+            <figure class="hp-project">
+              <Placeholder
+                ratio="4 / 3"
+                label="Completed custom home"
+                src={src}
+                alt="A completed custom home built by Interior Design Flooring"
+                real
+                class="hp-ph"
+              />
+            </figure>
+          ))}
+        </div>
+      </section>
+    )
+  }
 
   <section class="hp-final">
     <div class="hp-final-inner hp-final-inner--single">
