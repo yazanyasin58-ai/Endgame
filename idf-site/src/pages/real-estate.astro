@@ -41,11 +41,17 @@ const licensed = realEstateLicence.firmName !== '' && realEstateLicence.licenceN
               and approve. It is left out of the site menu and out of search engines, and
               nobody reaches it without this link.</p>
               <p>
-                One thing turns it on: the Virginia real estate <strong>firm</strong> licence
-                number of the business that will be advertising these services, and the firm
-                name exactly as it is licensed. Virginia requires both in real estate
-                advertising, and agents licensed under a different brokerage does not cover
-                it. Send those two and this goes live as it stands.
+                Everything on this page is written and ready — the services, the 10% credit,
+                Sameer and Ali with their licence numbers. <strong>One thing is missing:
+                the name of the brokerage they currently hold those licences under.</strong>
+              </p>
+              <p>
+                Those numbers are salesperson licences, which are held under a firm. Virginia
+                requires the firm's name in real estate advertising so the public can see
+                which brokerage stands behind it — naming the agents alone is the exact thing
+                that rule prevents, and the risk sits on their licences rather than on the
+                website. If the brokerage changes often, that is a reason to put it in and
+                update it, not to leave it out: it is one line, and it takes a minute.
               </p>
             </div>
           )}
@@ -59,6 +65,18 @@ const licensed = realEstateLicence.firmName !== '' && realEstateLicence.licenceN
               <article class="re-item">
                 <h3>{s.title}</h3>
                 <p>{s.detail}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section class="hp-section" aria-labelledby="re-team-h">
+          <h2 id="re-team-h" class="hp-h2">Our in-house realtors</h2>
+          <div class="re-grid">
+            {realEstate.realtors.map((r) => (
+              <article class="re-item">
+                <h3>{r.name}</h3>
+                <p>Virginia real estate licence {r.licence}</p>
               </article>
             ))}
           </div>

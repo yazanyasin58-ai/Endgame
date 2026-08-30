@@ -330,12 +330,23 @@ export const realEstate = {
     { title: 'Renovation and development potential', detail: 'Helping investors identify properties worth taking on.' },
   ],
   discount: {
-    title: 'Renovation credit for qualifying clients',
+    title: '10% off your renovation',
     body: [
-      'Clients who buy or sell through our in-house realtor and use Interior Design Flooring for the renovation or construction work may qualify for a renovation discount or credit.',
-      'Terms, eligibility and the amount are confirmed in writing before any project begins. Ask us about it when you call.',
+      'Buy or sell through our in-house realtors and use Interior Design Flooring for the renovation or construction work, and you get 10% off the project.',
+      'Additional discounts depend on the scope of the work. Ask us when you call and we will confirm everything in writing before the project begins.',
     ],
   },
+  /**
+   * The in-house realtors, as named by the owner.
+   *
+   * The numbers are Virginia real estate licences. The 0225 prefix is the
+   * salesperson series, not a firm — which is the whole problem with
+   * publishing this page as it stands. See the note on `realEstateLicence`.
+   */
+  realtors: [
+    { name: 'Sameer Waziri', licence: '0225273319' },
+    { name: 'Ali Waziri', licence: '0225273277' },
+  ],
 } as const;
 
 export const cta = {
@@ -454,9 +465,25 @@ export const features = {
 } as const;
 
 /**
- * The advertising disclosure Virginia requires on real estate advertising:
- * the licensed firm's name, and the licence number with it. Empty until the
- * owner supplies it, which is what holds `features.realEstate` at 'preview'.
+ * The advertising disclosure Virginia requires on real estate advertising.
+ *
+ * THE OWNER HAS ASKED TO LEAVE THE FIRM OUT — "that changes often" — and to
+ * name the two salespeople only. That cannot be done, and the reason is worth
+ * writing down so nobody relitigates it from memory:
+ *
+ * A salesperson licence is held *under* a brokerage. Virginia requires the
+ * licensed firm's name in real estate advertising precisely so the public can
+ * tell which brokerage stands behind the advert. Naming two salespeople and
+ * no firm is the specific thing the rule exists to prevent, and the exposure
+ * lands on their licences, not on the website.
+ *
+ * "It changes often" argues for putting it in, not leaving it out: whichever
+ * brokerage they hang their licences with today is the one legally answerable
+ * for this page today. Updating it later is one line in this file.
+ *
+ * So the page stays at 'preview' until firmName is filled in. Everything else
+ * on it — services, the 10% credit, the realtors' names and licence numbers —
+ * is written and ready.
  */
 export const realEstateLicence = {
   firmName: '',
