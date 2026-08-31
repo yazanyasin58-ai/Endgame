@@ -169,6 +169,17 @@ async function verifyTurnstile(secret: string, token: string, ip: string | null)
 const handlePost = async (context: PagesContext): Promise<Response> => {
   const { request, env } = context;
 
+  // Which services this deployment can actually see. A binding is baked into a
+  // deployment when it is built, so a setting saved in the dashboard after the
+  // fact is not here — and the symptom is silent. Log it on every request so
+  // the reason is one line away in the real-time log rather than a guess.
+  console.log(
+    'estimate: r2=%s resend=%s turnstile=%s',
+    env.ESTIMATE_UPLOADS ? 'bound' : 'MISSING',
+    env.RESEND_API_KEY ? 'set' : 'missing',
+    env.TURNSTILE_SECRET ? 'set' : 'missing',
+  );
+
   let form: FormData;
   try {
     form = await request.formData();
@@ -238,6 +249,11 @@ const handlePost = async (context: PagesContext): Promise<Response> => {
   // Photographs are the part a customer cannot easily re-send, so refuse the
   // submission outright rather than accept it and drop them.
   if (uploads.length > 0 && !env.ESTIMATE_UPLOADS) {
+    console.error(
+      `Refused ${uploads.length} file(s): no R2 binding named ESTIMATE_UPLOADS on this ` +
+        'deployment. Add it under Settings > Bindings for THIS environment, then create a ' +
+        'new deployment — an existing one keeps the config it was built with.',
+    );
     return json(
       {
         ok: false,
