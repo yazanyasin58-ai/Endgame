@@ -8,7 +8,7 @@
 .vb .logo-name,
 .vb .foot-wordmark { font-family: 'Fraunces', serif; }
 
-/* headings sit left with a rule beneath, not centred */
+/* headings sit left with a rule beneath, not centered */
 .vb .hp-h2 {
   font-family: 'Fraunces', serif;
   font-weight: 300;
@@ -30,7 +30,7 @@
 }
 .vb .hp-eyebrow { letter-spacing: 0.3em; }
 
-/* figures become a ruled row rather than four centred blocks */
+/* figures become a ruled row rather than four centered blocks */
 .vb .hp-figures { text-align: left; gap: 0; }
 .vb .hp-figure {
   padding: 1.25rem 1.5rem;
@@ -73,7 +73,7 @@
 .vb .hp-pillar .hp-pillar-link { grid-column: 2; margin-top: 0.9rem; }
 @media (min-width: 820px) { .vb .hp-pillar .hp-pillar-link { grid-column: 4; margin-top: 0; } }
 
-/* the wedge runs as a two-column feature, not a centred block */
+/* the wedge runs as a two-column feature, not a centered block */
 .vb .hp-wedge { text-align: left; }
 .vb .hp-wedge-tagline {
   font-size: clamp(1.7rem, 4.4vw, 3.2rem);

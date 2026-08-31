@@ -6,21 +6,21 @@
  * definition in content/idf.ts. In 'preview' the full page renders so the
  * owner can read and approve the copy, carrying a notice that says it is not
  * cleared, staying out of the nav and out of search. Only `true` publishes it,
- * and `true` requires the Virginia real estate FIRM licence number in
- * `realEstateLicence`.
+ * and `true` requires the Virginia real estate FIRM license number in
+ * `realEstateLicense`.
  *
  * The gate is not decoration. Virginia requires real estate advertising to
  * carry the licensed firm's name; individual agents licensed under some other
  * brokerage does not satisfy it. Publishing without that is the kind of thing
- * that costs a licence, not a redesign.
+ * that costs a license, not a redesign.
  */
 import Page from '../layouts/Page.astro';
 import BlockedSlot from '../components/BlockedSlot.astro';
-import { business, features, realEstate, realEstateLicence, serviceArea } from '../content/idf';
+import { business, features, realEstate, realEstateLicense, serviceArea } from '../content/idf';
 
 const preview = features.realEstate === 'preview';
 const live = features.realEstate === true;
-const licensed = realEstateLicence.firmName !== '' && realEstateLicence.licenceNumber !== '';
+const licensed = realEstateLicense.firmName !== '' && realEstateLicense.licenseNumber !== '';
 ---
 
 <Page
@@ -42,14 +42,14 @@ const licensed = realEstateLicence.firmName !== '' && realEstateLicence.licenceN
               nobody reaches it without this link.</p>
               <p>
                 Everything on this page is written and ready — the services, the 10% credit,
-                Sameer and Ali with their licence numbers. <strong>One thing is missing:
-                the name of the brokerage they currently hold those licences under.</strong>
+                Sameer and Ali with their license numbers. <strong>One thing is missing:
+                the name of the brokerage they currently hold those licenses under.</strong>
               </p>
               <p>
-                Those numbers are salesperson licences, which are held under a firm. Virginia
+                Those numbers are salesperson licenses, which are held under a firm. Virginia
                 requires the firm's name in real estate advertising so the public can see
                 which brokerage stands behind it — naming the agents alone is the exact thing
-                that rule prevents, and the risk sits on their licences rather than on the
+                that rule prevents, and the risk sits on their licenses rather than on the
                 website. If the brokerage changes often, that is a reason to put it in and
                 update it, not to leave it out: it is one line, and it takes a minute.
               </p>
@@ -76,7 +76,7 @@ const licensed = realEstateLicence.firmName !== '' && realEstateLicence.licenceN
             {realEstate.realtors.map((r) => (
               <article class="re-item">
                 <h3>{r.name}</h3>
-                <p>Virginia real estate licence {r.licence}</p>
+                <p>Virginia real estate license {r.license}</p>
               </article>
             ))}
           </div>
@@ -95,12 +95,12 @@ const licensed = realEstateLicence.firmName !== '' && realEstateLicence.licenceN
             Buying, selling, renting, building or renovating — it is one call either way.
             Reach us on <a href={business.phonePrimaryHref}>{business.phonePrimary}</a>.
           </p>
-          <p class="re-licence">
+          <p class="re-license">
             {serviceArea.detail}
             {licensed && (
               <>
-                {' '}Real estate services offered by {realEstateLicence.firmName}, Virginia
-                real estate firm licence {realEstateLicence.licenceNumber}.
+                {' '}Real estate services offered by {realEstateLicense.firmName}, Virginia
+                real estate firm license {realEstateLicense.licenseNumber}.
               </>
             )}
           </p>
@@ -109,11 +109,11 @@ const licensed = realEstateLicence.firmName !== '' && realEstateLicence.licenceN
     ) : (
       <section class="hp-section hp-section--tight">
         <div class="fin-blocked">
-          <BlockedSlot label="REAL ESTATE SERVICES — BLOCKED PENDING FIRM LICENCE VERIFICATION" />
+          <BlockedSlot label="REAL ESTATE SERVICES — BLOCKED PENDING FIRM LICENSE VERIFICATION" />
           <p class="fin-blocked-note">
             Advertising brokerage services in Virginia requires the advertising entity to
-            hold a real estate <strong>firm</strong> licence. Individual agents holding
-            licences under another brokerage is not sufficient, and advertisements must
+            hold a real estate <strong>firm</strong> license. Individual agents holding
+            licenses under another brokerage is not sufficient, and advertisements must
             carry the licensed brokerage name.
           </p>
         </div>

@@ -30,7 +30,7 @@ import SocialLinks from './SocialLinks.astro';
         <h3 class="foot-head">Contact</h3>
         <p>
           <a href={business.phonePrimaryHref}>{business.phonePrimary}</a><br />
-          <a href="tel:+15712335133">{business.phoneSecondary}</a><br />
+          <a href={business.phoneSecondaryHref}>{business.phoneSecondary}</a><br />
           <a href={`mailto:${business.email}`}>{business.email}</a>
         </p>
         <h3 class="foot-head foot-head--spaced">Follow</h3>
@@ -38,7 +38,7 @@ import SocialLinks from './SocialLinks.astro';
       </div>
       <div class="foot-col">
         <h3 class="foot-head">License</h3>
-        <p>{business.license}<br />Licensed &amp; Insured · Residential &amp; Commercial</p>
+        <p>{business.license}<br />Licensed &amp; Insured · Residential</p>
         <h3 class="foot-head foot-head--spaced">Start here</h3>
         <p>
           <a href="/estimate/">Request a free estimate</a><br />

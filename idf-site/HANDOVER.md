@@ -225,7 +225,7 @@ actually want next week:
   history and can revert one.
 
 What they should *not* do alone: the launch flags in step 6, anything under
-`functions/`, and the licence fields discussed below.
+`functions/`, and the license fields discussed below.
 
 ---
 
@@ -252,7 +252,7 @@ submissions.
 Give the client this list of open items with the site. Each is a decision only
 they can make, and each is recorded in the repo with its reasoning:
 
-- **Maryland and DC contractor licences.** The site advertises the DMV and
+- **Maryland and DC contractor licenses.** The site advertises the DMV and
   carries only the Virginia Class A number. Maryland licenses through the MHIC,
   DC separately. Either confirm both exist, or the service area comes back to
   Virginia only. This is live on every page today.

@@ -72,7 +72,7 @@ Verified in both states.
 | `/custom-homes/` | Custom homes — what we build and the five-stage process |
 | `/projects/` | Projects completed |
 | `/real-estate/` | **Preview.** Full page renders for owner review; kept out of the menu and out of search. See below. |
-| `/investors/` | Investor programme |
+| `/investors/` | Investor program |
 | `/financing/` | Financing — describes the arrangement and asks an interested reader to get in touch; no lender named, no link out, no application |
 | `/contact/` | Contact — showroom, hours, phone, intake form |
 | `/estimate/` | Request an estimate — the target of every primary CTA |
@@ -100,7 +100,7 @@ accident.
 
 | Gate | State | Why |
 |---|---|---|
-| `realEstate` | `'preview'` | Virginia requires the *advertising entity* to hold a real estate **firm** licence. Agents licensed under another brokerage is not sufficient, and ads must carry the licensed brokerage name. Needs the firm licence number and the firm name as licensed, both set in `realEstateLicence`. |
+| `realEstate` | `'preview'` | Virginia requires the *advertising entity* to hold a real estate **firm** license. Agents licensed under another brokerage is not sufficient, and ads must carry the licensed brokerage name. Needs the firm license number and the firm name as licensed, both set in `realEstateLicence`. |
 | `financeApplication` | off | A pre-approval form collects income and identity data, which belongs on a lender's own secured portal. The page now routes to a conversation rather than to a lender, so the flag gates nothing and is kept only as the record of the decision. |
 
 `realEstate` has three states rather than two:
@@ -198,7 +198,7 @@ two, and the carousel is what makes that fit.
   brief, and must stay in step with the live Google profile for NAP consistency.
 - **Instagram** is the only social account.
 - **Figures** are limited to what can be verified: established 1989, 4.7 Google rating,
-  24-hour estimate turnaround, Class A licence. No project counts or customer totals.
+  24-hour estimate turnaround, Class A license. No project counts or customer totals.
 - **The first-project offer** runs as a dismissible bar, not an entry overlay, because
   intrusive interstitials are demoted on mobile. Its terms — cap, eligible work, expiry —
   are still undefined, so the page states none.
@@ -209,11 +209,11 @@ two, and the carousel is what makes that fit.
   DC, Maryland and Virginia. The intake form was right and the older "Serving Northern
   Virginia" line was stale.
 
-  The caveat has not been resolved. The company holds a **Virginia** Class A licence, and
-  that is the only licence number on the site. Contracting in the other two jurisdictions
+  The caveat has not been resolved. The company holds a **Virginia** Class A license, and
+  that is the only license number on the site. Contracting in the other two jurisdictions
   is licensed separately — Maryland through the MHIC, the District through its own home
-  improvement contractor licence. Advertising work in a jurisdiction without holding its
-  licence is the same class of exposure as the real estate page. Confirm both licences
+  improvement contractor license. Advertising work in a jurisdiction without holding its
+  license is the same class of exposure as the real estate page. Confirm both licenses
   exist; if they do not, the service area comes back to Virginia only.
 - **Real estate services** — see the gate table above.
 - **Lender name — resolved, by removing the requirement.** The client asked for no
@@ -227,7 +227,7 @@ two, and the carousel is what makes that fit.
   the files back over the web — so an uploaded file is never executed or re-served. It
   does not scan contents. Anyone opening an attachment is doing so on their own machine,
   which is the same exposure as the emailed photographs the form previously asked for.
-- **Investor programme terms** — described as benefits with no percentages or dollar
+- **Investor program terms** — described as benefits with no percentages or dollar
   figures, because none have been set.
 - **Budget bands on the intake form** — provisional. They are qualifying ranges, not price
   claims, but the owner should confirm the edges before launch.
@@ -430,6 +430,6 @@ Fraunces (display) over Public Sans (body), both Google Fonts.
     performance number to anyone.
 
   Accessibility is the figure that is clean and real: 100, after fixing a contrast
-  failure, an accessible-name mismatch, two colour-only link treatments and an
+  failure, an accessible-name mismatch, two color-only link treatments and an
   undersized touch target.
 - Verified visually at 375px and 1440px. The sticky call/text bar appears below 768px.

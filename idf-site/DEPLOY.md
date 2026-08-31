@@ -62,7 +62,7 @@ Remove that at launch — see `src/layouts/Base.astro`.
 If the link should not be open to anyone who has it, Cloudflare Access (Zero
 Trust → Access → Applications) puts an email-code login in front of the Pages
 domain, free for a small number of users. Worth doing if the site carries the
-licence number and showroom address before launch.
+license number and showroom address before launch.
 
 ## At launch
 

@@ -136,7 +136,7 @@
 }
 @media (min-width: 1024px) { .hp-hero-ph { min-height: 0; max-height: 88vh; } }
 /* Narrow screens load the walnut frame, and a 16:9 picture crops to roughly a
-   square there. Centred, the crop lands on bare floor and plaster; pushed right
+   square there. Centered, the crop lands on bare floor and plaster; pushed right
    it picks up the side table, the sofa edge and the backlit window, which is
    the half of the room worth showing. Contrast passes at any position here —
    50% measures 10.35:1 and 95% measures 9.67:1 — so this is composition, not
@@ -391,8 +391,8 @@
   overflow: hidden;
 }
 
-/* Submission result. Uses a left rule rather than colour alone, so the
-   success and failure states are distinguishable without colour vision. */
+/* Submission result. Uses a left rule rather than color alone, so the
+   success and failure states are distinguishable without color vision. */
 .hp .ef-status {
   margin-top: 1.1rem; padding-left: 0.9rem; font-size: 0.9063rem; line-height: 1.6;
   border-left: 3px solid var(--stone); color: var(--stone);
@@ -472,7 +472,7 @@
 .hp .foot a { color: inherit; text-decoration: none; }
 .hp .foot a:hover { color: var(--gold-bright); }
 /* Footer links sit in running text on stone. gold-bright against stone is
-   1.44:1, so colour alone cannot tell them apart from the copy around them. */
+   1.44:1, so color alone cannot tell them apart from the copy around them. */
 .hp .foot a {
   color: var(--gold-bright); text-decoration: underline; text-underline-offset: 3px;
   /* Phone and email stack one per line in the footer. As inline links each was
@@ -698,9 +698,9 @@
 .ct-grid { display: grid; gap: 3rem; }
 @media (min-width: 900px) { .ct-grid { grid-template-columns: 1fr 1.2fr; gap: 4rem; } }
 .ct-details p { color: var(--gray); }
-/* Underlined, not colour-only. These sit inside running text, and a colour
+/* Underlined, not color-only. These sit inside running text, and a color
    difference alone was 2.85:1 against the surrounding copy — below the 3:1
-   that lets a link be told apart without relying on colour perception. */
+   that lets a link be told apart without relying on color perception. */
 .ct-details a {
   color: var(--charcoal); text-decoration: underline; text-underline-offset: 3px;
 }
@@ -844,7 +844,7 @@
 .re-offer h2 { margin: 0 0 0.7rem; }
 .re-offer p { margin: 0 0 0.7rem; color: var(--charcoal); max-width: 68ch; line-height: 1.6; }
 .re-offer p:last-of-type { margin-bottom: 1.25rem; }
-.re-licence {
+.re-license {
   margin-top: 2.5rem; padding-top: 1.25rem; border-top: 1px solid var(--rule);
   font-size: 0.8125rem; color: var(--gray);
 }

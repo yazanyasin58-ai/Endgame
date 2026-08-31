@@ -10,10 +10,20 @@ export const business = {
   established: '1989',
   yearsInBusiness: '37',
   address: '45431 Ruritan Circle, Suite 160, Sterling, VA 20164',
-  phonePrimary: '703-430-8129',
-  phonePrimaryHref: 'tel:+17034308129',
-  phonePrimarySms: 'sms:+17034308129',
-  phoneSecondary: '571-233-5133',
+  /**
+   * 571-233-5133 is the number to reach first, on the owner's instruction.
+   * 703-430-8129 stays on the site but no longer leads: it is the number on
+   * the Google Business Profile and on existing print, so removing it would
+   * strand anyone dialling from those.
+   *
+   * Both numbers, and their tel:/sms: forms, live here and nowhere else.
+   * Swapping which one leads is an edit to these five lines.
+   */
+  phonePrimary: '571-233-5133',
+  phonePrimaryHref: 'tel:+15712335133',
+  phonePrimarySms: 'sms:+15712335133',
+  phoneSecondary: '703-430-8129',
+  phoneSecondaryHref: 'tel:+17034308129',
   email: 'interiordesignflooring@gmail.com',
   license: 'Virginia Class A General Contractor #2705162130',
   licenseShort: 'Class A #2705162130',
@@ -23,11 +33,22 @@ export const business = {
   tagline: 'One Team. One Vision. One Build. No Middlemen. No Delays.',
 } as const;
 
+/**
+ * COMMERCIAL REMOVED, TEMPORARILY. The owner's commercial classification has
+ * lapsed; renewal is submitted and paid but not yet granted. Advertising
+ * commercial contracting without the classification is advertising work the
+ * company is not currently licensed to take, which is the same exposure as
+ * the real estate page.
+ *
+ * Restore 'Residential & Commercial' here, and the commercial entries marked
+ * with the same note below, once the renewal comes through. Real estate
+ * commercial is a different thing and is untouched — see `realEstate`.
+ */
 export const trustBar = [
   'Licensed & Insured',
   'Class A #2705162130',
   'Since 1989',
-  'Residential & Commercial',
+  'Residential',
 ] as const;
 
 export const pillars = [
@@ -47,7 +68,8 @@ export const pillars = [
     id: 'transform',
     number: '03',
     title: 'TRANSFORM',
-    services: ['Basements', 'Interior & Exterior Remodeling', 'Commercial Construction'],
+    // 'Commercial Construction' removed pending the classification renewal.
+    services: ['Basements', 'Interior & Exterior Remodeling', 'Additions'],
   },
 ] as const;
 
@@ -209,7 +231,7 @@ export const formFields = {
     'Kitchen or Bath',
     'Basement',
     'Exterior',
-    'Commercial',
+    // 'Commercial' removed pending the classification renewal.
     'Flooring',
     'Other',
   ],
@@ -339,15 +361,15 @@ export const realEstate = {
   /**
    * The in-house realtor, as named by the owner.
    *
-   * Ali Waziri (0225273277) was removed: his licence is reported inactive, and
+   * Ali Waziri (0225273277) was removed: his license is reported inactive, and
    * an inactive licensee cannot be advertised as providing brokerage services.
    * Restore him only against an active status on the DPOR lookup.
    *
-   * The number is a Virginia real estate licence. The 0225 prefix is the
+   * The number is a Virginia real estate license. The 0225 prefix is the
    * salesperson series, not a firm — which is the whole problem with
-   * publishing this page as it stands. See the note on `realEstateLicence`.
+   * publishing this page as it stands. See the note on `realEstateLicense`.
    */
-  realtors: [{ name: 'Sameer Waziri', licence: '0225273319' }],
+  realtors: [{ name: 'Sameer Waziri', license: '0225273319' }],
 } as const;
 
 export const cta = {
@@ -382,7 +404,7 @@ export const figures = [
   { value: '1989', label: 'Established', note: '37 years owner-run' },
   { value: '4.7', label: 'Google rating', note: 'From verified reviews' },
   { value: '24 hrs', label: 'Estimate turnaround', note: 'After the site visit' },
-  { value: 'Class A', label: 'Virginia licence', note: '#2705162130' },
+  { value: 'Class A', label: 'Virginia license', note: '#2705162130' },
 ] as const;
 
 /**
@@ -410,12 +432,12 @@ export const blocked = {} as const;
  * Virginia"). The intake form was right.
  *
  * OPEN QUESTION, raised with the owner and not settled here. The company holds
- * a Virginia Class A licence, which is the only licence number on this site.
+ * a Virginia Class A license, which is the only license number on this site.
  * Contracting in the other two jurisdictions is licensed separately —
  * Maryland through the MHIC, the District through its own home improvement
- * contractor licence. Advertising work in a jurisdiction without holding its
- * licence is the same class of exposure as the real estate page. If those
- * licences do not exist, this should come back to Virginia only.
+ * contractor license. Advertising work in a jurisdiction without holding its
+ * license is the same class of exposure as the real estate page. If those
+ * licenses do not exist, this should come back to Virginia only.
  */
 export const serviceArea = {
   short: 'Washington DC, Maryland & Virginia',
@@ -447,11 +469,11 @@ export const features = {
    * cannot yet lawfully advertise.
    *
    * To reach `true`, one thing is needed: the Virginia real estate FIRM
-   * licence number of the entity doing the advertising, set as
-   * `realEstateLicence` below. Virginia requires the licensed firm's name in
+   * license number of the entity doing the advertising, set as
+   * `realEstateLicense` below. Virginia requires the licensed firm's name in
    * advertising, and individual agents licensed under some other brokerage
    * does not satisfy it. Do not open this gate on verbal assurance; the
-   * licence number is the assurance.
+   * license number is the assurance.
    */
   realEstate: 'preview' as false | 'preview' | true,
 
@@ -478,19 +500,19 @@ export const features = {
  * name the two salespeople only. That cannot be done, and the reason is worth
  * writing down so nobody relitigates it from memory:
  *
- * A salesperson licence is held *under* a brokerage. Virginia requires the
+ * A salesperson license is held *under* a brokerage. Virginia requires the
  * licensed firm's name in real estate advertising precisely so the public can
  * tell which brokerage stands behind the advert. Naming two salespeople and
  * no firm is the specific thing the rule exists to prevent, and the exposure
- * lands on their licences, not on the website.
+ * lands on their licenses, not on the website.
  *
  * "It changes often" argues for putting it in, not leaving it out: whichever
- * brokerage they hang their licences with today is the one legally answerable
+ * brokerage they hang their licenses with today is the one legally answerable
  * for this page today. Updating it later is one line in this file.
  *
  * NAMING THE FIRM MAKES A SECOND PROBLEM VISIBLE, and it is the larger one.
  *
- * The brokerage Sameer's licence is reported to hang under is Samson Companies
+ * The brokerage Sameer's license is reported to hang under is Samson Companies
  * LLC — a different company from Interior Design Flooring. If that holds, then
  * every "in-house realtor", "one team" and "same company" line on this page is
  * inaccurate: IDF does not provide brokerage services, Samson does, and a
@@ -500,15 +522,15 @@ export const features = {
  * a thing of value moving between two companies for referred settlement-service
  * business — which is the federal question the README already flags.
  *
- * The licence half of that is now answered: Samson Companies LLC, 0226021529,
+ * The license half of that is now answered: Samson Companies LLC, 0226021529,
  * both recorded below and rendering in the disclosure.
  *
  * ONE QUESTION IS LEFT, and it is a question for Sameer, not for the records:
- * what his actual relationship to Interior Design Flooring is. The licence says
- * where his licence hangs; it does not say whether he is IDF staff licensed
+ * what his actual relationship to Interior Design Flooring is. The license says
+ * where his license hangs; it does not say whether he is IDF staff licensed
  * outside, a part-owner of an affiliated firm, or an independent referral
  * partner. Each gives different honest copy, and the page currently assumes the
- * one reading the licence contradicts.
+ * one reading the license contradicts.
  *
  * So the gate stays at 'preview' on a copy problem, not a licensing one. Ask
  * him, then rewrite these lines to match the answer and open it:
@@ -523,9 +545,9 @@ export const features = {
  * genuinely separate companies it is a thing of value for referred
  * settlement-service business, which is the federal question, not a discount.
  */
-export const realEstateLicence = {
+export const realEstateLicense = {
   /**
-   * The brokerage Sameer Waziri's licence hangs under, and the name that must
+   * The brokerage Sameer Waziri's license hangs under, and the name that must
    * appear on any real estate advertising this site carries.
    *
    * Spelled in title case deliberately: DPOR records it in capitals, as
@@ -534,11 +556,11 @@ export const realEstateLicence = {
    */
   firmName: 'Samson Companies LLC',
   /**
-   * The firm's own licence. A different series from the 0225 salesperson
-   * numbers, consistent with a firm licence — worth confirming once on the
+   * The firm's own license. A different series from the 0225 salesperson
+   * numbers, consistent with a firm license — worth confirming once on the
    * DPOR lookup, since publishing a wrong number is worse than publishing none.
    */
-  licenceNumber: '0226021529',
+  licenseNumber: '0226021529',
 } as const;
 
 /** Main navigation, in the owner's requested order. */
@@ -566,11 +588,8 @@ export const serviceGroups = [
     title: 'Interior & exterior',
     items: ['Flooring', 'Interior finishes', 'Siding, gutters, fascia and trim', 'Exterior remodeling'],
   },
-  {
-    id: 'commercial',
-    title: 'Commercial',
-    items: ['Commercial renovations', 'Tenant fit-outs', 'Retail and office spaces'],
-  },
+  // The Commercial group (renovations, tenant fit-outs, retail and office)
+  // is removed pending the classification renewal. Restore it here.
   {
     id: 'restoration',
     title: 'Restoration',
@@ -626,8 +645,8 @@ export const gallery = [
   {
     slot: 'project-siding-crew',
     caption: 'Exterior siding and trim',
-    detail: 'Two-storey siding and trim work from ladders.',
-    alt: 'Two workers, one on a ladder, replacing siding and trim on the upper storey of a house.',
+    detail: 'Two-story siding and trim work from ladders.',
+    alt: 'Two workers, one on a ladder, replacing siding and trim on the upper story of a house.',
     ratio: '4 / 3',
     tags: ['Exterior'],
   },
@@ -635,7 +654,7 @@ export const gallery = [
     slot: 'project-kitchen-cream',
     caption: 'Kitchen remodel, cream cabinetry',
     detail: 'Raised-panel cabinets, granite counters, full appliance run.',
-    alt: 'A kitchen with cream raised-panel cabinets, speckled granite counters, wall ovens and a centre island.',
+    alt: 'A kitchen with cream raised-panel cabinets, speckled granite counters, wall ovens and a center island.',
     ratio: '4 / 3',
     tags: ['Remodeling'],
   },
@@ -714,7 +733,7 @@ export const gallery = [
   {
     slot: 'project-siding-ladder',
     caption: 'Siding replacement',
-    detail: 'Upper-storey work above a rear deck.',
+    detail: 'Upper-story work above a rear deck.',
     alt: 'A worker high on an extension ladder replacing siding on the top floor of a house above a deck.',
     ratio: '3 / 4',
     tags: ['Exterior'],
@@ -847,7 +866,7 @@ export const customHomeOffers = [
 ] as const;
 
 /**
- * Investor programme. These are commercial terms the owner has asked to
+ * Investor program. These are commercial terms the owner has asked to
  * offer. No specific percentages or dollar figures appear until he sets
  * them — the page describes the benefit and routes to a conversation.
  */
