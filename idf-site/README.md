@@ -7,6 +7,14 @@ The five exploratory directions and the three variants that followed have all be
 The owner chose V4's warm light system with V1's monumental hero, then variant B —
 Editorial Column — of that direction. That combination is now the site itself, at `/`.
 
+## Handing it to the client
+
+`HANDOVER.md` is the transfer runbook: separating the site into its own
+repository, rebuilding hosting and the form's backend under the client's own
+Cloudflare account, moving the estimate submissions already received, cutting
+the domain over, going live, and revoking our access. Read it before starting —
+the steps are ordered, and secrets are rotated last.
+
 ## Running it
 
 ```
