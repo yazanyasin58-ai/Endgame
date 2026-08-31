@@ -60,7 +60,7 @@ const customHomePhotos = ['img/project-custom-home', 'img/project-custom-home-2'
     customHomePhotos.length > 0 && (
       <section class="hp-section">
         <h2 class="hp-h2">Completed custom homes</h2>
-        <div class="hp-grid">
+        <div class:list={['hp-grid', { 'hp-grid--few': customHomePhotos.length < 3 }]}>
           {customHomePhotos.map((src) => (
             <figure class="hp-project">
               <Placeholder

@@ -529,6 +529,16 @@
 .hp-pagehead { padding-bottom: 0; }
 .hp-section--tight { padding-top: clamp(2rem, 4vw, 3rem); }
 .hp-grid { display: grid; gap: 1.75rem; }
+/* One or two photographs in a three-column grid leave most of the row empty,
+   which reads as a page still being built rather than a young portfolio.
+   Below three, the grid stops stretching and sits at a readable width. */
+/* Doubled class for specificity: the three-column rule below shares a single
+   class and would otherwise win on source order, leaving one photo squeezed
+   into a third of an already narrowed container. */
+.hp-grid.hp-grid--few { max-width: 34rem; }
+@media (min-width: 1000px) {
+  .hp-grid.hp-grid--few { grid-template-columns: 1fr; }
+}
 @media (min-width: 640px) { .hp-grid { grid-template-columns: repeat(2, 1fr); } }
 @media (min-width: 1000px) { .hp-grid { grid-template-columns: repeat(3, 1fr); } }
 .hp-project-name {
