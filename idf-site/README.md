@@ -65,7 +65,7 @@ Verified in both states.
 | `/projects/` | Projects completed |
 | `/real-estate/` | **Preview.** Full page renders for owner review; kept out of the menu and out of search. See below. |
 | `/investors/` | Investor programme |
-| `/financing/` | Financing — routes to the lender, no application on this site |
+| `/financing/` | Financing — describes the arrangement and asks an interested reader to get in touch; no lender named, no link out, no application |
 | `/contact/` | Contact — showroom, hours, phone, intake form |
 | `/estimate/` | Request an estimate — the target of every primary CTA |
 | `/list-your-home/` | List your home — the in-house realtor intake form |
@@ -93,7 +93,7 @@ accident.
 | Gate | State | Why |
 |---|---|---|
 | `realEstate` | `'preview'` | Virginia requires the *advertising entity* to hold a real estate **firm** licence. Agents licensed under another brokerage is not sufficient, and ads must carry the licensed brokerage name. Needs the firm licence number and the firm name as licensed, both set in `realEstateLicence`. |
-| `financeApplication` | off | A pre-approval form collects income and identity data. That belongs on the lender's own secured portal, not on a static site with no backend. The Financing page links out instead. |
+| `financeApplication` | off | A pre-approval form collects income and identity data, which belongs on a lender's own secured portal. The page now routes to a conversation rather than to a lender, so the flag gates nothing and is kept only as the record of the decision. |
 
 `realEstate` has three states rather than two:
 
@@ -113,8 +113,9 @@ affiliated-business-arrangement rules. That was overstated: RESPA governs referr
 *settlement* services, and general contracting is not one. What the copy does avoid is a
 stated percentage or any promise of eligibility, since the owner has not supplied terms.
 
-`financeApplication` stays off permanently — when the lender is named it becomes an
-outbound link, not a hosted form.
+`financeApplication` stays off permanently, and now gates nothing: on the client's
+instruction the page carries no lender link at all, so there is no longer a slot waiting
+on a lender name. The flag is kept as the record of the decision — do not wire it back up.
 
 Pages that must stay out of search even after launch pass `noindex` to the layout. The
 site-wide pre-launch block is the `preLaunch` constant in `src/layouts/Base.astro`; delete
@@ -207,8 +208,10 @@ two, and the carousel is what makes that fit.
   licence is the same class of exposure as the real estate page. Confirm both licences
   exist; if they do not, the service area comes back to Virginia only.
 - **Real estate services** — see the gate table above.
-- **Lender name and application link** — Financing describes the arrangement and routes to
-  a conversation; the outbound link is a blocked slot until the lender is named.
+- **Lender name — resolved, by removing the requirement.** The client asked for no
+  outbound link to a lender or brokerage and no application form. Financing describes the
+  arrangement and asks an interested reader to get in touch; the introduction happens in
+  that conversation. Nothing on the page waits on a lender name.
 - **Embedded map** — blocked slot on Contact until the domain is live. "Open in Google
   Maps" works now.
 - **Virus scanning on uploads.** The endpoint enforces a type allowlist (images and PDF),

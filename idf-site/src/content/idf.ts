@@ -457,9 +457,15 @@ export const features = {
   /**
    * On-site finance application.
    *
-   * BLOCKED. A pre-approval form collects income and identity data. That
-   * belongs on the lender's own secured portal, not on a static marketing
-   * site with no backend. The Financing page links out instead.
+   * BLOCKED, permanently, and no longer read by any page — kept as the record
+   * of a decision rather than as a switch. Do not wire it back up.
+   *
+   * A pre-approval form collects income and identity data, which belongs on a
+   * lender's own secured portal and not on a static marketing site. The
+   * Financing page used to reserve a slot for an outbound link to that portal
+   * once the lender was named; on the client's instruction it no longer does.
+   * The page routes to a conversation instead — no form, no lender link, no
+   * lender named — so there is nothing left for this flag to gate.
    */
   financeApplication: false,
 } as const;
