@@ -195,27 +195,99 @@ A public form with an email address behind it will get bot submissions. There is
 already a honeypot field in the form that catches unsophisticated ones. Turnstile
 is Cloudflare's CAPTCHA and is free and usually invisible.
 
+### Why there are two keys, and why they behave differently
+
+Turnstile is a challenge issued in the browser and verified on the server, so it
+needs a key at each end:
+
+- The **site key** is rendered into the page's HTML so the widget knows which
+  configuration to load. It is public by design — anyone can read it in view
+  source, and that is fine, because on its own it proves nothing.
+- The **secret key** is used by the Function to call Cloudflare's siteverify API
+  and ask "is this token real, unspent, and issued for my site?". This is the
+  half that actually enforces anything, and it must never reach the browser.
+
+The two are read at **different times**, and that difference is the whole reason
+they have to be configured as a pair:
+
+| | Read when | Ends up in | To change it |
+|---|---|---|---|
+| `PUBLIC_TURNSTILE_SITE_KEY` | `npm run build`, on Cloudflare's build machine | the static HTML of every page with a form | needs a **rebuild** |
+| `TURNSTILE_SECRET` | each request, inside the Function | nothing — stays server-side | needs a **new deployment** |
+
+Both are satisfied by creating a new deployment, so in practice: set them, then
+redeploy. But it explains why a site key you saved is not live until a build has
+run, and why you cannot "just refresh" to pick one up.
+
+### Both or neither
+
+The Function enforces Turnstile only when it can see `TURNSTILE_SECRET`. The form
+renders the widget only when it was built with `PUBLIC_TURNSTILE_SITE_KEY`. That
+gives four states, and only two of them are ones you want:
+
+| Site key | Secret | Result |
+|---|---|---|
+| set | set | **Correct.** Widget issues a token, Function verifies it. |
+| unset | unset | **Correct.** No spam check; honeypot still active. Form works. |
+| set | unset | Widget renders and does nothing. Cosmetic security — worse than none, because it looks protected. |
+| unset | set | **Every submission is rejected.** The browser never sends a token, so the Function refuses all of them, including real customers. |
+
+That last row is the one to avoid. If the form starts refusing everything with
+"we could not verify that request came from a browser", this is why: the secret
+is set and the site key is not reaching the build.
+
+### The name must be exactly `PUBLIC_TURNSTILE_SITE_KEY`
+
+Astro only exposes environment variables through `import.meta.env` when they
+carry the `PUBLIC_` prefix. A variable named `TURNSTILE_SITE_KEY` is invisible to
+the build, so the widget silently does not render — no error, no warning, just a
+form with no token that the Function then rejects. Verified by building three
+times:
+
+```
+PUBLIC_TURNSTILE_SITE_KEY=... npm run build   → data-sitekey="..." in the HTML
+TURNSTILE_SITE_KEY=...        npm run build   → no widget at all
+(neither set)                 npm run build   → no widget at all
+```
+
+Dropping the prefix puts you straight into the "every submission rejected" row
+above, and the two settings will look correct in the dashboard while it happens.
+
+### Setting it up
+
 1. **dash.cloudflare.com → Turnstile → Add widget.**
-2. Hostnames: the `.pages.dev` domain, plus the real domain when it exists.
-   Widget mode **Managed**.
-3. It gives you two keys. They go in different places:
+2. Hostnames: add the `.pages.dev` domain **and** the real domain when it exists.
+   A hostname not on this list fails verification — the same class of mistake as
+   binding R2 to Production and then testing a preview URL.
+3. Widget mode **Managed**.
+4. Put the two keys in **Pages → Settings → Variables and secrets**:
 
-   | Key | Where | Type |
+   | Name | Type | Value |
    |---|---|---|
-   | Site key (public) | Pages → Variables → `PUBLIC_TURNSTILE_SITE_KEY` | Plaintext |
-   | Secret key | Pages → Variables → `TURNSTILE_SECRET` | **Secret** |
+   | `PUBLIC_TURNSTILE_SITE_KEY` | Plaintext | site key |
+   | `TURNSTILE_SECRET` | **Secret** | secret key |
 
-   `PUBLIC_TURNSTILE_SITE_KEY` is read at **build** time and baked into the
-   HTML, so it must be set as a build variable and the site must rebuild after
-   you set it. `TURNSTILE_SECRET` is read at **request** time by the Function.
-   Setting one without the other breaks the form: a site key with no secret is
-   just an unchecked widget, and a secret with no site key rejects every
-   submission because the browser never sends a token.
+5. Redeploy, then submit the form once to confirm it still goes through.
 
-Leave both unset until the form is working end to end. Adding a CAPTCHA to a
-form you are still debugging makes it much harder to tell what failed.
+### You will probably not see anything
 
----
+The widget renders with `data-appearance="interaction-only"`, so a legitimate
+visitor sees no checkbox and no badge — it only becomes visible if Cloudflare
+decides the visitor is suspicious. This is deliberate; an intake form should not
+make a homeowner prove they are human. But it means "I do not see a CAPTCHA" is
+not evidence that it failed.
+
+Two ways to confirm it is actually on:
+
+- **Real-time logs** show `turnstile=set` on each request.
+- **View source** on `/estimate/` and search for `cf-turnstile`. If the div is
+  there with a `data-sitekey`, the build picked the key up.
+
+### Backing it out
+
+If it goes wrong, delete **both** variables and redeploy. That returns you to the
+"unset / unset" row — no spam check, but a working form. Never delete only the
+site key.
 
 ## 4. Testing it
 
