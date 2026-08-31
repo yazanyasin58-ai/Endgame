@@ -315,7 +315,7 @@ export const realEstate = {
   standfirst:
     'Buy, sell, rent, build and renovate through one team.',
   intro: [
-    'Our in-house realtors handle the property side of the work, so the same company that renovates a house can also list it, sell it, or find it a tenant.',
+    'Our in-house realtor handles the property side of the work, so the same people who renovate a house can also help you list it, sell it, or find it a tenant.',
     'That matters most when the two are connected: a listing that needs work before it goes up, an investment property bought for what it could become, or a piece of land bought to build on.',
   ],
   services: [
@@ -332,21 +332,22 @@ export const realEstate = {
   discount: {
     title: '10% off your renovation',
     body: [
-      'Buy or sell through our in-house realtors and use Interior Design Flooring for the renovation or construction work, and you get 10% off the project.',
+      'Buy or sell through our in-house realtor and use Interior Design Flooring for the renovation or construction work, and you get 10% off the project.',
       'Additional discounts depend on the scope of the work. Ask us when you call and we will confirm everything in writing before the project begins.',
     ],
   },
   /**
-   * The in-house realtors, as named by the owner.
+   * The in-house realtor, as named by the owner.
    *
-   * The numbers are Virginia real estate licences. The 0225 prefix is the
+   * Ali Waziri (0225273277) was removed: his licence is reported inactive, and
+   * an inactive licensee cannot be advertised as providing brokerage services.
+   * Restore him only against an active status on the DPOR lookup.
+   *
+   * The number is a Virginia real estate licence. The 0225 prefix is the
    * salesperson series, not a firm — which is the whole problem with
    * publishing this page as it stands. See the note on `realEstateLicence`.
    */
-  realtors: [
-    { name: 'Sameer Waziri', licence: '0225273319' },
-    { name: 'Ali Waziri', licence: '0225273277' },
-  ],
+  realtors: [{ name: 'Sameer Waziri', licence: '0225273319' }],
 } as const;
 
 export const cta = {
@@ -487,12 +488,30 @@ export const features = {
  * brokerage they hang their licences with today is the one legally answerable
  * for this page today. Updating it later is one line in this file.
  *
- * So the page stays at 'preview' until firmName is filled in. Everything else
- * on it — services, the 10% credit, the realtors' names and licence numbers —
- * is written and ready.
+ * NAMING THE FIRM MAKES A SECOND PROBLEM VISIBLE, and it is the larger one.
+ *
+ * The brokerage Sameer's licence is reported to hang under is Samson Companies
+ * LLC — a different company from Interior Design Flooring. If that holds, then
+ * every "in-house realtor", "one team" and "same company" line on this page is
+ * inaccurate: IDF does not provide brokerage services, Samson does, and a
+ * client buying or selling contracts with Samson. Advertising another firm's
+ * brokerage as your own in-house service is the misrepresentation the naming
+ * rule exists to catch, and the 10% credit for using that realtor then becomes
+ * a thing of value moving between two companies for referred settlement-service
+ * business — which is the federal question the README already flags.
+ *
+ * So the page needs more than a filled-in field. It needs the firm's licence
+ * number, confirmation from Sameer of which brokerage he is actually under, and
+ * a rewrite of the copy to describe a partnership rather than an in-house
+ * department. Until then it stays at 'preview'.
  */
 export const realEstateLicence = {
-  firmName: '',
+  /**
+   * UNCONFIRMED — found, not supplied by the licensee. Do not publish on this.
+   * Verify against the DPOR licence lookup and confirm with Sameer directly.
+   */
+  firmName: 'Samson Companies LLC',
+  /** The firm's own licence number. Still missing; not a 0225 salesperson number. */
   licenceNumber: '',
 } as const;
 
