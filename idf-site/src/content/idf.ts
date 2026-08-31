@@ -500,19 +500,45 @@ export const features = {
  * a thing of value moving between two companies for referred settlement-service
  * business — which is the federal question the README already flags.
  *
- * So the page needs more than a filled-in field. It needs the firm's licence
- * number, confirmation from Sameer of which brokerage he is actually under, and
- * a rewrite of the copy to describe a partnership rather than an in-house
- * department. Until then it stays at 'preview'.
+ * The licence half of that is now answered: Samson Companies LLC, 0226021529,
+ * both recorded below and rendering in the disclosure.
+ *
+ * ONE QUESTION IS LEFT, and it is a question for Sameer, not for the records:
+ * what his actual relationship to Interior Design Flooring is. The licence says
+ * where his licence hangs; it does not say whether he is IDF staff licensed
+ * outside, a part-owner of an affiliated firm, or an independent referral
+ * partner. Each gives different honest copy, and the page currently assumes the
+ * one reading the licence contradicts.
+ *
+ * So the gate stays at 'preview' on a copy problem, not a licensing one. Ask
+ * him, then rewrite these lines to match the answer and open it:
+ *   - realEstate.intro           'our in-house realtor'
+ *   - realEstate.pillars         'One team, start to finish' / 'same company'
+ *   - listYourHome               'our in-house realtor will call you back'
+ *   - HomeSections.astro         'Our in-house realtor sells and rents ...'
+ *   - real-estate.astro          'Our in-house realtor' heading
+ *   - list-your-home.astro       meta description
+ *
+ * The 10% credit needs the same answer before it can stand. Between two
+ * genuinely separate companies it is a thing of value for referred
+ * settlement-service business, which is the federal question, not a discount.
  */
 export const realEstateLicence = {
   /**
-   * UNCONFIRMED — found, not supplied by the licensee. Do not publish on this.
-   * Verify against the DPOR licence lookup and confirm with Sameer directly.
+   * The brokerage Sameer Waziri's licence hangs under, and the name that must
+   * appear on any real estate advertising this site carries.
+   *
+   * Spelled in title case deliberately: DPOR records it in capitals, as
+   * registries do, and setting a company name in full capitals in body copy is
+   * a house-style artefact rather than part of the name.
    */
   firmName: 'Samson Companies LLC',
-  /** The firm's own licence number. Still missing; not a 0225 salesperson number. */
-  licenceNumber: '',
+  /**
+   * The firm's own licence. A different series from the 0225 salesperson
+   * numbers, consistent with a firm licence — worth confirming once on the
+   * DPOR lookup, since publishing a wrong number is worse than publishing none.
+   */
+  licenceNumber: '0226021529',
 } as const;
 
 /** Main navigation, in the owner's requested order. */
