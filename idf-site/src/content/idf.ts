@@ -27,14 +27,23 @@ export const business = {
   /**
    * The address on the site and the one the estimate form notifies.
    *
-   * interiordesignflooring@gmail.com is the older address and still works; it
-   * is on the Google Business Profile and on existing print, so mail will keep
-   * arriving there for years. It is deliberately NOT shown here any more —
-   * a business address on the company's own domain is the one to publish, and
-   * the form notifies both until the owner confirms this one is being read.
-   * See CLOUDFLARE.md § 2.
+   * INTERIM. The address this should end on is
+   * info@interiordesignconstructiondmv.com — a business address on the
+   * company's own domain. Receiving mail there needs MX records, which needs
+   * DNS on the domain, which is blocked on Cloudflare account access (see
+   * CLOUDFLARE.md § 2a). A published address that bounces is worse than a
+   * plain one that works, so until that is sorted the site shows a real
+   * mailbox.
+   *
+   * To flip back: put the info@ address here, and drop the Gmail from
+   * DEFAULT_NOTIFY_TO in functions/api/estimate.ts. Two lines, no other
+   * changes — every page reads this constant.
+   *
+   * interiordesignflooring@gmail.com, the owner's older address, is not shown
+   * on the site but still receives the form notification. It is on the Google
+   * Business Profile and on existing print, so mail arrives there regardless.
    */
-  email: 'info@interiordesignconstructiondmv.com',
+  email: 'interiordesignconstructiondmv@gmail.com',
   license: 'Virginia Class A General Contractor #2705162130',
   licenseShort: 'Class A #2705162130',
   licenseNumber: '2705162130',

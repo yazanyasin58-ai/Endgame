@@ -174,21 +174,54 @@ the backup — the copy that survives a deleted email.
 
 ---
 
-## 2. The info@ mailbox, and the email to the owner
+## 2. Where estimates land, and how they get there
 
-Estimates go to **info@interiordesignconstructiondmv.com**. That address is
-published on every page of the site and is the default recipient baked into
-`functions/api/estimate.ts`. Two separate things have to be true for it to
-work, and they are easy to confuse:
+Two separate things have to be true, and they are easy to confuse:
 
-- **Receiving** at info@ needs a mailbox. That is step 2a.
+- **Receiving** needs a mailbox that exists. That is step 2a.
 - **Sending** the notification needs Resend, and Resend will only send from a
   domain it has verified. That is step 2b.
 
-Until info@ is confirmed to be arriving and read, the endpoint emails **both**
-info@ and the owner's long-standing `interiordesignflooring@gmail.com`, so no
-submission can be lost in the changeover. Dropping the Gmail is one variable
-edit — see the end of 2b.
+**Currently:** `interiordesignconstructiondmv@gmail.com`, plus the owner's
+long-standing `interiordesignflooring@gmail.com`. Both are the default in
+`functions/api/estimate.ts` and the first is the address shown on the site.
+
+**Where this should end up:** `info@interiordesignconstructiondmv.com`, on the
+company's own domain. That is blocked on DNS access, not on anything in this
+repo — see 2a. A published address that bounces is worse than a plain one that
+works, so the site shows a Gmail until the domain address can actually receive.
+
+### 2z. The interim setup — no DNS at all
+
+This is what to do while DNS is out of reach. It gets estimates arriving
+automatically today, and nothing here has to be undone later.
+
+The catch that is easy to miss: **switching the recipient to a Gmail does not
+by itself let Resend send.** Without a verified domain, Resend only sends from
+its own shared `onboarding@resend.dev`, and it will only deliver that to the
+address that owns the Resend account. So:
+
+1. Create the Resend account **using `interiordesignconstructiondmv@gmail.com`
+   as the account email.** This is the whole trick — sender and recipient are
+   then the same address Resend already trusts, and no DNS record is needed.
+2. `RESEND_API_KEY` = the key. `NOTIFY_FROM` =
+   `Estimate Form <onboarding@resend.dev>`. `NOTIFY_TO` can be left unset; the
+   built-in default already covers both Gmail addresses.
+3. Redeploy, submit the form once, confirm it arrives.
+
+Two honest limits of this arrangement, worth saying out loud to the client
+rather than letting them discover:
+
+- The notification arrives **from `onboarding@resend.dev`**, not from the
+  company. It is an internal lead alert, not customer-facing, so this is
+  cosmetically poor rather than harmful — but it is more likely to land in
+  spam than a verified-domain sender. Tell them to check spam on the first one
+  and mark it "not spam".
+- `interiordesignflooring@gmail.com` is on the recipient list but is **not**
+  the Resend account owner, so under the shared sender it may not be delivered.
+  Treat the new Gmail as the one that will actually receive until 2b is done.
+
+Everything below is the permanent setup. Do it when DNS access exists.
 
 ### 2a. Create info@ — Cloudflare Email Routing
 
@@ -260,8 +293,13 @@ free tier is 3,000 emails a month.
 
    `NOTIFY_TO` is a comma-separated list; every address on it gets the same
    email. Once the client confirms info@ is arriving and being read, reduce it
-   to `info@interiordesignconstructiondmv.com` alone. Leaving both on costs
-   nothing but duplicates.
+   to `info@interiordesignconstructiondmv.com` alone. Leaving extra addresses
+   on costs nothing but duplicates.
+
+   Setting `NOTIFY_TO` here **overrides** the Gmail default compiled into
+   `functions/api/estimate.ts` — which is the point. Also put the info@ address
+   back into `business.email` in `src/content/idf.ts`, or the site will still
+   show the Gmail. Those two edits are the whole flip back.
 
    `NOTIFY_FROM` must be on the domain verified in step 2, or Resend rejects
    the send outright. Before verification is done, `Estimate Form

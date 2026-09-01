@@ -410,10 +410,12 @@ Fraunces (display) over Public Sans (body), both Google Fonts.
 ## Known state
 
 - The intake form **submits**, to `/api/estimate`. Photographs go to R2 and the owner is
-  emailed at `info@interiordesignconstructiondmv.com` — and, until that mailbox is
-  confirmed, also at the older `interiordesignflooring@gmail.com` — with the
-  photographs attached and reply-to set to the customer. `NOTIFY_TO` is a
-  comma-separated list, so trimming it to one address later is a variable edit. None of it works until the bindings in `CLOUDFLARE.md`
+  emailed at `interiordesignconstructiondmv@gmail.com` and the older
+  `interiordesignflooring@gmail.com`, with the photographs attached and reply-to
+  set to the customer. Gmail rather than `info@` on the company domain because
+  receiving there needs MX records the project cannot yet write — `CLOUDFLARE.md`
+  § 2 has the interim setup and the flip back. `NOTIFY_TO` is a comma-separated
+  list, so changing recipients later is a variable edit, not a deploy. None of it works until the bindings in `CLOUDFLARE.md`
   exist in the Pages project — the endpoint degrades one service at a time rather than
   failing whole, and refuses a submission carrying files it cannot store rather than
   accepting it and dropping them.

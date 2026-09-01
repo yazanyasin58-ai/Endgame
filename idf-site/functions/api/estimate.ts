@@ -48,13 +48,16 @@ interface PagesContext {
 }
 
 /**
- * Where an estimate lands when NOTIFY_TO is not set. Both addresses on
- * purpose: info@ is the address published on the site, the Gmail is the inbox
- * the owner has watched since before the domain existed. Remove the Gmail once
- * info@ is confirmed working — see CLOUDFLARE.md § 2.
+ * Where an estimate lands when NOTIFY_TO is not set. Two addresses on purpose:
+ * the first is the mailbox published on the site, the second is the inbox the
+ * owner has watched since before the domain existed. A lead arriving twice
+ * costs nothing; a lead arriving nowhere costs the client a job.
+ *
+ * Both are Gmail rather than info@ on the company domain because receiving at
+ * info@ needs MX records the project cannot yet write — see CLOUDFLARE.md § 2a.
  */
 const DEFAULT_NOTIFY_TO =
-  'info@interiordesignconstructiondmv.com,interiordesignflooring@gmail.com';
+  'interiordesignconstructiondmv@gmail.com,interiordesignflooring@gmail.com';
 
 const MAX_FILES = 8;
 const MAX_FILE_BYTES = 10 * 1024 * 1024; // 10 MB — a phone photograph, comfortably
