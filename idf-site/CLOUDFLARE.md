@@ -192,10 +192,12 @@ adds a hop, and forwarded mail is the kind that gets dropped for failing
 SPF/DMARC at the far end. The published address and the notification address do
 not have to be the same thing, and here they are better off not being.
 
-### 2z. The interim setup — no DNS at all
+### 2z. Fallback — getting mail flowing with no DNS at all
 
-This is what to do while DNS is out of reach. It gets estimates arriving
-automatically today, and nothing here has to be undone later.
+**Not the path to take if you have DNS on the domain — do 2b instead.** This is
+here for the case where Cloudflare account access is not available: it gets
+estimates arriving automatically without touching a single DNS record, and
+nothing in it has to be undone when 2b is done later.
 
 The catch that is easy to miss: **switching the recipient to a Gmail does not
 by itself let Resend send.** Without a verified domain, Resend only sends from
@@ -276,42 +278,56 @@ free tier is 3,000 emails a month.
 
 1. Sign up at **resend.com**, then **API Keys → Create**, permission
    **Sending access**. Copy the key — it is shown once.
-2. **Domains → Add domain.** Use the subdomain **`send.interiordesignconstructiondmv.com`**,
-   not the apex. This matters: Resend adds an MX record for the domain you give
-   it, and the apex MX records belong to Email Routing from 2a. Verifying a
-   subdomain keeps the two from colliding. If the domain is on the same
-   Cloudflare account Resend can write the records itself; otherwise paste the
-   DKIM, SPF and DMARC records it shows into Cloudflare DNS and press Verify.
-3. In **Pages → Settings → Variables and Secrets → Add**, add these three.
+2. **Domains → Add domain**, and give it the apex:
+   **`interiordesignconstructiondmv.com`**.
+
+   Resend does not put its records on the apex. It asks for an MX and an SPF
+   TXT on **`send.interiordesignconstructiondmv.com`**, and a DKIM TXT on
+   `resend._domainkey`. That is what keeps it clear of Email Routing, which
+   owns the apex MX and the apex SPF from 2a — so adding the apex domain here
+   is safe, and it is what lets the sender be `@interiordesignconstructiondmv.com`
+   rather than `@send.interiordesignconstructiondmv.com`.
+
+   **Check this before saving anything.** If Resend asks for an MX or a TXT
+   SPF record **on the apex itself**, stop. Two MX sets on the apex breaks
+   incoming mail, and two SPF records on one name is invalid — mail providers
+   treat it as a permanent error rather than picking one. In that case add
+   `send.interiordesignconstructiondmv.com` as the domain instead and accept
+   the longer sender address.
+
+   If the zone is on the same Cloudflare account Resend can write the records
+   itself. Otherwise paste them into Cloudflare DNS by hand and press Verify.
+
+3. In **Pages → Settings → Variables and Secrets → Add**, add these two.
    The key must be **type: Secret**, not Plaintext — a plaintext value is
    readable by anyone with dashboard access afterwards.
 
    | Name | Type | Value |
    |---|---|---|
    | `RESEND_API_KEY` | Secret | the key from step 1 |
-   | `NOTIFY_TO` | Plaintext | `info@interiordesignconstructiondmv.com,interiordesignflooring@gmail.com` |
-   | `NOTIFY_FROM` | Plaintext | `Interior Design Flooring <estimates@send.interiordesignconstructiondmv.com>` |
+   | `NOTIFY_FROM` | Plaintext | `Interior Design Flooring <estimates@interiordesignconstructiondmv.com>` |
 
-   `NOTIFY_TO` is a comma-separated list; every address on it gets the same
-   email. Once the client confirms info@ is arriving and being read, reduce it
-   to `info@interiordesignconstructiondmv.com` alone. Leaving extra addresses
-   on costs nothing but duplicates.
+   `NOTIFY_TO` is deliberately **not** set. The default compiled into
+   `functions/api/estimate.ts` already sends to the two destination inboxes,
+   and it sends to them directly rather than through the info@ forwarder — one
+   less hop, one less way to lose a lead. Set `NOTIFY_TO` only to change who
+   is notified; it is a comma-separated list and overrides the default
+   entirely.
 
-   Setting `NOTIFY_TO` here **overrides** the Gmail default compiled into
-   `functions/api/estimate.ts` — which is the point. Also put the info@ address
-   back into `business.email` in `src/content/idf.ts`, or the site will still
-   show the Gmail. Those two edits are the whole flip back.
+   `estimates@` does not need to exist as a mailbox. Nothing is delivered to
+   it; it is the name on the envelope, and Resend only requires that the
+   domain is verified. Replies go to the customer regardless — the endpoint
+   sets reply-to from the form.
 
-   `NOTIFY_FROM` must be on the domain verified in step 2, or Resend rejects
-   the send outright. Before verification is done, `Estimate Form
-   <onboarding@resend.dev>` works with no DNS at all — but Resend only delivers
-   that to the address that owns the Resend account, so it is for testing and
-   never for the client.
+   `NOTIFY_FROM` must be on the verified domain or Resend rejects the send
+   outright. Before verification is done, `Estimate Form <onboarding@resend.dev>`
+   works with no DNS — but Resend only delivers that to the address that owns
+   the Resend account, so it is for testing and never for the client.
 
 4. **Redeploy.** Variables added after a deployment do not reach it — Pages
    bakes them into the deployment at build time. Push a commit, or use
    **Deployments → Retry deployment**, then submit the form once and confirm
-   the email arrives at info@.
+   the email arrives.
 
 Deliverability to Gmail depends on the domain in `NOTIFY_FROM` being verified.
 Skipping step 2 is how the notification quietly lands in spam.
