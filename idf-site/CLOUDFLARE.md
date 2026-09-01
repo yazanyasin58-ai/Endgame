@@ -33,22 +33,21 @@ is the part that cannot be reconstructed if a submission is lost.
 
 ---
 
-## 0. THE SITE IS OFFLINE
+## 0. The off switch
 
-`OFFLINE = true` in `functions/_middleware.ts`. Every request returns 503 and
-nothing is served — pages, images, stylesheets and `/api/estimate` alike, with
-or without credentials. Verified against a local Workers runtime.
+`OFFLINE` in `functions/_middleware.ts`. **Currently `false` — the site is
+online.** When true, every request returns 503 and nothing is served: pages,
+images, stylesheets and `/api/estimate` alike, with or without credentials.
 
-Set by the owner, to stay that way until they say otherwise. **To bring it
-back: set `OFFLINE` to false and push.** Nothing else changed, and no
-dashboard setting is involved.
+Both directions are one line and a push, and both are verified against a local
+Workers runtime before shipping.
 
-It is a committed constant rather than a dashboard toggle or a missing secret
-on purpose — "nobody sees this" should not be undone by accident, and turning
-the site back on should be a reviewable change someone can find later.
+It is a committed constant rather than a dashboard toggle or a missing secret on
+purpose: "nobody sees this" should not be reachable by accident, and either
+direction should be a reviewable change someone can find later.
 
-503 rather than 404 is also deliberate: it means "temporarily unavailable",
-so crawlers hold what they know instead of dropping the pages.
+503 rather than 404 when off, so crawlers hold the pages they know instead of
+dropping them.
 
 If the domain itself must stop resolving — a harder disconnect than this — that
 is DNS, in the account that holds the zone: delete the two CNAME records, or

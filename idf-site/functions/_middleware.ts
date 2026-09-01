@@ -32,24 +32,22 @@
  */
 
 /*
- * OFFLINE. Every request gets 503 and nothing is served — no pages, no
- * assets, not the estimate endpoint. Set by the owner, to stay that way until
- * they say otherwise.
+ * Hard off switch, separate from the password gate below. When true, every
+ * request gets 503 and nothing is served — pages, assets and /api/estimate
+ * alike, with or without credentials.
  *
- * Deliberately separate from the password gate below rather than folded into
- * it. "Nobody sees this" and "only people with the password see this" are
- * different intentions, and a switch that means one of them should not be
- * reachable by removing a secret from a dashboard. This one takes no
- * configuration and cannot be undone by accident: it is a line of committed
- * code, and turning the site back on is a reviewable change.
+ * Currently FALSE: the site is back online at the owner's request, in the
+ * state it was in before it went down — open, no password, and still noindex
+ * with robots.txt disallowing everything until launch.
  *
- * 503 rather than 404 on purpose. It means "temporarily unavailable, come
- * back" — crawlers hold the pages they know rather than dropping them, which
- * is the truthful answer for a site that is coming back.
+ * It is a committed constant rather than a dashboard toggle or a missing
+ * secret on purpose: "nobody sees this" should not be reachable by accident,
+ * and both directions should be a reviewable change someone can find later.
  *
- * TO BRING IT BACK: set this to false. Nothing else has changed.
+ * When true it answers 503 rather than 404 — temporarily unavailable, so
+ * crawlers hold the pages they know instead of dropping them.
  */
-const OFFLINE = true;
+const OFFLINE = false;
 
 /*
  * The password gate, independent of OFFLINE above. Off — this was an open
