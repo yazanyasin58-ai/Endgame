@@ -25,25 +25,20 @@ export const business = {
   phoneSecondary: '703-430-8129',
   phoneSecondaryHref: 'tel:+17034308129',
   /**
-   * The address on the site and the one the estimate form notifies.
+   * The address published on every page. Cloudflare Email Routing forwards it
+   * to interiordesignconstructiondmv@gmail.com.
    *
-   * INTERIM. The address this should end on is
-   * info@interiordesignconstructiondmv.com — a business address on the
-   * company's own domain. Receiving mail there needs MX records, which needs
-   * DNS on the domain, which is blocked on Cloudflare account access (see
-   * CLOUDFLARE.md § 2a). A published address that bounces is worse than a
-   * plain one that works, so until that is sorted the site shows a real
-   * mailbox.
-   *
-   * To flip back: put the info@ address here, and drop the Gmail from
-   * DEFAULT_NOTIFY_TO in functions/api/estimate.ts. Two lines, no other
-   * changes — every page reads this constant.
+   * The estimate form deliberately does NOT notify this address — see
+   * DEFAULT_NOTIFY_TO in functions/api/estimate.ts. Mail sent here takes an
+   * extra hop through the forwarder, and forwarded mail is the kind that gets
+   * dropped on SPF/DMARC. The notification goes straight to the destination
+   * inbox instead, which is the same place a human would read it anyway.
    *
    * interiordesignflooring@gmail.com, the owner's older address, is not shown
    * on the site but still receives the form notification. It is on the Google
    * Business Profile and on existing print, so mail arrives there regardless.
    */
-  email: 'interiordesignconstructiondmv@gmail.com',
+  email: 'info@interiordesignconstructiondmv.com',
   license: 'Virginia Class A General Contractor #2705162130',
   licenseShort: 'Class A #2705162130',
   licenseNumber: '2705162130',

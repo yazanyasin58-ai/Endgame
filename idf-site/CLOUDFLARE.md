@@ -182,14 +182,15 @@ Two separate things have to be true, and they are easy to confuse:
 - **Sending** the notification needs Resend, and Resend will only send from a
   domain it has verified. That is step 2b.
 
-**Currently:** `interiordesignconstructiondmv@gmail.com`, plus the owner's
-long-standing `interiordesignflooring@gmail.com`. Both are the default in
-`functions/api/estimate.ts` and the first is the address shown on the site.
+**On the site:** `info@interiordesignconstructiondmv.com`, forwarded by
+Cloudflare Email Routing to `interiordesignconstructiondmv@gmail.com`.
 
-**Where this should end up:** `info@interiordesignconstructiondmv.com`, on the
-company's own domain. That is blocked on DNS access, not on anything in this
-repo — see 2a. A published address that bounces is worse than a plain one that
-works, so the site shows a Gmail until the domain address can actually receive.
+**Where the form notification goes:** `interiordesignconstructiondmv@gmail.com`
+and the owner's `interiordesignflooring@gmail.com`, straight to the inbox —
+*not* through info@. That is deliberate. info@ is a forwarder, so notifying it
+adds a hop, and forwarded mail is the kind that gets dropped for failing
+SPF/DMARC at the far end. The published address and the notification address do
+not have to be the same thing, and here they are better off not being.
 
 ### 2z. The interim setup — no DNS at all
 

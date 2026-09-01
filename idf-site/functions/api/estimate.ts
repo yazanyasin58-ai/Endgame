@@ -49,12 +49,13 @@ interface PagesContext {
 
 /**
  * Where an estimate lands when NOTIFY_TO is not set. Two addresses on purpose:
- * the first is the mailbox published on the site, the second is the inbox the
- * owner has watched since before the domain existed. A lead arriving twice
- * costs nothing; a lead arriving nowhere costs the client a job.
+ * a lead arriving twice costs nothing, a lead arriving nowhere costs a job.
  *
- * Both are Gmail rather than info@ on the company domain because receiving at
- * info@ needs MX records the project cannot yet write — see CLOUDFLARE.md § 2a.
+ * Deliberately the destination inboxes, not info@ on the company domain, even
+ * though info@ is what the site publishes. info@ is a Cloudflare Email Routing
+ * forwarder, so mail to it takes an extra hop before reaching this same Gmail —
+ * and a forward is exactly the shape of delivery that gets dropped for failing
+ * SPF/DMARC at the far end. One less hop, one less way to lose a lead.
  */
 const DEFAULT_NOTIFY_TO =
   'interiordesignconstructiondmv@gmail.com,interiordesignflooring@gmail.com';
