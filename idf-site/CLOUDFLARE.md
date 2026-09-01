@@ -381,9 +381,34 @@ gives four states, and only two of them are ones you want:
 | set | unset | Widget renders and does nothing. Cosmetic security — worse than none, because it looks protected. |
 | unset | set | **Every submission is rejected.** The browser never sends a token, so the Function refuses all of them, including real customers. |
 
-That last row is the one to avoid. If the form starts refusing everything with
-"we could not verify that request came from a browser", this is why: the secret
-is set and the site key is not reaching the build.
+That last row is the one to avoid. But it is not the only way to see
+**"we could not verify that request came from a browser"**, and the three
+causes are told apart in about a minute:
+
+1. **No site key in the build.** View source on `/estimate/` and search for
+   `cf-turnstile`. Not there? The widget never rendered, so no token was ever
+   sent. Either `PUBLIC_TURNSTILE_SITE_KEY` is unset, or it was added after the
+   running deployment was built — Pages bakes `PUBLIC_` variables into the HTML
+   at build time, so it needs a redeploy, not just a saved variable.
+   The widget is `data-appearance="interaction-only"`, so it is invisible when
+   no challenge is needed. Seeing nothing on the page proves nothing; view the
+   source.
+
+2. **Hostname not on the widget.** In **Turnstile → the widget → Settings**,
+   the Hostnames list must include `interiordesignconstructiondmv.com` and
+   `www.interiordesignconstructiondmv.com`. A widget created while the site was
+   still on `pages.dev` will have only that hostname, and every token minted on
+   the real domain is refused. This is the likeliest cause after a domain
+   launch.
+
+3. **Site key and secret from different widgets.** Each widget has its own
+   pair. Mixing one widget's site key with another's secret fails verification
+   every time. Re-copy both from the same widget's page.
+
+A single-use token being replayed used to be a fourth cause — a submission
+rejected for a missing field spent the token before the field check ran, and
+every retry then failed this way until a reload. The client now calls
+`turnstile.reset()` after any failed round-trip, so a retry gets a fresh token.
 
 ### The name must be exactly `PUBLIC_TURNSTILE_SITE_KEY`
 

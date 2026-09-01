@@ -27,6 +27,28 @@ export function initIntakeForms(): void {
       status.hidden = false;
     };
 
+    /**
+     * A Turnstile token is single-use, and the endpoint verifies it *before* it
+     * validates the fields. So a submission rejected for a missing field spends
+     * the token on the way out, and the corrected resubmission is then refused
+     * for reusing it — reported as "could not verify that request came from a
+     * browser", which describes neither problem. Worse, it sticks: every retry
+     * fails the same way until the page is reloaded.
+     *
+     * Issue a fresh token after any failed round-trip so the retry is judged on
+     * its own merits.
+     */
+    const resetTurnstile = () => {
+      const widget = form.querySelector('.cf-turnstile');
+      const api = (window as unknown as { turnstile?: { reset(el: Element): void } }).turnstile;
+      if (!widget || !api) return;
+      try {
+        api.reset(widget);
+      } catch {
+        /* Widget not rendered yet — nothing was spent, so nothing to reset. */
+      }
+    };
+
     fileInput?.addEventListener('change', () => {
       if (!fileList) return;
       const files = Array.from(fileInput.files ?? []);
@@ -71,8 +93,10 @@ export function initIntakeForms(): void {
           return;
         }
         show(result.error || 'Something went wrong sending that. Please call us instead.', 'error');
+        resetTurnstile();
       } catch {
         show('That did not send — please check your connection, or call us instead.', 'error');
+        resetTurnstile();
       }
 
       button.disabled = false;
