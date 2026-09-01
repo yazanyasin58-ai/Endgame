@@ -927,3 +927,16 @@
   }
   .hp-est-form .ef-input:focus { border-color: var(--gold); }
   .hp-est-form .ef-note { color: var(--gray); }
+  /* The submission result, on the light ground. Without these it inherits the
+     `.hp .ef-status` rules written for the charcoal homepage band, where the
+     text is --cream: 1.06:1 on paper, which is invisible rather than merely
+     low-contrast. The neutral state was --stone, 2.39:1, barely better. The
+     coloured left rule stays the thing that distinguishes success from
+     failure, so the states remain tellable apart without colour vision. */
+  .hp-est-form .ef-status { border-left-color: var(--gray); color: var(--ink); }
+  .hp-est-form .ef-status[data-kind='ok'] {
+    border-left-color: var(--gold-deep); color: var(--ink);
+  }
+  .hp-est-form .ef-status[data-kind='error'] {
+    border-left-color: #A84420; color: var(--ink);
+  }
