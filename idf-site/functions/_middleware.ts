@@ -32,16 +32,35 @@
  */
 
 /*
- * Off. The site is back to an open preview at the client's request, which is
- * where it was before the gate went in.
+ * OFFLINE. Every request gets 503 and nothing is served — no pages, no
+ * assets, not the estimate endpoint. Set by the owner, to stay that way until
+ * they say otherwise.
+ *
+ * Deliberately separate from the password gate below rather than folded into
+ * it. "Nobody sees this" and "only people with the password see this" are
+ * different intentions, and a switch that means one of them should not be
+ * reachable by removing a secret from a dashboard. This one takes no
+ * configuration and cannot be undone by accident: it is a line of committed
+ * code, and turning the site back on is a reviewable change.
+ *
+ * 503 rather than 404 on purpose. It means "temporarily unavailable, come
+ * back" — crawlers hold the pages they know rather than dropping them, which
+ * is the truthful answer for a site that is coming back.
+ *
+ * TO BRING IT BACK: set this to false. Nothing else has changed.
+ */
+const OFFLINE = true;
+
+/*
+ * The password gate, independent of OFFLINE above. Off — this was an open
+ * preview before it went offline, and that is what it returns to.
  *
  * Note what this does NOT change: `preLaunch` in src/lib/site.ts is still
  * true, so every page keeps its noindex and robots.txt still disallows
- * everything. Open to anyone with the link, still invisible to search — which
- * is the state this was in all along.
+ * everything.
  *
- * Set back to true to close it again; SITE_PASSWORD in the Pages project is
- * all it needs.
+ * Set to true, plus SITE_PASSWORD in the Pages project, to come back behind a
+ * password instead of fully open.
  */
 const GATE_ENABLED = false;
 
@@ -77,6 +96,21 @@ function safeEqual(a: string, b: string): boolean {
   return diff === 0;
 }
 
+/** Served for every request while OFFLINE is true. */
+function offline(): Response {
+  return new Response('This site is temporarily unavailable.', {
+    status: 503,
+    headers: {
+      'cache-control': 'no-store',
+      'content-type': 'text/plain; charset=utf-8',
+      'x-robots-tag': 'noindex, nofollow',
+      // Tells crawlers and uptime checks this is temporary, not an outage to
+      // diagnose. No fixed date, because there is not one yet.
+      'retry-after': '86400',
+    },
+  });
+}
+
 function unauthorized(): Response {
   return new Response('Authentication required.', {
     status: 401,
@@ -106,6 +140,7 @@ function misconfigured(): Response {
 }
 
 export const onRequest = async (context: MiddlewareContext): Promise<Response> => {
+  if (OFFLINE) return offline();
   if (!GATE_ENABLED) return context.next();
 
   const password = context.env.SITE_PASSWORD;

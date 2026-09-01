@@ -32,7 +32,13 @@ serving `POST /api/estimate` — the estimate form's backend, including photo up
 It is the only server-side code on the site. See `CLOUDFLARE.md` for what has to be
 configured in the dashboard before it does anything.
 
-## Who can see the site
+## The site is OFFLINE
+
+`OFFLINE = true` in `functions/_middleware.ts` — every request returns 503 and
+nothing is served. Set by the owner. To bring it back, set it to false and push.
+See CLOUDFLARE.md § 0.
+
+## Who can see the site, when it is back
 
 **Open preview.** No password: anyone with a link reaches it. The gate in
 `functions/_middleware.ts` exists but is off (`GATE_ENABLED = false`); set it to

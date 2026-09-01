@@ -33,7 +33,32 @@ is the part that cannot be reconstructed if a submission is lost.
 
 ---
 
-## 0. The access gate — who can see the site
+## 0. THE SITE IS OFFLINE
+
+`OFFLINE = true` in `functions/_middleware.ts`. Every request returns 503 and
+nothing is served — pages, images, stylesheets and `/api/estimate` alike, with
+or without credentials. Verified against a local Workers runtime.
+
+Set by the owner, to stay that way until they say otherwise. **To bring it
+back: set `OFFLINE` to false and push.** Nothing else changed, and no
+dashboard setting is involved.
+
+It is a committed constant rather than a dashboard toggle or a missing secret
+on purpose — "nobody sees this" should not be undone by accident, and turning
+the site back on should be a reviewable change someone can find later.
+
+503 rather than 404 is also deliberate: it means "temporarily unavailable",
+so crawlers hold what they know instead of dropping the pages.
+
+If the domain itself must stop resolving — a harder disconnect than this — that
+is DNS, in the account that holds the zone: delete the two CNAME records, or
+remove the custom domain from the Pages project.
+
+---
+
+## 0b. The access gate — who can see the site
+
+Independent of OFFLINE above; while the site is offline this does not apply.
 
 **Currently OFF.** The site is an open preview again at the client's request:
 anyone with a link reaches it, and no password is needed. `SITE_PASSWORD` does
