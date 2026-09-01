@@ -196,7 +196,24 @@ The domain is already on Cloudflare, so the free route is Cloudflare's own
 Email Routing. It is a **forwarder**, not a mailbox: mail to info@ is delivered
 to an inbox that already exists. That is all the estimate notification needs.
 
-1. Cloudflare dashboard → the `interiordesignconstructiondmv.com` zone →
+**Which account you do this in is not a detail.** Email Routing only works in
+the account whose zone is *Active* — the one Cloudflare answers DNS from. The
+domain was bought in the client's Cloudflare account and the Pages project
+lives in the developer's, so the two are not the same place, and the apex
+CNAME that makes the site resolve is in the client's zone.
+
+If Email Routing shows a **"change your nameservers"** screen, that account's
+zone is Pending — you are not in the account that holds the live zone. Do not
+follow that prompt. Pointing the nameservers at a zone that does not carry the
+current records takes the site down, and takes any existing mail on the domain
+down with it. Open the zone's Overview first: if it does not say **Active**,
+and the site's CNAME is not in its DNS list, stop and go to the other account.
+
+The same applies to Resend's DKIM records in 2b. Both halves of the email need
+DNS on the domain, so account access is worth settling once rather than twice.
+
+1. In the account holding the **Active** zone: Cloudflare dashboard →
+   the `interiordesignconstructiondmv.com` zone →
    **Email → Email Routing → Get started**.
 2. Let it **add the MX and SPF records for you**. It writes three MX records
    and one SPF TXT record on the apex. Do not hand-write these.
