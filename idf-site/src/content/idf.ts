@@ -24,7 +24,17 @@ export const business = {
   phonePrimarySms: 'sms:+15712335133',
   phoneSecondary: '703-430-8129',
   phoneSecondaryHref: 'tel:+17034308129',
-  email: 'interiordesignflooring@gmail.com',
+  /**
+   * The address on the site and the one the estimate form notifies.
+   *
+   * interiordesignflooring@gmail.com is the older address and still works; it
+   * is on the Google Business Profile and on existing print, so mail will keep
+   * arriving there for years. It is deliberately NOT shown here any more —
+   * a business address on the company's own domain is the one to publish, and
+   * the form notifies both until the owner confirms this one is being read.
+   * See CLOUDFLARE.md § 2.
+   */
+  email: 'info@interiordesignconstructiondmv.com',
   license: 'Virginia Class A General Contractor #2705162130',
   licenseShort: 'Class A #2705162130',
   licenseNumber: '2705162130',

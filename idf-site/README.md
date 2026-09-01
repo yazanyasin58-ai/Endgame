@@ -410,8 +410,10 @@ Fraunces (display) over Public Sans (body), both Google Fonts.
 ## Known state
 
 - The intake form **submits**, to `/api/estimate`. Photographs go to R2 and the owner is
-  emailed at `interiordesignflooring@gmail.com` with the photographs attached and
-  reply-to set to the customer. None of it works until the bindings in `CLOUDFLARE.md`
+  emailed at `info@interiordesignconstructiondmv.com` — and, until that mailbox is
+  confirmed, also at the older `interiordesignflooring@gmail.com` — with the
+  photographs attached and reply-to set to the customer. `NOTIFY_TO` is a
+  comma-separated list, so trimming it to one address later is a variable edit. None of it works until the bindings in `CLOUDFLARE.md`
   exist in the Pages project — the endpoint degrades one service at a time rather than
   failing whole, and refuses a submission carrying files it cannot store rather than
   accepting it and dropping them.

@@ -26,7 +26,13 @@ interface Env {
   TURNSTILE_SECRET?: string;
   /** Resend API key. Omit and nothing is emailed — submissions land in R2 only. */
   RESEND_API_KEY?: string;
-  /** Where the notification goes. Defaults to the address on the site. */
+  /**
+   * Where the notification goes. A comma-separated list — every address on it
+   * gets the same email. Defaults to the new company address plus the owner's
+   * long-standing Gmail, so a submission cannot be lost while the new mailbox
+   * is being set up. Drop the Gmail from this variable once info@ is confirmed
+   * to be arriving and read.
+   */
   NOTIFY_TO?: string;
   /**
    * Envelope sender. Must be on a domain verified in Resend. Until the real
@@ -40,6 +46,15 @@ interface PagesContext {
   env: Env;
   waitUntil(promise: Promise<unknown>): void;
 }
+
+/**
+ * Where an estimate lands when NOTIFY_TO is not set. Both addresses on
+ * purpose: info@ is the address published on the site, the Gmail is the inbox
+ * the owner has watched since before the domain existed. Remove the Gmail once
+ * info@ is confirmed working — see CLOUDFLARE.md § 2.
+ */
+const DEFAULT_NOTIFY_TO =
+  'info@interiordesignconstructiondmv.com,interiordesignflooring@gmail.com';
 
 const MAX_FILES = 8;
 const MAX_FILE_BYTES = 10 * 1024 * 1024; // 10 MB — a phone photograph, comfortably
@@ -296,7 +311,13 @@ const handlePost = async (context: PagesContext): Promise<Response> => {
   }
 
   if (env.RESEND_API_KEY) {
-    const to = env.NOTIFY_TO || 'interiordesignflooring@gmail.com';
+    // A list, not one address. Resend takes up to 50 recipients; the guard is
+    // against an empty or comma-only value silently sending to nobody.
+    const to = (env.NOTIFY_TO || DEFAULT_NOTIFY_TO)
+      .split(',')
+      .map((address) => address.trim())
+      .filter(Boolean);
+    if (to.length === 0) to.push(...DEFAULT_NOTIFY_TO.split(',').map((a) => a.trim()));
     const from = env.NOTIFY_FROM || 'Estimate Form <onboarding@resend.dev>';
 
     const rows = TEXT_FIELDS.filter((key) => fields[key] !== '')
@@ -336,7 +357,7 @@ const handlePost = async (context: PagesContext): Promise<Response> => {
       },
       body: JSON.stringify({
         from,
-        to: [to],
+        to,
         reply_to: fields.email,
         // Fields are capped at 4000 characters for the body; a subject line is
         // not the place for that, and long subjects get truncated or flagged

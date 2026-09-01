@@ -174,38 +174,91 @@ the backup — the copy that survives a deleted email.
 
 ---
 
-## 2. Resend — the email to the owner
+## 2. The info@ mailbox, and the email to the owner
 
-Without this, submissions sit in R2 and nobody knows they arrived. Resend's free
-tier is 3,000 emails a month.
+Estimates go to **info@interiordesignconstructiondmv.com**. That address is
+published on every page of the site and is the default recipient baked into
+`functions/api/estimate.ts`. Two separate things have to be true for it to
+work, and they are easy to confuse:
+
+- **Receiving** at info@ needs a mailbox. That is step 2a.
+- **Sending** the notification needs Resend, and Resend will only send from a
+  domain it has verified. That is step 2b.
+
+Until info@ is confirmed to be arriving and read, the endpoint emails **both**
+info@ and the owner's long-standing `interiordesignflooring@gmail.com`, so no
+submission can be lost in the changeover. Dropping the Gmail is one variable
+edit — see the end of 2b.
+
+### 2a. Create info@ — Cloudflare Email Routing
+
+The domain is already on Cloudflare, so the free route is Cloudflare's own
+Email Routing. It is a **forwarder**, not a mailbox: mail to info@ is delivered
+to an inbox that already exists. That is all the estimate notification needs.
+
+1. Cloudflare dashboard → the `interiordesignconstructiondmv.com` zone →
+   **Email → Email Routing → Get started**.
+2. Let it **add the MX and SPF records for you**. It writes three MX records
+   and one SPF TXT record on the apex. Do not hand-write these.
+3. **Destination addresses → Add** the inbox that should actually receive —
+   the owner's Gmail. Cloudflare emails a confirmation link there; it is not
+   live until someone clicks it.
+4. **Routing rules → Create address**: `info@` → that verified destination.
+5. Send a test from any outside account to info@ and watch it land.
+
+Two limits to know before promising the client anything:
+
+- Email Routing **forwards only**. Nobody can *reply* as info@ from it. Replies
+  will come from whatever inbox received the forward. For the estimate form
+  that is fine — the notification sets reply-to to the customer, so hitting
+  reply reaches the customer either way — but if the client wants to *send*
+  as info@, that needs a real mailbox: Google Workspace (~$7/user/month, and
+  it replaces the apex MX records, so Email Routing comes off first) or
+  Microsoft 365. Ask before assuming.
+- Forwarded mail keeps the original sender. Some senders that fail SPF/DMARC at
+  the destination get dropped in forwarding. Gmail destinations are reliable.
+
+### 2b. Resend — sending the notification
+
+Without this, submissions sit in R2 and nobody is told they arrived. Resend's
+free tier is 3,000 emails a month.
 
 1. Sign up at **resend.com**, then **API Keys → Create**, permission
    **Sending access**. Copy the key — it is shown once.
-2. In **Pages → Settings → Variables and Secrets → Add**, add these three.
+2. **Domains → Add domain.** Use the subdomain **`send.interiordesignconstructiondmv.com`**,
+   not the apex. This matters: Resend adds an MX record for the domain you give
+   it, and the apex MX records belong to Email Routing from 2a. Verifying a
+   subdomain keeps the two from colliding. If the domain is on the same
+   Cloudflare account Resend can write the records itself; otherwise paste the
+   DKIM, SPF and DMARC records it shows into Cloudflare DNS and press Verify.
+3. In **Pages → Settings → Variables and Secrets → Add**, add these three.
    The key must be **type: Secret**, not Plaintext — a plaintext value is
    readable by anyone with dashboard access afterwards.
 
    | Name | Type | Value |
    |---|---|---|
    | `RESEND_API_KEY` | Secret | the key from step 1 |
-   | `NOTIFY_TO` | Plaintext | `interiordesignflooring@gmail.com` |
-   | `NOTIFY_FROM` | Plaintext | see below |
+   | `NOTIFY_TO` | Plaintext | `info@interiordesignconstructiondmv.com,interiordesignflooring@gmail.com` |
+   | `NOTIFY_FROM` | Plaintext | `Interior Design Flooring <estimates@send.interiordesignconstructiondmv.com>` |
 
-3. `NOTIFY_FROM` is the sender address, and Resend will only send from a domain
-   you have verified with it. Two stages:
-   - **Before the real domain is live**, use `Estimate Form <onboarding@resend.dev>`.
-     That works immediately with no DNS, but Resend only delivers it to the
-     address that owns the Resend account — fine for testing, not for the
-     client.
-   - **At launch**, add the real domain under **Resend → Domains**, paste the
-     DKIM and SPF records it gives you into Cloudflare DNS, then set this to
-     something like `Estimate Form <estimates@interiordesignflooring.com>`.
-     If the domain is already on Cloudflare, Resend can add the records itself.
+   `NOTIFY_TO` is a comma-separated list; every address on it gets the same
+   email. Once the client confirms info@ is arriving and being read, reduce it
+   to `info@interiordesignconstructiondmv.com` alone. Leaving both on costs
+   nothing but duplicates.
 
-   Deliverability to Gmail depends on this being a verified domain. Skipping it
-   is how the notification quietly lands in spam.
+   `NOTIFY_FROM` must be on the domain verified in step 2, or Resend rejects
+   the send outright. Before verification is done, `Estimate Form
+   <onboarding@resend.dev>` works with no DNS at all — but Resend only delivers
+   that to the address that owns the Resend account, so it is for testing and
+   never for the client.
 
-4. Redeploy. Again: variables added after a deployment do not reach it.
+4. **Redeploy.** Variables added after a deployment do not reach it — Pages
+   bakes them into the deployment at build time. Push a commit, or use
+   **Deployments → Retry deployment**, then submit the form once and confirm
+   the email arrives at info@.
+
+Deliverability to Gmail depends on the domain in `NOTIFY_FROM` being verified.
+Skipping step 2 is how the notification quietly lands in spam.
 
 The email carries every filled-in field, sets **reply-to** to the customer's
 address so a reply goes straight to them, and attaches the photographs — up to
