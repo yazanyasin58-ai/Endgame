@@ -463,6 +463,84 @@ If it goes wrong, delete **both** variables and redeploy. That returns you to th
 "unset / unset" row — no spam check, but a working form. Never delete only the
 site key.
 
+## 3b. Google reviews — the live carousel feed
+
+Optional. With this unconfigured the carousel shows the curated reviews in
+`src/content/idf.ts` and nothing is broken; this is what makes it show the live
+Google set instead.
+
+**Two switches, and they are deliberately separate.** `features.googleReviews`
+in `src/content/idf.ts` decides whether the page asks for live reviews at all.
+`GOOGLE_PLACES_KEY` in the Pages project decides whether the endpoint can
+answer. The flag is not derived from the key because a key expiring or being
+deleted must not be the thing that silently changes what the page claims.
+
+1. **Google Cloud Console** → new project → **APIs & Services → Enable APIs**
+   → enable **Places API (New)**. Billing has to be on the project even though
+   this volume is inside the free allowance; check current Places pricing
+   yourself rather than trusting a number written here.
+2. **Credentials → Create credentials → API key.** Then **restrict it**:
+   under *API restrictions* select Places API (New) and nothing else. Leave
+   *Application restrictions* as None — the call is made from the edge, not a
+   browser, so an HTTP-referrer restriction would block it. That means the key
+   is a bearer secret and must never reach the client.
+3. **Pages → Settings → Variables and Secrets → Add**:
+
+   | Name | Type | Value |
+   |---|---|---|
+   | `GOOGLE_PLACES_KEY` | **Secret** | the key from step 2 |
+   | `GOOGLE_PLACE_ID` | Plaintext | *optional* — overrides the ID compiled into the Function |
+
+   The place ID for Interior Design Flooring, `ChIJr4P8Rvk4tokR4Ni_5rGjQbY`,
+   is committed in `functions/api/reviews.ts`. Place IDs are public and Google
+   permits storing them indefinitely, unlike the review content itself.
+
+4. Set `features.googleReviews` to `true` in `src/content/idf.ts`, push, and
+   load the homepage. `curl https://<domain>/api/reviews` should return
+   `ok: true` with a rating, a total and some reviews.
+
+### What it will and will not do
+
+- **Google returns at most five reviews per place.** There is no paging and no
+  quota to raise. The endpoint then keeps only four stars and up, so the live
+  set can come back with two, or none.
+- **The carousel keeps the curated reviews unless the live set has at least
+  three**, and unless Google also returned both the average and the total. A
+  four-star-and-up selection is only ever shown alongside the true average,
+  the true count, and a link to all of them — the endpoint returns them in the
+  same response, and the client refuses to swap the cards in without them.
+  That is not decoration. Presenting a rating-filtered set of reviews as
+  representative of reviews generally is review suppression under the FTC's
+  consumer-review rule (16 CFR 465.6, in force since October 2024).
+- **The endpoint takes no input.** The place ID is server-side, so it cannot be
+  used as a free proxy to query other places on the client's billed key.
+- **One call a day.** The response is cached in Cloudflare's Cache API for 24
+  hours on a fixed key, so a query string cannot multiply the billed calls.
+- Google's Maps Platform terms also govern how review content may be displayed
+  and cached — attribution, and a cache limit measured in days. The 24-hour TTL
+  is well inside it; read the current terms on the filtered display before
+  switching the flag on.
+
+### What has not been verified
+
+The endpoint has been tested against a missing key (returns
+`{ok:false,reason:"unconfigured"}`), a bad key (a real call to
+`places.googleapis.com`, 400, returns `{ok:false,reason:"upstream"}`), and a
+wrong method (405). The client has been tested in Chromium against six stubbed
+responses, including a thin result, a null aggregate and malformed JSON.
+
+**The one thing no test here covers is Google's actual field names.** Without a
+valid key the response body cannot be read, so `rating`, `userRatingCount`,
+`googleMapsUri`, `reviews[].text.text`, `reviews[].rating`,
+`reviews[].authorAttribution.displayName` and
+`reviews[].relativePublishTimeDescription` are taken from the API's
+documentation, not from a response. Every one is read defensively, so a renamed
+field costs that field rather than the section — but the first thing to do
+after adding the key is to call `/api/reviews` and confirm the fields are
+populated rather than assuming.
+
+---
+
 ## 4. Testing it
 
 Submit the real form on the deployed URL — not a local build, since none of the

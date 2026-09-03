@@ -940,3 +940,34 @@
   .hp-est-form .ef-status[data-kind='error'] {
     border-left-color: #A84420; color: var(--ink);
   }
+
+/* ---------- live Google reviews: the aggregate line ----------
+   Shown only when /api/reviews succeeds, which is the same moment the cards
+   become a four-star-and-up selection. The true average and count are what
+   make that selection honest rather than a misrepresentation of the whole,
+   so this is not decoration and must not be quietly dropped. */
+.rc-agg {
+  margin-top: 0.55rem;
+  font-size: 0.9063rem;
+  color: var(--gray);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: baseline;
+}
+.rc-agg-score {
+  font-family: 'Instrument Serif', serif;
+  font-size: 1.35rem;
+  color: var(--ink);
+  letter-spacing: 0.01em;
+}
+.hp .rc-agg-score { color: var(--cream); }
+.hp .rc-agg { color: var(--stone); }
+.rc-agg-link {
+  display: inline-block;
+  margin-top: 0.35rem;
+  font-size: 0.875rem;
+  color: var(--gold-deep);
+}
+.hp .rc-agg-link { color: var(--gold); }
+.rc-source-link { color: inherit; text-decoration: underline; text-underline-offset: 2px; }

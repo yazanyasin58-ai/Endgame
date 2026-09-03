@@ -505,6 +505,36 @@ export const features = {
    * lender named — so there is nothing left for this flag to gate.
    */
   financeApplication: false,
+
+  /**
+   * Live Google reviews in the carousel.
+   *
+   * false - the carousel shows only the curated reviews in `reviews` above.
+   * true  - on load the page also fetches /api/reviews and, if that returns a
+   *         usable set, replaces the curated cards with the live Google ones
+   *         and prints the true average and review count above them.
+   *
+   * The curated reviews stay the server-rendered floor either way. Google's
+   * Places API returns at most five reviews and this filters to four stars and
+   * up, so the live set can come back with one or none — and a testimonials
+   * section that renders empty is worse than one showing four good reviews
+   * from last year. The carousel keeps the curated cards unless the live set
+   * has at least three.
+   *
+   * What the flag does and does not strip, measured rather than assumed:
+   * with it off, no `data-rc-live` attribute and no card `<template>` reach
+   * the HTML, and no request is made — but the carousel's script is hoisted
+   * and bundled by Astro regardless of props, so the fetch code itself does
+   * ship, inert, with nothing to act on. Unlike `realEstate`, this gate is
+   * about a request and a claim, not about copy, so inert bytes are the right
+   * trade rather than a second component to keep in step.
+   *
+   * To reach `true`: put a Google Places API key into the Pages project as the
+   * secret `GOOGLE_PLACES_KEY` and redeploy. See CLOUDFLARE.md § 3b. The flag
+   * is separate from the key on purpose — the key going missing must not be
+   * the thing that decides what the page claims.
+   */
+  googleReviews: false,
 } as const;
 
 /**

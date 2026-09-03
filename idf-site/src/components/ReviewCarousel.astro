@@ -20,6 +20,11 @@ interface Props {
   heading?: string;
   headingId?: string;
   standfirst?: string;
+  /**
+   * Upgrade to live Google reviews on load. Pass `features.googleReviews`.
+   * When false, none of the fetch or render code is in the build.
+   */
+  live?: boolean;
 }
 
 const {
@@ -27,13 +32,28 @@ const {
   heading = 'What clients say',
   headingId = 'rc-heading',
   standfirst,
+  live = false,
 } = Astro.props;
 ---
 
-<section class="hp-section rc-wrap" aria-labelledby={headingId}>
+<section class="hp-section rc-wrap" aria-labelledby={headingId} data-rc-live={live ? '' : null}>
   <div class="rc-head">
     <div>
       <h2 id={headingId} class="hp-h2">{heading}</h2>
+      {/*
+        The true average and the true review count, filled in only when the
+        live fetch succeeds — which is the same moment the cards become a
+        four-star-and-up selection. Filter and aggregate arrive together by
+        construction, so the page cannot show a rating-filtered set of reviews
+        without also showing the numbers for all of them and a link to read
+        them. See the note on MIN_RATING in functions/api/reviews.ts.
+      */}
+      {live && (
+        <p class="rc-agg" data-rc-agg hidden>
+          <span class="rc-agg-score" data-rc-agg-score />
+          <span class="rc-agg-note" data-rc-agg-note />
+        </p>
+      )}
       {/* Hidden with the controls: with few enough reviews to fit on screen
           there is nothing to swipe, and telling someone to swipe a static row
           is worse than saying nothing. */}
@@ -81,6 +101,36 @@ const {
       ))
     }
   </div>
+
+  {
+    /*
+      One copy of the card markup, cloned by the script. A second hand-written
+      copy in JavaScript would drift from the one above the first time either
+      is touched.
+    */
+    live && (
+      <template data-rc-template>
+        <blockquote class="rc-card">
+          <p class="rc-stars">
+            <span class="rc-stars-mark" aria-hidden="true" data-f="stars" />
+            <span class="rc-sr" data-f="sr" />
+          </p>
+          <div class="rc-quote-box" data-rc-quote>
+            <p class="rc-quote hp-italic" data-f="quote" />
+          </div>
+          <footer class="rc-foot">
+            <cite class="rc-name" data-f="name" />
+            <span class="rc-context">
+              <span data-f="when" />
+              <a class="rc-source rc-source-link" data-f="link" rel="nofollow noopener" target="_blank">
+                Review on Google
+              </a>
+            </span>
+          </footer>
+        </blockquote>
+      </template>
+    )
+  }
 </section>
 
 <script>
@@ -92,6 +142,15 @@ const {
    * at the ends instead of wrapping — a carousel that silently jumps back to
    * the start loses people.
    */
+  interface LiveReview {
+    name: string;
+    rating: number;
+    quote: string;
+    when: string;
+    photo?: string;
+    uri?: string;
+  }
+
   document.querySelectorAll<HTMLElement>('.rc-wrap').forEach((wrap) => {
     const track = wrap.querySelector<HTMLElement>('[data-rc-track]');
     const controls = wrap.querySelector<HTMLElement>('[data-rc-controls]');
@@ -100,9 +159,10 @@ const {
     if (!track) return;
 
     /* ---- Read more, per card ---- */
-    wrap.querySelectorAll<HTMLElement>('[data-rc-quote]').forEach((box) => {
+    const setupReadMore = (box: HTMLElement) => {
       const quote = box.querySelector<HTMLElement>('.rc-quote');
-      if (!quote) return;
+      if (!quote || box.dataset.rcClamped) return;
+      box.dataset.rcClamped = 'done';
 
       /*
        * Decide from the text's own height against the clamp limit, not
@@ -129,39 +189,154 @@ const {
         toggle.textContent = open ? 'Read less' : 'Read more';
         toggle.setAttribute('aria-expanded', String(open));
       });
-    });
-
-    /* ---- Paging ---- */
-    const scrollable = () => track.scrollWidth - track.clientWidth > 4;
-    if (!scrollable()) return;
-
-    controls?.removeAttribute('hidden');
-    wrap.querySelector('[data-rc-hint]')?.removeAttribute('hidden');
-
-    const page = (direction: 1 | -1) => {
-      track.scrollBy({ left: direction * track.clientWidth * 0.9, behavior: 'smooth' });
     };
 
-    prev?.addEventListener('click', () => page(-1));
-    next?.addEventListener('click', () => page(1));
+    const scanCards = () =>
+      wrap.querySelectorAll<HTMLElement>('[data-rc-quote]').forEach(setupReadMore);
 
-    track.addEventListener('keydown', (event) => {
-      if (event.key === 'ArrowRight') {
-        event.preventDefault();
-        page(1);
-      } else if (event.key === 'ArrowLeft') {
-        event.preventDefault();
-        page(-1);
-      }
-    });
+    scanCards();
 
+    /* ---- Paging ---- */
     const sync = () => {
       const max = track.scrollWidth - track.clientWidth;
       if (prev) prev.disabled = track.scrollLeft <= 2;
       if (next) next.disabled = track.scrollLeft >= max - 2;
     };
-    track.addEventListener('scroll', sync, { passive: true });
-    window.addEventListener('resize', sync);
-    sync();
+
+    const page = (direction: 1 | -1) => {
+      track.scrollBy({ left: direction * track.clientWidth * 0.9, behavior: 'smooth' });
+    };
+
+    let paged = false;
+    const setupPaging = () => {
+      // Re-checked rather than done once: replacing the cards with the live
+      // set changes how much there is to scroll, in either direction.
+      const scrollable = track.scrollWidth - track.clientWidth > 4;
+      if (!scrollable) {
+        controls?.setAttribute('hidden', '');
+        wrap.querySelector('[data-rc-hint]')?.setAttribute('hidden', '');
+        return;
+      }
+      controls?.removeAttribute('hidden');
+      wrap.querySelector('[data-rc-hint]')?.removeAttribute('hidden');
+      if (paged) {
+        sync();
+        return;
+      }
+      paged = true;
+
+      prev?.addEventListener('click', () => page(-1));
+      next?.addEventListener('click', () => page(1));
+
+      track.addEventListener('keydown', (event) => {
+        if (event.key === 'ArrowRight') {
+          event.preventDefault();
+          page(1);
+        } else if (event.key === 'ArrowLeft') {
+          event.preventDefault();
+          page(-1);
+        }
+      });
+
+      track.addEventListener('scroll', sync, { passive: true });
+      window.addEventListener('resize', sync);
+      sync();
+    };
+
+    setupPaging();
+
+    /* ---- Live Google reviews ---- */
+    const template = wrap.querySelector<HTMLTemplateElement>('[data-rc-template]');
+    if (!wrap.hasAttribute('data-rc-live') || !template) return;
+
+    const field = (root: ParentNode, name: string) =>
+      root.querySelector<HTMLElement>(`[data-f="${name}"]`);
+
+    const render = (data: {
+      rating: number | null;
+      total: number | null;
+      href: string | null;
+      minRating: number;
+      reviews: LiveReview[];
+    }) => {
+      /*
+       * Two or fewer live reviews is not a carousel, and it is a thinner
+       * showing than the curated set it would replace. Keep what is already
+       * on the page — the fallback is the better outcome, not a failure.
+       */
+      if (data.reviews.length < 3) return;
+
+      const agg = wrap.querySelector<HTMLElement>('[data-rc-agg]');
+      const score = wrap.querySelector<HTMLElement>('[data-rc-agg-score]');
+      const note = wrap.querySelector<HTMLElement>('[data-rc-agg-note]');
+
+      /*
+       * The invariant, enforced before anything is swapped in rather than
+       * hoped for afterwards: these cards are filtered to four stars and up,
+       * so they may only go on the page together with the true average and
+       * the true total. If either number is missing — Google omitted it, or
+       * renamed the field — the honest outcome is to keep the unfiltered
+       * curated set, not to show a filtered one with nothing qualifying it.
+       *
+       * Found by testing this exact case: without the guard the cards
+       * appeared and the aggregate silently stayed hidden.
+       */
+      if (!agg || !score || !note || data.rating === null || data.total === null) return;
+
+      const cards = document.createDocumentFragment();
+      for (const r of data.reviews) {
+        const node = template.content.cloneNode(true) as DocumentFragment;
+        const stars = field(node, 'stars');
+        if (stars) stars.textContent = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
+        const sr = field(node, 'sr');
+        if (sr) sr.textContent = `${r.rating} out of 5 stars`;
+        // textContent throughout: review text is written by the public and is
+        // never inserted as markup.
+        const quote = field(node, 'quote');
+        if (quote) quote.textContent = r.quote;
+        const name = field(node, 'name');
+        if (name) name.textContent = r.name;
+        const when = field(node, 'when');
+        if (when) when.textContent = r.when;
+        const link = field(node, 'link') as HTMLAnchorElement | null;
+        if (link) {
+          const href = r.uri || data.href;
+          if (href) link.href = href;
+          else link.replaceWith(document.createTextNode('Google review'));
+        }
+        cards.appendChild(node);
+      }
+
+      track.replaceChildren(cards);
+      track.scrollLeft = 0;
+
+      // Guarded above, so this always runs when the cards are replaced.
+      score.textContent = `${data.rating.toFixed(1)} ★`;
+      note.textContent =
+        `average from ${data.total} Google review${data.total === 1 ? '' : 's'}` +
+        ` — a selection of ${data.minRating}-star and above.`;
+      if (data.href) {
+        const link = document.createElement('a');
+        link.className = 'rc-agg-link';
+        link.href = data.href;
+        link.rel = 'nofollow noopener';
+        link.target = '_blank';
+        link.textContent = 'See all reviews on Google';
+        agg.after(link);
+      }
+      agg.removeAttribute('hidden');
+
+      scanCards();
+      setupPaging();
+    };
+
+    fetch('/api/reviews', { headers: { accept: 'application/json' } })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data && data.ok && Array.isArray(data.reviews)) render(data);
+      })
+      .catch(() => {
+        /* Curated reviews are already on the page. Nothing to report. */
+      });
   });
 </script>

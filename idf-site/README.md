@@ -419,6 +419,11 @@ Fraunces (display) over Public Sans (body), both Google Fonts.
   exist in the Pages project — the endpoint degrades one service at a time rather than
   failing whole, and refuses a submission carrying files it cannot store rather than
   accepting it and dropping them.
+- **Google reviews are wired but switched off.** `features.googleReviews` is `false`, so
+  the carousel serves the curated reviews in `src/content/idf.ts`. Turning it on needs a
+  Places API key as the Pages secret `GOOGLE_PLACES_KEY` — `CLOUDFLARE.md` § 3b, including
+  the five-review cap, the FTC reason the true average and count are shown beside a
+  four-star-and-up selection, and the one thing no local test can cover.
 - Pages carry `noindex` while this is design review.
 - **Lighthouse, measured.** Run against a local production build, mobile preset:
 
