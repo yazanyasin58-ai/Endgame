@@ -534,7 +534,7 @@ export const features = {
    * is separate from the key on purpose — the key going missing must not be
    * the thing that decides what the page claims.
    */
-  googleReviews: false,
+  googleReviews: true,
 } as const;
 
 /**
