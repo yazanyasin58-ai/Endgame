@@ -99,13 +99,61 @@ const handleGet = async (context: PagesContext): Promise<Response> => {
       headers: { 'X-Goog-Api-Key': key, 'X-Goog-FieldMask': fields },
     });
     if (!res.ok) {
-      console.error('reviews: Places API', res.status, (await res.text()).slice(0, 400));
-      return json({ ok: false, reason: 'upstream' });
+      // Read the WHOLE body before parsing, and truncate only for the log.
+      // Parsing a truncated copy is how the first version of this silently
+      // dropped `upstreamStatus`: Google's key errors run to ~570 characters,
+      // so a 500-character slice is invalid JSON.
+      const body = await res.text();
+      console.error('reviews: Places API', res.status, body.slice(0, 500));
+
+      /*
+       * Return the upstream status code and Google's own status enum —
+       * PERMISSION_DENIED, SERVICE_DISABLED, INVALID_ARGUMENT and so on.
+       *
+       * Reading the Pages runtime log needs dashboard authentication, which
+       * whoever is debugging this may not have; without these two values
+       * `{ok:false}` is indistinguishable between a key that is missing, a key
+       * restricted to the legacy Places API rather than Places API (New), the
+       * API not enabled on the project, billing off, and a bad field mask.
+       * Neither value can carry the key or any customer data — the status enum
+       * is a fixed vocabulary and the code is an integer — so this is safe to
+       * expose on a public endpoint. Google's free-text message is
+       * deliberately NOT included; it is logged instead.
+       */
+      let status: string | undefined;
+      let detail: string | undefined;
+      try {
+        const parsed = JSON.parse(body) as {
+          error?: { status?: unknown; details?: { reason?: unknown }[] };
+        };
+        if (typeof parsed.error?.status === 'string') status = parsed.error.status;
+        // details[].reason is the precise one. INVALID_ARGUMENT could be
+        // several things; API_KEY_INVALID, SERVICE_DISABLED and
+        // API_KEY_SERVICE_BLOCKED each name exactly one fix — the last
+        // meaning the key is restricted to some other API, which is what
+        // happens when "Places API" (legacy) is picked instead of
+        // "Places API (New)".
+        for (const d of parsed.error?.details ?? []) {
+          if (typeof d?.reason === 'string') {
+            detail = d.reason;
+            break;
+          }
+        }
+      } catch {
+        /* Not JSON. The code alone still says a great deal. */
+      }
+      return json({
+        ok: false,
+        reason: 'upstream',
+        upstreamCode: res.status,
+        upstreamStatus: status,
+        upstreamReason: detail,
+      });
     }
     payload = (await res.json()) as Record<string, unknown>;
   } catch (err) {
     console.error('reviews: Places API threw', err);
-    return json({ ok: false, reason: 'upstream' });
+    return json({ ok: false, reason: 'upstream', upstreamCode: null });
   }
 
   // Read defensively. A field Google renames or omits should cost us that one

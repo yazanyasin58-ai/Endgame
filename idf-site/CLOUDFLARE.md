@@ -521,6 +521,31 @@ deleted must not be the thing that silently changes what the page claims.
   is well inside it; read the current terms on the filtered display before
   switching the flag on.
 
+### When it returns ok:false
+
+`curl https://<domain>/api/reviews` names its own fault, so this does not need
+the dashboard:
+
+| Response | Meaning | Fix |
+|---|---|---|
+| `reason:"unconfigured"` | The Function cannot see `GOOGLE_PLACES_KEY`. | Check the name is exact and that a deployment has been built *since* the secret was saved — Pages bakes variables in at build time. |
+| `upstreamReason:"API_KEY_INVALID"` | The key is wrong or malformed. | Re-copy it from Google Cloud → Credentials. |
+| `upstreamReason:"API_KEY_SERVICE_BLOCKED"` | The key is restricted to APIs that do not include this one. | Almost always **Places API (legacy)** was picked instead of **Places API (New)**. They are separate products. Fix the key's API restriction. |
+| `upstreamReason:"SERVICE_DISABLED"` | Places API (New) is not enabled on the project. | Enable it, then wait a minute. |
+| `upstreamCode:403`, no reason | Billing, or a referrer restriction on the key. | Remove *Application restrictions*; the call comes from the edge, not a browser. |
+| `upstreamStatus:"INVALID_ARGUMENT"` with a 400 and no key reason | Bad field mask. | A field name in the mask does not exist. |
+| `ok:true` but `reviews: []` | The call worked; nothing survived parsing or the four-star filter. | Compare the field names against a raw call. |
+
+Failures are returned with `cache-control: no-store` and are never written to
+the cache, so a fix shows up on the next request rather than after the 24-hour
+TTL. Only a successful response is cached.
+
+The upstream code, status enum and reason enum are returned to the client on
+purpose — reading the runtime log needs dashboard authentication that whoever
+is debugging may not have. All three are fixed vocabularies; Google's free-text
+message is logged but deliberately not returned, and the key never appears in
+either.
+
 ### What has not been verified
 
 The endpoint has been tested against a missing key (returns
