@@ -529,7 +529,8 @@ the dashboard:
 | Response | Meaning | Fix |
 |---|---|---|
 | `reason:"unconfigured"` | The Function cannot see `GOOGLE_PLACES_KEY`. | Check the name is exact and that a deployment has been built *since* the secret was saved — Pages bakes variables in at build time. |
-| `upstreamReason:"API_KEY_INVALID"` | The key is wrong or malformed. | Re-copy it from Google Cloud → Credentials. |
+| `upstreamReason:"API_KEY_INVALID"` with `keyShapeOk:false` | The stored value is not a Google API key at all. | Something else got pasted into the secret. A Google key is `AIza` plus 35 characters, 39 in total. |
+| `upstreamReason:"API_KEY_INVALID"` with `keyShapeOk:true` | The value has the right shape but Google does not recognise it. | The key was deleted or regenerated, or it belongs to a different project than the one with Places API (New) enabled. Create a fresh key in the right project. |
 | `upstreamReason:"API_KEY_SERVICE_BLOCKED"` | The key is restricted to APIs that do not include this one. | Almost always **Places API (legacy)** was picked instead of **Places API (New)**. They are separate products. Fix the key's API restriction. |
 | `upstreamReason:"SERVICE_DISABLED"` | Places API (New) is not enabled on the project. | Enable it, then wait a minute. |
 | `upstreamCode:403`, no reason | Billing, or a referrer restriction on the key. | Remove *Application restrictions*; the call comes from the edge, not a browser. |

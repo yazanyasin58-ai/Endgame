@@ -76,7 +76,13 @@ const json = (body: unknown, seconds = 0): Response =>
 
 const handleGet = async (context: PagesContext): Promise<Response> => {
   const { env, request } = context;
-  const key = env.GOOGLE_PLACES_KEY;
+  /*
+   * Trimmed. A secret pasted into the Pages dashboard can carry a trailing
+   * newline or space, and it would be sent as part of the X-Goog-Api-Key
+   * header — Google then rejects it as API_KEY_INVALID, which reads as a wrong
+   * key rather than a whitespace problem. Costs nothing to rule out.
+   */
+  const key = env.GOOGLE_PLACES_KEY?.trim();
   if (!key) {
     console.warn('reviews: GOOGLE_PLACES_KEY not set — returning ok:false');
     return json({ ok: false, reason: 'unconfigured' });
@@ -142,12 +148,26 @@ const handleGet = async (context: PagesContext): Promise<Response> => {
       } catch {
         /* Not JSON. The code alone still says a great deal. */
       }
+      /*
+       * On a key error only, say whether the stored value even has the shape
+       * of a Google API key — 'AIza' followed by 35 more URL-safe characters.
+       * That separates "the wrong value was pasted into the secret" from "a
+       * real key Google does not recognise", which are different fixes.
+       *
+       * A boolean about the format every Google key shares discloses nothing
+       * about this one: not its value, not its length, not any character of
+       * it. The key itself is never returned or logged.
+       */
+      const keyShapeOk =
+        detail === 'API_KEY_INVALID' ? /^AIza[0-9A-Za-z_-]{35}$/.test(key) : undefined;
+
       return json({
         ok: false,
         reason: 'upstream',
         upstreamCode: res.status,
         upstreamStatus: status,
         upstreamReason: detail,
+        keyShapeOk,
       });
     }
     payload = (await res.json()) as Record<string, unknown>;
