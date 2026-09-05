@@ -1,0 +1,62 @@
+---
+import { business, hours, serviceArea } from '../content/idf';
+import SocialLinks from './SocialLinks.astro';
+---
+
+<footer class="foot">
+  <div class="foot-inner">
+    <div class="foot-brand">
+      <p class="foot-wordmark">{business.name}</p>
+      <p class="foot-lockup">{business.lockup} · Est. {business.established}</p>
+    </div>
+
+    <div class="foot-cols">
+      <div class="foot-col">
+        <h3 class="foot-head">Showroom</h3>
+        <p>45431 Ruritan Circle, Suite 160<br />Sterling, VA 20164</p>
+        <h3 class="foot-head foot-head--spaced">Hours</h3>
+        <ul class="foot-hours">
+          {
+            hours.map((h) => (
+              <li>
+                <span>{h.days}</span>
+                <span>{h.open} – {h.close}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+      <div class="foot-col">
+        <h3 class="foot-head">Contact</h3>
+        <p>
+          <a href={business.phonePrimaryHref}>{business.phonePrimary}</a><br />
+          <a href={business.phoneSecondaryHref}>{business.phoneSecondary}</a><br />
+          <a href={`mailto:${business.email}`}>{business.email}</a>
+        </p>
+        <h3 class="foot-head foot-head--spaced">Follow</h3>
+        <SocialLinks class="foot-social" />
+      </div>
+      <div class="foot-col">
+        <h3 class="foot-head">License</h3>
+        <p>{business.license}<br />Licensed &amp; Insured · Residential</p>
+        <h3 class="foot-head foot-head--spaced">Start here</h3>
+        <p>
+          <a href="/estimate/">Request a free estimate</a><br />
+          <a href="/list-your-home/">List your home</a>
+        </p>
+      </div>
+    </div>
+
+    <div class="foot-area">
+      <h3 class="foot-head">Service area</h3>
+      <p>{serviceArea.detail}</p>
+      <ul class="foot-regions">
+        {serviceArea.regions.map((r) => <li>{r}</li>)}
+      </ul>
+    </div>
+
+    <p class="foot-fine">
+      &copy; 2026 {business.name} · {business.lockup} · Sterling, Virginia
+    </p>
+  </div>
+</footer>

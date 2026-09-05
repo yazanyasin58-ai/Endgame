@@ -1,0 +1,72 @@
+---
+/**
+ * Investor program.
+ *
+ * The benefits are the owner's own list. No percentages, dollar figures or
+ * tier thresholds appear anywhere: he has not set them, and a published
+ * number is a commitment. Each benefit routes to a conversation instead.
+ */
+import Page from '../layouts/Page.astro';
+import { business, investorBenefits, features, cta } from '../content/idf';
+---
+
+<Page
+  title="Investor Program — Interior Design Flooring"
+  description="Preferred pricing, multi-property discounts, priority scheduling and fix-and-flip packages for repeat investors. Class A general contractor in Northern Virginia."
+  heading="Investor program"
+  standfirst="The more you build with us, the better your pricing gets."
+  current="/investors/"
+>
+  <section class="hp-section hp-section--tight">
+    <div class="inv-intro">
+      <p>
+        We work with buy-and-hold landlords, flippers and property managers across
+        {' '}{business.region}. Repeat volume earns better pricing and a faster place in the
+        schedule — the program is built so that the more work you bring, the more it is
+        worth bringing.
+      </p>
+      <p class="inv-note">
+        Specific rates and tiers are set case by case against your volume and property
+        types. Call and we will put numbers to it.
+      </p>
+    </div>
+
+    <div class="inv-grid">
+      {
+        investorBenefits.map((b, i) => (
+          <article class="inv-card">
+            <span class="inv-num">{String(i + 1).padStart(2, '0')}</span>
+            <h2 class="inv-title">{b.title}</h2>
+            <p class="inv-detail">{b.detail}</p>
+          </article>
+        ))
+      }
+    </div>
+
+    {
+      features.realEstate && (
+        <p class="inv-note">
+          Investors also have access to our in-house real estate team for purchasing,
+          selling, renting and sourcing opportunities.
+        </p>
+      )
+    }
+  </section>
+
+  <section class="hp-final">
+    <div class="hp-final-inner hp-final-inner--single">
+      <div>
+        <h2 class="hp-final-heading">Bring us your next property.</h2>
+        <p class="hp-final-sub hp-italic">
+          Tell us how many and how often — we will price accordingly.
+        </p>
+        <div class="hp-hero-actions">
+          <a class="hp-btn" href="/estimate/">{cta.primary}</a>
+          <a class="hp-call hp-call--light" href={business.phonePrimaryHref}>
+            or call {business.phonePrimary}
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</Page>

@@ -1,0 +1,95 @@
+---
+import Page from '../layouts/Page.astro';
+import Placeholder from '../components/Placeholder.astro';
+import { business, customHomeSteps, customHomeOffers, cta } from '../content/idf';
+import { optionalImage } from '../lib/images';
+
+/**
+ * Three empty "Reserved" frames are the right thing during review and the
+ * wrong thing on a live site — they read as an unfinished page rather than a
+ * young portfolio. So the section appears only once there is a photograph to
+ * put in it, and drops out entirely until then. Add project-custom-home.webp
+ * (or -2, -3) to public/img and it comes back on the next build, no code.
+ */
+const customHomePhotos = ['img/project-custom-home', 'img/project-custom-home-2', 'img/project-custom-home-3']
+  .map((name) => optionalImage(name))
+  .filter((src): src is string => Boolean(src));
+---
+
+<Page
+  title="Custom Homes — Interior Design Flooring"
+  description="Custom homes built from the ground up in Northern Virginia. Build on your lot, design and planning, permits, material selections. Class A contractor since 1989."
+  heading="Custom homes"
+  standfirst="Built from the ground up, on your lot or ours to find."
+  current="/custom-homes/"
+>
+  <section class="hp-section hp-section--tight">
+    <div class="hp-pillars">
+      {
+        customHomeOffers.map((o, i) => (
+          <article class="hp-pillar">
+            <span class="hp-pillar-num">{String(i + 1).padStart(2, '0')}</span>
+            <h2 class="hp-pillar-title">{o.title}</h2>
+            <ul class="hp-pillar-list"><li>{o.detail}</li></ul>
+            <a class="hp-pillar-link" href="/estimate/">Start an estimate</a>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="hp-section">
+    <h2 class="hp-h2">The construction process</h2>
+    <p class="hp-sub hp-italic">Five stages, and the same two people across all of them.</p>
+    <ol class="hp-steps">
+      {
+        customHomeSteps.map((s) => (
+          <li class="hp-step">
+            <span class="hp-step-num">{s.number}</span>
+            <div>
+              <h3 class="hp-step-title">{s.title}</h3>
+              <p class="hp-step-detail">{s.detail}</p>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
+
+  {
+    customHomePhotos.length > 0 && (
+      <section class="hp-section">
+        <h2 class="hp-h2">Completed custom homes</h2>
+        <div class:list={['hp-grid', { 'hp-grid--few': customHomePhotos.length < 3 }]}>
+          {customHomePhotos.map((src) => (
+            <figure class="hp-project">
+              <Placeholder
+                ratio="4 / 3"
+                label="Completed custom home"
+                src={src}
+                alt="A completed custom home built by Interior Design Flooring"
+                real
+                class="hp-ph"
+              />
+            </figure>
+          ))}
+        </div>
+      </section>
+    )
+  }
+
+  <section class="hp-final">
+    <div class="hp-final-inner hp-final-inner--single">
+      <div>
+        <h2 class="hp-final-heading">Have a lot, or looking for one?</h2>
+        <p class="hp-final-sub hp-italic">Site visit first, written estimate within 24 hours.</p>
+        <div class="hp-hero-actions">
+          <a class="hp-btn" href="/estimate/">{cta.primary}</a>
+          <a class="hp-call hp-call--light" href={business.phonePrimaryHref}>
+            or call {business.phonePrimary}
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</Page>

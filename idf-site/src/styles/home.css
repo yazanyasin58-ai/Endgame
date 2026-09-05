@@ -1,0 +1,1243 @@
+/* ---------------------------------------------------------------
+   Chosen direction — warm light editorial.
+   Cream ground throughout; charcoal is reserved for the closing band
+   and the footer, per the client's "not dark, light" direction.
+   --------------------------------------------------------------- */
+.hp {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 1rem;
+  line-height: 1.7;
+  --rule: rgb(200 162 74 / 0.4);
+  --ph-bg: #e7dcc4;
+  --ph-fg: #857b62;
+}
+.hp ::selection { background: var(--gold); color: var(--ink); }
+.hp-italic { font-family: 'Instrument Serif', serif; font-style: italic; font-weight: 400; }
+.hp-visually-hidden {
+  position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%);
+}
+
+/* ---------- promo bar ---------- */
+.promo {
+  display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+  background: var(--ink); color: var(--cream);
+  padding: 0.7rem clamp(1rem, 4vw, 3.5rem);
+  font-size: 0.875rem;
+}
+.promo[hidden] { display: none; }
+.promo-text { display: flex; gap: 0.6rem; flex-wrap: wrap; align-items: baseline; flex: 1; }
+.promo-text strong { color: var(--gold-bright); }
+.promo-text span { color: rgb(246 241 231 / 0.75); font-size: 0.8125rem; }
+.promo-cta {
+  color: var(--ink); background: var(--gold); text-decoration: none;
+  font-size: 0.75rem; font-weight: 600; padding: 0.5em 1.2em; border-radius: 999px;
+  white-space: nowrap;
+}
+.promo-cta:hover { background: var(--gold-bright); }
+.promo-cta-short { display: none; }
+.promo-close {
+  background: none; border: 0; color: var(--stone); font-size: 1.4rem;
+  line-height: 1; cursor: pointer; padding: 0 0.25rem;
+}
+.promo-close:hover { color: var(--cream); }
+/* On a phone the bar sits above everything and must not eat the fold. The
+   detail line and the pill both come out; the headline links to the same
+   place the pill did, so nothing is lost but the height. */
+@media (max-width: 719px) {
+  .promo { flex-wrap: nowrap; gap: 0.5rem; padding: 0.55rem 1rem; font-size: 0.8125rem; }
+  .promo-text { flex: 1; min-width: 0; }
+  .promo-text span { display: none; }
+  .promo-text strong { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .promo-cta {
+    background: none; color: var(--gold-bright); padding: 0; border-radius: 0;
+    font-size: 0.75rem; text-decoration: underline; text-underline-offset: 3px;
+  }
+  .promo-cta:hover { background: none; color: var(--cream); }
+  .promo-cta-full { display: none; }
+  .promo-cta-short { display: inline; }
+}
+
+/* ---------- nav ---------- */
+.hp-nav {
+  display: flex; align-items: center; justify-content: space-between; gap: 1.25rem;
+  padding: 1.1rem clamp(1rem, 3vw, 3rem);
+  border-bottom: 1px solid var(--rule);
+  flex-wrap: wrap;
+}
+.logo {
+  text-decoration: none; color: inherit;
+  display: flex; align-items: center; gap: 0.6rem;
+}
+.logo-mark { display: block; height: 2.3rem; width: auto; flex: none; }
+.logo-name {
+  display: block; font-family: 'Instrument Serif', serif; font-size: 1.18rem; line-height: 1.1;
+}
+.logo-lockup {
+  display: block; font-size: 0.5625rem; font-weight: 600; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--gray); margin-top: 0.2rem;
+}
+/* On a narrow header the mark, the name and the strapline cannot all sit on
+   one line: the strapline wraps and the bar grows to 81px, crowding the menu
+   button. The mark carries the strapline's own type anyway, so below 768px
+   the name alone rides beside it and the strapline drops. */
+@media (max-width: 767px) {
+  .logo { gap: 0.55rem; }
+  .logo-mark { height: 2.15rem; }
+  .logo-name { font-size: 1.05rem; }
+  .logo-lockup { display: none; }
+}
+.hp-nav-links { display: none; gap: 1.75rem; }
+@media (min-width: 900px) { .hp-nav-links { display: flex; } }
+.hp-nav-links a {
+  color: var(--charcoal); text-decoration: none; font-size: 0.9375rem;
+  padding-bottom: 2px; border-bottom: 1px solid transparent;
+}
+.hp-nav-links a:hover { border-bottom-color: var(--gold); }
+.hp-nav-actions { display: flex; align-items: center; gap: 0.85rem; }
+.hp-nav-phone {
+  color: var(--ink); text-decoration: none; font-size: 0.9375rem; font-weight: 600;
+  white-space: nowrap;
+}
+.hp-nav-phone:hover { color: var(--gold-deep); }
+/* Below 768px the sticky bar already carries call and text, so the header
+   repeats them for no gain and wraps onto a second row doing it. Drop both and
+   the header is one line: wordmark and menu. */
+@media (max-width: 767px) {
+  .hp-nav { flex-wrap: nowrap; padding-block: 0.9rem; }
+  .hp-nav-phone, .hp-nav-actions .hp-btn { display: none; }
+}
+
+/* ---------- buttons ---------- */
+.hp-btn {
+  display: inline-block; background: var(--gold); color: var(--ink);
+  font-size: 0.875rem; font-weight: 600; letter-spacing: 0.03em;
+  text-decoration: none; padding: 0.9em 2.1em; border-radius: 999px; white-space: nowrap;
+}
+.hp-btn:hover { background: var(--gold-bright); }
+.hp-btn--sm { font-size: 0.8125rem; padding: 0.7em 1.5em; }
+.hp-call {
+  font-size: 0.875rem; color: var(--charcoal);
+  text-decoration: underline; text-underline-offset: 3px;
+}
+.hp-textlink {
+  display: inline-block; margin-top: 2rem; font-size: 0.9375rem; color: var(--charcoal);
+  text-decoration: underline; text-underline-offset: 4px;
+}
+
+/* ---------- hero ---------- */
+.hp-hero { padding: 0 clamp(0.75rem, 2.5vw, 2rem); }
+.hp-hero-frame { position: relative; }
+.hp-hero-ph {
+  --ph-bg: #ece5d6; --ph-lo: #d8cfbc; --ph-hi: #f7f2e79c; --ph-fg: #8a806c;
+  --ph-horizon: 66%;
+  min-height: 80vh;
+}
+@media (min-width: 1024px) { .hp-hero-ph { min-height: 0; max-height: 88vh; } }
+/* Narrow screens load the walnut frame, and a 16:9 picture crops to roughly a
+   square there. Centered, the crop lands on bare floor and plaster; pushed right
+   it picks up the side table, the sofa edge and the backlit window, which is
+   the half of the room worth showing. Contrast passes at any position here —
+   50% measures 10.35:1 and 95% measures 9.67:1 — so this is composition, not
+   legibility. */
+@media (max-width: 767px) {
+  .hp-hero-ph .ph-img { object-position: 95% center; }
+}
+/* Legibility floor for the copy.
+   Tuned against bright photography, not the dark vector comp this originally
+   sat on. The gold eyebrow needs 4.5:1 and the headline 3:1, and over a pale
+   oak floor the old gradient delivered 1.06:1 — invisible. The ramp is steep
+   and short so the upper two-thirds of the picture stays open. */
+.hp-hero-frame::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(
+    to top,
+    rgb(20 17 13 / 0.88) 0%,
+    rgb(20 17 13 / 0.80) 38%,
+    rgb(20 17 13 / 0.62) 54%,
+    rgb(20 17 13 / 0.26) 70%,
+    rgb(20 17 13 / 0.06) 84%,
+    transparent 94%
+  );
+}
+.hp-hero-copy {
+  position: absolute; z-index: 2; left: 0; right: 0;
+  bottom: clamp(1.5rem, 4vw, 3.5rem);
+  padding-inline: clamp(1.25rem, 4vw, 3.5rem);
+  color: var(--cream);
+}
+.hp-eyebrow {
+  font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.24em; text-transform: uppercase;
+  color: var(--gold-bright);
+}
+/* In the hero the eyebrow sits over photography rather than a flat ground.
+   At 11px it needs 4.5:1, and gold-bright tops out near 4 even under a heavy
+   scrim — buying that last bit of contrast means darkening the picture until
+   there is no point using a bright one. Cream clears it with room to spare. */
+.hp-hero-copy .hp-eyebrow { color: var(--cream); }
+.hp-h1 {
+  font-family: 'Instrument Serif', serif; font-weight: 400;
+  font-size: clamp(2.5rem, 6.5vw, 5.5rem); line-height: 1.03;
+  letter-spacing: -0.015em; margin-top: 0.7rem; max-width: 18ch; text-wrap: balance;
+}
+.hp-hero-italic {
+  font-family: 'Instrument Serif', serif; font-style: italic;
+  font-size: clamp(1.05rem, 2vw, 1.5rem); color: rgb(246 241 231 / 0.9); margin-top: 0.5rem;
+}
+.hp-hero-actions {
+  margin-top: 1.75rem; display: flex; flex-wrap: wrap; align-items: center; gap: 1.25rem;
+}
+.hp-hero-actions .hp-call { color: var(--cream); }
+
+/* ---------- trust bar ---------- */
+.hp-trust {
+  margin-top: clamp(2rem, 5vw, 3.5rem);
+  border-block: 1px solid var(--rule);
+  padding: 1.1rem clamp(1rem, 4vw, 3.5rem);
+}
+.hp-trust ul {
+  list-style: none; margin: 0; padding: 0;
+  display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem 0;
+  font-size: 0.7rem; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--gray);
+}
+.hp-trust li:not(:last-child)::after {
+  content: '\00B7'; color: var(--gold-deep); margin-inline: 1.4rem;
+}
+
+/* ---------- sections ---------- */
+.hp-section { padding: clamp(3.5rem, 8vw, 6.5rem) clamp(1.25rem, 4vw, 3.5rem); }
+.hp-h2 {
+  font-family: 'Instrument Serif', serif; font-weight: 400;
+  font-size: clamp(2rem, 4.5vw, 3.25rem); line-height: 1.05; text-align: center;
+}
+.hp-sub {
+  text-align: center; font-size: clamp(1.05rem, 1.8vw, 1.3rem);
+  color: var(--gray); margin-top: 0.7rem;
+}
+.hp-muted { color: var(--gray); font-style: italic; }
+
+/* ---------- figures ---------- */
+.hp-figures-wrap { background: var(--cream); padding-block: clamp(2.5rem, 5vw, 4rem); }
+.hp-figures {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem 1rem;
+  max-width: 64rem; margin-inline: auto; text-align: center;
+}
+@media (min-width: 860px) { .hp-figures { grid-template-columns: repeat(4, 1fr); } }
+.hp-figure-value {
+  display: block; font-family: 'Instrument Serif', serif;
+  font-size: clamp(2.4rem, 5vw, 3.5rem); line-height: 1; color: var(--ink);
+}
+.hp-figure-label {
+  display: block; margin-top: 0.6rem; font-size: 0.6875rem; font-weight: 600;
+  letter-spacing: 0.18em; text-transform: uppercase; color: var(--charcoal);
+}
+.hp-figure-note { display: block; margin-top: 0.3rem; font-size: 0.8125rem; color: var(--gray); }
+
+/* ---------- pillars ---------- */
+.hp-pillars {
+  margin-top: 3rem; display: grid; gap: 2.5rem; max-width: 62rem; margin-inline: auto;
+}
+@media (min-width: 768px) { .hp-pillars { grid-template-columns: repeat(3, 1fr); gap: 3rem; } }
+.hp-pillar { text-align: center; border-top: 1px solid var(--rule); padding-top: 1.75rem; }
+.hp-pillar-title { font-family: 'Instrument Serif', serif; font-weight: 400; font-size: 1.75rem; }
+.hp-pillar-list { list-style: none; margin: 1rem 0 0; padding: 0; font-size: 0.9063rem; color: var(--gray); }
+.hp-pillar-list li + li { margin-top: 0.35rem; }
+.hp-pillar-link {
+  display: inline-block; margin-top: 1.1rem; font-size: 0.8125rem; font-weight: 600;
+  letter-spacing: 0.06em; color: var(--charcoal);
+  text-decoration: underline; text-underline-offset: 4px;
+}
+
+/* ---------- why one team ---------- */
+.hp-wedge { background: var(--cream); text-align: center; }
+.hp-wedge-tagline {
+  font-size: clamp(1.5rem, 4vw, 2.75rem); line-height: 1.25; max-width: 26ch;
+  margin: 2rem auto 0; color: var(--charcoal);
+}
+.hp-wedge-copy { max-width: 38rem; margin: 2.5rem auto 0; }
+.hp-wedge-heading {
+  font-size: 0.8125rem; font-weight: 600; letter-spacing: 0.18em;
+  text-transform: uppercase; color: var(--gray); margin-bottom: 1.1rem;
+}
+.hp-wedge-copy p { font-size: 0.9688rem; color: var(--charcoal); }
+.hp-wedge-copy p + p { margin-top: 0.9rem; }
+
+/* ---------- projects ---------- */
+.hp-projects { margin-top: 3rem; display: grid; gap: 2.25rem; }
+@media (min-width: 768px) { .hp-projects { grid-template-columns: repeat(3, 1fr); gap: 1.75rem; } }
+.hp-project { margin: 0; }
+.hp-project figcaption {
+  margin-top: 0.9rem; font-family: 'Instrument Serif', serif; font-size: 1.2rem; text-align: center;
+}
+.hp-section > .hp-textlink { display: block; text-align: center; }
+
+/* ---------- reviews ---------- */
+.hp-reviews-wrap { background: var(--cream); }
+.hp-reviews {
+  margin-top: 3rem; display: grid; gap: 3.5rem; max-width: 60rem; margin-inline: auto;
+}
+@media (min-width: 900px) { .hp-reviews { grid-template-columns: 1.25fr 1fr; gap: 4rem; } }
+.hp-review { margin: 0; position: relative; padding-top: 1.5rem; }
+.hp-review-mark {
+  position: absolute; top: -0.75rem; left: -0.4rem;
+  font-family: 'Instrument Serif', serif; font-size: 4.5rem; line-height: 1; color: var(--gold);
+}
+.hp-review-quote { font-size: clamp(1.1rem, 2vw, 1.35rem); line-height: 1.55; color: var(--charcoal); }
+.hp-review footer { margin-top: 1.25rem; display: flex; align-items: baseline; gap: 0.9rem; }
+.hp-review cite {
+  font-style: normal; font-size: 0.8125rem; font-weight: 600;
+  letter-spacing: 0.1em; text-transform: uppercase;
+}
+.hp-review-context { font-size: 0.75rem; color: var(--gray); }
+
+/* ---------- how it works ---------- */
+.hp-steps { list-style: none; margin: 3rem auto 0; padding: 0; max-width: 40rem; }
+.hp-step {
+  display: grid; grid-template-columns: 3.25rem 1fr; gap: 1.25rem;
+  padding-block: 1.4rem; border-top: 1px solid var(--rule);
+}
+.hp-step-num { font-family: 'Instrument Serif', serif; font-size: 1.5rem; color: var(--gray); }
+.hp-step-title { font-size: 1rem; font-weight: 600; }
+.hp-step-detail { font-size: 0.9063rem; color: var(--gray); margin-top: 0.25rem; }
+.hp-step--featured .hp-step-num {
+  display: flex; align-items: center; justify-content: center;
+  width: 2.4rem; height: 2.4rem; border-radius: 999px;
+  background: var(--gold); color: var(--ink); font-size: 1.15rem;
+}
+.hp-step--featured .hp-step-title::after {
+  content: ' — our promise'; font-family: 'Instrument Serif', serif; font-style: italic;
+  font-weight: 400; color: var(--gray);
+}
+
+/* ---------- price your project ---------- */
+.hp-final {
+  background: var(--charcoal); color: var(--cream);
+  padding: clamp(3.5rem, 8vw, 6.5rem) clamp(1.25rem, 4vw, 3.5rem);
+}
+.hp-final-inner { display: grid; gap: 3rem; max-width: 66rem; margin-inline: auto; }
+@media (min-width: 1024px) { .hp-final-inner { grid-template-columns: 1fr 1.3fr; gap: 5rem; } }
+.hp-final-heading {
+  font-family: 'Instrument Serif', serif; font-weight: 400;
+  font-size: clamp(2.2rem, 5vw, 3.75rem); line-height: 1.05;
+}
+.hp-final-sub { font-size: 1.15rem; color: var(--gold-bright); margin-top: 1rem; }
+.hp-call--light { display: inline-block; margin-top: 1.5rem; color: var(--cream); }
+.hp-final-social { margin-top: 2rem; }
+
+/* ---------- social ---------- */
+.social { list-style: none; margin: 0; padding: 0; display: flex; gap: 1rem; }
+.social a {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  color: inherit; text-decoration: none; font-size: 0.875rem;
+}
+.social a:hover { color: var(--gold); }
+.social svg { width: 1.15rem; height: 1.15rem; }
+
+/* ---------- form on charcoal ---------- */
+/* The form's base styling assumes the charcoal ground it sits on for the
+   homepage; a blocked slot inside it has to opt into the dark palette too. */
+.hp .ef { --blocked-fg: var(--stone); --blocked-bg: var(--charcoal); }
+.hp .ef-label {
+  font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--stone);
+}
+.hp .ef-input {
+  background: rgb(251 248 242 / 0.06); border: 1px solid rgb(251 248 242 / 0.25);
+  border-radius: 0.4rem; color: var(--cream); font-family: inherit;
+  font-size: 0.9375rem; padding: 0.65rem 0.8rem;
+}
+.hp .ef-input:focus { outline: none; border-color: var(--gold-bright); }
+.hp .ef-select option { color: var(--ink); background: var(--cream); }
+.hp .ef-submit {
+  margin-top: 1.75rem; background: var(--gold); color: var(--ink); border: 0;
+  border-radius: 999px; font-family: inherit; font-size: 0.875rem; font-weight: 600;
+  letter-spacing: 0.05em; padding: 0.95em 2.4em; cursor: pointer;
+}
+.hp .ef-submit:hover { background: var(--gold-bright); }
+.hp .ef-note { margin-top: 1rem; color: var(--stone); }
+.hp .ef-optional { text-transform: none; letter-spacing: 0.02em; }
+.hp .ef-hint {
+  margin: 0.15rem 0 0.6rem; font-size: 0.8438rem; line-height: 1.6; color: var(--stone);
+}
+.hp .ef-hint a {
+  color: var(--gold-bright); text-decoration: underline; text-underline-offset: 3px;
+}
+
+/* File input. Browsers will not style the native button consistently, so the
+   button half is restyled through ::file-selector-button and the field itself
+   is left transparent — a bordered box around a bordered button reads as two
+   controls. */
+.hp .ef-file {
+  font-family: inherit; font-size: 0.875rem; color: var(--stone);
+  width: 100%; padding: 0.35rem 0;
+}
+.hp .ef-file::file-selector-button {
+  margin-right: 0.9rem; padding: 0.55em 1.3em; cursor: pointer;
+  background: transparent; color: var(--gold-bright);
+  border: 1px solid var(--gold); border-radius: 999px;
+  font-family: inherit; font-size: 0.8125rem; font-weight: 600;
+  letter-spacing: 0.05em;
+}
+.hp .ef-file::file-selector-button:hover { background: rgb(200 162 74 / 0.14); }
+.hp .ef-file:focus-visible { outline: 2px solid var(--gold-bright); outline-offset: 3px; }
+.hp .ef-filelist { margin: 0.5rem 0 0; font-size: 0.8438rem; color: var(--gold-bright); }
+
+/* Honeypot: hidden without display:none, so a bot that checks for that still
+   fills it in. Clipped in place rather than parked at left: -9999px — a large
+   negative offset is real geometry outside the page, and iOS Safari will let
+   the reader pan into it. Same technique as .rc-sr. */
+.ef-hp {
+  position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
+  overflow: hidden; clip-path: inset(50%); white-space: nowrap;
+}
+
+/* Submission result. Uses a left rule rather than color alone, so the
+   success and failure states are distinguishable without color vision. */
+.hp .ef-status {
+  margin-top: 1.1rem; padding-left: 0.9rem; font-size: 0.9063rem; line-height: 1.6;
+  border-left: 3px solid var(--stone); color: var(--stone);
+}
+.hp .ef-status[data-kind='ok'] { border-left-color: var(--gold); color: var(--cream); }
+.hp .ef-status[data-kind='error'] { border-left-color: #E08A6B; color: var(--cream); }
+
+.hp .cf-turnstile { margin-top: 1.5rem; }
+
+/* ---------- showroom band (homepage, above the footer) ---------- */
+.hp-showroom {
+  background: var(--cream);
+  border-top: 1px solid var(--rule);
+  padding: clamp(3rem, 6vw, 5rem) clamp(1.25rem, 4vw, 3.5rem);
+}
+.hp-showroom-inner { display: grid; gap: 2.5rem; align-items: start; }
+@media (min-width: 900px) {
+  .hp-showroom-inner { grid-template-columns: 1fr 1.1fr; gap: 4rem; }
+}
+.hp-showroom-addr {
+  font-style: normal; margin-top: 2rem; font-size: 1.0625rem; line-height: 1.7;
+  color: var(--charcoal);
+}
+.hp-showroom-hours {
+  list-style: none; margin: 1.5rem 0 0; padding: 0; font-size: 0.9063rem;
+  max-width: 22rem; color: var(--gray);
+}
+.hp-showroom-hours li {
+  display: flex; justify-content: space-between; gap: 1rem;
+  padding-block: 0.3rem; border-bottom: 1px solid var(--rule);
+}
+.hp-showroom-area {
+  margin-top: 1.75rem; font-size: 0.9063rem; line-height: 1.7; color: var(--gray);
+}
+.hp-showroom-area strong { color: var(--charcoal); }
+.hp-showroom-map {
+  border: 1px solid var(--rule); border-radius: 0.35rem; overflow: hidden;
+  aspect-ratio: 4 / 3;
+}
+.hp-showroom-map iframe { display: block; width: 100%; height: 100%; border: 0; }
+
+/* ---------- footer service area ---------- */
+.hp .foot-area { margin-top: 2.25rem; }
+.hp .foot-regions {
+  list-style: none; margin: 0.5rem 0 0; padding: 0;
+  display: flex; flex-wrap: wrap; gap: 0.4rem 1.25rem; font-size: 0.875rem;
+}
+.ct-regions {
+  list-style: none; margin: 0.5rem 0 0; padding: 0;
+  display: flex; flex-wrap: wrap; gap: 0.4rem 1.25rem;
+  font-size: 0.9063rem; color: var(--gray);
+}
+
+/* ---------- footer ---------- */
+.hp .foot {
+  background: var(--charcoal); color: var(--stone);
+  border-top: 1px solid rgb(251 248 242 / 0.14);
+  padding: clamp(2.5rem, 5vw, 4rem) clamp(1.25rem, 4vw, 3.5rem) 2rem;
+}
+.hp .foot-wordmark { font-family: 'Instrument Serif', serif; font-size: 1.5rem; color: var(--cream); }
+.hp .foot-lockup {
+  font-size: 0.625rem; font-weight: 600; letter-spacing: 0.22em;
+  text-transform: uppercase; color: var(--gold-bright); margin-top: 0.35rem;
+}
+.hp .foot-cols { margin-top: 2.25rem; display: grid; gap: 1.75rem; font-size: 0.875rem; }
+@media (min-width: 768px) { .hp .foot-cols { grid-template-columns: repeat(3, 1fr); } }
+.hp .foot-head {
+  font-size: 0.6563rem; font-weight: 600; letter-spacing: 0.2em;
+  text-transform: uppercase; color: var(--cream); margin-bottom: 0.6rem;
+}
+.hp .foot-head--spaced { margin-top: 1.5rem; }
+.hp .foot-hours { list-style: none; margin: 0; padding: 0; font-size: 0.8438rem; }
+.hp .foot-hours li {
+  display: flex; justify-content: space-between; gap: 1rem; padding-block: 0.2rem;
+  max-width: 18rem;
+}
+.hp .foot a { color: inherit; text-decoration: none; }
+.hp .foot a:hover { color: var(--gold-bright); }
+/* Footer links sit in running text on stone. gold-bright against stone is
+   1.44:1, so color alone cannot tell them apart from the copy around them. */
+.hp .foot a {
+  color: var(--gold-bright); text-decoration: underline; text-underline-offset: 3px;
+  /* Phone and email stack one per line in the footer. As inline links each was
+     16px tall with no gap, under the 24px minimum for a touch target. */
+  display: inline-block; padding-block: 0.3rem;
+}
+.hp .foot-col p { line-height: 1.9; }
+.hp .foot a:hover { color: var(--cream); }
+.hp .foot-blocked {
+  margin-top: 2.25rem; display: grid; gap: 0.6rem; max-width: 40rem;
+  /* The footer is charcoal, so it opts into --stone (6.41:1 there). The
+     component default is --gray, which is right for the light pages and
+     would fail here. */
+  --blocked-fg: var(--stone); --blocked-bg: var(--charcoal);
+}
+.hp .foot-fine { margin-top: 2.25rem; font-size: 0.75rem; }
+
+/* ---------- dropdown in the header ---------- */
+.hp-menu { position: relative; }
+.hp-menu > summary {
+  list-style: none; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  font-size: 0.9375rem; color: var(--charcoal);
+  padding-bottom: 2px; border-bottom: 1px solid transparent;
+}
+.hp-menu > summary::-webkit-details-marker { display: none; }
+.hp-menu > summary:hover { border-bottom-color: var(--gold); }
+.hp-menu > summary svg { width: 0.7rem; height: 0.7rem; transition: transform 0.15s ease; }
+.hp-menu[open] > summary svg { transform: rotate(180deg); }
+.hp-menu-panel {
+  position: absolute; top: calc(100% + 0.75rem); right: 0; z-index: 60;
+  min-width: 17rem; display: grid;
+  background: var(--paper); border: 1px solid var(--rule); border-radius: 0.5rem;
+  box-shadow: 0 18px 40px rgb(20 17 13 / 0.14);
+  padding: 0.5rem;
+}
+.hp-menu-panel a {
+  display: block; padding: 0.7rem 0.8rem; border-radius: 0.35rem;
+  text-decoration: none; color: var(--charcoal); font-size: 0.9375rem;
+}
+.hp-menu-panel a:hover { background: var(--cream); }
+.hp-menu-panel a[aria-current='page'] { background: var(--cream); }
+.hp-menu-panel a strong { display: block; color: var(--ink); font-weight: 600; }
+.hp-menu-panel a span {
+  display: block; font-size: 0.8125rem; color: var(--gray); margin-top: 0.15rem;
+}
+.hp-menu-panel hr { border: 0; border-top: 1px solid var(--rule); margin: 0.4rem 0.8rem; }
+/*
+ * A closed <details> hides its content with display: none from the UA
+ * stylesheet — but `display: grid` above overrides that, so the panel was
+ * being laid out whether the menu was open or not. Below 900px it is also
+ * position: static, so a closed menu dropped 838px of links into the 16px
+ * column beside the logo and their boxes ran ~77px past the right edge of a
+ * 390px viewport. Invisible, and enough to make the page overflow sideways on
+ * a phone.
+ *
+ * Restore the closed state explicitly. This has to come after the rule that
+ * sets display: grid, and it is scoped to the direct child so nothing else
+ * inside the panel is affected.
+ */
+.hp-menu:not([open]) > .hp-menu-panel { display: none; }
+
+/*
+ * On narrow screens the panel is meant to span the header rather than hang off
+ * the edge. `position: static` did not achieve that: the panel is inside
+ * .hp-nav-actions, a flex item sized to the hamburger, so it was squeezed to
+ * 156px on a 390px screen and ran 685px tall on eleven wrapped links.
+ *
+ * Anchor it to the header instead. .hp-nav becomes the containing block, and
+ * the panel spans it edge to edge with the header's own horizontal padding.
+ */
+@media (max-width: 1099px) {
+  .hp-nav { position: relative; }
+  .hp-menu { position: static; }
+  .hp-menu-panel {
+    position: absolute;
+    top: 100%;
+    left: clamp(1rem, 3vw, 3rem);
+    right: clamp(1rem, 3vw, 3rem);
+    min-width: 0;
+    margin-top: 0.35rem;
+  }
+}
+
+/* ---------- page heads and grids for the standalone pages ---------- */
+.hp-pagehead { padding-bottom: 0; }
+.hp-section--tight { padding-top: clamp(2rem, 4vw, 3rem); }
+.hp-grid { display: grid; gap: 1.75rem; }
+/* One or two photographs in a three-column grid leave most of the row empty,
+   which reads as a page still being built rather than a young portfolio.
+   Below three, the grid stops stretching and sits at a readable width. */
+/* Doubled class for specificity: the three-column rule below shares a single
+   class and would otherwise win on source order, leaving one photo squeezed
+   into a third of an already narrowed container. */
+.hp-grid.hp-grid--few { max-width: 34rem; }
+@media (min-width: 1000px) {
+  .hp-grid.hp-grid--few { grid-template-columns: 1fr; }
+}
+@media (min-width: 640px) { .hp-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1000px) { .hp-grid { grid-template-columns: repeat(3, 1fr); } }
+.hp-project-name {
+  font-family: 'Instrument Serif', serif; font-size: 1.2rem; color: var(--ink);
+}
+.hp-project--reserved figcaption { font-size: 0.875rem; }
+.hp-note {
+  margin-top: 2.5rem; text-align: center; font-size: 0.875rem; color: var(--gray);
+  max-width: 46ch; margin-inline: auto;
+}
+.hp-final-inner--single { grid-template-columns: 1fr; text-align: center; }
+.hp-final-inner--single .hp-hero-actions { justify-content: center; margin-top: 1.75rem; }
+
+/* ---------- footer social, deliberately quiet ---------- */
+.hp .foot-social { gap: 0.6rem; }
+.hp .foot-social a { font-size: 0.75rem; color: var(--stone); }
+.hp .foot-social svg { width: 0.875rem; height: 0.875rem; }
+.hp .foot-social a:hover { color: var(--gold-bright); }
+
+/* ---------- full main menu (nine items) ---------- */
+.hp-nav-links { display: none; gap: 1.1rem; flex-wrap: nowrap; }
+/* The row used to carry nine links and needed ~1300px beside the logo, so it
+   waited for 1340px. Grouping took it to five entries, which is a much
+   narrower row — the breakpoint below is measured against the new width, not
+   inherited from the old one. The Menu disclosure still carries every page. */
+@media (min-width: 1100px) { .hp-nav-links { display: flex; } }
+.hp-nav-links a { font-size: 0.875rem; white-space: nowrap; }
+.hp-nav-links a[aria-current='page'] { border-bottom-color: var(--gold); }
+/* The collapsed menu button replaces the row below the breakpoint, so this
+   width and the .hp-nav-links one above are a pair and must match. They did
+   not for one build: the links came down to 1100 and this stayed at 1340, so
+   between those widths the header showed the full row AND the Menu button. */
+.hp-menu { display: block; }
+@media (min-width: 1100px) { .hp-menu { display: none; } }
+.hp-menu > summary { gap: 0.5rem; }
+.hp-menu > summary svg { width: 1rem; height: 0.75rem; }
+.hp-menu-label { font-size: 0.875rem; }
+@media (max-width: 520px) { .hp-menu-label { display: none; } }
+
+/* ---------- about ---------- */
+.ab-grid { display: grid; gap: 2.5rem; }
+@media (min-width: 900px) { .ab-grid { grid-template-columns: 1.5fr 1fr; gap: 4rem; } }
+.ab-h3 {
+  font-size: 0.8125rem; font-weight: 600; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--gray); margin-bottom: 0.9rem;
+}
+.ab-h3:not(:first-child) { margin-top: 2rem; }
+.ab-copy p { margin-bottom: 1rem; color: var(--charcoal); }
+.ab-caption {
+  margin-top: 0.8rem; font-size: 0.8125rem; color: var(--gray); text-align: center;
+}
+
+/* ---------- services ---------- */
+.sv-list { display: grid; gap: 0; }
+.sv-group {
+  display: grid; gap: 0.6rem 2rem; padding: 2rem 0; border-top: 1px solid var(--rule);
+}
+@media (min-width: 820px) {
+  .sv-group { grid-template-columns: 22rem 1fr auto; align-items: baseline; }
+}
+.sv-title {
+  font-family: 'Fraunces', serif; font-weight: 300;
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  text-wrap: balance;
+}
+.sv-items {
+  list-style: none; margin: 0; padding: 0; columns: 2; column-gap: 2rem;
+  font-size: 0.9063rem; color: var(--gray);
+}
+@media (max-width: 560px) { .sv-items { columns: 1; } }
+.sv-items li { padding-block: 0.25rem; break-inside: avoid; }
+
+/* ---------- project gallery ---------- */
+.gal { display: grid; gap: 2.5rem 2rem; grid-template-columns: 1fr; }
+@media (min-width: 640px) { .gal { grid-template-columns: 1fr 1fr; } }
+@media (min-width: 1060px) { .gal { grid-template-columns: repeat(3, 1fr); } }
+/* The portrait shot keeps its proportion rather than being cropped square. */
+@media (min-width: 640px) { .gal-item--tall { grid-row: span 2; } }
+.gal-ph { border-radius: 0.35rem; }
+.gal-cap { display: grid; gap: 0.3rem; margin-top: 0.9rem; }
+.gal-cap-name {
+  font-family: 'Fraunces', serif; font-weight: 300; font-size: 1.2rem; line-height: 1.3;
+}
+.gal-cap-detail { font-size: 0.875rem; line-height: 1.6; color: var(--gray); }
+.gal-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.35rem; }
+.gal-tag {
+  font-size: 0.625rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--gray); border: 1px solid var(--rule); border-radius: 999px;
+  padding: 0.3em 0.7em;
+}
+.hp-note code {
+  font-family: ui-monospace, 'SFMono-Regular', Menlo, monospace; font-size: 0.85em;
+}
+.pr-named {
+  list-style: none; margin: 1.75rem 0 0; padding: 0; max-width: 46rem;
+}
+.pr-named li {
+  font-family: 'Fraunces', serif; font-weight: 300; font-size: 1.3rem;
+  padding: 1rem 0; border-top: 1px solid var(--rule);
+}
+
+/* ---------- insurance restoration ---------- */
+.ir-section { border-top: 1px solid var(--rule); }
+.ir-lede { display: grid; gap: 2rem; margin-top: 2rem; align-items: start; }
+@media (min-width: 900px) { .ir-lede { grid-template-columns: 1.15fr 1fr; gap: 3.5rem; } }
+.ir-intro { max-width: 46rem; display: grid; gap: 1rem; }
+.ir-figure { margin: 0; display: grid; gap: 0.7rem; }
+.ir-intro p { color: var(--gray); line-height: 1.75; }
+.ir-items {
+  list-style: none; margin: 2.75rem 0 0; padding: 0;
+  display: grid; gap: 0; counter-reset: none;
+}
+@media (min-width: 760px) { .ir-items { grid-template-columns: 1fr 1fr; column-gap: 3rem; } }
+@media (min-width: 1120px) { .ir-items { grid-template-columns: repeat(3, 1fr); } }
+.ir-item { padding: 1.6rem 0; border-top: 1px solid var(--rule); }
+.ir-num {
+  display: block; font-family: 'Fraunces', serif; font-size: 0.875rem;
+  color: var(--gold-deep); margin-bottom: 0.5rem;
+}
+.ir-item-title {
+  font-family: 'Fraunces', serif; font-weight: 300; font-size: 1.3rem; line-height: 1.25;
+}
+.ir-item-detail {
+  margin-top: 0.5rem; font-size: 0.9063rem; line-height: 1.7; color: var(--gray);
+}
+/* The scope limit is stated, not buried. Bordered and set apart so a homeowner
+   reads it before assuming we will run their claim for them. */
+.ir-limit {
+  margin-top: 2.75rem; max-width: 46rem;
+  border-left: 2px solid var(--gold); padding: 0.2rem 0 0.2rem 1.5rem;
+}
+.ir-limit-title {
+  font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--charcoal);
+}
+.ir-limit p { margin-top: 0.6rem; font-size: 0.9063rem; line-height: 1.75; color: var(--gray); }
+
+/* ---------- investors ---------- */
+.inv-intro { max-width: 46rem; }
+.inv-intro p { margin-bottom: 1rem; color: var(--charcoal); }
+.inv-note {
+  border-left: 2px solid var(--gold); padding-left: 1rem;
+  font-size: 0.9063rem; color: var(--gray);
+}
+.inv-grid { margin-top: 3rem; display: grid; gap: 1.25rem; }
+@media (min-width: 700px) { .inv-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1080px) { .inv-grid { grid-template-columns: repeat(3, 1fr); } }
+.inv-card { border-top: 1px solid var(--rule); padding-top: 1.25rem; }
+.inv-num {
+  font-family: 'Fraunces', serif; font-size: 0.9rem; color: var(--gold-deep);
+}
+.inv-title {
+  font-family: 'Fraunces', serif; font-weight: 400;
+  font-size: 1.3rem; margin-top: 0.4rem;
+}
+.inv-detail { font-size: 0.9063rem; color: var(--gray); margin-top: 0.4rem; }
+
+/* ---------- blocked notices on financing / real estate ---------- */
+.fin-blocked {
+  margin-top: 2.5rem; max-width: 46rem;
+  border: 1px dashed var(--gray); border-radius: 0.5rem; padding: 1.5rem;
+  --blocked-fg: var(--gray); --blocked-bg: var(--paper);
+}
+.fin-blocked-note {
+  margin-top: 1rem; font-size: 0.875rem; color: var(--gray); line-height: 1.6;
+}
+
+/* ---------- contact ---------- */
+.ct-grid { display: grid; gap: 3rem; }
+@media (min-width: 900px) { .ct-grid { grid-template-columns: 1fr 1.2fr; gap: 4rem; } }
+.ct-details p { color: var(--gray); }
+/* Underlined, not color-only. These sit inside running text, and a color
+   difference alone was 2.85:1 against the surrounding copy — below the 3:1
+   that lets a link be told apart without relying on color perception. */
+.ct-details a {
+  color: var(--charcoal); text-decoration: underline; text-underline-offset: 3px;
+}
+.ct-details a:hover { color: var(--gold-deep); }
+.ct-hours { list-style: none; margin: 0; padding: 0; font-size: 0.9063rem; }
+.ct-hours li {
+  display: flex; justify-content: space-between; gap: 1rem;
+  padding-block: 0.3rem; border-bottom: 1px solid var(--rule); max-width: 22rem;
+}
+.ct-map {
+  margin-top: 1rem; border: 1px solid var(--rule); border-radius: 0.35rem;
+  overflow: hidden; aspect-ratio: 4 / 3; max-width: 34rem;
+}
+.ct-map iframe { display: block; width: 100%; height: 100%; border: 0; }
+.ct-blocked { margin-top: 2.5rem; display: grid; gap: 0.75rem; }
+.ct-form .ef-label { color: var(--gray); }
+.ct-form .ef-input { background: #fff; border: 1px solid rgb(20 17 13 / 0.18); color: var(--ink); }
+.ct-form .ef-input:focus { border-color: var(--gold); }
+.ct-form .ef-note { color: var(--gray); }
+.ct-form .ef { --blocked-fg: var(--gray); --blocked-bg: var(--paper); }
+.ct-form .ef-hint { color: var(--gray); }
+.ct-form .ef-hint a { color: var(--charcoal); }
+.ct-form .ef-file { color: var(--gray); }
+.ct-form .ef-file::file-selector-button { color: var(--gold-deep); border-color: var(--gold-deep); }
+.ct-form .ef-filelist { color: var(--gold-deep); }
+.ct-form .ef-status { border-left-color: var(--gray); color: var(--gray); }
+.ct-form .ef-status[data-kind='ok'] { border-left-color: var(--gold-deep); color: var(--ink); }
+.ct-form .ef-status[data-kind='error'] { border-left-color: #A84420; color: var(--ink); }
+
+/* ---------- reviews carousel ---------- */
+.rc-head {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  gap: 1.5rem; flex-wrap: wrap; margin-bottom: 1.6rem;
+}
+.rc-head .hp-h2 { margin-bottom: 0.2rem; }
+.rc-head .hp-sub { margin: 0; }
+.rc-controls { display: flex; gap: 0.6rem; flex: none; }
+.rc-arrow {
+  width: 2.75rem; height: 2.75rem; border-radius: 50%;
+  border: 1px solid var(--rule); background: transparent; color: var(--ink);
+  display: grid; place-items: center; cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
+}
+.rc-arrow svg { width: 0.7rem; height: 1.1rem; }
+.rc-arrow:hover:not(:disabled) { background: var(--cream); border-color: var(--gold); }
+.rc-arrow:disabled { opacity: 0.3; cursor: default; }
+
+/* The track is the scroller. Cards are sized in percentages of it so the
+   paging step (0.9 of the visible width) always lands on a card edge. */
+/*
+ * Flex, not grid with percentage grid-auto-columns.
+ *
+ * This was `display: grid; grid-auto-flow: column; grid-auto-columns: 85%`.
+ * A percentage track size inside a scroll container resolves against the
+ * container's own content box, which is what the scrolling is meant to
+ * determine — circular, and engines disagree about how to break the loop.
+ * The track holds ~1256px of cards in a ~356px box on a phone, so it is the
+ * widest thing on any page by a long way; if an engine resolves that against
+ * max-content instead of the box, the whole document goes ~1250px wide and
+ * scrolls sideways. Chromium clips it, and this is the most likely reason
+ * iPhones did not.
+ *
+ * A flex basis percentage resolves against the flex container's inner width
+ * and is handled the same way everywhere. Behaviour is otherwise identical:
+ * same widths, same gap, same scroll snapping.
+ */
+.rc-track {
+  display: flex;
+  gap: 1.25rem; overflow-x: auto; scroll-snap-type: x mandatory;
+  /* Without this the swipe chains out of the carousel and pans the whole page
+     on iOS Safari, where overflow-x: hidden on the root is not a reliable
+     clamp. This is the only horizontal scroller on the site, which is why the
+     drift was reported on the homepage and nowhere else. */
+  overscroll-behavior-x: contain;
+  padding-bottom: 0.5rem; scrollbar-width: thin;
+  /* room for the focus ring, which a clipping scroller would cut off */
+  padding-inline: 3px; margin-inline: -3px;
+  max-width: 100%;
+  min-width: 0;
+}
+.rc-track > * { flex: 0 0 85%; }
+@media (min-width: 700px) { .rc-track > * { flex-basis: 46%; } }
+@media (min-width: 1060px) { .rc-track > * { flex-basis: 31.5%; } }
+.rc-track:focus-visible { outline: 2px solid var(--gold-deep); outline-offset: 4px; }
+
+.rc-card {
+  /* Positioned so the .rc-sr spans inside it resolve their containing block
+     here rather than at the page. An absolutely positioned box whose
+     containing block sits outside a scroll container is not clipped by that
+     container — correct CSS, but it meant those 1px spans were laid out at
+     their static position across the full 1550px of track and belonged to the
+     document, setting its scrollable width. Chromium hid it because the root
+     overflow-x: hidden held; iOS Safari does not honour that, so the page
+     became pannable to exactly the rightmost span's edge. */
+  position: relative;
+  scroll-snap-align: start; margin: 0;
+  display: flex; flex-direction: column; gap: 0.9rem;
+  padding: 1.6rem 1.5rem; background: var(--paper);
+  border: 1px solid var(--rule); border-radius: 3px;
+}
+.rc-stars { margin: 0; line-height: 1; }
+.rc-stars-mark { color: var(--gold-deep); font-size: 1.05rem; letter-spacing: 0.12em; }
+.rc-sr {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip-path: inset(50%); white-space: nowrap;
+}
+.rc-quote-box { flex: 1 1 auto; }
+/* A clamped box must not also grow to fill the card, or the clamp has no
+   effect on the height the card actually takes. */
+.rc-quote-box.is-clamped { flex: 0 0 auto; }
+.rc-quote-box.is-clamped .rc-quote {
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 6;
+  line-clamp: 6; overflow: hidden;
+}
+.rc-quote { margin: 0; color: var(--charcoal); line-height: 1.6; }
+.rc-more {
+  align-self: flex-start; background: none; border: 0; padding: 0;
+  font: inherit; font-size: 0.875rem; font-weight: 600; cursor: pointer;
+  color: var(--gold-deep); border-bottom: 1px solid currentColor;
+}
+.rc-more:hover { color: var(--ink); }
+.rc-foot { display: flex; flex-direction: column; gap: 0.15rem; margin-top: auto; }
+.rc-name { font-style: normal; font-weight: 600; color: var(--ink); }
+.rc-context { font-size: 0.8125rem; color: var(--gray); }
+.rc-source::before { content: '·'; margin: 0 0.4em; }
+
+@media (prefers-reduced-motion: reduce) {
+  .rc-track { scroll-behavior: auto; }
+}
+
+/* ---------- list your home band ---------- */
+.lyh-band {
+  display: grid; gap: 1.6rem; align-items: center;
+  padding: clamp(2rem, 5vw, 3.25rem) clamp(1.25rem, 4vw, 3rem);
+  background: var(--cream); border: 1px solid var(--rule); border-radius: 3px;
+}
+@media (min-width: 860px) { .lyh-band { grid-template-columns: auto 1fr auto; gap: 2rem; } }
+.lyh-icon {
+  width: 3.5rem; height: 3.5rem; flex: none; color: var(--gold-deep);
+  display: grid; place-items: center;
+  border: 1px solid var(--gold); border-radius: 50%; background: var(--paper);
+}
+.lyh-icon svg { width: 1.75rem; height: 1.75rem; }
+.lyh-band h2 {
+  margin: 0 0 0.35rem; font-family: 'Fraunces', 'Instrument Serif', serif;
+  font-weight: 400; font-size: clamp(1.35rem, 2.6vw, 1.75rem); color: var(--ink);
+}
+.lyh-band p { margin: 0; color: var(--charcoal); max-width: 52ch; }
+.lyh-band .hp-btn { flex: none; white-space: nowrap; }
+
+/* ---------- preview notice ---------- */
+.pv-notice {
+  margin: 0 0 2rem; padding: 1.1rem 1.25rem;
+  border: 1px solid var(--gold); border-left-width: 4px; border-radius: 3px;
+  background: var(--cream);
+}
+.pv-notice p { margin: 0 0 0.5rem; color: var(--charcoal); font-size: 0.9375rem; }
+.pv-notice p:last-child { margin-bottom: 0; }
+.pv-notice strong { color: var(--ink); }
+
+/* ---------- real estate ---------- */
+.re-grid { display: grid; gap: 1.25rem; }
+@media (min-width: 720px) { .re-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1080px) { .re-grid { grid-template-columns: repeat(3, 1fr); } }
+.re-item {
+  padding: 1.4rem 1.35rem; background: var(--paper);
+  border: 1px solid var(--rule); border-radius: 3px;
+}
+.re-item h3 { margin: 0 0 0.4rem; font-size: 1.0625rem; color: var(--ink); }
+.re-item p { margin: 0; color: var(--charcoal); font-size: 0.9375rem; line-height: 1.55; }
+.re-offer {
+  padding: clamp(1.6rem, 4vw, 2.4rem); background: var(--cream);
+  border: 1px solid var(--gold); border-radius: 3px;
+}
+.re-offer h2 { margin: 0 0 0.7rem; }
+.re-offer p { margin: 0 0 0.7rem; color: var(--charcoal); max-width: 68ch; line-height: 1.6; }
+.re-offer p:last-of-type { margin-bottom: 1.25rem; }
+.re-license {
+  margin-top: 2.5rem; padding-top: 1.25rem; border-top: 1px solid var(--rule);
+  font-size: 0.8125rem; color: var(--gray);
+}
+
+/* ---------- list your home page ---------- */
+.lyh-points { list-style: none; margin: 2rem 0 1.5rem; padding: 0; display: grid; gap: 1.25rem; }
+.lyh-points li { padding-left: 1.1rem; border-left: 2px solid var(--gold); }
+.lyh-points h2 { margin: 0 0 0.25rem; font-size: 1.0625rem; color: var(--ink); }
+.lyh-points p { margin: 0; color: var(--charcoal); font-size: 0.9375rem; line-height: 1.55; }
+.lyh-area { margin: 0 0 1.5rem; color: var(--gray); font-size: 0.9375rem; }
+
+/* Body copy for pages that are mostly prose. Sized between the standfirst and
+   the small print, which nothing else on the site covered. */
+.hp-lede {
+  max-width: 44rem; margin: 0 0 1rem; color: var(--charcoal);
+  font-size: 1.0625rem; line-height: 1.65;
+}
+.hp-lede:last-child { margin-bottom: 0; }
+.hp-lede a { color: var(--ink); text-decoration: underline; text-underline-offset: 2px; }
+.hp-lede a:hover { color: var(--gold-deep); }
+
+/* The real-estate page stacks several short prose sections; the default
+   section rhythm leaves a gap between them big enough to read as a break in
+   the page. Pull the prose-only ones together. */
+.re-prose { padding-top: 0; padding-bottom: clamp(1.5rem, 3vw, 2.25rem); }
+.re-prose .pv-notice { max-width: 52rem; }
+
+/* ---------- intake pages (estimate, list your home) ----------
+   These lived in a page-scoped <style is:global> on the estimate page, which
+   meant the second page built on the same layout rendered unstyled. Shared
+   here so any intake page picks them up. */
+.hp-est {
+    display: grid;
+    gap: 3rem;
+    max-width: 68rem;
+    margin-inline: auto;
+    padding: clamp(2.5rem, 6vw, 5rem) clamp(1.25rem, 4vw, 3.5rem);
+  }
+  @media (min-width: 1024px) {
+    .hp-est { grid-template-columns: 1fr 1.2fr; gap: 4.5rem; }
+  }
+  .hp-est-h1 {
+    font-family: 'Instrument Serif', serif; font-weight: 400;
+    font-size: clamp(2.2rem, 5vw, 3.5rem); line-height: 1.05;
+  }
+  .hp-est-sub { font-size: 1.15rem; color: var(--gray); margin-top: 0.9rem; }
+  .hp-est-promo {
+    margin-top: 1.75rem; padding: 1rem 1.25rem;
+    border: 1px solid var(--rule); border-radius: 0.5rem;
+    background: var(--cream); font-size: 0.9375rem;
+  }
+  .hp-est-promo span { color: var(--gray); font-size: 0.8438rem; }
+  .hp-est-steps {
+    list-style: none; margin: 2rem 0 0; padding: 0;
+    font-size: 0.9063rem; color: var(--charcoal);
+  }
+  .hp-est-steps li {
+    padding-block: 0.5rem; border-top: 1px solid var(--rule);
+  }
+  .hp-est-steps li span {
+    font-family: 'Instrument Serif', serif; color: var(--gray); margin-right: 0.6rem;
+  }
+  .hp-est-steps li.is-featured { font-weight: 600; }
+  .hp-est-steps li.is-featured span { color: var(--gold); }
+  .hp-est .hp-call { display: inline-block; margin-top: 1.75rem; }
+  /* form sits on the light ground here, not charcoal */
+  .hp-est-form .ef-label { color: var(--gray); }
+  .hp-est-form .ef-input {
+    background: #fff; border: 1px solid rgb(20 17 13 / 0.18); color: var(--ink);
+  }
+  .hp-est-form .ef-input:focus { border-color: var(--gold); }
+  .hp-est-form .ef-note { color: var(--gray); }
+  /* The submission result, on the light ground. Without these it inherits the
+     `.hp .ef-status` rules written for the charcoal homepage band, where the
+     text is --cream: 1.06:1 on paper, which is invisible rather than merely
+     low-contrast. The neutral state was --stone, 2.39:1, barely better. The
+     coloured left rule stays the thing that distinguishes success from
+     failure, so the states remain tellable apart without colour vision. */
+  .hp-est-form .ef-status { border-left-color: var(--gray); color: var(--ink); }
+  .hp-est-form .ef-status[data-kind='ok'] {
+    border-left-color: var(--gold-deep); color: var(--ink);
+  }
+  .hp-est-form .ef-status[data-kind='error'] {
+    border-left-color: #A84420; color: var(--ink);
+  }
+
+/* ---------- live Google reviews: the aggregate line ----------
+   Shown only when /api/reviews succeeds, which is the same moment the cards
+   become a four-star-and-up selection. The true average and count are what
+   make that selection honest rather than a misrepresentation of the whole,
+   so this is not decoration and must not be quietly dropped.
+
+   These carry NO `.hp` overrides. The first version had them — cream score,
+   stone note, --gold link — on the assumption that `.hp` meant the charcoal
+   band. It does not: `.hp` is the homepage body class and its ground is
+   --paper, so those overrides rendered the score at 1.06:1, the note at 2.39
+   and the link at 2.27. Measured on the light ground, the base values are
+   already right: --ink 17.76, --gray 5.36, --gold-deep 5.01. If a dark-ground
+   variant is ever needed, scope it to that band's own class, not to `.hp`. */
+.rc-agg {
+  margin-top: 0.55rem;
+  font-size: 0.9063rem;
+  color: var(--gray);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: baseline;
+}
+.rc-agg-score {
+  font-family: 'Instrument Serif', serif;
+  font-size: 1.35rem;
+  color: var(--ink);
+  letter-spacing: 0.01em;
+}
+.rc-agg-link {
+  display: inline-block;
+  margin-top: 0.35rem;
+  font-size: 0.875rem;
+  color: var(--gold-deep);
+}
+.rc-source-link { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
+
+/* ---------- hover lift on the stat and review boxes ----------
+   The client asked for the boxes to "levitate" on hover. Kept small: 3px and
+   a soft shadow reads as responsive, more reads as a toy. Pointer-only, so it
+   never fires from a tap on touch, and off entirely under
+   prefers-reduced-motion. */
+@media (hover: hover) and (pointer: fine) {
+  .hp-figure,
+  .rc-card {
+    transition: transform 180ms ease, box-shadow 180ms ease;
+  }
+  .hp-figure:hover,
+  .rc-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 24px rgb(20 17 13 / 0.10);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hp-figure, .rc-card { transition: none; }
+  .hp-figure:hover, .rc-card:hover { transform: none; }
+}
+
+/* ---------- "Leave us a Google review" ---------- */
+.rc-cta { margin: 1.6rem 0 0; }
+.rc-cta-link {
+  display: inline-block;
+  padding: 0.7rem 1.4rem;
+  border: 1px solid var(--gold-deep);
+  border-radius: 3px;
+  font-size: 0.9063rem;
+  font-weight: 600;
+  color: var(--ink);
+  text-decoration: none;
+  transition: background-color 160ms ease, color 160ms ease;
+}
+.rc-cta-link:hover { background: var(--gold-deep); color: var(--paper); }
+@media (prefers-reduced-motion: reduce) { .rc-cta-link { transition: none; } }
+
+/* ---------- About: what you can count on ---------- */
+.ab-count {
+  display: grid;
+  gap: 1.25rem;
+  margin-top: 2rem;
+}
+@media (min-width: 800px) {
+  .ab-count { grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+}
+.ab-count-item {
+  padding: 1.5rem 1.4rem;
+  background: var(--cream);
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+}
+.ab-count-title {
+  margin: 0;
+  font-family: 'Instrument Serif', serif;
+  font-weight: 400;
+  font-size: 1.3rem;
+  line-height: 1.2;
+  color: var(--ink);
+}
+.ab-count-detail {
+  margin: 0.6rem 0 0;
+  font-size: 0.9688rem;
+  line-height: 1.65;
+  color: var(--charcoal);
+}
+.ab-count-proof {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin: 0.9rem 0 0;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--rule);
+}
+.ab-count-score {
+  font-family: 'Instrument Serif', serif;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: var(--ink);
+}
+.ab-count-proof-note { font-size: 0.875rem; color: var(--gray); }
+@media (hover: hover) and (pointer: fine) {
+  .ab-count-item { transition: transform 180ms ease, box-shadow 180ms ease; }
+  .ab-count-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 24px rgb(20 17 13 / 0.10);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ab-count-item { transition: none; }
+  .ab-count-item:hover { transform: none; }
+}
+
+/* The "How we help" subheadings needed to read as headings rather than as the
+   first line of the paragraph. Gold at 600 is the same accent the featured
+   estimate step uses, and --gold-deep measures 5.01:1 on --paper. */
+.re-item h3 {
+  font-weight: 600;
+  color: var(--gold-deep);
+  letter-spacing: 0.005em;
+}
+.re-actions {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 1.25rem;
+  margin: 1.5rem 0 0;
+}
+.re-note {
+  margin: 2rem 0 0; padding-top: 1.25rem; border-top: 1px solid var(--rule);
+  max-width: 60ch; font-size: 0.8125rem; line-height: 1.6; color: var(--gray);
+}
+
+/* ---------- grouped navigation ----------
+   Two of the five header entries open a short list. Built on <details> like
+   the Menu disclosure, so it works with no JavaScript; the script only closes
+   siblings and handles Escape and outside clicks. */
+.hp-nav-group { position: relative; }
+.hp-nav-group > summary {
+  display: inline-flex; align-items: center; gap: 0.35rem;
+  list-style: none; cursor: pointer;
+  color: var(--charcoal); font-size: 0.875rem; white-space: nowrap;
+  padding-bottom: 2px; border-bottom: 1px solid transparent;
+}
+.hp-nav-group > summary::-webkit-details-marker { display: none; }
+.hp-nav-group > summary:hover { border-bottom-color: var(--gold); }
+.hp-nav-group > summary[aria-current] { border-bottom-color: var(--gold); }
+.hp-nav-group > summary svg {
+  width: 0.55rem; height: 0.55rem; transition: transform 0.15s ease;
+}
+.hp-nav-group[open] > summary svg { transform: rotate(180deg); }
+.hp-nav-group > summary:focus-visible { outline: 2px solid var(--gold-bright); outline-offset: 3px; }
+
+/* The panel sits 0.65rem below the label. On a hover menu that gap is a hole:
+   the pointer crosses it on the way down, leaves the group, and the menu shuts
+   under the cursor. This bridges it with a transparent strip so the hover
+   target is continuous — the delayed close in the script covers the rest. */
+.hp-nav-panel::before {
+  content: ''; position: absolute; left: 0; right: 0;
+  top: -0.7rem; height: 0.7rem;
+}
+.hp-nav-panel {
+  position: absolute; top: calc(100% + 0.65rem); left: 0; z-index: 40;
+  min-width: 13rem; padding: 0.4rem 0;
+  background: var(--paper); border: 1px solid var(--rule); border-radius: 3px;
+  box-shadow: 0 12px 28px rgb(20 17 13 / 0.12);
+}
+.hp-nav-panel a {
+  display: block; padding: 0.55rem 1rem;
+  font-size: 0.875rem; color: var(--charcoal); text-decoration: none;
+  border-bottom: 0;
+}
+.hp-nav-panel a:hover { background: var(--cream); color: var(--ink); border-bottom: 0; }
+.hp-nav-panel a[aria-current='page'] { background: var(--cream); color: var(--ink); }
+
+/* Mobile panel: groups become labelled blocks rather than nested disclosures,
+   which are unpleasant to operate with a thumb. */
+.hp-menu-block { padding-top: 0.35rem; }
+.hp-menu-block + .hp-menu-block { border-top: 1px solid var(--rule); margin-top: 0.35rem; }
+.hp-menu-block-label {
+  margin: 0; padding: 0.45rem 0.8rem 0.2rem;
+  font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--gray);
+}
+.hp-menu-block a { padding-left: 1.4rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  .hp-nav-group > summary svg { transition: none; }
+}
+
+/* ---------- Selling a home: spacing corrections ----------
+   Measured on the page rather than guessed at.
+
+   The card subheadings sat 23px below the card's top border, which is tight
+   for gold text at 17px — they read as attached to the rule rather than as the
+   head of the card. More room above, and a little more between the heading and
+   its paragraph.
+
+   The two links under "Talk to us" landed 15px apart vertically. .hp-textlink
+   carries margin-top: 2rem for use in a prose flow, and align-items: center
+   then centred two boxes of different heights, so neither the tops nor the
+   baselines agreed. Baseline alignment with the flow margins cleared is what
+   makes them sit on one line. */
+.re-item { padding: 1.75rem 1.5rem 1.6rem; }
+.re-item h3 { margin: 0 0 0.65rem; }
+
+.re-actions {
+  align-items: baseline;
+  gap: 0.9rem 2rem;
+  margin-top: 2.25rem;
+}
+.re-actions > * { margin-top: 0; margin-bottom: 0; }
+
+/* The gap under a heading's rule is now set where that rule is defined, in
+   variant-b.css, so it applies to every section rather than only prose ones.
+   This page-scoped override is gone; it was treating one symptom. */

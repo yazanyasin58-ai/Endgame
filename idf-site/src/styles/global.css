@@ -1,0 +1,281 @@
+@import "tailwindcss";
+
+/* Client palette — shared across all versions. Per-version tokens live in
+   each version's own stylesheet scope; only these base colors are shared. */
+:root {
+  --ink: #14110d;
+  --charcoal: #23201b;
+  --gray: #6b6660;
+  --stone: #a9a296; /* muted text on dark grounds — --gray fails AA on ink */
+  --cream: #f6f1e7;
+  --paper: #fbf8f2;
+  --gold: #c8a24a;
+  --gold-bright: #e2c06b;
+  /* Gold for text on the light grounds. --gold is 2.27:1 on paper, which fails
+     AA badly; this is the same hue taken down until it clears 4.5:1 on both
+     paper (5.01) and cream (4.72). --gold itself is unchanged and still used
+     for buttons, rules and anything on a dark ground. */
+  --gold-deep: #856719;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/*
+ * Lock the page to the width of the screen.
+ *
+ * On an iPhone the whole page was rendering narrow with empty space to the
+ * right, which is what a document wider than the viewport looks like when the
+ * browser fits the document width to the screen. Chromium reports no overflow
+ * at 320-414px — html.scrollWidth equals the viewport on every page — so the
+ * cause is something this engine clips and WebKit does not, and there is no
+ * WebKit in this container to find it in.
+ *
+ * Rather than keep guessing at the cause, make the symptom impossible: nothing
+ * can push the document sideways past the viewport.
+ *
+ * `clip` rather than `hidden` on purpose. `hidden` makes the element a scroll
+ * container, which breaks position: sticky in descendants; `clip` does not.
+ * The `hidden` line above it is the fallback for engines too old to know
+ * `clip`, which drop that declaration and keep it. This site has no sticky
+ * elements today — only two fixed ones, the call bar and the review switcher,
+ * and fixed positioning is unaffected either way — but the next person adding
+ * one should not have to discover this.
+ *
+ * `overflow-x: clip` paired with `overflow-y: visible` is a legal pair that
+ * leaves vertical scrolling alone. Pairing `hidden` with `visible` would not:
+ * `visible` would compute to `auto`.
+ */
+html,
+body {
+  max-width: 100%;
+  /*
+   * `hidden`, not `clip`. I used clip here first because it does not make the
+   * element a scroll container and so does not break position: sticky — but
+   * `clip` on the ROOT element is not propagated to the viewport the way
+   * `hidden` is, so the page still scrolled sideways on iOS. Sticky costs
+   * nothing to protect here: this site has no sticky elements, only two fixed
+   * ones, and fixed is unaffected.
+   *
+   * This is a backstop, not the fix. The things that were actually wider than
+   * the viewport are dealt with where they live — see .rc-track in home.css
+   * and the wrapping rule below.
+   */
+  overflow-x: hidden;
+}
+
+/*
+ * Long unbreakable strings must be allowed to break.
+ *
+ * info@interiordesignconstructiondmv.com is 38 characters with no break
+ * opportunity, and it is in the footer of every page. At 320px it renders
+ * 252px wide inside a 280px column — 28px of slack, and that is measured with
+ * fallback fonts because this build environment cannot reach Google Fonts. In
+ * the real face it may well not fit, and one word past the edge makes the
+ * whole document scroll sideways.
+ */
+body {
+  overflow-wrap: anywhere;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+:focus-visible {
+  outline: 2px solid var(--gold-bright);
+  outline-offset: 3px;
+}
+
+/* ---------- image placeholder protocol (§6) ---------- */
+.ph {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  width: 100%;
+  /* Reserved photographic field. Tonal, not pictorial — it never pretends to
+     be a photograph, it holds the exact space one will occupy. */
+  background:
+    radial-gradient(115% 85% at var(--ph-light-x, 62%) var(--ph-light-y, 20%),
+      var(--ph-hi, #6b5c43b3) 0%, transparent 64%),
+    linear-gradient(178deg, var(--ph-bg, #363028) 0%, var(--ph-lo, #1b1811) 100%);
+}
+/* horizon line — reads as a landscape/architectural plane, keeps the field from
+   looking like an empty div without imitating a picture */
+.ph::after {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  top: var(--ph-horizon, 58%);
+  border-top: 1px solid var(--ph-fg, var(--stone));
+  opacity: 0.18;
+}
+.ph-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+/* a slot carrying a comp photograph keeps a discreet corner marker */
+.ph--photo .ph-label {
+  background: rgb(20 17 13 / 0.55);
+  border-color: rgb(246 241 231 / 0.45);
+  color: #efe9dc;
+  backdrop-filter: blur(3px);
+  opacity: 0.85;
+}
+.comp {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+/* a slot showing a comp does not need the abstract horizon rule */
+.ph--scene::after {
+  display: none;
+}
+.ph-label {
+  position: absolute;
+  z-index: 2;
+  inset-block-end: 0.9rem;
+  inset-inline-end: 1rem;
+  font-family: ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  font-size: 0.5625rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ph-fg, var(--stone));
+  border: 1px dashed var(--ph-fg, var(--stone));
+  padding: 0.45em 0.8em;
+  white-space: nowrap;
+  max-width: calc(100% - 2rem);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  opacity: 0.75;
+}
+.ph--label-tl .ph-label { inset-block: 0.9rem auto; inset-inline: 1rem auto; }
+.ph--label-tr .ph-label { inset-block: 0.9rem auto; inset-inline: auto 1rem; }
+.ph--label-bl .ph-label { inset-block: auto 0.9rem; inset-inline: 1rem auto; }
+
+/* ---------- blocked slots (§2 unconfirmed facts) ---------- */
+.blocked {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  border: 1px dashed var(--blocked-fg, var(--gray));
+  padding: 0.75rem 1rem;
+  font-family: ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  /* Defaults to --gray, which passes on the light grounds these mostly sit on.
+     --stone is 2.38:1 on paper; it is only safe on ink or charcoal, so dark
+     contexts set --blocked-fg themselves. */
+  color: var(--blocked-fg, var(--gray));
+}
+.blocked-tag {
+  flex: none;
+  font-weight: 700;
+  background: var(--blocked-fg, var(--gray));
+  color: var(--blocked-bg, var(--paper));
+  padding: 0.15em 0.5em;
+}
+
+/* ---------- version switcher (review chrome, not part of any design) ---------- */
+.vswitch {
+  position: fixed;
+  top: 0.75rem;
+  right: 0.75rem;
+  z-index: 90;
+  display: flex;
+  gap: 1px;
+  background: rgb(20 17 13 / 0.82);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgb(246 241 231 / 0.25);
+  font-family: ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  font-size: 0.6875rem;
+}
+.vswitch a {
+  display: block;
+  padding: 0.45rem 0.6rem;
+  color: #d9d3c7;
+  text-decoration: none;
+}
+.vswitch a:hover {
+  background: rgb(246 241 231 / 0.12);
+}
+.vswitch a.active {
+  background: var(--gold);
+  color: var(--ink);
+  font-weight: 700;
+}
+
+/* ---------- sticky mobile call/text bar ---------- */
+.callbar {
+  position: fixed;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: 80;
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  height: 3.5rem;
+}
+.callbar a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+.callbar .callbar-call {
+  background: var(--gold);
+  color: var(--ink);
+}
+.callbar .callbar-text {
+  background: var(--ink);
+  color: var(--gold-bright);
+  border-top: 1px solid rgb(226 192 107 / 0.4);
+  border-left: 1px solid rgb(226 192 107 / 0.4);
+}
+@media (min-width: 768px) {
+  .callbar {
+    display: none;
+  }
+}
+@media (max-width: 767px) {
+  body.with-callbar {
+    padding-bottom: 3.5rem;
+  }
+}
+
+/* ---------- estimate form skeleton (visuals are per-version) ---------- */
+.ef-grid {
+  display: grid;
+  gap: 1.25rem;
+}
+@media (min-width: 640px) {
+  .ef-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .ef-field--full {
+    grid-column: 1 / -1;
+  }
+}
+.ef-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.ef-note {
+  font-family: ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  font-size: 0.625rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}

@@ -1,0 +1,151 @@
+---
+/**
+ * About. Strictly what the brief and the owner have given us — no invented
+ * biography, hometown, origin story or family history.
+ */
+import Page from '../layouts/Page.astro';
+import Placeholder from '../components/Placeholder.astro';
+import {
+  business,
+  wedge,
+  figures,
+  countOn,
+  googleSnapshot,
+  features,
+  processSteps,
+  cta,
+} from '../content/idf';
+import { optionalImage } from '../lib/images';
+
+const portrait = optionalImage('img/owner-portrait');
+---
+
+<Page
+  title="About — Interior Design Flooring"
+  description="Interior Design Flooring has been owner-operated in Sterling, Virginia since 1989. Shawn and Nancy Waziri, Virginia Class A general contractor."
+  heading="About"
+  standfirst="Owner-operated in Sterling, Virginia since 1989."
+  current="/about/"
+>
+  <section class="hp-section hp-section--tight">
+    <div class="ab-grid">
+      <div class="ab-copy">
+        <h2 class="ab-h3">{wedge.heading}</h2>
+        {wedge.body.map((p) => <p>{p}</p>)}
+        <p>
+          Interior Design Flooring is {business.owners}. The company holds a
+          {' '}{business.license} and works across {business.region} on
+          residential projects. The showroom is at {business.address}.
+        </p>
+        <p>
+          The name says flooring because that is where the company started in 1989. The work
+          today is general contracting — custom homes, additions and remodeling — with
+          flooring as one capability among many.
+        </p>
+      </div>
+      <div class="ab-portrait">
+        <Placeholder
+          ratio="4 / 5"
+          label="Reserved — owner portrait · 4:5 · 1200px"
+          src={portrait}
+          alt="Shawn Waziri on site in a hard hat, reading plans, with a crane and new framing behind him"
+          real
+          class="hp-ph"
+        />
+        {/* Names only who is actually in the frame. The body copy above carries
+            both owners; a caption that says otherwise is simply wrong. */}
+        <p class="ab-caption">Shawn Waziri on site</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="hp-section hp-figures-wrap">
+    <div class="hp-figures">
+      {
+        figures.map((f) => (
+          <div class="hp-figure">
+            <span
+              class="hp-figure-value"
+              data-live-figure={features.googleReviews && 'live' in f ? f.live : null}
+            >
+              {f.value}
+            </span>
+            <span class="hp-figure-label">{f.label}</span>
+            <span class="hp-figure-note">{f.note}</span>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="hp-section" aria-labelledby="ab-count-h">
+    <h2 id="ab-count-h" class="hp-h2">What you can count on</h2>
+    <p class="hp-sub hp-italic">
+      Every one of these is something you can check without taking our word for it.
+    </p>
+    <div class="ab-count">
+      {
+        countOn.map((item) => (
+          <div class="ab-count-item">
+            <h3 class="ab-count-title">{item.title}</h3>
+            <p class="ab-count-detail">{item.detail}</p>
+            {'showRating' in item && item.showRating && (
+              <p class="ab-count-proof">
+                <span class="ab-count-score">
+                  <span data-live-figure={features.googleReviews ? 'googleRating' : null}>
+                    {googleSnapshot.rating}
+                  </span>{' '}★
+                </span>
+                <span class="ab-count-proof-note">
+                  across{' '}
+                  <span data-live-figure={features.googleReviews ? 'googleTotal' : null}>
+                    {googleSnapshot.total}
+                  </span>{' '}
+                  Google reviews
+                </span>
+              </p>
+            )}
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="hp-section">
+    <h2 class="hp-h2">How we manage a project</h2>
+    <p class="hp-sub hp-italic">Start to finish, with the same two people throughout.</p>
+    <ol class="hp-steps">
+      {
+        processSteps.map((s) => (
+          <li class:list={['hp-step', { 'hp-step--featured': 'featured' in s && s.featured }]}>
+            <span class="hp-step-num">{s.number}</span>
+            <div>
+              <h3 class="hp-step-title">{s.title}</h3>
+              <p class="hp-step-detail">{s.detail}</p>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
+
+  <section class="hp-final">
+    <div class="hp-final-inner hp-final-inner--single">
+      <div>
+        <h2 class="hp-final-heading">Talk to the owner.</h2>
+        <p class="hp-final-sub hp-italic">Site visit first, written estimate within 24 hours.</p>
+        <div class="hp-hero-actions">
+          <a class="hp-btn" href="/estimate/">{cta.primary}</a>
+          <a class="hp-call hp-call--light" href={business.phonePrimaryHref}>
+            or call {business.phonePrimary}
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</Page>
+
+<script>
+  import { fetchAndApplyLiveFigures } from '../scripts/live-figures';
+  fetchAndApplyLiveFigures();
+</script>

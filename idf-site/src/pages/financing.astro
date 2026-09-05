@@ -1,0 +1,64 @@
+---
+/**
+ * Financing.
+ *
+ * Informational only. No rates, APRs, terms or monthly figures appear —
+ * advertising credit terms triggers Truth in Lending disclosure rules, and we
+ * have been given no figures to disclose.
+ *
+ * The page routes to a conversation, not to a lender. On the client's
+ * instruction there is no application form, no outbound link to a lender or
+ * brokerage, and no lender named: someone interested gets in touch and the
+ * introduction happens from there. That removes the last blocked slot on the
+ * page — it was waiting on a lender name for a link that is no longer wanted —
+ * and it keeps the site clear of hosting or routing anything that collects
+ * income and identity data.
+ */
+import Page from '../layouts/Page.astro';
+import { business, cta } from '../content/idf';
+---
+
+<Page
+  title="Financing — Interior Design Flooring"
+  description="Financing options are available for qualified renovation and construction clients. Ask about financing when you request your estimate."
+  heading="Financing"
+  standfirst="Options are available for qualified renovation and construction clients."
+  current="/financing/"
+>
+  <section class="hp-section hp-section--tight">
+    <div class="inv-intro">
+      <p>
+        Not every project needs to be paid for up front. We work with a lending partner who
+        handles renovation and construction financing, and we can introduce you when you
+        request your estimate.
+      </p>
+      <p>
+        Approval, rates and terms are set by the lender, not by us. We do not take a
+        decision on your application and we do not see your financial information.
+      </p>
+      <p>
+        There is no application on this site, and nothing here to sign. If financing is
+        something you are considering, say so when you get in touch — we will talk you
+        through how it works and make the introduction from there.
+      </p>
+      <p class="inv-note">
+        Interested? Ask about financing when you request your estimate, or call and ask.
+      </p>
+    </div>
+  </section>
+
+  <section class="hp-final">
+    <div class="hp-final-inner hp-final-inner--single">
+      <div>
+        <h2 class="hp-final-heading">Ask about financing.</h2>
+        <p class="hp-final-sub hp-italic">Mention it on your estimate request, or call and ask.</p>
+        <div class="hp-hero-actions">
+          <a class="hp-btn" href="/estimate/">{cta.primary}</a>
+          <a class="hp-call hp-call--light" href={business.phonePrimaryHref}>
+            or call {business.phonePrimary}
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</Page>

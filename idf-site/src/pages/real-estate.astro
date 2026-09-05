@@ -1,0 +1,63 @@
+---
+/**
+ * Real estate — the generic version.
+ *
+ * This page used to advertise brokerage services under the Interior Design
+ * Flooring name and was gated behind features.realEstate for that reason:
+ * Virginia requires the entity advertising those services to hold a real
+ * estate FIRM license and to name it, and the agent's license hangs under
+ * Samson Companies LLC, a different company.
+ *
+ * On the owner's instruction of 5 Sep the page now offers what this company is
+ * actually licensed to do — renovation work that gets a house ready to sell —
+ * and offers an introduction to a licensed agent rather than the listing
+ * itself. A referral is not brokerage, so no firm license is required and the
+ * gate no longer applies.
+ *
+ * If the brokerage copy ever comes back, so must the gate. The three things
+ * that must not return without the firm license number are listed above
+ * `realEstate` in content/idf.ts.
+ */
+import Page from '../layouts/Page.astro';
+import { business, realEstate, serviceArea } from '../content/idf';
+---
+
+<Page
+  title="Selling a home — Interior Design Flooring"
+  description="Renovation work that gets a home ready for the market, across Northern Virginia. A straight answer on what pays back before you list."
+  heading="Selling a home"
+  standfirst={realEstate.standfirst}
+  current="/real-estate/"
+>
+  <section class="hp-section hp-section--tight re-prose">
+    {realEstate.intro.map((para) => <p class="hp-lede">{para}</p>)}
+  </section>
+
+  <section class="hp-section" aria-labelledby="re-points-h">
+    <h2 id="re-points-h" class="hp-h2">How we help</h2>
+    <div class="re-grid">
+      {
+        realEstate.points.map((point) => (
+          <div class="re-item">
+            <h3>{point.title}</h3>
+            <p>{point.detail}</p>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="hp-section hp-section--tight re-prose" aria-labelledby="re-cta-h">
+    <h2 id="re-cta-h" class="hp-h2">Talk to us</h2>
+    <p class="hp-lede">{realEstate.cta}</p>
+    <p class="re-actions">
+      <a class="hp-call" href={business.phonePrimaryHref}>Call {business.phonePrimary}</a>
+      <a class="hp-textlink" href="/list-your-home/">Or tell us about the property</a>
+    </p>
+    <p class="re-note">
+      Interior Design Flooring is a {business.license}. We are contractors, not a real
+      estate brokerage — the listing is handled by a licensed agent, and we are glad to
+      introduce you to one. Serving {serviceArea.short}.
+    </p>
+  </section>
+</Page>

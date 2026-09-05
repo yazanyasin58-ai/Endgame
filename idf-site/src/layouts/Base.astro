@@ -1,0 +1,167 @@
+---
+import '../styles/global.css';
+import { preLaunch } from '../lib/site';
+
+interface Props {
+  title: string;
+  description: string;
+  fontsHref: string;
+  bodyClass?: string;
+  withCallbar?: boolean;
+  /**
+   * Keep this page out of search indexes permanently, independently of the
+   * site-wide pre-launch block below. Set on pages that must stay unindexed
+   * even after launch — so that removing the site-wide tag at launch cannot
+   * quietly expose them.
+   */
+  noindex?: boolean;
+}
+
+const {
+  title,
+  description,
+  fontsHref,
+  bodyClass = '',
+  withCallbar = false,
+  noindex = false,
+} = Astro.props;
+
+/**
+ * Canonical URL. Emitted only when a real origin is configured — see `site`
+ * in astro.config.mjs. A canonical pointing at the wrong host is worse than
+ * none, so this stays absent until the domain exists.
+ */
+const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : undefined;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    {
+      preLaunch || noindex ? (
+        <meta name="robots" content="noindex, nofollow" />
+      ) : null
+    }
+    {canonical && <link rel="canonical" href={canonical} />}
+    {/* The logo's centre gable. The full lockup is 3:1 and turns to mush at
+        favicon size, so the tab icon is the mark's central element on the
+        brand cream — same artwork, legible at 16px. */}
+    <link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48" />
+    <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href={fontsHref} />
+  </head>
+  <body class:list={[bodyClass, { 'with-callbar': withCallbar }]}>
+    <slot />
+
+    {/*
+      Width diagnostic, off unless the URL carries ?debug=width.
+      Nothing renders and no work is done on a normal visit.
+
+      It exists because a horizontal-scroll bug reported on iPhone could not be
+      reproduced in this project's only available engine, Chromium. Rather than
+      keep guessing, this reports from the device that actually has the
+      problem. Remove it once that is settled.
+    */}
+    <script is:inline>
+      if (location.search.indexOf('debug=width') !== -1) {
+        addEventListener('load', function () {
+          var de = document.documentElement;
+          var body = document.body;
+
+          function docWidth() {
+            return Math.max(de.scrollWidth, body.scrollWidth);
+          }
+
+          /* Measure twice. Clamped is what the reader actually gets; lifted is
+             what the page wants to be. If clamped already exceeds the viewport
+             then overflow-x: hidden is not holding on this engine, which is a
+             different problem from an element simply being too wide. */
+          var vw = de.clientWidth;
+          var clamped = docWidth();
+
+          var lift = document.createElement('style');
+          lift.textContent = 'html,body{overflow-x:visible!important}';
+          document.head.appendChild(lift);
+          de.getBoundingClientRect();
+          var lifted = docWidth();
+
+          /* Boxes past the right edge. Nothing is skipped for being inside a
+             scroller — that skip is what hid the real culprit last time — but
+             each hit says whether an ancestor clips it, because a clipped box
+             that still grows the document is the interesting case. */
+          var wide = [];
+          var scrollers = [];
+          var all = document.querySelectorAll('*');
+          for (var i = 0; i < all.length; i++) {
+            var el = all[i];
+            if (el === lift) continue;
+            var cs = getComputedStyle(el);
+            var b = el.getBoundingClientRect();
+            var tag = el.tagName.toLowerCase() + (el.className && typeof el.className === 'string'
+              ? '.' + el.className.trim().split(/\s+/).join('.') : '');
+
+            /* Anything that scrolls sideways, and by how much. */
+            if (el.scrollWidth > el.clientWidth + 1 && el.clientWidth > 0) {
+              scrollers.push(tag.slice(0, 40) + ' ' + el.clientWidth + '/' + el.scrollWidth +
+                ' ox:' + cs.overflowX + (cs.position === 'fixed' ? ' fixed' : ''));
+            }
+
+            if (cs.position === 'fixed') continue;
+            if (!b.width || !b.height) continue;
+            if (b.right > vw + 1 || b.left < -1) {
+              /* A scroller only clips an absolutely positioned box when it
+                 contains that box's containing block. Walking the DOM alone
+                 reports the opposite and calls an escaping box "clipped" —
+                 which is exactly how the .rc-sr spans hid for so long. */
+              var cb = (cs.position === 'absolute' || cs.position === 'fixed') ? el.offsetParent : undefined;
+              var clip = '';
+              for (var n = el.parentElement; n && n !== body; n = n.parentElement) {
+                var ox = getComputedStyle(n).overflowX;
+                if (ox === 'visible') continue;
+                var holds = cb === undefined || (cb !== null && (n === cb || n.contains(cb)));
+                clip = (holds ? ' [clipped by ' : ' [ESCAPES ') + n.tagName.toLowerCase() +
+                  (holds ? ']' : ', cb=' + (cb ? cb.tagName.toLowerCase() : 'page') + ']');
+                break;
+              }
+              wide.push({
+                name: tag, clip: clip,
+                over: Math.round(Math.max(b.right - vw, 0) + Math.max(-b.left, 0)),
+              });
+            }
+          }
+          wide.sort(function (a, c) { return c.over - a.over; });
+
+          lift.remove();
+
+          var lines = [
+            'viewport ' + vw + '  inner ' + window.innerWidth,
+            'document clamped ' + clamped + (clamped > vw ? '  CLAMP FAILING +' + (clamped - vw) : '  (clamp holding)'),
+            'document lifted  ' + lifted + (lifted > vw ? '  wants +' + (lifted - vw) : ''),
+            'html rect ' + Math.round(de.getBoundingClientRect().width) +
+              '  body rect ' + Math.round(body.getBoundingClientRect().width),
+            'scrollers: ' + scrollers.length,
+          ];
+          for (var s = 0; s < Math.min(scrollers.length, 6); s++) lines.push('  ' + scrollers[s]);
+          lines.push('wide boxes: ' + wide.length);
+          for (var j = 0; j < Math.min(wide.length, 10); j++) {
+            lines.push('  +' + wide[j].over + 'px ' + wide[j].name.slice(0, 46) + wide[j].clip);
+          }
+
+          var box = document.createElement('div');
+          box.setAttribute('style', 'position:fixed;left:0;right:0;top:0;z-index:99999;' +
+            'background:#14110d;color:#f6f1e7;font:11px/1.4 ui-monospace,Menlo,monospace;' +
+            'padding:10px 12px;max-height:70vh;overflow:auto;white-space:pre-wrap;');
+          box.textContent = lines.join('\n');
+          document.body.appendChild(box);
+        });
+      }
+    </script>
+  </body>
+</html>
