@@ -976,3 +976,40 @@
   color: var(--gold-deep);
 }
 .rc-source-link { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
+
+/* ---------- hover lift on the stat and review boxes ----------
+   The client asked for the boxes to "levitate" on hover. Kept small: 3px and
+   a soft shadow reads as responsive, more reads as a toy. Pointer-only, so it
+   never fires from a tap on touch, and off entirely under
+   prefers-reduced-motion. */
+@media (hover: hover) and (pointer: fine) {
+  .hp-figure,
+  .rc-card {
+    transition: transform 180ms ease, box-shadow 180ms ease;
+  }
+  .hp-figure:hover,
+  .rc-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 24px rgb(20 17 13 / 0.10);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hp-figure, .rc-card { transition: none; }
+  .hp-figure:hover, .rc-card:hover { transform: none; }
+}
+
+/* ---------- "Leave us a Google review" ---------- */
+.rc-cta { margin: 1.6rem 0 0; }
+.rc-cta-link {
+  display: inline-block;
+  padding: 0.7rem 1.4rem;
+  border: 1px solid var(--gold-deep);
+  border-radius: 3px;
+  font-size: 0.9063rem;
+  font-weight: 600;
+  color: var(--ink);
+  text-decoration: none;
+  transition: background-color 160ms ease, color 160ms ease;
+}
+.rc-cta-link:hover { background: var(--gold-deep); color: var(--paper); }
+@media (prefers-reduced-motion: reduce) { .rc-cta-link { transition: none; } }

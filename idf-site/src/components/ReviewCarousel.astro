@@ -14,6 +14,7 @@
  * open it would misrepresent what someone wrote.
  */
 import type { Review } from '../content/idf';
+import { writeReviewUrl } from '../content/idf';
 
 interface Props {
   reviews: readonly Review[];
@@ -101,6 +102,12 @@ const {
       ))
     }
   </div>
+
+  <p class="rc-cta">
+    <a class="rc-cta-link" href={writeReviewUrl} rel="nofollow noopener" target="_blank">
+      Leave us a Google review
+    </a>
+  </p>
 
   {
     /*

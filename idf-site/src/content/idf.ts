@@ -204,6 +204,19 @@ export const reviews: Review[] = [
  */
 export const reviewsPending = ['Jeremy Smith', 'Samantha Scott', 'Sam Smith'] as const;
 
+/**
+ * Where "Leave us a Google review" sends people.
+ *
+ * Google's own deep link for writing a review, built from the place ID. It
+ * opens the review box directly rather than the listing, which is the whole
+ * point — a link to the listing loses most people before they find the button.
+ *
+ * The place ID is the same one functions/api/reviews.ts reads, and Google
+ * permits storing place IDs indefinitely, unlike review content.
+ */
+export const writeReviewUrl =
+  'https://search.google.com/local/writereview?placeid=ChIJr4P8Rvk4tokR4Ni_5rGjQbY';
+
 /*
  * To add a review, copy this into the `reviews` array above and fill it in.
  * No other change is needed — the carousel picks it up, shows the stars if
@@ -225,7 +238,7 @@ export const reviewsPending = ['Jeremy Smith', 'Samantha Scott', 'Sam Smith'] as
 
 // The real five-step sequence. "Estimate within 24 hours" is the differentiator.
 export const processSteps = [
-  { number: '01', title: 'Call us', detail: 'Reach Shawn or Nancy directly at 703-430-8129.' },
+  { number: '01', title: 'Call us', detail: 'Reach Shawn or Nancy directly at 571-233-5133.' },
   { number: '02', title: 'Describe the work', detail: 'Tell us the type of project and the address.' },
   { number: '03', title: 'Site visit', detail: 'We walk the project site ourselves.' },
   {
@@ -388,7 +401,7 @@ export const realEstate = {
 
 export const cta = {
   primary: 'Request a Free Estimate',
-  secondaryLabel: 'Call 703-430-8129',
+  secondaryLabel: 'Call 571-233-5133',
 } as const;
 
 /**
