@@ -528,6 +528,13 @@ export const figures = [
  * (cap, eligible work, expiry) are still undefined, so the page directs to a
  * conversation rather than stating conditions we have not been given.
  */
+/**
+ * Date shown on the privacy policy and the terms. Update it whenever either
+ * page changes substantively — a policy with a stale date is worse than one
+ * with no date, because it asserts something untrue about when it was checked.
+ */
+export const legalUpdated = '5 September 2026';
+
 export const promo = {
   headline: '15% off your first project',
   detail: 'New customers. Ask us for details when you request your estimate.',

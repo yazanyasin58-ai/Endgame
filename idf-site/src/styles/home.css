@@ -155,9 +155,9 @@
     to top,
     rgb(20 17 13 / 0.88) 0%,
     rgb(20 17 13 / 0.80) 38%,
-    rgb(20 17 13 / 0.62) 54%,
-    rgb(20 17 13 / 0.26) 70%,
-    rgb(20 17 13 / 0.06) 84%,
+    rgb(20 17 13 / 0.74) 54%,
+    rgb(20 17 13 / 0.46) 70%,
+    rgb(20 17 13 / 0.14) 84%,
     transparent 94%
   );
 }
@@ -1349,3 +1349,89 @@
   position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
   overflow: hidden; clip-path: inset(50%); white-space: nowrap;
 }
+
+/* ---------- legal pages and the human sitemap ---------- */
+.legal { max-width: 44rem; margin-inline: auto; }
+.legal h2 {
+  margin: 2.5rem 0 0.85rem; font-family: 'Instrument Serif', serif; font-weight: 400;
+  font-size: clamp(1.35rem, 3vw, 1.7rem); line-height: 1.2; color: var(--ink);
+}
+.legal h2:first-child { margin-top: 0; }
+.legal p, .legal li { font-size: 1rem; line-height: 1.75; color: var(--charcoal); }
+.legal p { margin: 0 0 1.05rem; }
+.legal ul { margin: 0 0 1.05rem; padding-left: 1.2rem; display: grid; gap: 0.5rem; }
+.legal strong { color: var(--ink); font-weight: 600; }
+
+.sm-grid {
+  max-width: 62rem; margin-inline: auto;
+  display: grid; gap: 2.5rem 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+}
+.sm-head { margin: 0 0 0.9rem; font-size: 0.6875rem; font-weight: 600;
+  letter-spacing: 0.18em; text-transform: uppercase; color: var(--charcoal); }
+.sm-head a { color: inherit; }
+.sm-list { margin: 0; padding: 0; list-style: none; display: grid; gap: 0.55rem; }
+.sm-list a { font-size: 0.9375rem; color: var(--charcoal); }
+.sm-list a:hover { color: var(--ink); }
+.sm-note {
+  max-width: 62rem; margin: 3rem auto 0; padding-top: 1.25rem;
+  border-top: 1px solid var(--rule); font-size: 0.8438rem; color: var(--gray);
+}
+
+/* ---------- footer: logo, social marks, Google review button ---------- */
+/* The footer underlines every link because gold on stone is only 1.44:1 in
+   running text. The logo, the social marks and the review button are not
+   running text — they are objects with their own edges — so they opt out.
+   Specificity has to match `.hp .foot a` to do it. */
+.hp .foot .foot-logo,
+.hp .foot .foot-logo:hover,
+.hp .foot .foot-review,
+.hp .foot .foot-review:hover,
+.hp .foot .foot-marks .foot-social a { text-decoration: none; }
+.hp .foot .foot-logo { display: inline-flex; margin-bottom: 0.2rem; padding-block: 0; }
+/* `.hp .foot a` sets display:inline-block, which outranks .foot-review's own
+   inline-flex — so align-items never applied and the badge sat at the top of
+   a box stretched by the two-line label. Restate display at this weight. */
+.hp .foot .foot-review {
+  display: inline-flex; align-items: center; padding-block: 0.55rem;
+}
+/* The logo's own strapline is coloured for the light header. On the dark
+   footer --gray measures 2.9:1, so it takes the dark-ground token instead —
+   the same reason .foot-review-sub does. The name goes to full cream. */
+.foot-logo .logo-lockup { color: var(--stone); }
+.foot-logo .logo-name { color: var(--cream); }
+.foot-marks {
+  margin-top: 1.4rem; display: flex; flex-wrap: wrap;
+  align-items: center; gap: 0.9rem 1.5rem;
+}
+/* The social marks are icon-plus-handle stacks; centre them on the pill. */
+.foot-marks .foot-social { display: flex; align-items: center; gap: 1rem; margin: 0; }
+.foot-review {
+  display: inline-flex; align-items: center; gap: 0.6rem; line-height: 1;
+  padding: 0.55rem 1rem 0.55rem 0.55rem;
+  border: 1px solid var(--rule); border-radius: 999px;
+  text-decoration: none; color: var(--stone);
+}
+.foot-review:hover { border-color: var(--gold); color: var(--cream); }
+.foot-review-g {
+  width: 1.6rem; height: 1.6rem; flex: none; border-radius: 50%;
+  background: var(--cream); color: #1a1a1a;
+  display: grid; place-items: center;
+  font-family: 'Instrument Serif', serif; font-size: 1rem; line-height: 1;
+}
+.foot-review-text { display: grid; font-size: 0.8125rem; line-height: 1.3; }
+/* --stone, not --gray: --gray is for muted text on LIGHT grounds and measures
+   2.9:1 on this one, below AA. The token exists for exactly this case. */
+.foot-review-sub { font-size: 0.6875rem; color: var(--stone); }
+
+.foot-legal {
+  margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid rgb(246 241 231 / 0.12);
+  display: flex; flex-wrap: wrap; gap: 0.75rem 1.5rem;
+  align-items: baseline; justify-content: space-between;
+}
+.foot-legal-links {
+  margin: 0; padding: 0; list-style: none;
+  display: flex; flex-wrap: wrap; gap: 0.5rem 1.25rem;
+}
+.foot-legal-links a { font-size: 0.8125rem; color: var(--stone); }
+.foot-legal-links a:hover { color: var(--cream); }
