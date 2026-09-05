@@ -520,9 +520,41 @@
   display: block; font-size: 0.8125rem; color: var(--gray); margin-top: 0.15rem;
 }
 .hp-menu-panel hr { border: 0; border-top: 1px solid var(--rule); margin: 0.4rem 0.8rem; }
-/* on narrow screens the panel spans the header instead of hanging off the edge */
-@media (max-width: 899px) {
-  .hp-menu-panel { position: static; min-width: 0; box-shadow: none; margin-top: 0.5rem; }
+/*
+ * A closed <details> hides its content with display: none from the UA
+ * stylesheet — but `display: grid` above overrides that, so the panel was
+ * being laid out whether the menu was open or not. Below 900px it is also
+ * position: static, so a closed menu dropped 838px of links into the 16px
+ * column beside the logo and their boxes ran ~77px past the right edge of a
+ * 390px viewport. Invisible, and enough to make the page overflow sideways on
+ * a phone.
+ *
+ * Restore the closed state explicitly. This has to come after the rule that
+ * sets display: grid, and it is scoped to the direct child so nothing else
+ * inside the panel is affected.
+ */
+.hp-menu:not([open]) > .hp-menu-panel { display: none; }
+
+/*
+ * On narrow screens the panel is meant to span the header rather than hang off
+ * the edge. `position: static` did not achieve that: the panel is inside
+ * .hp-nav-actions, a flex item sized to the hamburger, so it was squeezed to
+ * 156px on a 390px screen and ran 685px tall on eleven wrapped links.
+ *
+ * Anchor it to the header instead. .hp-nav becomes the containing block, and
+ * the panel spans it edge to edge with the header's own horizontal padding.
+ */
+@media (max-width: 1099px) {
+  .hp-nav { position: relative; }
+  .hp-menu { position: static; }
+  .hp-menu-panel {
+    position: absolute;
+    top: 100%;
+    left: clamp(1rem, 3vw, 3rem);
+    right: clamp(1rem, 3vw, 3rem);
+    min-width: 0;
+    margin-top: 0.35rem;
+  }
 }
 
 /* ---------- page heads and grids for the standalone pages ---------- */
