@@ -72,75 +72,84 @@ const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : un
     <script is:inline>
       if (location.search.indexOf('debug=width') !== -1) {
         addEventListener('load', function () {
-          /* The page clamps itself with overflow-x: hidden on html and body.
-             Measuring under that clamp is pointless: scrollWidth is clipped to
-             the viewport and every element counts as "inside something that
-             clips", so the honest answer is always zero offenders. Lift the
-             clamp, measure, put it back. */
+          var de = document.documentElement;
+          var body = document.body;
+
+          function docWidth() {
+            return Math.max(de.scrollWidth, body.scrollWidth);
+          }
+
+          /* Measure twice. Clamped is what the reader actually gets; lifted is
+             what the page wants to be. If clamped already exceeds the viewport
+             then overflow-x: hidden is not holding on this engine, which is a
+             different problem from an element simply being too wide. */
+          var vw = de.clientWidth;
+          var clamped = docWidth();
+
           var lift = document.createElement('style');
           lift.textContent = 'html,body{overflow-x:visible!important}';
           document.head.appendChild(lift);
-          document.documentElement.getBoundingClientRect();
+          de.getBoundingClientRect();
+          var lifted = docWidth();
 
-          var vw = document.documentElement.clientWidth;
-          var doc = Math.max(
-            document.documentElement.scrollWidth,
-            document.body.scrollWidth
-          );
-          var hits = [];
+          /* Boxes past the right edge. Nothing is skipped for being inside a
+             scroller — that skip is what hid the real culprit last time — but
+             each hit says whether an ancestor clips it, because a clipped box
+             that still grows the document is the interesting case. */
+          var wide = [];
+          var scrollers = [];
           var all = document.querySelectorAll('*');
           for (var i = 0; i < all.length; i++) {
             var el = all[i];
             if (el === lift) continue;
             var cs = getComputedStyle(el);
-            if (cs.position === 'fixed') continue;
-            /* Skip anything a genuine scroller already contains, e.g. the
-               review carousel. html and body are excluded from this walk
-               because their clamp is exactly what we just lifted. */
-            var clipped = false;
-            for (var n = el.parentElement; n && n !== document.body; n = n.parentElement) {
-              var ox = getComputedStyle(n).overflowX;
-              if (ox === 'auto' || ox === 'scroll' || ox === 'hidden' || ox === 'clip') { clipped = true; break; }
-            }
-            if (clipped) continue;
             var b = el.getBoundingClientRect();
+            var tag = el.tagName.toLowerCase() + (el.className && typeof el.className === 'string'
+              ? '.' + el.className.trim().split(/\s+/).join('.') : '');
+
+            /* Anything that scrolls sideways, and by how much. */
+            if (el.scrollWidth > el.clientWidth + 1 && el.clientWidth > 0) {
+              scrollers.push(tag.slice(0, 40) + ' ' + el.clientWidth + '/' + el.scrollWidth +
+                ' ox:' + cs.overflowX + (cs.position === 'fixed' ? ' fixed' : ''));
+            }
+
+            if (cs.position === 'fixed') continue;
             if (!b.width || !b.height) continue;
             if (b.right > vw + 1 || b.left < -1) {
-              hits.push({
-                name: el.tagName.toLowerCase() + (el.className && typeof el.className === 'string'
-                  ? '.' + el.className.trim().split(/\s+/).join('.') : ''),
+              var clip = '';
+              for (var n = el.parentElement; n && n !== body; n = n.parentElement) {
+                var ox = getComputedStyle(n).overflowX;
+                if (ox !== 'visible') { clip = ' [clipped by ' + n.tagName.toLowerCase() + ']'; break; }
+              }
+              wide.push({
+                name: tag, clip: clip,
                 over: Math.round(Math.max(b.right - vw, 0) + Math.max(-b.left, 0)),
               });
             }
           }
-          hits.sort(function (a, c) { return c.over - a.over; });
+          wide.sort(function (a, c) { return c.over - a.over; });
 
           lift.remove();
 
-          /* Local renders fall back to system fonts because the sandbox cannot
-             reach Google Fonts, so text is narrower there than on a real
-             phone. Report whether the real faces arrived. */
-          var fontNote = 'fonts n/a';
-          try {
-            fontNote = 'Fraunces ' + (document.fonts.check('1em Fraunces') ? 'yes' : 'NO') +
-              ', Public Sans ' + (document.fonts.check('1em "Public Sans"') ? 'yes' : 'NO');
-          } catch (e) { /* older engines */ }
+          var lines = [
+            'viewport ' + vw + '  inner ' + window.innerWidth,
+            'document clamped ' + clamped + (clamped > vw ? '  CLAMP FAILING +' + (clamped - vw) : '  (clamp holding)'),
+            'document lifted  ' + lifted + (lifted > vw ? '  wants +' + (lifted - vw) : ''),
+            'html rect ' + Math.round(de.getBoundingClientRect().width) +
+              '  body rect ' + Math.round(body.getBoundingClientRect().width),
+            'scrollers: ' + scrollers.length,
+          ];
+          for (var s = 0; s < Math.min(scrollers.length, 6); s++) lines.push('  ' + scrollers[s]);
+          lines.push('wide boxes: ' + wide.length);
+          for (var j = 0; j < Math.min(wide.length, 10); j++) {
+            lines.push('  +' + wide[j].over + 'px ' + wide[j].name.slice(0, 46) + wide[j].clip);
+          }
 
           var box = document.createElement('div');
           box.setAttribute('style', 'position:fixed;left:0;right:0;top:0;z-index:99999;' +
-            'background:#14110d;color:#f6f1e7;font:12px/1.45 ui-monospace,Menlo,monospace;' +
-            'padding:10px 12px;max-height:60vh;overflow:auto;-webkit-overflow-scrolling:touch;');
-          var lines = [
-            'viewport ' + vw + '  inner ' + window.innerWidth + '  document ' + doc +
-              (doc > vw ? '  OVERFLOW +' + (doc - vw) : '  (no overflow)'),
-            fontNote,
-            'offenders: ' + hits.length,
-          ];
-          for (var j = 0; j < Math.min(hits.length, 14); j++) {
-            lines.push('+' + hits[j].over + 'px  ' + hits[j].name.slice(0, 70));
-          }
+            'background:#14110d;color:#f6f1e7;font:11px/1.4 ui-monospace,Menlo,monospace;' +
+            'padding:10px 12px;max-height:70vh;overflow:auto;white-space:pre-wrap;');
           box.textContent = lines.join('\n');
-          box.style.whiteSpace = 'pre-wrap';
           document.body.appendChild(box);
         });
       }
