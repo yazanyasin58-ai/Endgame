@@ -945,7 +945,15 @@
    Shown only when /api/reviews succeeds, which is the same moment the cards
    become a four-star-and-up selection. The true average and count are what
    make that selection honest rather than a misrepresentation of the whole,
-   so this is not decoration and must not be quietly dropped. */
+   so this is not decoration and must not be quietly dropped.
+
+   These carry NO `.hp` overrides. The first version had them — cream score,
+   stone note, --gold link — on the assumption that `.hp` meant the charcoal
+   band. It does not: `.hp` is the homepage body class and its ground is
+   --paper, so those overrides rendered the score at 1.06:1, the note at 2.39
+   and the link at 2.27. Measured on the light ground, the base values are
+   already right: --ink 17.76, --gray 5.36, --gold-deep 5.01. If a dark-ground
+   variant is ever needed, scope it to that band's own class, not to `.hp`. */
 .rc-agg {
   margin-top: 0.55rem;
   font-size: 0.9063rem;
@@ -961,13 +969,10 @@
   color: var(--ink);
   letter-spacing: 0.01em;
 }
-.hp .rc-agg-score { color: var(--cream); }
-.hp .rc-agg { color: var(--stone); }
 .rc-agg-link {
   display: inline-block;
   margin-top: 0.35rem;
   font-size: 0.875rem;
   color: var(--gold-deep);
 }
-.hp .rc-agg-link { color: var(--gold); }
 .rc-source-link { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
