@@ -1,6 +1,8 @@
 ---
 import '../styles/global.css';
 import { preLaunch } from '../lib/site';
+import { features } from '../content/idf';
+import LeadPopup from '../components/LeadPopup.astro';
 
 interface Props {
   title: string;
@@ -59,6 +61,8 @@ const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : un
   </head>
   <body class:list={[bodyClass, { 'with-callbar': withCallbar }]}>
     <slot />
+
+    {features.promoPopup && <LeadPopup />}
 
     {/*
       Width diagnostic, off unless the URL carries ?debug=width.

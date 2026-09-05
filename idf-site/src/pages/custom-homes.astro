@@ -23,7 +23,7 @@ const customHomePhotos = ['img/project-custom-home', 'img/project-custom-home-2'
   standfirst="Built from the ground up, on your lot or ours to find."
   current="/custom-homes/"
 >
-  <section class="hp-section hp-section--tight">
+  <section id="what-we-build" class="hp-section hp-section--tight">
     <div class="hp-pillars">
       {
         customHomeOffers.map((o, i) => (
@@ -39,7 +39,7 @@ const customHomePhotos = ['img/project-custom-home', 'img/project-custom-home-2'
   </section>
 
   <section class="hp-section">
-    <h2 class="hp-h2">The construction process</h2>
+    <h2 id="process" class="hp-h2">The construction process</h2>
     <p class="hp-sub hp-italic">Five stages, and the same two people across all of them.</p>
     <ol class="hp-steps">
       {
@@ -59,7 +59,7 @@ const customHomePhotos = ['img/project-custom-home', 'img/project-custom-home-2'
   {
     customHomePhotos.length > 0 && (
       <section class="hp-section">
-        <h2 class="hp-h2">Completed custom homes</h2>
+        <h2 id="completed" class="hp-h2">Completed custom homes</h2>
         <div class:list={['hp-grid', { 'hp-grid--few': customHomePhotos.length < 3 }]}>
           {customHomePhotos.map((src) => (
             <figure class="hp-project">

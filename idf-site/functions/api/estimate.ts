@@ -96,6 +96,17 @@ const TEXT_FIELDS = [
 
 const REQUIRED_FIELDS = ['name', 'phone', 'email', 'address', 'type'] as const;
 
+/**
+ * Required fields, per form. The lead-capture pop-up deliberately asks for
+ * contact details and nothing else — it is a lead magnet, not an estimate
+ * request — so holding it to the estimate form's address and type would
+ * reject every submission it makes. Keyed on `enquiry`, which is already the
+ * allowlisted field that says which form posted.
+ */
+const REQUIRED_BY_ENQUIRY: Record<string, readonly string[]> = {
+  popup: ['name', 'phone', 'email'],
+};
+
 const LABELS: Record<string, string> = {
   enquiry: 'Enquiry type',
   name: 'Name',
@@ -228,7 +239,8 @@ const handlePost = async (context: PagesContext): Promise<Response> => {
     fields[key] = String(form.get(key) ?? '').trim().slice(0, 4000);
   }
 
-  const missing = REQUIRED_FIELDS.filter((key) => fields[key] === '');
+  const required = REQUIRED_BY_ENQUIRY[fields.enquiry] ?? REQUIRED_FIELDS;
+  const missing = required.filter((key) => fields[key] === '');
   if (missing.length > 0) {
     return json(
       { ok: false, error: `Please fill in: ${missing.map((k) => LABELS[k]).join(', ')}.` },

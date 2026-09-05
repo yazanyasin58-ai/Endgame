@@ -1,3 +1,5 @@
+import { serviceMenu } from './services-detail';
+
 /**
  * Single source of approved content for Interior Design Flooring.
  * Every fact here traces to the build brief. Versions import from this
@@ -626,6 +628,90 @@ export const features = {
    * the thing that decides what the page claims.
    */
   googleReviews: true,
+
+  /**
+   * Property management — the client's menu group 8.
+   *
+   * BLOCKED. Managing rental property for someone else for compensation is
+   * real estate activity in Virginia and requires a licence; a Class A
+   * contractor licence does not cover it. The group as briefed — "Property
+   * Management Services", "Property Turnovers", "Emergency / Priority
+   * Repairs" — advertises exactly that service under this company's name.
+   *
+   * Two parts of the group are NOT blocked and can be published without any
+   * of this: repairs and maintenance, and renovations, are contracting work
+   * we already advertise. "Become a Vendor Partner" is a trade-recruitment
+   * page and needs no licence either. Those are the pieces to build first if
+   * the licence question stays open.
+   *
+   * To open: the real estate firm licence number, same as `brokerageServices`.
+   */
+  propertyManagement: false,
+
+  /**
+   * The expanded real estate menu — buy, sell, rent, find a rental,
+   * investment property, land, commercial, residential, new construction.
+   *
+   * BLOCKED, and this is the third time the same wall has been hit. Virginia
+   * requires the entity advertising brokerage services to hold a real estate
+   * FIRM licence and to name it in the advertising. Interior Design Flooring
+   * does not hold one; the agents' licences hang at a different company.
+   *
+   * The note above `realEstate` lists the three things that must not come
+   * back without that licence number. The client's brief asks for all three.
+   * The current /real-estate/ page stays as it is — renovation work that
+   * prepares a house for sale, plus a referral to a licensed agent, which is
+   * not brokerage and needs no firm licence.
+   */
+  brokerageServices: false,
+
+  /**
+   * "Meet Our In-House Realtors" — names, photos, contact details and bios.
+   *
+   * BLOCKED for two separate reasons, either of which is enough. First, it is
+   * brokerage advertising and carries the firm-licence problem above. Second,
+   * nothing about these people has been supplied: no verified names, no
+   * licence numbers, no photographs, no bios in their own words. Writing a
+   * biography for a real, named person who did not write it is not something
+   * this site does.
+   */
+  realtorProfiles: false,
+
+  /**
+   * Referral programme, under About.
+   *
+   * BLOCKED pending terms. A referral programme that pays for construction
+   * referrals is ordinary and fine. One that pays for real estate or
+   * settlement-service referrals engages federal RESPA rules, and the earlier
+   * version of this site had to have exactly that removed — a renovation
+   * credit conditioned on using a particular agent.
+   *
+   * To open: what is offered, to whom, for what kind of referral, and whether
+   * any part of it touches a real estate transaction.
+   */
+  referralProgram: false,
+
+  /**
+   * Lead-capture pop-up.
+   *
+   * ON. It carries `promo` — the same "15% off your first project" sentence
+   * already approved and live in the promo bar — and not the brief's "UP TO
+   * 15% OFF YOUR PROJECT", so it makes no claim this site was not already
+   * making.
+   *
+   * That substitution is the point. The brief calls 15% an "Example offer",
+   * so the number is not settled, and an "up to" discount needs terms behind
+   * it: what it applies to, what it excludes, when it ends, whether it
+   * combines. "Up to" claims attract particular attention because they are
+   * true of one job and misleading about the rest, and Virginia's Consumer
+   * Protection Act reaches advertising that leaves that out.
+   *
+   * To use the brief's wording instead: get the real percentage, what it
+   * applies to, exclusions and an end date in writing, then change `promo`.
+   * Do not change the pop-up alone — the promo bar makes the same offer and
+   * the two must not disagree.
+   */
+  promoPopup: true,
 } as const;
 
 /**
@@ -711,29 +797,131 @@ export const realEstateLicense = {
  * group whose children all disappear still renders as a plain link to its own
  * page rather than an empty dropdown.
  */
-export const nav = [
+export type NavChild = { label: string; href: string; gated?: keyof typeof features };
+export type NavGroup = NavChild & { children?: NavChild[] };
+
+/**
+ * The header, restructured to the client's menu brief.
+ *
+ * Two of the client's ten groups are absent and one is reduced. That is not an
+ * oversight, and the reasons are on the gates in `features`:
+ *
+ *   - PROPERTY MANAGEMENT (group 8) is gated off entirely. Managing rental
+ *     property for others for compensation needs a real estate licence.
+ *   - REAL ESTATE (group 6) keeps the renovation-and-referral page it has.
+ *     The eleven brokerage entries the brief asks for need a firm licence.
+ *   - ABOUT's referral programme is gated pending its terms.
+ *
+ * Entries whose target does not exist yet are NOT listed here even behind a
+ * gate, because a gate that gets flipped should not produce a 404. What the
+ * client asked for and has not got is recorded in `menuNotBuilt` below, which
+ * nothing renders — it is the to-do list, kept next to the thing it is about.
+ */
+export const nav: NavGroup[] = [
   { label: 'Home', href: '/' },
+  {
+    label: 'About',
+    href: '/about/',
+    children: [
+      { label: 'About us', href: '/about/' },
+      { label: 'What you can count on', href: '/about/#count-on' },
+      { label: 'How we manage a project', href: '/about/#how-we-manage' },
+      { label: 'Referral program', href: '/referrals/', gated: 'referralProgram' },
+    ],
+  },
   {
     label: 'Services',
     href: '/services/',
+    children: [{ label: 'All services', href: '/services/' }, ...serviceMenu],
+  },
+  {
+    label: 'Custom homes',
+    href: '/custom-homes/',
     children: [
-      { label: 'All services', href: '/services/' },
-      { label: 'Custom homes', href: '/custom-homes/' },
-      { label: 'Selling a home', href: '/real-estate/', gated: 'realEstate' },
-      { label: 'Financing', href: '/financing/' },
+      { label: 'Custom home building', href: '/custom-homes/' },
+      { label: 'Ground-up construction', href: '/custom-homes/#what-we-build' },
+      { label: 'Design & planning', href: '/custom-homes/#process' },
+      { label: 'Our building process', href: '/custom-homes/#process' },
+      { label: 'Completed custom homes', href: '/custom-homes/#completed' },
     ],
   },
   {
-    label: 'Our work',
+    label: 'Projects',
     href: '/projects/',
     children: [
-      { label: 'Projects', href: '/projects/' },
-      { label: 'About us', href: '/about/' },
-      { label: 'Investors', href: '/investors/' },
+      { label: 'All projects', href: '/projects/' },
+      { label: 'Named projects', href: '/projects/#named' },
     ],
   },
-  { label: 'Contact', href: '/contact/' },
-] as const;
+  {
+    label: 'Real estate',
+    href: '/real-estate/',
+    children: [
+      { label: 'Renovate before you sell', href: '/real-estate/' },
+      { label: 'Selling a home', href: '/list-your-home/' },
+    ],
+  },
+  {
+    label: 'Investors',
+    href: '/investors/',
+    children: [
+      { label: 'Investor services', href: '/investors/' },
+      { label: 'Fix & flip', href: '/investors/#services' },
+      { label: 'Rental property renovations', href: '/investors/#services' },
+    ],
+  },
+  {
+    label: 'Property management',
+    href: '/property-management/',
+    gated: 'propertyManagement',
+  },
+  {
+    label: 'Financing',
+    href: '/financing/',
+    children: [
+      { label: 'Financing options', href: '/financing/' },
+      { label: 'Finance your project', href: '/financing/#options' },
+    ],
+  },
+  {
+    label: 'Contact',
+    href: '/contact/',
+    children: [
+      { label: 'Contact us', href: '/contact/' },
+      { label: 'Request a free estimate', href: '/estimate/' },
+    ],
+  },
+];
+
+/**
+ * Menu entries the client asked for that this site does not yet have, with the
+ * reason. Nothing imports this — it exists so the gap is written down beside
+ * the menu rather than living in a chat thread.
+ *
+ * Blocked on a licence (see `features.brokerageServices` and
+ * `features.propertyManagement`):
+ *   Buy a home · Sell your home · Rent your home · Find a rental ·
+ *   Investment properties · Land · Commercial real estate ·
+ *   Residential real estate · New construction ·
+ *   Meet our in-house realtors ·
+ *   Property management services · Property turnovers ·
+ *   Emergency / priority repairs
+ *
+ * Blocked on content the client has not supplied:
+ *   Architecture & engineering — we coordinate a licensed engineer, we do not
+ *     provide the service, so a page claiming it would be wrong
+ *   Property evaluations — no description of what is being offered
+ *   Before & after — needs the paired photographs
+ *   Project videos — needs the videos
+ *   Kitchens & bathrooms as a project filter — needs the photographs tagged
+ *
+ * Buildable now, not yet built, and needing no permission:
+ *   Repairs & maintenance, and Renovations, under Property Management —
+ *     ordinary contracting work, safe to publish without the licence
+ *   Become a vendor partner — trade recruitment, no licence needed
+ *   Request financing information — a form, once the lender is named
+ */
+export const menuNotBuilt = true;
 
 /** Services, grouped as the owner listed them. */
 export const serviceGroups = [

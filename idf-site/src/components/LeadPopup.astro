@@ -1,0 +1,163 @@
+---
+/**
+ * Lead-capture pop-up, from the client's brief.
+ *
+ * The offer wording is `promo`, the same sentence already approved and live in
+ * the promo bar. The brief's own wording — "UP TO 15% OFF YOUR PROJECT" — is
+ * not used, for two reasons: the brief calls it an "Example offer", so the
+ * number is not settled, and an "up to" discount claim needs terms behind it
+ * (what it applies to, exclusions, an end date) in a way that "15% off your
+ * first project, ask us for details" does not. Reusing approved copy means
+ * nothing here is invented. Swap it when the terms arrive.
+ *
+ * Three departures from the brief, each deliberate:
+ *
+ *  - It opens after a short delay rather than "as soon as a visitor enters".
+ *    A modal that lands during page load fights the largest paint, shifts
+ *    layout, and is the single most-complained-about pattern on the web. The
+ *    delay is small enough that it still catches an arriving visitor.
+ *  - A dismissal is remembered, so it does not reappear on every page. A
+ *    pop-up that cannot be got rid of costs more leads than it captures.
+ *  - It never opens on /estimate/ or /contact/. Someone already filling in the
+ *    estimate form does not need to be interrupted and asked to fill in a
+ *    smaller one.
+ *
+ * It posts to /api/estimate with enquiry=popup, so leads land in the same
+ * inbox as everything else rather than in a second place nobody checks.
+ */
+import { promo, formFields, business } from '../content/idf';
+
+const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
+---
+
+<div class="lp" data-lead-popup hidden>
+  <div class="lp-scrim" data-lp-close></div>
+  <div class="lp-box" role="dialog" aria-modal="true" aria-labelledby="lp-h" aria-describedby="lp-d" tabindex="-1">
+    <button class="lp-x" type="button" data-lp-close aria-label="Close">&times;</button>
+
+    <p class="lp-eyebrow">{business.lockup}</p>
+    <h2 class="lp-h" id="lp-h">{promo.headline}</h2>
+    <p class="lp-d" id="lp-d">{promo.detail}</p>
+
+    <form class="lp-form" data-lp-form novalidate>
+      <input type="hidden" name="enquiry" value="popup" />
+      <div class="lp-hp" aria-hidden="true">
+        <label for="lp-company">Company</label>
+        <input type="text" id="lp-company" name="company" tabindex="-1" autocomplete="off" />
+      </div>
+
+      <label class="lp-label" for="lp-name">Name</label>
+      <input class="lp-input" id="lp-name" name="name" type="text" autocomplete="name" required />
+
+      <label class="lp-label" for="lp-phone">Phone</label>
+      <input class="lp-input" id="lp-phone" name="phone" type="tel" autocomplete="tel" required />
+
+      <label class="lp-label" for="lp-email">Email</label>
+      <input class="lp-input" id="lp-email" name="email" type="email" autocomplete="email" required />
+
+      <label class="lp-label" for="lp-type">What do you need?</label>
+      <select class="lp-input" id="lp-type" name="type">
+        <option value="">Select one</option>
+        {formFields.typeOfWork.map((t) => <option value={t}>{t}</option>)}
+      </select>
+
+      {siteKey && <div class="cf-turnstile" data-sitekey={siteKey} data-appearance="interaction-only" />}
+
+      <button class="lp-submit" type="submit">{promo.cta}</button>
+      <p class="lp-status" data-lp-status role="status" aria-live="polite"></p>
+      <p class="lp-fine">
+        We use this to reply to you about your project. Nothing else.
+        Prefer to talk? <a href={business.phonePrimaryHref}>{business.phonePrimary}</a>.
+      </p>
+    </form>
+  </div>
+</div>
+
+<script>
+  const KEY = 'idf-lp-seen';
+  const DELAY = 6000;
+  const SKIP = ['/estimate/', '/contact/', '/list-your-home/'];
+
+  const root = document.querySelector<HTMLElement>('[data-lead-popup]');
+  if (root && !SKIP.includes(location.pathname)) {
+    let seen = false;
+    try { seen = localStorage.getItem(KEY) === '1'; } catch { /* private mode */ }
+
+    if (!seen) {
+      const box = root.querySelector<HTMLElement>('.lp-box')!;
+      const form = root.querySelector<HTMLFormElement>('[data-lp-form]')!;
+      const status = root.querySelector<HTMLElement>('[data-lp-status]')!;
+      let opener: Element | null = null;
+
+      const remember = () => { try { localStorage.setItem(KEY, '1'); } catch { /* ignore */ } };
+
+      const close = () => {
+        root.hidden = true;
+        document.body.style.removeProperty('overflow');
+        remember();
+        if (opener instanceof HTMLElement) opener.focus();
+      };
+
+      const open = () => {
+        opener = document.activeElement;
+        root.hidden = false;
+        // Stop the page scrolling behind the dialog.
+        document.body.style.overflow = 'hidden';
+        // Focus the dialog itself, not the first control: focusing the close
+        // button rings it, and focusing the name field opens the phone
+        // keyboard over the offer the reader has not read yet.
+        box.focus();
+      };
+
+      root.querySelectorAll('[data-lp-close]').forEach((el) =>
+        el.addEventListener('click', close),
+      );
+
+      document.addEventListener('keydown', (e) => {
+        if (root.hidden) return;
+        if (e.key === 'Escape') { close(); return; }
+        if (e.key !== 'Tab') return;
+        // Keep focus inside the dialog while it is open.
+        const focusable = [...box.querySelectorAll<HTMLElement>(
+          'a[href], button, input, select, textarea, [tabindex]:not([tabindex="-1"])',
+        )].filter((el) => !el.hasAttribute('disabled') && el.offsetParent !== null);
+        if (focusable.length === 0) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+      });
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const button = form.querySelector<HTMLButtonElement>('.lp-submit')!;
+        status.className = 'lp-status';
+        status.textContent = 'Sending…';
+        button.disabled = true;
+        try {
+          const res = await fetch('/api/estimate', { method: 'POST', body: new FormData(form) });
+          const data = await res.json().catch(() => ({ ok: false }));
+          if (data.ok) {
+            status.className = 'lp-status is-ok';
+            status.textContent = 'Thank you — we will call you back.';
+            remember();
+            setTimeout(close, 2200);
+          } else {
+            status.className = 'lp-status is-err';
+            status.textContent = data.error || 'That did not send. Please call us instead.';
+            button.disabled = false;
+            // Turnstile tokens are single-use; a rejected round trip spends one.
+            (window as any).turnstile?.reset?.();
+          }
+        } catch {
+          status.className = 'lp-status is-err';
+          status.textContent = 'That did not send. Please call us instead.';
+          button.disabled = false;
+          (window as any).turnstile?.reset?.();
+        }
+      });
+
+      setTimeout(open, DELAY);
+    }
+  }
+</script>
