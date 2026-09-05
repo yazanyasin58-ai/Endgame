@@ -5,3 +5,6 @@ dist/
 
 # wrangler local state (created by `wrangler pages dev`)
 .wrangler/
+
+# scratch measurement scripts
+*.tmp.mjs
