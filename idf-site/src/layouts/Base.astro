@@ -59,5 +59,60 @@ const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : un
   </head>
   <body class:list={[bodyClass, { 'with-callbar': withCallbar }]}>
     <slot />
+
+    {/*
+      Width diagnostic, off unless the URL carries ?debug=width.
+      Nothing renders and no work is done on a normal visit.
+
+      It exists because a horizontal-scroll bug reported on iPhone could not be
+      reproduced in this project's only available engine, Chromium. Rather than
+      keep guessing, this reports from the device that actually has the
+      problem. Remove it once that is settled.
+    */}
+    <script is:inline>
+      if (location.search.indexOf('debug=width') !== -1) {
+        addEventListener('load', function () {
+          var vw = document.documentElement.clientWidth;
+          var doc = document.documentElement.scrollWidth;
+          var hits = [];
+          var all = document.querySelectorAll('*');
+          for (var i = 0; i < all.length; i++) {
+            var el = all[i];
+            var cs = getComputedStyle(el);
+            if (cs.position === 'fixed') continue;
+            // Skip anything inside something that clips, e.g. the carousel.
+            var clipped = false;
+            for (var n = el.parentElement; n && n !== document.documentElement; n = n.parentElement) {
+              var ox = getComputedStyle(n).overflowX;
+              if (ox === 'auto' || ox === 'scroll' || ox === 'hidden' || ox === 'clip') { clipped = true; break; }
+            }
+            if (clipped) continue;
+            var b = el.getBoundingClientRect();
+            if (!b.width || !b.height) continue;
+            if (b.right > vw + 1) {
+              hits.push({
+                name: el.tagName.toLowerCase() + (el.className && typeof el.className === 'string'
+                  ? '.' + el.className.trim().split(/\s+/).join('.') : ''),
+                over: Math.round(b.right - vw),
+              });
+            }
+          }
+          hits.sort(function (a, c) { return c.over - a.over; });
+          var box = document.createElement('div');
+          box.setAttribute('style', 'position:fixed;left:0;right:0;top:0;z-index:99999;' +
+            'background:#14110d;color:#f6f1e7;font:12px/1.45 ui-monospace,Menlo,monospace;' +
+            'padding:10px 12px;max-height:55vh;overflow:auto;-webkit-overflow-scrolling:touch;');
+          var lines = ['viewport ' + vw + '  document ' + doc +
+            (doc > vw ? '  OVERFLOW +' + (doc - vw) : '  (no overflow)'),
+            'offenders: ' + hits.length];
+          for (var j = 0; j < Math.min(hits.length, 12); j++) {
+            lines.push('+' + hits[j].over + 'px  ' + hits[j].name.slice(0, 70));
+          }
+          box.textContent = lines.join('\n');
+          box.style.whiteSpace = 'pre-wrap';
+          document.body.appendChild(box);
+        });
+      }
+    </script>
   </body>
 </html>
