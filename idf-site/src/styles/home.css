@@ -833,6 +833,15 @@
 .rc-track:focus-visible { outline: 2px solid var(--gold-deep); outline-offset: 4px; }
 
 .rc-card {
+  /* Positioned so the .rc-sr spans inside it resolve their containing block
+     here rather than at the page. An absolutely positioned box whose
+     containing block sits outside a scroll container is not clipped by that
+     container — correct CSS, but it meant those 1px spans were laid out at
+     their static position across the full 1550px of track and belonged to the
+     document, setting its scrollable width. Chromium hid it because the root
+     overflow-x: hidden held; iOS Safari does not honour that, so the page
+     became pannable to exactly the rightmost span's edge. */
+  position: relative;
   scroll-snap-align: start; margin: 0;
   display: flex; flex-direction: column; gap: 0.9rem;
   padding: 1.6rem 1.5rem; background: var(--paper);

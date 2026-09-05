@@ -116,10 +116,19 @@ const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : un
             if (cs.position === 'fixed') continue;
             if (!b.width || !b.height) continue;
             if (b.right > vw + 1 || b.left < -1) {
+              /* A scroller only clips an absolutely positioned box when it
+                 contains that box's containing block. Walking the DOM alone
+                 reports the opposite and calls an escaping box "clipped" —
+                 which is exactly how the .rc-sr spans hid for so long. */
+              var cb = (cs.position === 'absolute' || cs.position === 'fixed') ? el.offsetParent : undefined;
               var clip = '';
               for (var n = el.parentElement; n && n !== body; n = n.parentElement) {
                 var ox = getComputedStyle(n).overflowX;
-                if (ox !== 'visible') { clip = ' [clipped by ' + n.tagName.toLowerCase() + ']'; break; }
+                if (ox === 'visible') continue;
+                var holds = cb === undefined || (cb !== null && (n === cb || n.contains(cb)));
+                clip = (holds ? ' [clipped by ' : ' [ESCAPES ') + n.tagName.toLowerCase() +
+                  (holds ? ']' : ', cb=' + (cb ? cb.tagName.toLowerCase() : 'page') + ']');
+                break;
               }
               wide.push({
                 name: tag, clip: clip,
