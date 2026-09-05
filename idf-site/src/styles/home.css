@@ -794,21 +794,35 @@
 
 /* The track is the scroller. Cards are sized in percentages of it so the
    paging step (0.9 of the visible width) always lands on a card edge. */
+/*
+ * Flex, not grid with percentage grid-auto-columns.
+ *
+ * This was `display: grid; grid-auto-flow: column; grid-auto-columns: 85%`.
+ * A percentage track size inside a scroll container resolves against the
+ * container's own content box, which is what the scrolling is meant to
+ * determine — circular, and engines disagree about how to break the loop.
+ * The track holds ~1256px of cards in a ~356px box on a phone, so it is the
+ * widest thing on any page by a long way; if an engine resolves that against
+ * max-content instead of the box, the whole document goes ~1250px wide and
+ * scrolls sideways. Chromium clips it, and this is the most likely reason
+ * iPhones did not.
+ *
+ * A flex basis percentage resolves against the flex container's inner width
+ * and is handled the same way everywhere. Behaviour is otherwise identical:
+ * same widths, same gap, same scroll snapping.
+ */
 .rc-track {
-  display: grid; grid-auto-flow: column; grid-auto-columns: 85%;
+  display: flex;
   gap: 1.25rem; overflow-x: auto; scroll-snap-type: x mandatory;
   padding-bottom: 0.5rem; scrollbar-width: thin;
   /* room for the focus ring, which a clipping scroller would cut off */
   padding-inline: 3px; margin-inline: -3px;
-  /* The track holds ~1256px of cards in a ~356px box on a phone. It is the
-     widest thing on the page by a long way, so if any engine fails to treat it
-     as the scroll container it is the first candidate for pushing the document
-     sideways. These two say it may never be wider than its parent regardless. */
   max-width: 100%;
   min-width: 0;
 }
-@media (min-width: 700px) { .rc-track { grid-auto-columns: 46%; } }
-@media (min-width: 1060px) { .rc-track { grid-auto-columns: 31.5%; } }
+.rc-track > * { flex: 0 0 85%; }
+@media (min-width: 700px) { .rc-track > * { flex-basis: 46%; } }
+@media (min-width: 1060px) { .rc-track > * { flex-basis: 31.5%; } }
 .rc-track:focus-visible { outline: 2px solid var(--gold-deep); outline-offset: 4px; }
 
 .rc-card {

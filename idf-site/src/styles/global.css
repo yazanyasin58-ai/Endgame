@@ -50,8 +50,33 @@ html {
 html,
 body {
   max-width: 100%;
+  /*
+   * `hidden`, not `clip`. I used clip here first because it does not make the
+   * element a scroll container and so does not break position: sticky — but
+   * `clip` on the ROOT element is not propagated to the viewport the way
+   * `hidden` is, so the page still scrolled sideways on iOS. Sticky costs
+   * nothing to protect here: this site has no sticky elements, only two fixed
+   * ones, and fixed is unaffected.
+   *
+   * This is a backstop, not the fix. The things that were actually wider than
+   * the viewport are dealt with where they live — see .rc-track in home.css
+   * and the wrapping rule below.
+   */
   overflow-x: hidden;
-  overflow-x: clip;
+}
+
+/*
+ * Long unbreakable strings must be allowed to break.
+ *
+ * info@interiordesignconstructiondmv.com is 38 characters with no break
+ * opportunity, and it is in the footer of every page. At 320px it renders
+ * 252px wide inside a 280px column — 28px of slack, and that is measured with
+ * fallback fonts because this build environment cannot reach Google Fonts. In
+ * the real face it may well not fit, and one word past the edge makes the
+ * whole document scroll sideways.
+ */
+body {
+  overflow-wrap: anywhere;
 }
 
 body {
