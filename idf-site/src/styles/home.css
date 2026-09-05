@@ -1110,6 +1110,14 @@
 .hp-nav-group[open] > summary svg { transform: rotate(180deg); }
 .hp-nav-group > summary:focus-visible { outline: 2px solid var(--gold-bright); outline-offset: 3px; }
 
+/* The panel sits 0.65rem below the label. On a hover menu that gap is a hole:
+   the pointer crosses it on the way down, leaves the group, and the menu shuts
+   under the cursor. This bridges it with a transparent strip so the hover
+   target is continuous — the delayed close in the script covers the rest. */
+.hp-nav-panel::before {
+  content: ''; position: absolute; left: 0; right: 0;
+  top: -0.7rem; height: 0.7rem;
+}
 .hp-nav-panel {
   position: absolute; top: calc(100% + 0.65rem); left: 0; z-index: 40;
   min-width: 13rem; padding: 0.4rem 0;
@@ -1138,3 +1146,30 @@
 @media (prefers-reduced-motion: reduce) {
   .hp-nav-group > summary svg { transition: none; }
 }
+
+/* ---------- Selling a home: spacing corrections ----------
+   Measured on the page rather than guessed at.
+
+   The card subheadings sat 23px below the card's top border, which is tight
+   for gold text at 17px — they read as attached to the rule rather than as the
+   head of the card. More room above, and a little more between the heading and
+   its paragraph.
+
+   The two links under "Talk to us" landed 15px apart vertically. .hp-textlink
+   carries margin-top: 2rem for use in a prose flow, and align-items: center
+   then centred two boxes of different heights, so neither the tops nor the
+   baselines agreed. Baseline alignment with the flow margins cleared is what
+   makes them sit on one line. */
+.re-item { padding: 1.75rem 1.5rem 1.6rem; }
+.re-item h3 { margin: 0 0 0.65rem; }
+
+.re-actions {
+  align-items: baseline;
+  gap: 0.9rem 2rem;
+  margin-top: 2.25rem;
+}
+.re-actions > * { margin-top: 0; margin-bottom: 0; }
+
+/* The rule under a section heading needs air beneath it before the copy
+   starts, or the heading, its rule and the first line read as one block. */
+.re-prose .hp-h2 { margin-bottom: 1.4rem; }

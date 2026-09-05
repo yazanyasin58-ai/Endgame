@@ -133,10 +133,67 @@ const isCurrent = (entry: NavEntry) =>
     document.querySelectorAll<HTMLDetailsElement>('[data-nav-group]'),
   );
 
+  const closeOthers = (keep: HTMLDetailsElement) => {
+    for (const other of groups) if (other !== keep) other.open = false;
+  };
+
   for (const group of groups) {
     group.addEventListener('toggle', () => {
-      if (!group.open) return;
-      for (const other of groups) if (other !== group) other.open = false;
+      if (group.open) closeOthers(group);
+    });
+  }
+
+  /**
+   * Hover to open, on pointing devices only.
+   *
+   * Click still opens and closes everything, so this is an enhancement rather
+   * than the mechanism — with no JavaScript the menu behaves exactly as it did
+   * before. `(hover: hover) and (pointer: fine)` keeps it off touch screens,
+   * where a hover menu opens on the tap that was meant to follow the link.
+   *
+   * The close is delayed. Without it, the diagonal a pointer travels from the
+   * label toward an item lower in the list leaves the group for a few frames
+   * and the menu shuts under the cursor. 180ms is enough to cross that and
+   * short enough not to feel stuck open.
+   */
+  const pointer = window.matchMedia('(hover: hover) and (pointer: fine)');
+  const desktop = window.matchMedia('(min-width: 1100px)');
+  let closeTimer: number | undefined;
+
+  const hoverable = groups.filter((g) => g.classList.contains('hp-nav-group'));
+  for (const group of hoverable) {
+    group.addEventListener('pointerenter', (event) => {
+      if (event.pointerType !== 'mouse' || !pointer.matches || !desktop.matches) return;
+      window.clearTimeout(closeTimer);
+      group.open = true;
+      closeOthers(group);
+    });
+
+    group.addEventListener('pointerleave', (event) => {
+      if (event.pointerType !== 'mouse' || !pointer.matches || !desktop.matches) return;
+      window.clearTimeout(closeTimer);
+      closeTimer = window.setTimeout(() => {
+        group.open = false;
+      }, 180);
+    });
+
+    /*
+     * Once hover opens the menu, a mouse click on the label would toggle it
+     * shut — the panel vanishes under a cursor that was on its way into it,
+     * which reads as the menu being broken. Suppress that one case.
+     *
+     * `event.detail > 0` is what separates a real click from Enter or Space on
+     * the summary, which browsers also deliver as a click but with detail 0.
+     * Without that check this would lock keyboard users out of the menu
+     * entirely on any machine with a mouse attached.
+     */
+    group.addEventListener('click', (event) => {
+      if (!pointer.matches || !desktop.matches) return;
+      if (event.detail === 0) return;
+      const summary = group.querySelector('summary');
+      if (summary && summary.contains(event.target as Node) && group.open) {
+        event.preventDefault();
+      }
     });
   }
 
