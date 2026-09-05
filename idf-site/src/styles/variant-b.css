@@ -8,7 +8,15 @@
 .vb .logo-name,
 .vb .foot-wordmark { font-family: 'Fraunces', serif; }
 
-/* headings sit left with a rule beneath, not centered */
+/* Headings sit left with a rule beneath, not centered.
+ *
+ * The margin below the rule is not optional decoration. Without it the rule
+ * lands flush against whatever follows: on /real-estate/ and /custom-homes/
+ * the next element is a card grid whose own top border sits 0px below this
+ * one, so two gold lines nearly touch and the heading reads as glued to the
+ * grid. Elements that bring their own top margin collapse against this rather
+ * than adding to it, so the only sections it changes are the ones that had no
+ * gap at all. */
 .vb .hp-h2 {
   font-family: 'Fraunces', serif;
   font-weight: 300;
@@ -16,6 +24,7 @@
   font-size: clamp(2rem, 4.6vw, 3.4rem);
   letter-spacing: -0.015em;
   padding-bottom: 0.9rem;
+  margin-bottom: 1.5rem;
   border-bottom: 1px solid var(--rule);
 }
 .vb .hp-sub { text-align: left; margin-top: 1rem; max-width: 46ch; }

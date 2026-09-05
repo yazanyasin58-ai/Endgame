@@ -1170,6 +1170,6 @@
 }
 .re-actions > * { margin-top: 0; margin-bottom: 0; }
 
-/* The rule under a section heading needs air beneath it before the copy
-   starts, or the heading, its rule and the first line read as one block. */
-.re-prose .hp-h2 { margin-bottom: 1.4rem; }
+/* The gap under a heading's rule is now set where that rule is defined, in
+   variant-b.css, so it applies to every section rather than only prose ones.
+   This page-scoped override is gone; it was treating one symptom. */
