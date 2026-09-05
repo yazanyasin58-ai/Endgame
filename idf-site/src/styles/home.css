@@ -800,6 +800,12 @@
   padding-bottom: 0.5rem; scrollbar-width: thin;
   /* room for the focus ring, which a clipping scroller would cut off */
   padding-inline: 3px; margin-inline: -3px;
+  /* The track holds ~1256px of cards in a ~356px box on a phone. It is the
+     widest thing on the page by a long way, so if any engine fails to treat it
+     as the scroll container it is the first candidate for pushing the document
+     sideways. These two say it may never be wider than its parent regardless. */
+  max-width: 100%;
+  min-width: 0;
 }
 @media (min-width: 700px) { .rc-track { grid-auto-columns: 46%; } }
 @media (min-width: 1060px) { .rc-track { grid-auto-columns: 31.5%; } }
