@@ -1,123 +1,63 @@
 ---
 /**
- * Real estate.
+ * Real estate — the generic version.
  *
- * Gated on features.realEstate, which has three states — see the gate
- * definition in content/idf.ts. In 'preview' the full page renders so the
- * owner can read and approve the copy, carrying a notice that says it is not
- * cleared, staying out of the nav and out of search. Only `true` publishes it,
- * and `true` requires the Virginia real estate FIRM license number in
- * `realEstateLicense`.
+ * This page used to advertise brokerage services under the Interior Design
+ * Flooring name and was gated behind features.realEstate for that reason:
+ * Virginia requires the entity advertising those services to hold a real
+ * estate FIRM license and to name it, and the agent's license hangs under
+ * Samson Companies LLC, a different company.
  *
- * The gate is not decoration. Virginia requires real estate advertising to
- * carry the licensed firm's name; individual agents licensed under some other
- * brokerage does not satisfy it. Publishing without that is the kind of thing
- * that costs a license, not a redesign.
+ * On the owner's instruction of 5 Sep the page now offers what this company is
+ * actually licensed to do — renovation work that gets a house ready to sell —
+ * and offers an introduction to a licensed agent rather than the listing
+ * itself. A referral is not brokerage, so no firm license is required and the
+ * gate no longer applies.
+ *
+ * If the brokerage copy ever comes back, so must the gate. The three things
+ * that must not return without the firm license number are listed above
+ * `realEstate` in content/idf.ts.
  */
 import Page from '../layouts/Page.astro';
-import BlockedSlot from '../components/BlockedSlot.astro';
-import { business, features, realEstate, realEstateLicense, serviceArea } from '../content/idf';
-
-const preview = features.realEstate === 'preview';
-const live = features.realEstate === true;
-const licensed = realEstateLicense.firmName !== '' && realEstateLicense.licenseNumber !== '';
+import { business, realEstate, serviceArea } from '../content/idf';
 ---
 
 <Page
-  title="Real Estate — Interior Design Flooring"
-  description="In-house realtors for sales, rentals, land and investment property across DC, Maryland and Virginia — with the renovation team under the same roof."
-  heading="Real estate"
-  standfirst={live || preview ? realEstate.standfirst : 'This page is not cleared for publication.'}
+  title="Selling a home — Interior Design Flooring"
+  description="Renovation work that gets a home ready for the market, across Northern Virginia. A straight answer on what pays back before you list."
+  heading="Selling a home"
+  standfirst={realEstate.standfirst}
   current="/real-estate/"
-  noindex={!live}
 >
-  {
-    live || preview ? (
-      <>
-        <section class="hp-section hp-section--tight re-prose">
-          {preview && (
-            <div class="pv-notice">
-              <p><strong>Preview — not published.</strong> This page is here for you to read
-              and approve. It is left out of the site menu and out of search engines, and
-              nobody reaches it without this link.</p>
-              <p>
-                Everything on this page is written and ready — the services, the 10% credit,
-                Sameer and Ali with their license numbers. <strong>One thing is missing:
-                the name of the brokerage they currently hold those licenses under.</strong>
-              </p>
-              <p>
-                Those numbers are salesperson licenses, which are held under a firm. Virginia
-                requires the firm's name in real estate advertising so the public can see
-                which brokerage stands behind it — naming the agents alone is the exact thing
-                that rule prevents, and the risk sits on their licenses rather than on the
-                website. If the brokerage changes often, that is a reason to put it in and
-                update it, not to leave it out: it is one line, and it takes a minute.
-              </p>
-            </div>
-          )}
-          {realEstate.intro.map((para) => <p class="hp-lede">{para}</p>)}
-        </section>
+  <section class="hp-section hp-section--tight re-prose">
+    {realEstate.intro.map((para) => <p class="hp-lede">{para}</p>)}
+  </section>
 
-        <section class="hp-section" aria-labelledby="re-services-h">
-          <h2 id="re-services-h" class="hp-h2">What our realtors handle</h2>
-          <div class="re-grid">
-            {realEstate.services.map((s) => (
-              <article class="re-item">
-                <h3>{s.title}</h3>
-                <p>{s.detail}</p>
-              </article>
-            ))}
+  <section class="hp-section" aria-labelledby="re-points-h">
+    <h2 id="re-points-h" class="hp-h2">How we help</h2>
+    <div class="re-grid">
+      {
+        realEstate.points.map((point) => (
+          <div class="re-card">
+            <h3 class="re-card-title">{point.title}</h3>
+            <p class="re-card-detail">{point.detail}</p>
           </div>
-        </section>
+        ))
+      }
+    </div>
+  </section>
 
-        <section class="hp-section" aria-labelledby="re-team-h">
-          <h2 id="re-team-h" class="hp-h2">Our in-house realtor</h2>
-          <div class="re-grid">
-            {realEstate.realtors.map((r) => (
-              <article class="re-item">
-                <h3>{r.name}</h3>
-                <p>Virginia real estate license {r.license}</p>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        <section class="hp-section" aria-labelledby="re-offer-h">
-          <div class="re-offer">
-            <h2 id="re-offer-h" class="hp-h2">{realEstate.discount.title}</h2>
-            {realEstate.discount.body.map((para) => <p>{para}</p>)}
-            <a class="hp-btn" href="/list-your-home/">List My Home</a>
-          </div>
-        </section>
-
-        <section class="hp-section hp-section--tight re-prose">
-          <p class="hp-lede">
-            Buying, selling, renting, building or renovating — it is one call either way.
-            Reach us on <a href={business.phonePrimaryHref}>{business.phonePrimary}</a>.
-          </p>
-          <p class="re-license">
-            {serviceArea.detail}
-            {licensed && (
-              <>
-                {' '}Real estate services offered by {realEstateLicense.firmName}, Virginia
-                real estate firm license {realEstateLicense.licenseNumber}.
-              </>
-            )}
-          </p>
-        </section>
-      </>
-    ) : (
-      <section class="hp-section hp-section--tight">
-        <div class="fin-blocked">
-          <BlockedSlot label="REAL ESTATE SERVICES — BLOCKED PENDING FIRM LICENSE VERIFICATION" />
-          <p class="fin-blocked-note">
-            Advertising brokerage services in Virginia requires the advertising entity to
-            hold a real estate <strong>firm</strong> license. Individual agents holding
-            licenses under another brokerage is not sufficient, and advertisements must
-            carry the licensed brokerage name.
-          </p>
-        </div>
-      </section>
-    )
-  }
+  <section class="hp-section hp-section--tight re-prose" aria-labelledby="re-cta-h">
+    <h2 id="re-cta-h" class="hp-h2">Talk to us</h2>
+    <p class="hp-lede">{realEstate.cta}</p>
+    <p class="re-actions">
+      <a class="hp-call" href={business.phonePrimaryHref}>Call {business.phonePrimary}</a>
+      <a class="hp-textlink" href="/list-your-home/">Or tell us about the property</a>
+    </p>
+    <p class="re-note">
+      Interior Design Flooring is a {business.license}. We are contractors, not a real
+      estate brokerage — the listing is handled by a licensed agent, and we are glad to
+      introduce you to one. Serving {serviceArea.short}.
+    </p>
+  </section>
 </Page>

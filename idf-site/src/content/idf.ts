@@ -298,18 +298,13 @@ export const formFields = {
  * with it is enough to start a conversation.
  */
 export const listing = {
-  heading: 'List your home with Interior Design Flooring.',
+  heading: 'Thinking of selling? Start here.',
   standfirst:
-    'One team to list it, sell it or rent it, and renovate it. Tell us about the property and our in-house realtor will call you back.',
+    'Tell us about the property and we will come and look at it. You get a straight answer on what is worth doing before it goes on the market, and an introduction to a licensed agent if you need one.',
   intent: [
-    'Sell my home',
-    'Rent out my property',
-    'Buy a home',
-    'Find a rental',
-    'Sell commercial property',
-    'Rent out commercial property',
-    'Sell land',
-    'Buy land',
+    'Selling my home',
+    'Renting out my property',
+    'Buying and want to renovate',
     'Not sure yet',
   ],
   propertyType: [
@@ -317,7 +312,6 @@ export const listing = {
     'Townhouse',
     'Condominium',
     'Multi-family',
-    'Commercial',
     'Land',
     'Other',
   ],
@@ -328,21 +322,27 @@ export const listing = {
     '6 months or more',
     'Just exploring',
   ],
+  /*
+   * These used to say the realtor and the contractor "work for the same
+   * company". They do not — the agent's license hangs under Samson Companies
+   * LLC — so that was a false statement about the business, on a page that was
+   * live and in the main navigation. See the note above `realEstate`.
+   */
   points: [
-    {
-      title: 'One team, start to finish',
-      detail:
-        'The realtor who lists your property and the contractor who prepares it work for the same company, so nothing falls between them.',
-    },
     {
       title: 'We know what work pays back',
       detail:
-        'Thirty-five years of renovation work behind the listing advice, so the recommendation is what actually needs doing rather than a wish list.',
+        'Thirty-seven years of renovation work behind the advice, so what we recommend is what actually needs doing rather than a wish list.',
     },
     {
-      title: 'Renovation credit for qualifying clients',
+      title: 'Built around your listing date',
       detail:
-        'Buy or sell through our in-house realtor and use us for the work, and you may qualify for a renovation discount or credit. Terms are confirmed in writing before the project begins.',
+        'The work is scheduled to finish before the photographs are taken, not after.',
+    },
+    {
+      title: 'An agent, if you need one',
+      detail:
+        'We can introduce you to a licensed agent in the area. The listing is handled by them; the work is handled by us.',
     },
   ],
 } as const;
@@ -360,43 +360,57 @@ export const listing = {
  *   - any stated commission rate or discount percentage, until the owner
  *     supplies the actual terms in writing
  */
+/**
+ * Real estate — the GENERIC version, on the owner's instruction of 5 Sep.
+ *
+ * What this used to be, and why it changed: the page advertised brokerage
+ * services under the Interior Design Flooring name — "our in-house realtor", a
+ * list of listing, sales, rental and land services, and a 10% credit
+ * conditioned on buying or selling through that realtor. Virginia requires the
+ * entity advertising brokerage services to hold a real estate FIRM license and
+ * to name it in the advertising, and Samson Companies LLC, where the agent's
+ * license hangs, is a different company from this one.
+ *
+ * Softening the wording alone would not have fixed that. An invitation to
+ * "contact us about listing your home" still offers the regulated service. So
+ * the page now offers what Interior Design Flooring is actually licensed to
+ * do — the renovation work that gets a house ready to sell — and says plainly
+ * that the listing is handled by a licensed agent it can introduce you to.
+ * A referral is not brokerage and needs no firm license.
+ *
+ * Three things must NOT come back without the firm license number and an
+ * answer on Sameer Waziri's relationship to this company:
+ *   1. "in-house realtor", or any wording placing the agent inside this firm
+ *   2. a list of brokerage services offered by Interior Design Flooring
+ *   3. a discount or credit conditioned on using a particular agent — a thing
+ *      of value for referring settlement-service business
+ * `realEstateLicense` below keeps the firm name and number for that day.
+ */
 export const realEstate = {
-  standfirst:
-    'Buy, sell, rent, build and renovate through one team.',
+  standfirst: 'Selling a home? Talk to us before it goes on the market.',
   intro: [
-    'Our in-house realtor handles the property side of the work, so the same people who renovate a house can also help you list it, sell it, or find it a tenant.',
-    'That matters most when the two are connected: a listing that needs work before it goes up, an investment property bought for what it could become, or a piece of land bought to build on.',
+    'Most homes sell for more after the right work is done first, and lose money on the wrong work. We have spent thirty-seven years learning which is which in Northern Virginia.',
+    'Tell us about the property and we will tell you honestly what is worth doing, what is not, and what it will cost. If you still need an agent, we can put you in touch with one.',
   ],
-  services: [
-    { title: 'List and sell homes', detail: 'Residential listings, from preparing the property to closing.' },
-    { title: 'List rental properties and find tenants', detail: 'Marketing the property and placing a tenant in it.' },
-    { title: 'Help buyers purchase homes', detail: 'Representing buyers through search, offer and settlement.' },
-    { title: 'Help renters find homes', detail: 'Finding and securing a rental for tenants.' },
-    { title: 'Residential and commercial', detail: 'Sales and rentals on both sides of the market.' },
-    { title: 'Land purchases and sales', detail: 'Buying and selling raw and improved land.' },
-    { title: 'Investment properties and fixer-uppers', detail: 'Properties bought for the work they need rather than the state they are in.' },
-    { title: 'Land for custom home construction', detail: 'Finding a site to build on, with the builder already at the table.' },
-    { title: 'Renovation and development potential', detail: 'Helping investors identify properties worth taking on.' },
+  /** What this company actually does. Contracting, not brokerage. */
+  points: [
+    {
+      title: 'What pays back, and what does not',
+      detail:
+        'A walk-through and a straight answer on which work returns more than it costs, based on the jobs we have actually done.',
+    },
+    {
+      title: 'The work itself',
+      detail:
+        'Kitchens, bathrooms, flooring, paint, siding and roofing, with the schedule built around your listing date.',
+    },
+    {
+      title: 'An introduction, if you want one',
+      detail:
+        'We work alongside licensed agents in the area and are glad to introduce you. The listing is theirs; the work is ours.',
+    },
   ],
-  discount: {
-    title: '10% off your renovation',
-    body: [
-      'Buy or sell through our in-house realtor and use Interior Design Flooring for the renovation or construction work, and you get 10% off the project.',
-      'Additional discounts depend on the scope of the work. Ask us when you call and we will confirm everything in writing before the project begins.',
-    ],
-  },
-  /**
-   * The in-house realtor, as named by the owner.
-   *
-   * Ali Waziri (0225273277) was removed: his license is reported inactive, and
-   * an inactive licensee cannot be advertised as providing brokerage services.
-   * Restore him only against an active status on the DPOR lookup.
-   *
-   * The number is a Virginia real estate license. The 0225 prefix is the
-   * salesperson series, not a firm — which is the whole problem with
-   * publishing this page as it stands. See the note on `realEstateLicense`.
-   */
-  realtors: [{ name: 'Sameer Waziri', license: '0225273319' }],
+  cta: 'Reach out and we will go through the details with you.',
 } as const;
 
 export const cta = {
@@ -490,26 +504,17 @@ export const serviceArea = {
    ------------------------------------------------------------------ */
 export const features = {
   /**
-   * Real estate / brokerage services.
+   * Real estate.
    *
-   * Three states, not two:
-   *   false     - the page renders a blocked notice and nothing else
-   *   'preview' - the full page renders for review, carries a notice saying
-   *               it is not cleared, stays out of the nav and out of search
-   *   true      - published: page renders clean and appears in the nav
+   * OPEN, because the page no longer advertises brokerage services. It offers
+   * renovation work that prepares a house for sale, and an introduction to a
+   * licensed agent — a referral, which needs no real estate firm license.
    *
-   * Currently 'preview' so the owner can read and approve the copy, which is
-   * what they asked for, without the site advertising brokerage services it
-   * cannot yet lawfully advertise.
-   *
-   * To reach `true`, one thing is needed: the Virginia real estate FIRM
-   * license number of the entity doing the advertising, set as
-   * `realEstateLicense` below. Virginia requires the licensed firm's name in
-   * advertising, and individual agents licensed under some other brokerage
-   * does not satisfy it. Do not open this gate on verbal assurance; the
-   * license number is the assurance.
+   * If the brokerage copy ever returns, this gate returns with it and goes
+   * back to 'preview' until `realEstateLicense` is confirmed. The three things
+   * that must not come back without it are listed above `realEstate`.
    */
-  realEstate: 'preview' as false | 'preview' | true,
+  realEstate: true as false | 'preview' | true,
 
   /**
    * On-site finance application.
@@ -574,40 +579,33 @@ export const features = {
  * brokerage they hang their licenses with today is the one legally answerable
  * for this page today. Updating it later is one line in this file.
  *
- * NAMING THE FIRM MAKES A SECOND PROBLEM VISIBLE, and it is the larger one.
+ * NAMING THE FIRM MADE A SECOND PROBLEM VISIBLE, and it was the larger one.
  *
- * The brokerage Sameer's license is reported to hang under is Samson Companies
- * LLC — a different company from Interior Design Flooring. If that holds, then
- * every "in-house realtor", "one team" and "same company" line on this page is
- * inaccurate: IDF does not provide brokerage services, Samson does, and a
- * client buying or selling contracts with Samson. Advertising another firm's
- * brokerage as your own in-house service is the misrepresentation the naming
- * rule exists to catch, and the 10% credit for using that realtor then becomes
- * a thing of value moving between two companies for referred settlement-service
- * business — which is the federal question the README already flags.
+ * The brokerage Sameer's license hangs under is Samson Companies LLC — a
+ * different company from Interior Design Flooring. That made every "in-house
+ * realtor", "one team" and "same company" line inaccurate: IDF does not
+ * provide brokerage services, Samson does, and a client buying or selling
+ * contracts with Samson. The 10% credit for using that realtor was then a
+ * thing of value moving between two companies for referred settlement-service
+ * business, which is a federal question rather than a discount.
  *
- * The license half of that is now answered: Samson Companies LLC, 0226021529,
- * both recorded below and rendering in the disclosure.
+ * RESOLVED ON 5 SEP by removing the claim rather than by answering the
+ * question. On the owner's instruction the real estate copy is now generic:
+ * it offers the renovation work IDF is licensed to do and an introduction to a
+ * licensed agent, which is a referral and needs no firm license. All six
+ * places that carried the claim have been rewritten —
+ *   - realEstate.intro / points   now contracting and a referral
+ *   - listing.points              'same company' removed
+ *   - HomeSections.astro          homepage band, now 'Selling a home?'
+ *   - real-estate.astro           rewritten, gate opened
+ *   - list-your-home.astro        meta description
+ *   - the 10% credit              removed entirely
  *
- * ONE QUESTION IS LEFT, and it is a question for Sameer, not for the records:
- * what his actual relationship to Interior Design Flooring is. The license says
- * where his license hangs; it does not say whether he is IDF staff licensed
- * outside, a part-owner of an affiliated firm, or an independent referral
- * partner. Each gives different honest copy, and the page currently assumes the
- * one reading the license contradicts.
- *
- * So the gate stays at 'preview' on a copy problem, not a licensing one. Ask
- * him, then rewrite these lines to match the answer and open it:
- *   - realEstate.intro           'our in-house realtor'
- *   - realEstate.pillars         'One team, start to finish' / 'same company'
- *   - listYourHome               'our in-house realtor will call you back'
- *   - HomeSections.astro         'Our in-house realtor sells and rents ...'
- *   - real-estate.astro          'Our in-house realtor' heading
- *   - list-your-home.astro       meta description
- *
- * The 10% credit needs the same answer before it can stand. Between two
- * genuinely separate companies it is a thing of value for referred
- * settlement-service business, which is the federal question, not a discount.
+ * The question for Sameer is therefore no longer blocking anything, but it is
+ * not answered: what his actual relationship to Interior Design Flooring is —
+ * staff licensed outside, part-owner of an affiliated firm, or an independent
+ * referral partner. That answer is what any future brokerage copy depends on,
+ * and `realEstateLicense` keeps the firm name and number for it.
  */
 export const realEstateLicense = {
   /**
