@@ -384,11 +384,13 @@
 .hp .ef-file:focus-visible { outline: 2px solid var(--gold-bright); outline-offset: 3px; }
 .hp .ef-filelist { margin: 0.5rem 0 0; font-size: 0.8438rem; color: var(--gold-bright); }
 
-/* Honeypot: off-screen rather than hidden, so a bot that checks for
-   display:none still fills it in. */
+/* Honeypot: hidden without display:none, so a bot that checks for that still
+   fills it in. Clipped in place rather than parked at left: -9999px — a large
+   negative offset is real geometry outside the page, and iOS Safari will let
+   the reader pan into it. Same technique as .rc-sr. */
 .ef-hp {
-  position: absolute; left: -9999px; width: 1px; height: 1px;
-  overflow: hidden;
+  position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
+  overflow: hidden; clip-path: inset(50%); white-space: nowrap;
 }
 
 /* Submission result. Uses a left rule rather than color alone, so the
@@ -814,6 +816,11 @@
 .rc-track {
   display: flex;
   gap: 1.25rem; overflow-x: auto; scroll-snap-type: x mandatory;
+  /* Without this the swipe chains out of the carousel and pans the whole page
+     on iOS Safari, where overflow-x: hidden on the root is not a reliable
+     clamp. This is the only horizontal scroller on the site, which is why the
+     drift was reported on the homepage and nowhere else. */
+  overscroll-behavior-x: contain;
   padding-bottom: 0.5rem; scrollbar-width: thin;
   /* room for the focus ring, which a clipping scroller would cut off */
   padding-inline: 3px; margin-inline: -3px;

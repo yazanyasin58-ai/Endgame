@@ -72,40 +72,71 @@ const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : un
     <script is:inline>
       if (location.search.indexOf('debug=width') !== -1) {
         addEventListener('load', function () {
+          /* The page clamps itself with overflow-x: hidden on html and body.
+             Measuring under that clamp is pointless: scrollWidth is clipped to
+             the viewport and every element counts as "inside something that
+             clips", so the honest answer is always zero offenders. Lift the
+             clamp, measure, put it back. */
+          var lift = document.createElement('style');
+          lift.textContent = 'html,body{overflow-x:visible!important}';
+          document.head.appendChild(lift);
+          document.documentElement.getBoundingClientRect();
+
           var vw = document.documentElement.clientWidth;
-          var doc = document.documentElement.scrollWidth;
+          var doc = Math.max(
+            document.documentElement.scrollWidth,
+            document.body.scrollWidth
+          );
           var hits = [];
           var all = document.querySelectorAll('*');
           for (var i = 0; i < all.length; i++) {
             var el = all[i];
+            if (el === lift) continue;
             var cs = getComputedStyle(el);
             if (cs.position === 'fixed') continue;
-            // Skip anything inside something that clips, e.g. the carousel.
+            /* Skip anything a genuine scroller already contains, e.g. the
+               review carousel. html and body are excluded from this walk
+               because their clamp is exactly what we just lifted. */
             var clipped = false;
-            for (var n = el.parentElement; n && n !== document.documentElement; n = n.parentElement) {
+            for (var n = el.parentElement; n && n !== document.body; n = n.parentElement) {
               var ox = getComputedStyle(n).overflowX;
               if (ox === 'auto' || ox === 'scroll' || ox === 'hidden' || ox === 'clip') { clipped = true; break; }
             }
             if (clipped) continue;
             var b = el.getBoundingClientRect();
             if (!b.width || !b.height) continue;
-            if (b.right > vw + 1) {
+            if (b.right > vw + 1 || b.left < -1) {
               hits.push({
                 name: el.tagName.toLowerCase() + (el.className && typeof el.className === 'string'
                   ? '.' + el.className.trim().split(/\s+/).join('.') : ''),
-                over: Math.round(b.right - vw),
+                over: Math.round(Math.max(b.right - vw, 0) + Math.max(-b.left, 0)),
               });
             }
           }
           hits.sort(function (a, c) { return c.over - a.over; });
+
+          lift.remove();
+
+          /* Local renders fall back to system fonts because the sandbox cannot
+             reach Google Fonts, so text is narrower there than on a real
+             phone. Report whether the real faces arrived. */
+          var fontNote = 'fonts n/a';
+          try {
+            fontNote = 'Fraunces ' + (document.fonts.check('1em Fraunces') ? 'yes' : 'NO') +
+              ', Public Sans ' + (document.fonts.check('1em "Public Sans"') ? 'yes' : 'NO');
+          } catch (e) { /* older engines */ }
+
           var box = document.createElement('div');
           box.setAttribute('style', 'position:fixed;left:0;right:0;top:0;z-index:99999;' +
             'background:#14110d;color:#f6f1e7;font:12px/1.45 ui-monospace,Menlo,monospace;' +
-            'padding:10px 12px;max-height:55vh;overflow:auto;-webkit-overflow-scrolling:touch;');
-          var lines = ['viewport ' + vw + '  document ' + doc +
-            (doc > vw ? '  OVERFLOW +' + (doc - vw) : '  (no overflow)'),
-            'offenders: ' + hits.length];
-          for (var j = 0; j < Math.min(hits.length, 12); j++) {
+            'padding:10px 12px;max-height:60vh;overflow:auto;-webkit-overflow-scrolling:touch;');
+          var lines = [
+            'viewport ' + vw + '  inner ' + window.innerWidth + '  document ' + doc +
+              (doc > vw ? '  OVERFLOW +' + (doc - vw) : '  (no overflow)'),
+            fontNote,
+            'offenders: ' + hits.length,
+          ];
+          for (var j = 0; j < Math.min(hits.length, 14); j++) {
             lines.push('+' + hits[j].over + 'px  ' + hits[j].name.slice(0, 70));
           }
           box.textContent = lines.join('\n');
