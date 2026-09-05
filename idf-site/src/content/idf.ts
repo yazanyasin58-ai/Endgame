@@ -692,15 +692,46 @@ export const realEstateLicense = {
 } as const;
 
 /** Main navigation, in the owner's requested order. */
+/**
+ * Site navigation, grouped.
+ *
+ * This was nine flat links, which is more than a header can carry without the
+ * row wrapping and more than a visitor can scan. It is now five top-level
+ * entries, two of which open a short list.
+ *
+ * A group's `href` is a real page, not a placeholder: the parent is the
+ * overview and the children are the pages under it, so clicking the group
+ * label goes somewhere sensible if the disclosure is never opened.
+ *
+ * `/real-estate/` appears as "Selling a home", which is what the page is now
+ * called. Labelling that group "Real Estate" would put brokerage language back
+ * into the header, which is the thing the 5 Sep rewrite took out.
+ *
+ * `gated` works at either level. A gated child is dropped from its group; a
+ * group whose children all disappear still renders as a plain link to its own
+ * page rather than an empty dropdown.
+ */
 export const nav = [
   { label: 'Home', href: '/' },
-  { label: 'About', href: '/about/' },
-  { label: 'Services', href: '/services/' },
-  { label: 'Custom Homes', href: '/custom-homes/' },
-  { label: 'Projects', href: '/projects/' },
-  { label: 'Real Estate', href: '/real-estate/', gated: 'realEstate' },
-  { label: 'Investors', href: '/investors/' },
-  { label: 'Financing', href: '/financing/' },
+  {
+    label: 'Services',
+    href: '/services/',
+    children: [
+      { label: 'All services', href: '/services/' },
+      { label: 'Custom homes', href: '/custom-homes/' },
+      { label: 'Selling a home', href: '/real-estate/', gated: 'realEstate' },
+      { label: 'Financing', href: '/financing/' },
+    ],
+  },
+  {
+    label: 'Our work',
+    href: '/projects/',
+    children: [
+      { label: 'Projects', href: '/projects/' },
+      { label: 'About us', href: '/about/' },
+      { label: 'Investors', href: '/investors/' },
+    ],
+  },
   { label: 'Contact', href: '/contact/' },
 ] as const;
 

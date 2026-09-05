@@ -560,17 +560,19 @@
 
 /* ---------- full main menu (nine items) ---------- */
 .hp-nav-links { display: none; gap: 1.1rem; flex-wrap: nowrap; }
-/* Nine links, a phone number and a call-to-action need ~1300px beside the
-   logo. Below that the row wrapped onto a second line with the phone and the
-   button stranded under the mark, so the full row waits for 1340px and the
-   Menu disclosure — which carries the same nine pages — covers everything
-   narrower. */
-@media (min-width: 1340px) { .hp-nav-links { display: flex; } }
+/* The row used to carry nine links and needed ~1300px beside the logo, so it
+   waited for 1340px. Grouping took it to five entries, which is a much
+   narrower row — the breakpoint below is measured against the new width, not
+   inherited from the old one. The Menu disclosure still carries every page. */
+@media (min-width: 1100px) { .hp-nav-links { display: flex; } }
 .hp-nav-links a { font-size: 0.875rem; white-space: nowrap; }
 .hp-nav-links a[aria-current='page'] { border-bottom-color: var(--gold); }
-/* the collapsed menu button replaces the row below the breakpoint */
+/* The collapsed menu button replaces the row below the breakpoint, so this
+   width and the .hp-nav-links one above are a pair and must match. They did
+   not for one build: the links came down to 1100 and this stayed at 1340, so
+   between those widths the header showed the full row AND the Menu button. */
 .hp-menu { display: block; }
-@media (min-width: 1340px) { .hp-menu { display: none; } }
+@media (min-width: 1100px) { .hp-menu { display: none; } }
 .hp-menu > summary { gap: 0.5rem; }
 .hp-menu > summary svg { width: 1rem; height: 0.75rem; }
 .hp-menu-label { font-size: 0.875rem; }
@@ -1086,4 +1088,53 @@
 .re-note {
   margin: 2rem 0 0; padding-top: 1.25rem; border-top: 1px solid var(--rule);
   max-width: 60ch; font-size: 0.8125rem; line-height: 1.6; color: var(--gray);
+}
+
+/* ---------- grouped navigation ----------
+   Two of the five header entries open a short list. Built on <details> like
+   the Menu disclosure, so it works with no JavaScript; the script only closes
+   siblings and handles Escape and outside clicks. */
+.hp-nav-group { position: relative; }
+.hp-nav-group > summary {
+  display: inline-flex; align-items: center; gap: 0.35rem;
+  list-style: none; cursor: pointer;
+  color: var(--charcoal); font-size: 0.875rem; white-space: nowrap;
+  padding-bottom: 2px; border-bottom: 1px solid transparent;
+}
+.hp-nav-group > summary::-webkit-details-marker { display: none; }
+.hp-nav-group > summary:hover { border-bottom-color: var(--gold); }
+.hp-nav-group > summary[aria-current] { border-bottom-color: var(--gold); }
+.hp-nav-group > summary svg {
+  width: 0.55rem; height: 0.55rem; transition: transform 0.15s ease;
+}
+.hp-nav-group[open] > summary svg { transform: rotate(180deg); }
+.hp-nav-group > summary:focus-visible { outline: 2px solid var(--gold-bright); outline-offset: 3px; }
+
+.hp-nav-panel {
+  position: absolute; top: calc(100% + 0.65rem); left: 0; z-index: 40;
+  min-width: 13rem; padding: 0.4rem 0;
+  background: var(--paper); border: 1px solid var(--rule); border-radius: 3px;
+  box-shadow: 0 12px 28px rgb(20 17 13 / 0.12);
+}
+.hp-nav-panel a {
+  display: block; padding: 0.55rem 1rem;
+  font-size: 0.875rem; color: var(--charcoal); text-decoration: none;
+  border-bottom: 0;
+}
+.hp-nav-panel a:hover { background: var(--cream); color: var(--ink); border-bottom: 0; }
+.hp-nav-panel a[aria-current='page'] { background: var(--cream); color: var(--ink); }
+
+/* Mobile panel: groups become labelled blocks rather than nested disclosures,
+   which are unpleasant to operate with a thumb. */
+.hp-menu-block { padding-top: 0.35rem; }
+.hp-menu-block + .hp-menu-block { border-top: 1px solid var(--rule); margin-top: 0.35rem; }
+.hp-menu-block-label {
+  margin: 0; padding: 0.45rem 0.8rem 0.2rem;
+  font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--gray);
+}
+.hp-menu-block a { padding-left: 1.4rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  .hp-nav-group > summary svg { transition: none; }
 }

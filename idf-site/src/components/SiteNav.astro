@@ -3,9 +3,12 @@
  * Site header.
  *
  * The full menu shows on wide screens; below that it collapses into a single
- * disclosure. Built on <details>/<summary> so it opens, closes and takes
- * keyboard focus without JavaScript — the small script only adds dismissal on
- * Escape or an outside click.
+ * disclosure. Built on <details>/<summary> so everything opens, closes and
+ * takes keyboard focus without JavaScript — the script only adds dismissal on
+ * Escape or an outside click, and closes a sibling group when one opens.
+ *
+ * Nine flat links became five entries, two of them groups. Grouping is why the
+ * desktop row now fits: see the breakpoint note in home.css.
  *
  * Gated entries are omitted entirely rather than rendered disabled: a nav item
  * pointing at content we are not cleared to publish is itself a liability.
@@ -18,13 +21,35 @@ interface Props {
 }
 
 const { current } = Astro.props;
+
 /**
  * A gated entry appears only when its gate is exactly `true`. The real estate
  * gate also has a 'preview' state, which is truthy but must NOT put the link
  * in the nav: preview means the owner can read the page at its URL, not that
  * the site advertises it.
  */
-const items = nav.filter((i) => !('gated' in i) || features[i.gated as keyof typeof features] === true);
+const open = (entry: { gated?: string }) =>
+  !('gated' in entry) || features[entry.gated as keyof typeof features] === true;
+
+interface NavLink {
+  label: string;
+  href: string;
+}
+interface NavEntry extends NavLink {
+  children?: NavLink[];
+}
+
+/* Filter both levels, then drop the dropdown from any group whose children
+   have all been gated away — a group with nothing under it is a plain link. */
+const items: NavEntry[] = nav.filter(open).map((entry) => {
+  const children = 'children' in entry ? entry.children.filter(open) : [];
+  return children.length > 0
+    ? { label: entry.label, href: entry.href, children: children.map((c) => ({ label: c.label, href: c.href })) }
+    : { label: entry.label, href: entry.href };
+});
+
+const isCurrent = (entry: NavEntry) =>
+  current === entry.href || (entry.children ?? []).some((c) => c.href === current);
 ---
 
 <header class="hp-nav">
@@ -32,11 +57,29 @@ const items = nav.filter((i) => !('gated' in i) || features[i.gated as keyof typ
 
   <nav class="hp-nav-links" aria-label="Main">
     {
-      items.map((i) => (
-        <a href={i.href} aria-current={current === i.href ? 'page' : undefined}>
-          {i.label}
-        </a>
-      ))
+      items.map((i) =>
+        i.children ? (
+          <details class="hp-nav-group" data-nav-group>
+            <summary aria-current={isCurrent(i) ? 'true' : undefined}>
+              {i.label}
+              <svg viewBox="0 0 10 6" aria-hidden="true">
+                <path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.4" />
+              </svg>
+            </summary>
+            <div class="hp-nav-panel">
+              {i.children.map((c) => (
+                <a href={c.href} aria-current={current === c.href ? 'page' : undefined}>
+                  {c.label}
+                </a>
+              ))}
+            </div>
+          </details>
+        ) : (
+          <a href={i.href} aria-current={current === i.href ? 'page' : undefined}>
+            {i.label}
+          </a>
+        ),
+      )
     }
   </nav>
 
@@ -44,38 +87,72 @@ const items = nav.filter((i) => !('gated' in i) || features[i.gated as keyof typ
     <a class="hp-nav-phone" href={business.phonePrimaryHref}>{business.phonePrimary}</a>
     <a class="hp-btn hp-btn--sm" href="/estimate/">Free Estimate</a>
 
-    <details class="hp-menu">
+    <details class="hp-menu" data-nav-group>
       <summary aria-label="Menu">
         <span class="hp-menu-label">Menu</span>
         <svg viewBox="0 0 16 12" aria-hidden="true">
           <path d="M0 1h16M0 6h16M0 11h16" fill="none" stroke="currentColor" stroke-width="1.6" />
         </svg>
       </summary>
+      {/* Flattened rather than nested: a disclosure inside a disclosure is a
+          poor thing to operate on a phone. Groups become labelled blocks. */}
       <div class="hp-menu-panel">
         {
-          items.map((i) => (
-            <a href={i.href} aria-current={current === i.href ? 'page' : undefined}>{i.label}</a>
-          ))
+          items.map((i) =>
+            i.children ? (
+              <div class="hp-menu-block">
+                <p class="hp-menu-block-label">{i.label}</p>
+                {i.children.map((c) => (
+                  <a href={c.href} aria-current={current === c.href ? 'page' : undefined}>
+                    {c.label}
+                  </a>
+                ))}
+              </div>
+            ) : (
+              <a href={i.href} aria-current={current === i.href ? 'page' : undefined}>
+                {i.label}
+              </a>
+            ),
+          )
         }
         <hr />
         <a href="/estimate/"><strong>Request an Estimate</strong></a>
-        <a href="/list-your-home/"><strong>List Your Home</strong></a>
+        <a href="/list-your-home/"><strong>Tell us about your property</strong></a>
       </div>
     </details>
   </div>
 </header>
 
 <script>
-  const menu = document.querySelector('.hp-menu');
-  if (menu instanceof HTMLDetailsElement) {
-    document.addEventListener('click', (e) => {
-      if (menu.open && !menu.contains(e.target as Node)) menu.open = false;
-    });
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && menu.open) {
-        menu.open = false;
-        menu.querySelector('summary')?.focus();
-      }
+  /**
+   * One handler for every disclosure in the header: the mobile Menu and each
+   * desktop group. Opening one closes the others, so two panels can never
+   * overlap.
+   */
+  const groups = Array.from(
+    document.querySelectorAll<HTMLDetailsElement>('[data-nav-group]'),
+  );
+
+  for (const group of groups) {
+    group.addEventListener('toggle', () => {
+      if (!group.open) return;
+      for (const other of groups) if (other !== group) other.open = false;
     });
   }
+
+  document.addEventListener('click', (event) => {
+    for (const group of groups) {
+      if (group.open && !group.contains(event.target as Node)) group.open = false;
+    }
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key !== 'Escape') return;
+    for (const group of groups) {
+      if (group.open) {
+        group.open = false;
+        group.querySelector('summary')?.focus();
+      }
+    }
+  });
 </script>
