@@ -1013,3 +1013,77 @@
 }
 .rc-cta-link:hover { background: var(--gold-deep); color: var(--paper); }
 @media (prefers-reduced-motion: reduce) { .rc-cta-link { transition: none; } }
+
+/* ---------- About: what you can count on ---------- */
+.ab-count {
+  display: grid;
+  gap: 1.25rem;
+  margin-top: 2rem;
+}
+@media (min-width: 800px) {
+  .ab-count { grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+}
+.ab-count-item {
+  padding: 1.5rem 1.4rem;
+  background: var(--cream);
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+}
+.ab-count-title {
+  margin: 0;
+  font-family: 'Instrument Serif', serif;
+  font-weight: 400;
+  font-size: 1.3rem;
+  line-height: 1.2;
+  color: var(--ink);
+}
+.ab-count-detail {
+  margin: 0.6rem 0 0;
+  font-size: 0.9688rem;
+  line-height: 1.65;
+  color: var(--charcoal);
+}
+.ab-count-proof {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin: 0.9rem 0 0;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--rule);
+}
+.ab-count-score {
+  font-family: 'Instrument Serif', serif;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: var(--ink);
+}
+.ab-count-proof-note { font-size: 0.875rem; color: var(--gray); }
+@media (hover: hover) and (pointer: fine) {
+  .ab-count-item { transition: transform 180ms ease, box-shadow 180ms ease; }
+  .ab-count-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 24px rgb(20 17 13 / 0.10);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ab-count-item { transition: none; }
+  .ab-count-item:hover { transform: none; }
+}
+
+/* The "How we help" subheadings needed to read as headings rather than as the
+   first line of the paragraph. Gold at 600 is the same accent the featured
+   estimate step uses, and --gold-deep measures 5.01:1 on --paper. */
+.re-item h3 {
+  font-weight: 600;
+  color: var(--gold-deep);
+  letter-spacing: 0.005em;
+}
+.re-actions {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 1.25rem;
+  margin: 1.5rem 0 0;
+}
+.re-note {
+  margin: 2rem 0 0; padding-top: 1.25rem; border-top: 1px solid var(--rule);
+  max-width: 60ch; font-size: 0.8125rem; line-height: 1.6; color: var(--gray);
+}

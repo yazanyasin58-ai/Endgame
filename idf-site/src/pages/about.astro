@@ -5,7 +5,16 @@
  */
 import Page from '../layouts/Page.astro';
 import Placeholder from '../components/Placeholder.astro';
-import { business, wedge, figures, processSteps, cta } from '../content/idf';
+import {
+  business,
+  wedge,
+  figures,
+  countOn,
+  googleSnapshot,
+  features,
+  processSteps,
+  cta,
+} from '../content/idf';
 import { optionalImage } from '../lib/images';
 
 const portrait = optionalImage('img/owner-portrait');
@@ -55,9 +64,47 @@ const portrait = optionalImage('img/owner-portrait');
       {
         figures.map((f) => (
           <div class="hp-figure">
-            <span class="hp-figure-value">{f.value}</span>
+            <span
+              class="hp-figure-value"
+              data-live-figure={features.googleReviews && 'live' in f ? f.live : null}
+            >
+              {f.value}
+            </span>
             <span class="hp-figure-label">{f.label}</span>
             <span class="hp-figure-note">{f.note}</span>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="hp-section" aria-labelledby="ab-count-h">
+    <h2 id="ab-count-h" class="hp-h2">What you can count on</h2>
+    <p class="hp-sub hp-italic">
+      Every one of these is something you can check without taking our word for it.
+    </p>
+    <div class="ab-count">
+      {
+        countOn.map((item) => (
+          <div class="ab-count-item">
+            <h3 class="ab-count-title">{item.title}</h3>
+            <p class="ab-count-detail">{item.detail}</p>
+            {'showRating' in item && item.showRating && (
+              <p class="ab-count-proof">
+                <span class="ab-count-score">
+                  <span data-live-figure={features.googleReviews ? 'googleRating' : null}>
+                    {googleSnapshot.rating}
+                  </span>{' '}★
+                </span>
+                <span class="ab-count-proof-note">
+                  across{' '}
+                  <span data-live-figure={features.googleReviews ? 'googleTotal' : null}>
+                    {googleSnapshot.total}
+                  </span>{' '}
+                  Google reviews
+                </span>
+              </p>
+            )}
           </div>
         ))
       }
@@ -97,3 +144,8 @@ const portrait = optionalImage('img/owner-portrait');
     </div>
   </section>
 </Page>
+
+<script>
+  import { fetchAndApplyLiveFigures } from '../scripts/live-figures';
+  fetchAndApplyLiveFigures();
+</script>

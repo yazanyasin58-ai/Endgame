@@ -438,6 +438,72 @@ export const social = [
 ] as const;
 
 /**
+ * The Google rating and review count, as read from the Places API.
+ *
+ * These are the fallback values, used when the live fetch does not run or does
+ * not answer. Anything on the site that prints either number takes it from
+ * here, so the page cannot show two different figures — and the live response
+ * overwrites both through `data-live-figure`.
+ */
+export const googleSnapshot = {
+  rating: '4.8',
+  total: '32',
+  readOn: '4 September 2026',
+} as const;
+
+/**
+ * What you can count on. Credibility points for the About page.
+ *
+ * Every line here is checkable by a stranger: a license number they can look
+ * up, a founding year, a rating published by someone other than us. That is
+ * the test each one had to pass.
+ *
+ * Two things the owner asked for are deliberately not here.
+ *
+ * "100% customer satisfaction" is contradicted by the company's own Google
+ * listing — a 4.8 average is not 100%, and the listing is the first thing a
+ * sceptical customer checks. "10,000+ customers" is a quantity claim nobody
+ * can substantiate; if Shawn has a real figure from his records, use that and
+ * say where it comes from.
+ *
+ * The satisfaction line is phrased as standing behind the work rather than as
+ * a guarantee. An unqualified "satisfaction guaranteed" is read as a promise
+ * of a refund on request, which on a sixty-thousand-dollar renovation is a
+ * commitment the company would have to honour. "We are not finished until you
+ * are" says the same thing to a customer and is a promise a contractor can
+ * actually keep.
+ */
+export const countOn = [
+  {
+    title: 'The owner, on your job',
+    detail:
+      'Shawn and Nancy Waziri have run this company since 1989. The person who walks your site, writes your estimate and answers the phone is an owner, not a project manager you meet once.',
+  },
+  {
+    title: 'Licensed and insured, and you can check',
+    detail:
+      'Virginia Class A General Contractor #2705162130. The number is public — look it up with the Department of Professional and Occupational Regulation before you hire anyone, including us.',
+  },
+  {
+    title: 'We are not finished until you are',
+    detail:
+      'We stand behind every job and put right what is not right. You do not have to take our word for it: the reviews are published on Google by the customers who wrote them.',
+    /** Renders the live rating and count beside this point. */
+    showRating: true,
+  },
+  {
+    title: 'A written estimate within 24 hours',
+    detail:
+      'We walk the site ourselves, then the written estimate arrives within one day of the visit. No waiting a week to find out what it costs.',
+  },
+  {
+    title: 'Thirty-seven years in the same trade',
+    detail:
+      'Kitchens, bathrooms, floors, additions, whole-home renovations and custom builds across Northern Virginia since 1989 — long enough to know what the work costs and what it should not.',
+  },
+] as const;
+
+/**
  * The only figures that appear as statistics. Every one is verifiable —
  * no project counts or customer totals, which cannot be substantiated.
  */
@@ -450,7 +516,7 @@ export const figures = [
    * does not answer — 4.8 across 32 reviews, read from the Places API on
    * 4 Sep 2026. It was 4.7, which had already drifted.
    */
-  { value: '4.8', label: 'Google rating', note: 'From verified reviews', live: 'googleRating' },
+  { value: googleSnapshot.rating, label: 'Google rating', note: 'From verified reviews', live: 'googleRating' },
   { value: '24 hrs', label: 'Estimate turnaround', note: 'After the site visit' },
   { value: 'Class A', label: 'Virginia license', note: '#2705162130' },
 ] as const;

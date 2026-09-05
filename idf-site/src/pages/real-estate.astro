@@ -38,9 +38,9 @@ import { business, realEstate, serviceArea } from '../content/idf';
     <div class="re-grid">
       {
         realEstate.points.map((point) => (
-          <div class="re-card">
-            <h3 class="re-card-title">{point.title}</h3>
-            <p class="re-card-detail">{point.detail}</p>
+          <div class="re-item">
+            <h3>{point.title}</h3>
+            <p>{point.detail}</p>
           </div>
         ))
       }

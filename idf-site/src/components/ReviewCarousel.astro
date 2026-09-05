@@ -149,6 +149,8 @@ const {
    * at the ends instead of wrapping — a carousel that silently jumps back to
    * the start loses people.
    */
+  import { applyLiveFigures } from '../scripts/live-figures';
+
   interface LiveReview {
     name: string;
     rating: number;
@@ -334,14 +336,13 @@ const {
       agg.removeAttribute('hidden');
 
       /*
-       * The stats row further up the page carries the same number. Update it
-       * from this one response so the page cannot show two different Google
-       * ratings — which it would have, since the committed figure and the
-       * carousel's average are read at different times.
+       * The stats row further up the page carries the same numbers. Update
+       * them from this one response so the page cannot show two different
+       * Google ratings — the committed figure and the carousel's average are
+       * read at different times. Shared with the About page, which prints the
+       * same numbers without a carousel.
        */
-      document.querySelectorAll<HTMLElement>('[data-live-figure="googleRating"]').forEach((el) => {
-        el.textContent = data.rating!.toFixed(1);
-      });
+      applyLiveFigures(data);
 
       scanCards();
       setupPaging();
