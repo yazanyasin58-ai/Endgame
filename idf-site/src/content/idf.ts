@@ -416,7 +416,14 @@ export const social = [
  */
 export const figures = [
   { value: '1989', label: 'Established', note: '37 years owner-run' },
-  { value: '4.7', label: 'Google rating', note: 'From verified reviews' },
+  /*
+   * `live: 'googleRating'` marks this one for the reviews fetch to overwrite,
+   * so it can never contradict the average the carousel prints from the same
+   * response. The value here is the fallback when that fetch does not run or
+   * does not answer — 4.8 across 32 reviews, read from the Places API on
+   * 4 Sep 2026. It was 4.7, which had already drifted.
+   */
+  { value: '4.8', label: 'Google rating', note: 'From verified reviews', live: 'googleRating' },
   { value: '24 hrs', label: 'Estimate turnaround', note: 'After the site visit' },
   { value: 'Class A', label: 'Virginia license', note: '#2705162130' },
 ] as const;

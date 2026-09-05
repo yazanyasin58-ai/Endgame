@@ -86,7 +86,12 @@ const homeCards = ['project-kitchen-blue-island', 'project-framing-interior', 'p
       {
         figures.map((f) => (
           <div class="hp-figure">
-            <span class="hp-figure-value">{f.value}</span>
+            <span
+              class="hp-figure-value"
+              data-live-figure={features.googleReviews && 'live' in f ? f.live : null}
+            >
+              {f.value}
+            </span>
             <span class="hp-figure-label">{f.label}</span>
             <span class="hp-figure-note">{f.note}</span>
           </div>

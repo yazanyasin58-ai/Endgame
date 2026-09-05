@@ -326,6 +326,16 @@ const {
       }
       agg.removeAttribute('hidden');
 
+      /*
+       * The stats row further up the page carries the same number. Update it
+       * from this one response so the page cannot show two different Google
+       * ratings — which it would have, since the committed figure and the
+       * carousel's average are read at different times.
+       */
+      document.querySelectorAll<HTMLElement>('[data-live-figure="googleRating"]').forEach((el) => {
+        el.textContent = data.rating!.toFixed(1);
+      });
+
       scanCards();
       setupPaging();
     };
