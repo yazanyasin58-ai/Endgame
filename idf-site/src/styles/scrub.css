@@ -207,7 +207,22 @@
    A designed layout, not a fallback apology: the ending frame with the
    composed copy over it. THE FIVE GATES, matched exactly in ScrubHero.astro. */
 
-.sh-static { display: none; }
+/* Everything about the static hero EXCEPT its display, which belongs to the
+   gates below and nowhere else. Declaring `display: flex` out here is what
+   broke this once: it sat after both `display: none` and the media query's
+   own display, won at equal specificity, and put a second hero on every
+   desktop page underneath the film. If you add a property here, make sure it
+   is not `display`. */
+.sh-static {
+  display: none;
+  position: relative;
+  min-height: 78vh;
+  padding: clamp(3rem, 10vw, 6rem) clamp(1.5rem, 6vw, 4rem) clamp(2.5rem, 8vw, 5rem);
+  flex-direction: column;
+  justify-content: flex-end;
+  color: var(--cream);
+  text-shadow: var(--sh-tshadow);
+}
 
 @media (max-width: 720px),
        (orientation: portrait) and (max-width: 1024px),
@@ -217,16 +232,7 @@
   .sh { height: auto; }
   .sh-stage { position: static; height: auto; min-height: 78vh; }
   .sh-video, .sh-band, .sh-load, .sh-cue { display: none !important; }
-  .sh-static { display: block; }
-}
-
-.sh-static {
-  position: relative;
-  min-height: 78vh;
-  padding: clamp(3rem, 10vw, 6rem) clamp(1.5rem, 6vw, 4rem) clamp(2.5rem, 8vw, 5rem);
-  display: flex; flex-direction: column; justify-content: flex-end;
-  color: var(--cream);
-  text-shadow: var(--sh-tshadow);
+  .sh-static { display: flex; }
 }
 .sh-static-copy { position: relative; z-index: 2; max-width: 34rem; }
 .sh-static .sh-line { font-size: clamp(2rem, 8vw, 3.4rem); }

@@ -48,22 +48,36 @@ html {
  * `visible` would compute to `auto`.
  */
 html,
-body {
-  max-width: 100%;
-  /*
-   * `hidden`, not `clip`. I used clip here first because it does not make the
-   * element a scroll container and so does not break position: sticky — but
-   * `clip` on the ROOT element is not propagated to the viewport the way
-   * `hidden` is, so the page still scrolled sideways on iOS. Sticky costs
-   * nothing to protect here: this site has no sticky elements, only two fixed
-   * ones, and fixed is unaffected.
-   *
-   * This is a backstop, not the fix. The things that were actually wider than
-   * the viewport are dealt with where they live — see .rc-track in home.css
-   * and the wrapping rule below.
-   */
-  overflow-x: hidden;
-}
+body { max-width: 100%; }
+
+/*
+ * The root gets `hidden`, and ONLY the root.
+ *
+ * The root element's overflow is what propagates to the viewport, so `hidden`
+ * here is the declaration that actually stops the page being dragged sideways
+ * on iOS. `clip` does not propagate the same way, which is why it failed when
+ * it was tried here first.
+ *
+ * This is a backstop, not the fix. The things that were genuinely wider than
+ * the viewport are dealt with where they live: see .rc-track and .rc-card in
+ * home.css, .dr-svg in scrub.css, and the wrapping rule below.
+ */
+html { overflow-x: hidden; }
+
+/*
+ * The body gets `clip`, and the difference is load-bearing.
+ *
+ * `hidden` makes an element a scroll container, and position: sticky inside a
+ * scroll container sticks to THAT container rather than to the viewport. With
+ * `hidden` on the body the scrubbed hero never pinned: it scrolled away while
+ * the film played under it, which is precisely the bug the owner reported.
+ * `clip` still clips, but creates no scroll container, so sticky works.
+ *
+ * The earlier note here said this site had no sticky elements. That was true
+ * when it was written and is not true now, which is how this broke. If you
+ * change this line, check the hero still pins.
+ */
+body { overflow-x: clip; }
 
 /*
  * Long unbreakable strings must be allowed to break.
