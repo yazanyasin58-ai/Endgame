@@ -6,6 +6,7 @@
  * stylesheet and type pairing. Keeping one DOM means the content cannot
  * drift between variants and a copy change lands in all three at once.
  */
+import ScrubHero from './ScrubHero.astro';
 import Placeholder from './Placeholder.astro';
 import ReviewCarousel from './ReviewCarousel.astro';
 import EstimateForm from './EstimateForm.astro';
@@ -42,6 +43,11 @@ const heroSrcMobile = optionalImage(heroImages.heroMobile);
  * a crew on ladders outside. The owner asked for work actually in progress to
  * appear alongside the finished rooms.
  */
+/** Bytes of public/hero/hero-scrub.mp4, the fallback when Content-Length is
+ *  missing so the loading ring still reports honest progress. Update it when
+ *  the film is re-encoded. */
+const HERO_BYTES = 4140512;
+
 const homeCards = ['project-kitchen-blue-island', 'project-framing-interior', 'project-siding-crew']
   .map((slot) => gallery.find((g) => g.slot === slot))
   .filter((g): g is (typeof gallery)[number] => Boolean(g))
@@ -49,30 +55,10 @@ const homeCards = ['project-kitchen-blue-island', 'project-framing-interior', 'p
 ---
 
 <main>
-  <!-- HERO -->
-  <section class="hp-hero" aria-label="Introduction">
-    <div class="hp-hero-frame">
-      <Placeholder
-        ratio="16 / 9"
-        label="Comp — hero · custom home · 16:9 · 2400px"
-        scene="exterior-dusk"
-        src={heroSrc}
-        srcMobile={heroSrcMobile}
-        alt="Wide-plank hardwood flooring in a finished interior"
-        real={Boolean(heroSrc)}
-        class="hp-ph hp-hero-ph ph--label-tr"
-      />
-      <div class="hp-hero-copy">
-        <p class="hp-eyebrow">Class A Contractor &middot; Since 1989 &middot; Northern Virginia</p>
-        <h1 class="hp-h1">A home built the way you asked for it.</h1>
-        <p class="hp-hero-italic">Custom homes, additions &amp; remodeling</p>
-        <div class="hp-hero-actions">
-          <a class="hp-btn" href="/estimate/">{cta.primary}</a>
-          <a class="hp-call" href={business.phonePrimaryHref}>or call {business.phonePrimary}</a>
-        </div>
-      </div>
-    </div>
-  </section>
+  {/* HERO. The scroll-scrubbed film: a house from open framing to a finished
+      floor, played by the scroll. Phones and reduced motion get the composed
+      still hero inside the same component. */}
+  <ScrubHero videoBytes={HERO_BYTES} />
 
   <!-- TRUST BAR -->
   <section class="hp-trust" aria-label="Credentials">

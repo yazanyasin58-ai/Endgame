@@ -340,7 +340,10 @@ const bands = [
       }
       clearTimeout(watchdog);
       ring.style.setProperty('--ld', 0);
-      video.src = URL.createObjectURL(new Blob(chunks));
+      // The type matters: a Blob built without one carries an empty MIME type
+      // and the video element rejects it with MEDIA_ELEMENT_ERROR code 4,
+      // having downloaded the whole file perfectly.
+      video.src = URL.createObjectURL(new Blob(chunks, { type: 'video/mp4' }));
       video.load();
       video.addEventListener('canplay', () => {
         requestSeek(heroProgress() * video.duration);
