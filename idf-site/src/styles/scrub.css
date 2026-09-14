@@ -230,10 +230,52 @@
        (orientation: landscape) and (pointer: coarse) and (max-height: 560px),
        (prefers-reduced-motion: reduce) {
   .sh { height: auto; }
-  .sh-stage { position: static; height: auto; min-height: 78vh; }
+
+  /* The stage goes entirely, and this is not tidying. Leaving it in flow with
+     min-height: 78vh left an empty screen-height block standing above the
+     static hero, because everything inside it is hidden here. The result on a
+     phone was the promo bar, the header, a full blank screen, and only then
+     the hero: the hero was below the fold on every handset.
+
+     Collapsing min-height alone is not enough either. .sh-poster is absolutely
+     positioned, and once .sh-stage is position: static its containing block
+     becomes .sh, so the poster stretches over the whole section rather than
+     the stage, and paints behind the static hero. Removing the stage removes
+     both problems at once. */
+  .sh-stage { display: none; }
+
   .sh-video, .sh-band, .sh-load, .sh-cue { display: none !important; }
   .sh-static { display: flex; }
 }
+/* The static hero needs a scrim of its own, and the reason is worth keeping.
+   The global .sh-scrim is a radial gradient that is CLEAR through the middle
+   by design, which was right when the ending frame was a dim interior. The
+   ending is now a golden-hour exterior whose brightest region, the pale stone
+   motor court, falls exactly where this copy sits. Measured over the finished
+   frame at 390px, the headline came out at 1.05:1 and the subline at 1.02:1:
+   not low contrast, invisible.
+
+   So: a lower-third gradient, and it is heavy on purpose. The strength was set
+   by measurement, not by eye. The gold kicker is the binding constraint,
+   because gold on a light ground cannot reach 4.5:1 at any opacity and has to
+   be darkened to roughly 60/255 behind it instead. The house, the sky and the
+   fountains above the copy are untouched. */
+.sh-static::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    to top,
+    rgb(8 7 5 / 0.92) 0%,
+    rgb(8 7 5 / 0.9) 30%,
+    rgb(8 7 5 / 0.84) 58%,
+    rgb(8 7 5 / 0.34) 73%,
+    rgb(8 7 5 / 0) 88%
+  );
+}
+
 .sh-static-copy { position: relative; z-index: 2; max-width: 34rem; }
 .sh-static .sh-line { font-size: clamp(2rem, 8vw, 3.4rem); }
 
