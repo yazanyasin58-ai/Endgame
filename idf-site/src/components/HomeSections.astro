@@ -1,0 +1,264 @@
+---
+/**
+ * The homepage, as one shared body.
+ *
+ * All three variants render this identical markup and differ only in their
+ * stylesheet and type pairing. Keeping one DOM means the content cannot
+ * drift between variants and a copy change lands in all three at once.
+ */
+import Placeholder from './Placeholder.astro';
+import ReviewCarousel from './ReviewCarousel.astro';
+import EstimateForm from './EstimateForm.astro';
+import SocialLinks from './SocialLinks.astro';
+import {
+  business,
+  trustBar,
+  pillars,
+  wedge,
+  gallery,
+  reviews,
+  features,
+  processSteps,
+  figures,
+  cta,
+  hours,
+  serviceArea,
+} from '../content/idf';
+import { optionalImage, firstImage, heroImages } from '../lib/images';
+
+const mapEmbed = `https://maps.google.com/maps?q=${encodeURIComponent(business.address)}&z=15&output=embed`;
+
+const heroSrc = firstImage(
+  heroImages.hero,
+  heroImages.heroAlt,
+  heroImages.heroAlt2,
+  heroImages.heroAlt3,
+);
+const heroSrcMobile = optionalImage(heroImages.heroMobile);
+
+/**
+ * Three cards for the homepage strip, chosen to show the whole job rather than
+ * three versions of the same thing: a finished kitchen, framing going in, and
+ * a crew on ladders outside. The owner asked for work actually in progress to
+ * appear alongside the finished rooms.
+ */
+const homeCards = ['project-kitchen-blue-island', 'project-framing-interior', 'project-siding-crew']
+  .map((slot) => gallery.find((g) => g.slot === slot))
+  .filter((g): g is (typeof gallery)[number] => Boolean(g))
+  .map((g) => ({ ...g, src: optionalImage(`img/${g.slot}`) }));
+---
+
+<main>
+  <!-- HERO -->
+  <section class="hp-hero" aria-label="Introduction">
+    <div class="hp-hero-frame">
+      <Placeholder
+        ratio="16 / 9"
+        label="Comp — hero · custom home · 16:9 · 2400px"
+        scene="exterior-dusk"
+        src={heroSrc}
+        srcMobile={heroSrcMobile}
+        alt="Wide-plank hardwood flooring in a finished interior"
+        real={Boolean(heroSrc)}
+        class="hp-ph hp-hero-ph ph--label-tr"
+      />
+      <div class="hp-hero-copy">
+        <p class="hp-eyebrow">Class A Contractor &middot; Since 1989 &middot; Northern Virginia</p>
+        <h1 class="hp-h1">A home built the way you asked for it.</h1>
+        <p class="hp-hero-italic">Custom homes, additions &amp; remodeling</p>
+        <div class="hp-hero-actions">
+          <a class="hp-btn" href="/estimate/">{cta.primary}</a>
+          <a class="hp-call" href={business.phonePrimaryHref}>or call {business.phonePrimary}</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TRUST BAR -->
+  <section class="hp-trust" aria-label="Credentials">
+    <ul>{trustBar.map((item) => <li>{item}</li>)}</ul>
+  </section>
+
+  <!-- FIGURES — every one verifiable -->
+  <section class="hp-section hp-figures-wrap" aria-labelledby="hp-figures-h">
+    <h2 id="hp-figures-h" class="hp-visually-hidden">By the numbers</h2>
+    <div class="hp-figures">
+      {
+        figures.map((f) => (
+          <div class="hp-figure">
+            <span
+              class="hp-figure-value"
+              data-live-figure={features.googleReviews && 'live' in f ? f.live : null}
+            >
+              {f.value}
+            </span>
+            <span class="hp-figure-label">{f.label}</span>
+            <span class="hp-figure-note">{f.note}</span>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- WHAT WE BUILD -->
+  <section class="hp-section" id="what-we-build" aria-labelledby="hp-pillars-h">
+    <h2 id="hp-pillars-h" class="hp-h2">What we build</h2>
+    <p class="hp-sub hp-italic">Three ways to start, one team throughout.</p>
+    <div class="hp-pillars">
+      {
+        pillars.map((p) => (
+          <article class="hp-pillar">
+            <span class="hp-pillar-num">{p.number}</span>
+            <h3 class="hp-pillar-title">{p.title.charAt(0) + p.title.slice(1).toLowerCase()}</h3>
+            <ul class="hp-pillar-list">
+              {p.services.map((s) => (
+                <li>{s}</li>
+              ))}
+            </ul>
+            <a class="hp-pillar-link" href="/estimate/">Start an estimate</a>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- WHY ONE TEAM -->
+  <section class="hp-section hp-wedge" id="why-one-team" aria-labelledby="hp-wedge-h">
+    <h2 id="hp-wedge-h" class="hp-h2">Why one team</h2>
+    <p class="hp-wedge-tagline hp-italic">&ldquo;{wedge.tagline}&rdquo;</p>
+    <div class="hp-wedge-copy">
+      <h3 class="hp-wedge-heading">{wedge.heading}</h3>
+      {wedge.body.map((para) => <p>{para}</p>)}
+    </div>
+  </section>
+
+  <!-- SELECTED PROJECTS -->
+  <section class="hp-section" id="selected-projects" aria-labelledby="hp-projects-h">
+    <h2 id="hp-projects-h" class="hp-h2">Selected projects</h2>
+    <p class="hp-sub hp-italic">Real work, from the framing through to the finish.</p>
+    <div class="hp-projects">
+      {
+        homeCards.map((card) => (
+          <figure class="hp-project">
+            <Placeholder
+              ratio="4 / 3"
+              label={`Reserved — ${card.caption.toLowerCase()}`}
+              src={card.src}
+              alt={card.alt}
+              real
+              class="hp-ph"
+            />
+            <figcaption>{card.caption}</figcaption>
+          </figure>
+        ))
+      }
+    </div>
+    <a class="hp-textlink" href="/projects/">See projects completed</a>
+  </section>
+
+  <!-- REVIEWS -->
+  <ReviewCarousel
+    reviews={reviews}
+    headingId="hp-reviews-h"
+    standfirst="Swipe, or use the arrows, to read more."
+    live={features.googleReviews}
+  />
+
+  <!-- LIST YOUR HOME -->
+  <section class="hp-section" aria-labelledby="hp-lyh-h">
+    <div class="lyh-band">
+      <span class="lyh-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+             stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 10.5 12 3l9 7.5" />
+          <path d="M5.5 9.5V20a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1V9.5" />
+          <path d="M9.5 21v-6h5v6" />
+        </svg>
+      </span>
+      <div>
+        <h2 id="hp-lyh-h">Selling a home?</h2>
+        <p>
+          Talk to us before it goes on the market. Thirty-seven years of renovation work
+          behind a straight answer on what is worth doing first.
+        </p>
+      </div>
+      <a class="hp-btn" href="/list-your-home/">Tell us about it</a>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="hp-section" id="how-it-works" aria-labelledby="hp-process-h">
+    <h2 id="hp-process-h" class="hp-h2">How it works</h2>
+    <p class="hp-sub hp-italic">Five steps, one of them unusually fast.</p>
+    <ol class="hp-steps">
+      {
+        processSteps.map((step) => (
+          <li class:list={['hp-step', { 'hp-step--featured': 'featured' in step && step.featured }]}>
+            <span class="hp-step-num">{step.number}</span>
+            <div>
+              <h3 class="hp-step-title">{step.title}</h3>
+              <p class="hp-step-detail">{step.detail}</p>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
+
+  <!-- PRICE YOUR PROJECT -->
+  <section class="hp-final" id="estimate" aria-labelledby="hp-final-h">
+    <div class="hp-final-inner">
+      <div class="hp-final-intro">
+        <h2 id="hp-final-h" class="hp-final-heading">Price your project today.</h2>
+        <p class="hp-final-sub hp-italic">
+          A site visit first, then a written estimate within 24 hours.
+        </p>
+        <a class="hp-call hp-call--light" href={business.phonePrimaryHref}>
+          Prefer to talk? {business.phonePrimary}
+        </a>
+        <SocialLinks class="hp-final-social" />
+      </div>
+      <EstimateForm idPrefix="hp" />
+    </div>
+  </section>
+
+  <!-- SHOWROOM -->
+  <section class="hp-showroom" aria-labelledby="hp-showroom-h">
+    <div class="hp-showroom-inner">
+      <div class="hp-showroom-text">
+        <h2 id="hp-showroom-h" class="hp-h2">Visit the showroom</h2>
+        <p class="hp-sub">
+          Contracts are signed here, and selections are made here. Open seven days.
+        </p>
+
+        <address class="hp-showroom-addr">
+          45431 Ruritan Circle, Suite 160<br />Sterling, VA 20164
+        </address>
+
+        <ul class="hp-showroom-hours">
+          {hours.map((h) => (<li><span>{h.days}</span><span>{h.open} – {h.close}</span></li>))}
+        </ul>
+
+        <p class="hp-showroom-area">
+          <strong>{serviceArea.short}</strong><br />{serviceArea.detail}
+        </p>
+
+        <a
+          class="hp-textlink"
+          href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(business.address)}`}
+          target="_blank"
+          rel="noopener noreferrer">Get directions</a
+        >
+      </div>
+
+      <div class="hp-showroom-map">
+        <iframe
+          title="Map showing Interior Design Flooring at 45431 Ruritan Circle, Suite 160, Sterling, VA 20164"
+          src={mapEmbed}
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          allowfullscreen></iframe>
+      </div>
+    </div>
+  </section>
+</main>

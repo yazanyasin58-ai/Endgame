@@ -1,0 +1,67 @@
+---
+/**
+ * Estimate request — its own page, at the client's request.
+ * Every primary CTA across the site points here.
+ */
+import Base from '../layouts/Base.astro';
+import '../styles/home.css';
+import StickyCallBar from '../components/StickyCallBar.astro';
+import EstimateForm from '../components/EstimateForm.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import SiteNav from '../components/SiteNav.astro';
+import { business, processSteps, trustBar, promo } from '../content/idf';
+
+const fonts =
+  'https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Source+Sans+3:wght@400;600&display=swap';
+---
+
+<Base
+  title="Request a Free Estimate — Interior Design Flooring"
+  description="Request a free estimate from Interior Design Flooring, a Virginia Class A general contractor in Sterling. Site visit first, written estimate within 24 hours."
+  fontsHref={fonts}
+  bodyClass="hp"
+  withCallbar
+>
+  <SiteNav current="estimate" />
+
+  <main>
+    <section class="hp-est">
+      <div class="hp-est-intro">
+        <h1 class="hp-est-h1">Request a free estimate.</h1>
+        <p class="hp-est-sub hp-italic">
+          Tell us what you're planning. We visit the site, then your written estimate arrives
+          within 24 hours.
+        </p>
+        <p class="hp-est-promo">
+          <strong>{promo.headline}</strong><br />
+          <span>{promo.detail}</span>
+        </p>
+        <ol class="hp-est-steps">
+          {
+            processSteps.map((step) => (
+              <li class:list={[{ 'is-featured': 'featured' in step && step.featured }]}>
+                <span>{step.number}</span> {step.title}
+              </li>
+            ))
+          }
+        </ol>
+        <a class="hp-call" href={business.phonePrimaryHref}>
+          Prefer to talk? {business.phonePrimary}
+        </a>
+      </div>
+
+      <div class="hp-est-form">
+        <EstimateForm idPrefix="est" />
+      </div>
+    </section>
+
+    <section class="hp-trust" aria-label="Credentials">
+      <ul>
+        {trustBar.map((item) => <li>{item}</li>)}
+      </ul>
+    </section>
+  </main>
+
+  <SiteFooter />
+  <StickyCallBar />
+</Base>

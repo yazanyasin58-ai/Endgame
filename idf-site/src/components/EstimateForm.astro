@@ -1,0 +1,145 @@
+---
+/**
+ * Estimate request form.
+ *
+ * Posts to /api/estimate — a Cloudflare Pages Function in `functions/api/`,
+ * the only server-side code on the site. Photographs go up with the rest of
+ * the form and land in R2. See CLOUDFLARE.md for what has to be configured in
+ * the dashboard before this endpoint does anything.
+ *
+ * The endpoint is not required for the form to be useful: with no JavaScript,
+ * or before the bindings exist, the phone and email routes are on the page in
+ * plain text and the form reports what went wrong rather than pretending.
+ */
+import { business, cta, formFields } from '../content/idf';
+
+interface Props {
+  idPrefix?: string;
+  /**
+   * Turnstile site key. Public by design — safe in the HTML. Defaults to
+   * PUBLIC_TURNSTILE_SITE_KEY so it is set once in the Pages project rather
+   * than passed down from every page. With no key the widget does not render
+   * and the Function does not enforce it; the form still works.
+   */
+  turnstileSiteKey?: string;
+}
+
+const {
+  idPrefix = 'ef',
+  turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY,
+} = Astro.props;
+const f = (name: string) => `${idPrefix}-${name}`;
+---
+
+<form
+  class="ef"
+  method="post"
+  action="/api/estimate"
+  enctype="multipart/form-data"
+  novalidate
+  data-ef-success="Thank you — your request is in. Reference {reference}. We will call to arrange the site visit, and your written estimate follows within 24 hours."
+>
+  <div class="ef-grid">
+    <div class="ef-field">
+      <label class="ef-label" for={f('name')}>Name <span aria-hidden="true">*</span></label>
+      <input class="ef-input" type="text" id={f('name')} name="name" autocomplete="name" required />
+    </div>
+    <div class="ef-field">
+      <label class="ef-label" for={f('phone')}>Phone <span aria-hidden="true">*</span></label>
+      <input class="ef-input" type="tel" id={f('phone')} name="phone" autocomplete="tel" required />
+    </div>
+    <div class="ef-field">
+      <label class="ef-label" for={f('email')}>Email <span aria-hidden="true">*</span></label>
+      <input class="ef-input" type="email" id={f('email')} name="email" autocomplete="email" required />
+    </div>
+    <div class="ef-field">
+      <label class="ef-label" for={f('address')}>Project address <span aria-hidden="true">*</span></label>
+      <input
+        class="ef-input"
+        type="text"
+        id={f('address')}
+        name="address"
+        placeholder="City or ZIP at minimum"
+        required
+      />
+    </div>
+    <div class="ef-field ef-field--full">
+      <label class="ef-label" for={f('type')}>Type of work <span aria-hidden="true">*</span></label>
+      <select class="ef-input ef-select" id={f('type')} name="type" required>
+        <option value="" selected disabled>Select one</option>
+        {formFields.typeOfWork.map((t) => <option value={t}>{t}</option>)}
+      </select>
+    </div>
+    <div class="ef-field">
+      <label class="ef-label" for={f('budget')}>Budget range <span class="ef-optional">(optional)</span></label>
+      <select class="ef-input ef-select" id={f('budget')} name="budget">
+        <option value="" selected>Select one</option>
+        {formFields.budget.map((b) => <option value={b}>{b}</option>)}
+      </select>
+    </div>
+    <div class="ef-field">
+      <label class="ef-label" for={f('timeframe')}>Timeframe <span class="ef-optional">(optional)</span></label>
+      <select class="ef-input ef-select" id={f('timeframe')} name="timeframe">
+        <option value="" selected>Select one</option>
+        {formFields.timeframe.map((t) => <option value={t}>{t}</option>)}
+      </select>
+    </div>
+    <div class="ef-field ef-field--full">
+      <label class="ef-label" for={f('details')}>Project details</label>
+      <textarea class="ef-input ef-textarea" id={f('details')} name="details" rows="4"></textarea>
+    </div>
+    <div class="ef-field ef-field--full">
+      <label class="ef-label" for={f('photos')}>
+        Photos or plans <span class="ef-optional">(optional)</span>
+      </label>
+      <input
+        class="ef-file"
+        type="file"
+        id={f('photos')}
+        name="photos"
+        multiple
+        accept="image/jpeg,image/png,image/webp,image/heic,image/heif,application/pdf,.heic,.heif"
+        aria-describedby={f('photos-hint')}
+      />
+      <p class="ef-hint" id={f('photos-hint')}>
+        Up to 8 files, 10 MB each. Or text them to
+        <a href={business.phonePrimarySms}>{business.phonePrimary}</a> and we will match them to
+        your request.
+      </p>
+      <p class="ef-filelist" data-ef-filelist hidden></p>
+    </div>
+    <div class="ef-field ef-field--full">
+      <label class="ef-label" for={f('source')}>How did you hear about us? <span class="ef-optional">(optional)</span></label>
+      <input class="ef-input" type="text" id={f('source')} name="source" />
+    </div>
+  </div>
+
+  {/* Honeypot. Off-screen rather than display:none, which some bots detect. */}
+  <div class="ef-hp" aria-hidden="true">
+    <label for={f('company')}>Company</label>
+    <input type="text" id={f('company')} name="company" tabindex="-1" autocomplete="off" />
+  </div>
+
+  {
+    turnstileSiteKey && (
+      <div class="cf-turnstile" data-sitekey={turnstileSiteKey} data-appearance="interaction-only" />
+    )
+  }
+
+  <button class="ef-submit" type="submit">{cta.primary}</button>
+
+  <p class="ef-status" data-ef-status role="status" aria-live="polite" hidden></p>
+  <noscript>
+    <p class="ef-note">
+      This form needs JavaScript to send your photos. Without it, call
+      {business.phonePrimary} or email {business.email}.
+    </p>
+  </noscript>
+</form>
+
+{turnstileSiteKey && <script is:inline async src="https://challenges.cloudflare.com/turnstile/v0/api.js" />}
+
+<script>
+  import { initIntakeForms } from '../scripts/intake-form';
+  initIntakeForms();
+</script>
