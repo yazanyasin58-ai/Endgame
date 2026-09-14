@@ -4,12 +4,28 @@
  *
  * The premise of the whole page is that every finish starts as a frame, and
  * that the part a customer never sees is the part that decides whether the
- * finish lasts. Here the visitor performs it: press and hold, and the same
- * room travels from open studs to painted walls and an oak floor.
+ * finish lasts. Here the visitor performs it: press and hold, and the house
+ * travels from open timber framing to the finished property.
  *
- * The two photographs are the SAME room at two moments of the hero film, 13.5
- * seconds and 15.9 seconds, so the crossfade is one place finishing rather
- * than two rooms swapped. They cost nothing extra; the film already had them.
+ * The two photographs are THE TWO ENDS OF THE HERO FILM, its first frame and
+ * its last: the same house as a skeleton on a building site, and finished at
+ * golden hour. So this is the hero's own journey compressed into one gesture,
+ * and it costs nothing extra because the film already contains both.
+ *
+ * Note what this deliberately is NOT. It is not a locked-off before and after
+ * of one view, and it does not pretend to be: the two frames are taken from
+ * different points in a moving camera move, so they are different vantages on
+ * one house rather than one vantage at two times. That was a considered
+ * choice. A true locked-off pair was attempted three times and measured each
+ * time: a generated still drifted 24.5px of roofline against its reference
+ * with horizontal structure correlating at only 0.256, and a generated
+ * locked-camera time-lapse drifted steadily to 25.1px with correlation
+ * falling to 0.258. These models will not hold an exact camera position
+ * across a large content change, and a crossfade between near-but-not-quite
+ * aligned frames reads as a glitch, which is worse than an honest dissolve.
+ *
+ * If real before-and-after photography of one IDF project ever arrives, that
+ * is strictly better than either and should replace this.
  *
  * The mechanics that stop it feeling like a gimmick:
  *   - progress builds while held
@@ -31,8 +47,8 @@
 
   <div class="ftf-stage" data-ftf>
     <div class="ftf-frames">
-      <img class="ftf-img ftf-img--raw" src="/hero/state-frame.jpg" alt="The same room as open timber framing, before the walls and floor go in" width="1600" height="900" loading="lazy" decoding="async" />
-      <img class="ftf-img ftf-img--done" src="/hero/state-finish.jpg" alt="The same room finished, with painted walls, white baseboard and an oak floor" width="1600" height="900" loading="lazy" decoding="async" />
+      <img class="ftf-img ftf-img--raw" src="/hero/state-frame.jpg" alt="A large house at the timber framing stage, seen from the air: open stud walls, bare roof trusses and a graded building site around it" width="1600" height="900" loading="lazy" decoding="async" />
+      <img class="ftf-img ftf-img--done" src="/hero/state-finish.jpg" alt="The same house finished at golden hour: stone and stucco facade, lit windows, planted grounds and the fountains running" width="1600" height="900" loading="lazy" decoding="async" />
       <div class="ftf-veil" aria-hidden="true"></div>
     </div>
 
