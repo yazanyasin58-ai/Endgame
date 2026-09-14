@@ -1,0 +1,149 @@
+---
+/**
+ * "List your home" intake.
+ *
+ * Posts to the same /api/estimate endpoint as the estimate form, with a
+ * hidden `enquiry` field so the notification email says which desk it is for.
+ * One endpoint rather than two because the validation, the upload limits, the
+ * spam handling and the R2 write are identical — a second copy of that would
+ * be a second thing to keep in step.
+ */
+import { business, cta, listing } from '../content/idf';
+
+interface Props {
+  idPrefix?: string;
+  turnstileSiteKey?: string;
+}
+
+const {
+  idPrefix = 'lf',
+  turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY,
+} = Astro.props;
+const f = (name: string) => `${idPrefix}-${name}`;
+---
+
+<form
+  class="ef"
+  method="post"
+  action="/api/estimate"
+  enctype="multipart/form-data"
+  novalidate
+  data-ef-success="Thank you — we have your property details. Reference {reference}. One of our realtors will call you back."
+>
+  <input type="hidden" name="enquiry" value="Property listing" />
+
+  <div class="ef-grid">
+    <div class="ef-field">
+      <label class="ef-label" for={f('name')}>Name <span aria-hidden="true">*</span></label>
+      <input class="ef-input" type="text" id={f('name')} name="name" autocomplete="name" required />
+    </div>
+    <div class="ef-field">
+      <label class="ef-label" for={f('phone')}>Phone <span aria-hidden="true">*</span></label>
+      <input class="ef-input" type="tel" id={f('phone')} name="phone" autocomplete="tel" required />
+    </div>
+    <div class="ef-field">
+      <label class="ef-label" for={f('email')}>Email <span aria-hidden="true">*</span></label>
+      <input class="ef-input" type="email" id={f('email')} name="email" autocomplete="email" required />
+    </div>
+    <div class="ef-field">
+      <label class="ef-label" for={f('address')}>Property address <span aria-hidden="true">*</span></label>
+      <input
+        class="ef-input"
+        type="text"
+        id={f('address')}
+        name="address"
+        autocomplete="street-address"
+        placeholder="Street, city or ZIP"
+        required
+      />
+    </div>
+    <div class="ef-field ef-field--full">
+      <label class="ef-label" for={f('type')}>What would you like to do? <span aria-hidden="true">*</span></label>
+      <select class="ef-input ef-select" id={f('type')} name="type" required>
+        <option value="" selected disabled>Select one</option>
+        {listing.intent.map((i) => <option value={i}>{i}</option>)}
+      </select>
+    </div>
+    <div class="ef-field">
+      <label class="ef-label" for={f('propertyType')}>
+        Property type <span class="ef-optional">(optional)</span>
+      </label>
+      <select class="ef-input ef-select" id={f('propertyType')} name="propertyType">
+        <option value="" selected>Select one</option>
+        {listing.propertyType.map((t) => <option value={t}>{t}</option>)}
+      </select>
+    </div>
+    <div class="ef-field">
+      <label class="ef-label" for={f('timeframe')}>Timeframe <span class="ef-optional">(optional)</span></label>
+      <select class="ef-input ef-select" id={f('timeframe')} name="timeframe">
+        <option value="" selected>Select one</option>
+        {listing.timeline.map((t) => <option value={t}>{t}</option>)}
+      </select>
+    </div>
+    <div class="ef-field ef-field--full">
+      <label class="ef-label" for={f('details')}>
+        Anything else about the property? <span class="ef-optional">(optional)</span>
+      </label>
+      <textarea
+        class="ef-input ef-textarea"
+        id={f('details')}
+        name="details"
+        rows="4"
+        placeholder="Condition, work you are considering before listing, tenancy, anything we should know."></textarea>
+    </div>
+    <div class="ef-field ef-field--full">
+      <label class="ef-label" for={f('photos')}>
+        Photos <span class="ef-optional">(optional)</span>
+      </label>
+      <input
+        class="ef-file"
+        type="file"
+        id={f('photos')}
+        name="photos"
+        multiple
+        accept="image/jpeg,image/png,image/webp,image/heic,image/heif,application/pdf,.heic,.heif"
+        aria-describedby={f('photos-hint')}
+      />
+      <p class="ef-hint" id={f('photos-hint')}>
+        Up to 8 files, 10 MB each. Or text them to
+        <a href={business.phonePrimarySms}>{business.phonePrimary}</a>.
+      </p>
+      <p class="ef-filelist" data-ef-filelist hidden></p>
+    </div>
+    <div class="ef-field ef-field--full">
+      <label class="ef-label" for={f('source')}>
+        How did you hear about us? <span class="ef-optional">(optional)</span>
+      </label>
+      <input class="ef-input" type="text" id={f('source')} name="source" />
+    </div>
+  </div>
+
+  {/* Honeypot, matching the estimate form. */}
+  <div class="ef-hp" aria-hidden="true">
+    <label for={f('company')}>Company</label>
+    <input type="text" id={f('company')} name="company" tabindex="-1" autocomplete="off" />
+  </div>
+
+  {
+    turnstileSiteKey && (
+      <div class="cf-turnstile" data-sitekey={turnstileSiteKey} data-appearance="interaction-only" />
+    )
+  }
+
+  <button class="ef-submit" type="submit">Send my property details</button>
+
+  <p class="ef-status" data-ef-status role="status" aria-live="polite" hidden></p>
+  <noscript>
+    <p class="ef-note">
+      This form needs JavaScript to send your photos. Without it, call
+      {business.phonePrimary} or email {business.email}.
+    </p>
+  </noscript>
+</form>
+
+{turnstileSiteKey && <script is:inline async src="https://challenges.cloudflare.com/turnstile/v0/api.js" />}
+
+<script>
+  import { initIntakeForms } from '../scripts/intake-form';
+  initIntakeForms();
+</script>

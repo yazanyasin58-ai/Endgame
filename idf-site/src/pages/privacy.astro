@@ -1,0 +1,167 @@
+---
+/**
+ * Privacy policy.
+ *
+ * Written from what this site actually does, verified against the code rather
+ * than adapted from another company's policy — the client asked for original
+ * wording, and a borrowed policy describes a stack you do not run.
+ *
+ * Every claim below traces to something in this repository:
+ *   forms          -> functions/api/estimate.ts
+ *   file storage   -> the ESTIMATE_UPLOADS R2 binding in that function
+ *   email delivery -> Resend, same file
+ *   bot check      -> Cloudflare Turnstile, same file
+ *   maps           -> the Google Maps iframe on / and /contact/
+ *   reviews        -> functions/api/reviews.ts, server side, no visitor data
+ *   storage        -> localStorage in PromoBar.astro and LeadPopup.astro
+ *   analytics      -> none. There is no analytics script on this site.
+ *
+ * If any of those change, this page changes with them. It should also be read
+ * by the company's attorney before launch; it is accurate, but accurate is not
+ * the same as sufficient for every jurisdiction the company may later sell in.
+ */
+import Page from '../layouts/Page.astro';
+import { business, legalUpdated } from '../content/idf';
+---
+
+<Page
+  title={`Privacy Policy — ${business.name}`}
+  description={`How ${business.name} handles the information you send through this website.`}
+  heading="Privacy Policy"
+  standfirst={`What we collect, why, and what we do with it. Last updated ${legalUpdated}.`}
+>
+  <section class="hp-section hp-section--tight">
+    <div class="legal">
+      <h2>Who we are</h2>
+      <p>
+        {business.name} is a Virginia Class A general contractor based in Sterling,
+        Virginia. Our licence number is {business.license}. If you have a question about
+        anything on this page, write to <a href={`mailto:${business.email}`}>{business.email}</a>
+        or call <a href={business.phonePrimaryHref}>{business.phonePrimary}</a>.
+      </p>
+
+      <h2>What we collect</h2>
+      <p>
+        We collect information in one way only: you type it into a form on this site
+        and send it to us. We do not buy contact lists, and there is no analytics or
+        advertising tracker on this website.
+      </p>
+      <p>The forms ask for some or all of the following, depending on which one you use:</p>
+      <ul>
+        <li>Your name, phone number and email address</li>
+        <li>The property address the work concerns</li>
+        <li>What kind of work you want, your budget range and your timeframe</li>
+        <li>Anything you write in the details box</li>
+        <li>Photographs or PDFs you choose to attach</li>
+      </ul>
+      <p>
+        Our server also records the IP address and browser user-agent the submission
+        arrived from, alongside the submission itself. That is there so we can tell a
+        real enquiry from an automated one.
+      </p>
+      <p>
+        We do not ask for, and you should not send us, your date of birth, social
+        security number, bank or card details, or income and employment information.
+        No form on this site collects any of those. If financing is discussed, that
+        happens directly with the lender on their own secure system, not here.
+      </p>
+
+      <h2>What we do with it</h2>
+      <p>
+        We use it to answer you and to price and carry out your work. That is the whole
+        purpose. We do not sell it, rent it, or share it for anyone else's marketing.
+      </p>
+      <p>When you send a form, two things happen:</p>
+      <ul>
+        <li>
+          The submission and any files you attached are written to encrypted object
+          storage on Cloudflare's network, so an enquiry cannot be lost to a failed email.
+        </li>
+        <li>
+          A notification is emailed to our own staff addresses through Resend, our email
+          delivery provider.
+        </li>
+      </ul>
+      <p>
+        We share information with other people only where the work requires it — for
+        example, giving a subcontractor the site address so they can attend — or where
+        the law requires it of us.
+      </p>
+
+      <h2>Other companies involved in running this site</h2>
+      <ul>
+        <li>
+          <strong>Cloudflare</strong> hosts this website and stores form submissions.
+          As the host, it processes the network requests your browser makes, which
+          includes your IP address.
+        </li>
+        <li>
+          <strong>Cloudflare Turnstile</strong> checks that a form was sent by a person
+          rather than a script. It runs in your browser when you use a form.
+        </li>
+        <li>
+          <strong>Resend</strong> delivers the notification emails to us.
+        </li>
+        <li>
+          <strong>Google Maps</strong> is embedded on our home and contact pages so you
+          can find the showroom. Loading that map is a request to Google, and Google
+          receives it under its own privacy policy. Nothing you type into our forms is
+          sent to Google.
+        </li>
+        <li>
+          <strong>Google Reviews</strong> shown on this site are fetched by our server
+          from Google, not by your browser. No information about you is involved.
+        </li>
+      </ul>
+
+      <h2>Cookies and browser storage</h2>
+      <p>
+        We do not set advertising or analytics cookies, because we do not run
+        advertising or analytics on this site.
+      </p>
+      <p>
+        We do use your browser's local storage for two small conveniences: remembering
+        that you closed the offer bar at the top of the page, and remembering that you
+        closed the offer pop-up. Both are a single yes/no value stored in your own
+        browser. They are never sent to us and never leave your device. Clearing your
+        browsing data removes them.
+      </p>
+      <p>
+        Cloudflare and Google may set their own cookies as part of the security check
+        and the embedded map. Those are theirs, governed by their policies, not ours.
+      </p>
+
+      <h2>How long we keep it</h2>
+      <p>
+        Enquiries that become jobs are kept as part of the project record, because we
+        need them for warranty, tax and licensing purposes. Enquiries that do not become
+        jobs are kept while there is a reasonable prospect of the conversation resuming,
+        and are removed after that.
+      </p>
+
+      <h2>Your choices</h2>
+      <p>
+        Write to <a href={`mailto:${business.email}`}>{business.email}</a> and ask us to
+        send you a copy of what we hold about you, correct something that is wrong, or
+        delete it. We will do it. If we are required to keep something — a completed
+        contract, for instance — we will tell you what and why.
+      </p>
+      <p>
+        We only email you about your own enquiry or your own job. If we ever start
+        sending anything else, every message will carry an unsubscribe link.
+      </p>
+
+      <h2>Children</h2>
+      <p>
+        This site is for people arranging construction work on a property. It is not
+        directed at children and we do not knowingly collect information from them.
+      </p>
+
+      <h2>Changes</h2>
+      <p>
+        If we change how any of this works, we change this page and update the date at
+        the top of it.
+      </p>
+    </div>
+  </section>
+</Page>

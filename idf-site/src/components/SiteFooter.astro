@@ -1,0 +1,84 @@
+---
+import { business, hours, serviceArea, writeReviewUrl, googleSnapshot } from '../content/idf';
+import SocialLinks from './SocialLinks.astro';
+import Logo from './Logo.astro';
+---
+
+<footer class="foot">
+  <div class="foot-inner">
+    {/* Logo, then the social icons, then the Google review button — the
+        presentation the client asked for, in that reading order. */}
+    <div class="foot-brand">
+      <Logo class="foot-logo" />
+      <div class="foot-marks">
+        <SocialLinks class="foot-social foot-social--brand" />
+        <a class="foot-review" href={writeReviewUrl} target="_blank" rel="noopener noreferrer">
+          <span class="foot-review-g" aria-hidden="true">G</span>
+          <span class="foot-review-text">
+            Review us on Google
+            <span class="foot-review-sub">{googleSnapshot.rating} from {googleSnapshot.total} reviews</span>
+          </span>
+        </a>
+      </div>
+    </div>
+
+    <div class="foot-cols">
+      <div class="foot-col">
+        <h3 class="foot-head">Showroom</h3>
+        <p>45431 Ruritan Circle, Suite 160<br />Sterling, VA 20164</p>
+        <h3 class="foot-head foot-head--spaced">Hours</h3>
+        <ul class="foot-hours">
+          {
+            hours.map((h) => (
+              <li>
+                <span>{h.days}</span>
+                <span>{h.open} – {h.close}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+      <div class="foot-col">
+        <h3 class="foot-head">Contact</h3>
+        <p>
+          <a href={business.phonePrimaryHref}>{business.phonePrimary}</a><br />
+          <a href={business.phoneSecondaryHref}>{business.phoneSecondary}</a><br />
+          <a href={`mailto:${business.email}`}>{business.email}</a>
+        </p>
+      </div>
+      <div class="foot-col">
+        <h3 class="foot-head">License</h3>
+        <p>{business.license}<br />Licensed &amp; Insured · Residential</p>
+        <h3 class="foot-head foot-head--spaced">Start here</h3>
+        <p>
+          <a href="/estimate/">Request a free estimate</a><br />
+          <a href="/list-your-home/">List your home</a>
+        </p>
+      </div>
+    </div>
+
+    <div class="foot-area">
+      <h3 class="foot-head">Service area</h3>
+      <p>{serviceArea.detail}</p>
+      <ul class="foot-regions">
+        {serviceArea.regions.map((r) => <li>{r}</li>)}
+      </ul>
+    </div>
+
+    <div class="foot-legal">
+      <p class="foot-fine">
+        &copy; 2026 {business.name} · {business.lockup} · Sterling, Virginia
+      </p>
+      <p class="foot-ai">
+        The film on our home page is illustrative and AI generated. It is not a
+        photograph of one of our projects. Our completed work is shown on the
+        <a href="/projects/">projects page</a>.
+      </p>
+      <ul class="foot-legal-links">
+        <li><a href="/privacy/">Privacy Policy</a></li>
+        <li><a href="/terms/">Terms &amp; Conditions</a></li>
+        <li><a href="/sitemap/">Sitemap</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>

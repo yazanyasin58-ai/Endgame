@@ -1,0 +1,17 @@
+---
+/**
+ * A content slot that exists in the layout but is blocked pending client
+ * confirmation (§2 unconfirmed facts). Rendered visibly as blocked — never
+ * softened into publishable copy.
+ */
+interface Props {
+  label: string;
+}
+
+const { label } = Astro.props;
+---
+
+<div class="blocked" role="note">
+  <span class="blocked-tag">Blocked</span>
+  <span>{label}</span>
+</div>
