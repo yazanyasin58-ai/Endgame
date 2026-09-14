@@ -7,6 +7,8 @@
  * drift between variants and a copy change lands in all three at once.
  */
 import ScrubHero from './ScrubHero.astro';
+import DraftRule from './DraftRule.astro';
+import FrameToFinish from './FrameToFinish.astro';
 import Placeholder from './Placeholder.astro';
 import ReviewCarousel from './ReviewCarousel.astro';
 import EstimateForm from './EstimateForm.astro';
@@ -24,6 +26,8 @@ import {
   cta,
   hours,
   serviceArea,
+  countOn,
+  googleSnapshot,
 } from '../content/idf';
 import { optionalImage, firstImage, heroImages } from '../lib/images';
 
@@ -65,7 +69,7 @@ const homeCards = ['project-kitchen-blue-island', 'project-framing-interior', 'p
     <ul>{trustBar.map((item) => <li>{item}</li>)}</ul>
   </section>
 
-  <!-- FIGURES — every one verifiable -->
+  <!-- FIGURES. Every one verifiable -->
   <section class="hp-section hp-figures-wrap" aria-labelledby="hp-figures-h">
     <h2 id="hp-figures-h" class="hp-visually-hidden">By the numbers</h2>
     <div class="hp-figures">
@@ -87,7 +91,8 @@ const homeCards = ['project-kitchen-blue-island', 'project-framing-interior', 'p
   </section>
 
   <!-- WHAT WE BUILD -->
-  <section class="hp-section" id="what-we-build" aria-labelledby="hp-pillars-h">
+  <section class="hp-section rv" id="what-we-build" aria-labelledby="hp-pillars-h">
+    <DraftRule label="01 / Scope" />
     <h2 id="hp-pillars-h" class="hp-h2">What we build</h2>
     <p class="hp-sub hp-italic">Three ways to start, one team throughout.</p>
     <div class="hp-pillars">
@@ -109,7 +114,8 @@ const homeCards = ['project-kitchen-blue-island', 'project-framing-interior', 'p
   </section>
 
   <!-- WHY ONE TEAM -->
-  <section class="hp-section hp-wedge" id="why-one-team" aria-labelledby="hp-wedge-h">
+  <section class="hp-section hp-wedge rv" id="why-one-team" aria-labelledby="hp-wedge-h">
+    <DraftRule label="02 / Who does it" />
     <h2 id="hp-wedge-h" class="hp-h2">Why one team</h2>
     <p class="hp-wedge-tagline hp-italic">&ldquo;{wedge.tagline}&rdquo;</p>
     <div class="hp-wedge-copy">
@@ -118,8 +124,37 @@ const homeCards = ['project-kitchen-blue-island', 'project-framing-interior', 'p
     </div>
   </section>
 
+  {/* THE INTERACTIVE MOMENT. The visitor performs the page's one idea. */}
+  <FrameToFinish />
+
+  {/* WHAT YOU CAN COUNT ON. The section the customer research earned: it
+      answers, in order, the objections buyers actually raise about
+      contractors. Every point is approved copy. */}
+  <section class="hp-section rv" id="count-on" aria-labelledby="hp-count-h">
+    <div class="hco">
+      <DraftRule label="03 / What holds" />
+      <h2 id="hp-count-h" class="hp-h2">What you can count on</h2>
+      <ul class="hco-list">
+        {countOn.map((point) => (
+          <li>
+            <h3 class="hco-t">{point.title}</h3>
+            <p class="hco-d">
+              {point.detail}
+              {'showRating' in point && point.showRating && (
+                <span class="hco-rating" data-live-figure="googleRating">
+                  {googleSnapshot.rating} / 5 &middot; {googleSnapshot.total} reviews
+                </span>
+              )}
+            </p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
   <!-- SELECTED PROJECTS -->
-  <section class="hp-section" id="selected-projects" aria-labelledby="hp-projects-h">
+  <section class="hp-section rv" id="selected-projects" aria-labelledby="hp-projects-h">
+    <DraftRule label="04 / The work" />
     <h2 id="hp-projects-h" class="hp-h2">Selected projects</h2>
     <p class="hp-sub hp-italic">Real work, from the framing through to the finish.</p>
     <div class="hp-projects">
@@ -128,7 +163,7 @@ const homeCards = ['project-kitchen-blue-island', 'project-framing-interior', 'p
           <figure class="hp-project">
             <Placeholder
               ratio="4 / 3"
-              label={`Reserved — ${card.caption.toLowerCase()}`}
+              label={`Reserved: ${card.caption.toLowerCase()}`}
               src={card.src}
               alt={card.alt}
               real
@@ -173,7 +208,8 @@ const homeCards = ['project-kitchen-blue-island', 'project-framing-interior', 'p
   </section>
 
   <!-- HOW IT WORKS -->
-  <section class="hp-section" id="how-it-works" aria-labelledby="hp-process-h">
+  <section class="hp-section rv" id="how-it-works" aria-labelledby="hp-process-h">
+    <DraftRule label="05 / The order" />
     <h2 id="hp-process-h" class="hp-h2">How it works</h2>
     <p class="hp-sub hp-italic">Five steps, one of them unusually fast.</p>
     <ol class="hp-steps">
@@ -248,3 +284,50 @@ const homeCards = ['project-kitchen-blue-island', 'project-framing-interior', 'p
     </div>
   </section>
 </main>
+
+<script>
+  /**
+   * Entrances for the page below the hero.
+   *
+   * One observer drives both the section arrivals and the drafting rules
+   * drawing themselves. Elements are unobserved once they have arrived, so
+   * nothing keeps running after it is done.
+   *
+   * Reduced motion is honored live and in BOTH directions: flipping it on
+   * pins everything to its finished state, flipping it back off re-arms the
+   * observer rather than leaving the page pinned.
+   */
+  (() => {
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)');
+    const targets = () => [...document.querySelectorAll('.rv, [data-draft-rule]')];
+    let io = null;
+
+    function pinAll() {
+      if (io) { io.disconnect(); io = null; }
+      targets().forEach((el) => el.classList.add('in'));
+    }
+
+    function arm() {
+      if (io) return;
+      io = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add('in');
+          io.unobserve(entry.target);        // arrived: stop watching it
+        });
+      }, { rootMargin: '0px 0px -12% 0px', threshold: 0.08 });
+      targets().forEach((el) => { if (!el.classList.contains('in')) io.observe(el); });
+    }
+
+    function apply() { reduce.matches ? pinAll() : arm(); }
+    reduce.addEventListener('change', apply);
+    apply();
+
+    /* Pause every animation and pseudo-element animation on a hidden tab.
+       animation-play-state does not inherit, so it has to hit each element
+       directly rather than being set on a container. */
+    document.addEventListener('visibilitychange', () => {
+      document.body.classList.toggle('paused', document.hidden);
+    });
+  })();
+</script>

@@ -94,7 +94,7 @@ export const wedge = {
   // Owner-direct accountability copy. No competitor names.
   heading: 'You talk to the owner. Start to finish.',
   body: [
-    'No layers. No hand-offs. When you hire Interior Design Flooring, you work directly with Shawn and Nancy Waziri — the same two people who have run this company since 1989.',
+    'No layers. No hand-offs. When you hire Interior Design Flooring, you work directly with Shawn and Nancy Waziri, the same two people who have run this company since 1989.',
     'The person who walks your site, writes your estimate, and stands behind the work is the owner. Not a project manager you met once.',
   ],
 } as const;
@@ -484,7 +484,7 @@ export const countOn = [
   {
     title: 'Licensed and insured, and you can check',
     detail:
-      'Virginia Class A General Contractor #2705162130. The number is public — look it up with the Department of Professional and Occupational Regulation before you hire anyone, including us.',
+      'Virginia Class A General Contractor #2705162130. The number is public. Look it up with the Department of Professional and Occupational Regulation before you hire anyone, including us.',
   },
   {
     title: 'We are not finished until you are',
@@ -501,7 +501,7 @@ export const countOn = [
   {
     title: 'Thirty-seven years in the same trade',
     detail:
-      'Kitchens, bathrooms, floors, additions, whole-home renovations and custom builds across Northern Virginia since 1989 — long enough to know what the work costs and what it should not.',
+      'Kitchens, bathrooms, floors, additions, whole-home renovations and custom builds across Northern Virginia since 1989, long enough to know what the work costs and what it should not.',
   },
 ] as const;
 

@@ -236,3 +236,170 @@
   .sh-video { transition: none; }
   .sh-band, .sh-band::before { transition: none; animation: none; }
 }
+
+/* ===========================================================================
+   The page below the hero.
+
+   One environment rather than stacked sections, and one signature element (the
+   drafting rule) carrying the boldness budget so everything else can stay
+   quiet. Everything eases; nothing snaps.
+   =========================================================================== */
+
+/* ---- the signature: a drafting rule that draws itself -------------------- */
+.dr {
+  display: flex; align-items: center; gap: 0.75rem;
+  margin: 0 0 1.6rem;
+  max-width: min(26rem, 100%);
+}
+/* min-width: 0 is load-bearing. A flex item defaults to min-width: auto,
+   which resolves to min-content, and for an SVG that is its intrinsic width
+   from the viewBox (400px). Without this the rule refuses to shrink and
+   pushes the whole page sideways on a phone. */
+.dr-svg { flex: 1 1 auto; min-width: 0; width: 100%; height: 8px; overflow: visible; }
+.dr-line, .dr-tick {
+  stroke: var(--gold-deep); stroke-width: 1; vector-effect: non-scaling-stroke;
+}
+.dr-line {
+  stroke-dasharray: 400; stroke-dashoffset: 400;
+  transition: stroke-dashoffset 1100ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.dr-tick { opacity: 0; transition: opacity 300ms ease 900ms; }
+.dr-label {
+  flex: none;
+  font-family: var(--sh-mono); font-size: 0.625rem; font-weight: 500;
+  letter-spacing: 0.18em; text-transform: uppercase; color: var(--gray);
+  opacity: 0; transform: translateX(-6px);
+  transition: opacity 400ms ease 900ms, transform 400ms ease 900ms;
+}
+.dr.in .dr-line { stroke-dashoffset: 0; }
+.dr.in .dr-tick { opacity: 0.8; }
+.dr.in .dr-label { opacity: 1; transform: none; }
+
+/* ---- frame to finish: the one interactive moment ------------------------- */
+.ftf { --p: 0; }
+/* Left aligned, because this site's whole direction is left aligned and
+   editorial. A centred block here read as a different template stamped in. */
+.ftf-head { max-width: 46rem; margin: 0 auto 2.5rem; }
+.ftf-head .hp-h2, .ftf-head .hp-sub { text-align: left; }
+.ftf-kicker {
+  margin: 0 0 0.9rem;
+  font-family: var(--sh-mono); font-size: 0.625rem; font-weight: 500;
+  letter-spacing: 0.22em; text-transform: uppercase; color: var(--gold-deep);
+}
+
+.ftf-stage { position: relative; max-width: 62rem; margin-inline: auto; }
+.ftf-frames {
+  position: relative; border-radius: 3px; overflow: hidden;
+  border: 1px solid var(--rule); background: var(--ink);
+  aspect-ratio: 16 / 9;
+}
+.ftf-img {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%; object-fit: cover; display: block;
+}
+/* The finished state fades in over the raw one as the hold progresses. Opacity
+   only, so it stays on the compositor. */
+.ftf-img--done { opacity: var(--p); }
+/* A warm wash that lifts as the room finishes, so the change reads as light
+   arriving rather than only as a crossfade. */
+.ftf-veil {
+  position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(to top, rgb(20 17 13 / 0.55), rgb(20 17 13 / 0.12));
+  opacity: calc(1 - var(--p) * 0.8);
+}
+
+.ftf-hold {
+  position: absolute; left: 50%; bottom: 1.5rem; transform: translateX(-50%);
+  display: inline-flex; align-items: center; gap: 0.85rem;
+  padding: 0.55rem 1.4rem 0.55rem 0.6rem;
+  background: rgb(8 7 5 / 0.62); backdrop-filter: blur(10px);
+  border: 1px solid rgb(201 162 39 / 0.4); border-radius: 999px;
+  color: var(--cream); font: inherit; font-size: 0.875rem;
+  cursor: pointer; touch-action: none;
+  transition: border-color 240ms ease, background 240ms ease;
+}
+.ftf-hold:hover { border-color: var(--gold); background: rgb(8 7 5 / 0.75); }
+.ftf-hold:focus-visible { outline: 2px solid var(--gold-bright); outline-offset: 3px; }
+.ftf-hold-ring { width: 2.25rem; height: 2.25rem; flex: none; }
+.ftf-hold-ring svg { width: 100%; height: 100%; display: block; }
+.ftf-ring-bg { fill: none; stroke: rgb(246 241 231 / 0.22); stroke-width: 3; }
+.ftf-ring-fg {
+  fill: none; stroke: var(--gold); stroke-width: 3; stroke-linecap: round;
+  stroke-dasharray: 151;                       /* 2 * pi * 24 */
+  stroke-dashoffset: calc(151 - 151 * var(--p));
+}
+.ftf.is-done .ftf-hold { border-color: var(--gold); }
+
+.ftf-points {
+  list-style: none; counter-reset: ftf;
+  max-width: 62rem; margin: 2.5rem auto 0; padding: 0;
+  display: grid; gap: 1.5rem;
+}
+@media (min-width: 860px) { .ftf-points { grid-template-columns: repeat(3, 1fr); gap: 2.5rem; } }
+.ftf-points li {
+  counter-increment: ftf;
+  position: relative; padding-top: 1.1rem;
+  border-top: 1px solid var(--rule);
+  font-size: 0.9375rem; line-height: 1.65;
+  /* Readable BEFORE the visitor interacts. Dimming body copy with opacity
+     until someone presses a button fails contrast for everyone who does not,
+     so the unlit state is a real colour that passes and the reward is a
+     colour and rule change instead. */
+  color: var(--gray);
+  transform: translateY(6px);
+  transition: color 500ms ease, transform 500ms ease, border-color 500ms ease;
+}
+.ftf-points li::before {
+  content: counter(ftf, decimal-leading-zero);
+  display: block; margin-bottom: 0.5rem;
+  font-family: var(--sh-mono); font-size: 0.625rem; letter-spacing: 0.16em;
+  color: var(--gold-deep);
+}
+.ftf-points li strong { color: var(--charcoal); font-weight: 600; transition: color 500ms ease; }
+.ftf.is-done .ftf-points li strong { color: var(--ink); }
+/* the visitor's action earns something: the points light in sequence */
+.ftf.is-done .ftf-points li { color: var(--charcoal); transform: none; border-color: var(--gold-deep); }
+.ftf.is-done .ftf-points li:nth-child(2) { transition-delay: 140ms; }
+.ftf.is-done .ftf-points li:nth-child(3) { transition-delay: 280ms; }
+
+/* ---- what you can count on, on the homepage ----------------------------- */
+.hco { max-width: 62rem; margin-inline: auto; }
+.hco-list { list-style: none; margin: 2.5rem 0 0; padding: 0; }
+.hco-list li {
+  padding: 1.5rem 0; border-top: 1px solid var(--rule);
+  display: grid; gap: 0.4rem 2rem;
+}
+@media (min-width: 780px) {
+  .hco-list li { grid-template-columns: 18rem 1fr; align-items: baseline; }
+}
+.hco-list li:last-child { border-bottom: 1px solid var(--rule); }
+.hco-t { margin: 0; font-size: 1.0625rem; font-weight: 600; color: var(--gold-deep); }
+.hco-d { margin: 0; font-size: 0.9375rem; line-height: 1.7; color: var(--charcoal); max-width: 58ch; }
+.hco-rating {
+  display: inline-flex; align-items: baseline; gap: 0.4rem; margin-left: 0.5rem;
+  font-family: var(--sh-mono); font-size: 0.6875rem; letter-spacing: 0.1em;
+  color: var(--gray);
+}
+
+/* ---- entrances ----------------------------------------------------------
+   Prefixed with the container class so a later rule cannot silently cancel
+   them, and the stagger delays are retired after arrival so hovers on the
+   later siblings never lag. */
+.rv { opacity: 0; transform: translateY(18px); }
+.rv.in { opacity: 1; transform: none;
+  transition: opacity 700ms cubic-bezier(0.22,1,0.36,1), transform 700ms cubic-bezier(0.22,1,0.36,1); }
+
+@media (prefers-reduced-motion: reduce) {
+  .rv, .rv.in { opacity: 1; transform: none; transition: none; }
+  .dr-line { stroke-dashoffset: 0; transition: none; }
+  .dr-tick, .dr-label { opacity: 0.8; transform: none; transition: none; }
+  .dr-label { opacity: 1; }
+  .ftf-points li { transform: none; transition: none; }
+  .ftf-hold { display: none; }
+}
+
+/* animation-play-state is not inherited, so the pause has to reach every
+   element and pseudo-element directly rather than being set on a container. */
+body.paused *,
+body.paused *::before,
+body.paused *::after { animation-play-state: paused !important; }

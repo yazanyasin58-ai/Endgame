@@ -1435,3 +1435,11 @@
 }
 .foot-legal-links a { font-size: 0.8125rem; color: var(--stone); }
 .foot-legal-links a:hover { color: var(--cream); }
+
+/* The hero film is generated, and the footer says so. A visitor could
+   otherwise reasonably read it as one of this company's own jobs. */
+.foot-ai {
+  flex: 1 1 26rem; margin: 0;
+  font-size: 0.75rem; line-height: 1.6; color: var(--gray);
+}
+.hp .foot .foot-ai a { padding-block: 0; }

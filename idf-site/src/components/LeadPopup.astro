@@ -139,7 +139,7 @@ const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
           const data = await res.json().catch(() => ({ ok: false }));
           if (data.ok) {
             status.className = 'lp-status is-ok';
-            status.textContent = 'Thank you — we will call you back.';
+            status.textContent = 'Thank you. We will call you back.';
             remember();
             setTimeout(close, 2200);
           } else {
