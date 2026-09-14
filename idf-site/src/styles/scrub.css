@@ -1,0 +1,231 @@
+/* ===========================================================================
+   The scroll-scrubbed hero.
+
+   A tall pinned region containing a sticky full-viewport stage. Progress
+   through the pinned region maps 0 to 1 and drives the film's time, so the
+   page settles exactly when the film reaches its composed resting frame.
+
+   Sized in scroll distance, not seconds: a 24 second journey needs room for
+   every beat, which is why the hero is 1200vh rather than something tuned to
+   the clip's duration.
+
+   THE FIVE STATIC-HERO GATES appear here and in ScrubHero.astro. They must
+   match character for character in both places, or one side loads assets the
+   other side hides.
+   =========================================================================== */
+
+.sh {
+  position: relative;
+  height: 1200vh;               /* the scroll distance, not the clip length */
+  background: var(--ink);
+}
+
+.sh-stage {
+  position: sticky; top: 0;
+  height: 100vh; width: 100%;
+  overflow: hidden;
+  background: var(--ink);
+}
+
+.sh-video {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 600ms ease;
+  /* its own compositor layer, so its repaints never drag the page */
+  will-change: transform;
+  transform: translateZ(0);
+}
+.sh-stage.video-ready .sh-video { opacity: 1; }
+.sh-stage.video-failed .sh-video { display: none; }
+
+.sh-poster {
+  position: absolute; inset: 0;
+  background-size: cover; background-position: center;
+  background-color: var(--ink);
+}
+
+/* 1. The global base scrim. Always on, so no frame is ever raw behind type. */
+.sh-scrim {
+  position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(ellipse 120% 90% at 50% 45%,
+    rgb(10 9 6 / 0) 35%, rgb(10 9 6 / 0.62) 100%);
+}
+
+/* ---- the caption bands ---------------------------------------------------
+   Four beats sit in the calm left column the frame was composed to leave.
+   The settle centres, because by then the camera has come to rest and the
+   floor fills the lower half. */
+
+.sh-band {
+  position: absolute; z-index: 2;
+  left: clamp(1.5rem, 6vw, 6rem);
+  right: clamp(1.5rem, 6vw, 6rem);
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0;
+  max-width: 46rem;
+  color: var(--cream);
+  text-shadow: var(--sh-tshadow);
+  pointer-events: none;
+}
+.sh-band.is-settle { max-width: 54rem; }
+
+/* 2. The per-band scrim. Rides the band's own opacity and deepens with its
+      assembly progress, so the footage dims exactly while this text is on and
+      nowhere else. Dies out by 76 percent so the corners stay alive. */
+.sh-band::before {
+  content: ""; position: absolute; inset: -8% -6%;
+  pointer-events: none; z-index: -1;
+  opacity: calc(0.25 + 0.75 * var(--k, 1));
+  background: radial-gradient(ellipse 74% 68% at 34% 50%,
+    rgb(5 4 3 / 0.70) 0%, rgb(5 4 3 / 0.46) 46%, rgb(5 4 3 / 0) 76%);
+}
+.sh-band.is-settle::before {
+  background: radial-gradient(ellipse 80% 70% at 50% 50%,
+    rgb(5 4 3 / 0.72) 0%, rgb(5 4 3 / 0.48) 46%, rgb(5 4 3 / 0) 76%);
+}
+
+.sh-kicker {
+  margin: 0 0 1.1rem;
+  font-family: var(--sh-mono);
+  font-size: 0.6875rem; font-weight: 500;
+  letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--gold);
+}
+.sh-line {
+  margin: 0;
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 300;
+  font-size: clamp(2.1rem, 6.2vw, 5rem);
+  line-height: 1.02;
+  letter-spacing: -0.015em;
+}
+.sh-sub {
+  margin: 1.2rem 0 0;
+  font-size: clamp(1rem, 1.7vw, 1.28rem);
+  line-height: 1.5;
+  color: var(--cream);
+  font-style: italic;
+  opacity: 0.92;
+}
+
+/* ---- text choreography ---------------------------------------------------
+   Every entrance is transform and opacity only, scrubbed off the band's --k,
+   and fully reversible. Band one carries a one-time load ramp so the hero
+   never opens on footage with no words. */
+
+.sh-line .w { display: inline-block; white-space: nowrap; }
+.sh-line .c { display: inline-block; will-change: transform, opacity; }
+.sh-sr {
+  position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
+  overflow: hidden; clip-path: inset(50%); white-space: nowrap;
+}
+
+/* (f) drift-down. Echoes the fall through the roof. */
+.e-drift .w {
+  --kc: clamp(0, (var(--k, 0) - var(--th, 0)) * 2.8, 1);
+  opacity: var(--kc);
+  transform: translateY(calc((1 - var(--kc)) * -26px));
+}
+
+/* (i) weave. Characters arrive alternately from above and below, echoing the
+       camera passing between the rafters. */
+.e-weave .c {
+  --kc: clamp(0, (var(--k, 0) - var(--th, 0)) * 2.6, 1);
+  opacity: var(--kc);
+  transform: translateY(calc((1 - var(--kc)) * var(--jy, 0px)));
+}
+
+/* (h) halves parting. Echoes the camera passing through the door opening. */
+.e-part .w {
+  --kc: clamp(0, (var(--k, 0) - var(--th, 0)) * 2.4, 1);
+  opacity: var(--kc);
+  transform: translateX(calc((1 - var(--kc)) * var(--jx, 0px)));
+}
+
+/* (c) blur-to-sharp. Echoes the room resolving into finish. Two stacked
+       copies crossfaded by opacity; the soft copy's blur is STATIC, because
+       animating filter is not compositor friendly. */
+.e-focus { position: relative; }
+.e-focus .soft {
+  position: absolute; inset: 0;
+  filter: blur(12px);
+  opacity: calc(1 - var(--k, 0));
+}
+.e-focus .sharp { opacity: var(--k, 0); }
+
+/* (e) word-by-word rise into a staged settle. Three arrivals, one band. */
+.e-rise .w {
+  --kc: clamp(0, (var(--k, 0) - var(--th, 0)) * 2.6, 1);
+  opacity: var(--kc);
+  transform: translateY(calc((1 - var(--kc)) * 30px));
+}
+.e-rise .sh-sub {
+  opacity: clamp(0, (var(--k, 0) - 0.66) * 4, 1);
+  transform: translateY(calc((1 - clamp(0, (var(--k, 0) - 0.66) * 4, 1)) * 14px));
+}
+.sh-actions {
+  margin-top: 2rem;
+  display: flex; flex-wrap: wrap; gap: 1rem 1.5rem; align-items: baseline;
+  pointer-events: auto;
+  opacity: clamp(0, (var(--k, 0) - 0.78) * 5, 1);
+  transform: translateY(calc((1 - clamp(0, (var(--k, 0) - 0.78) * 5, 1)) * 14px));
+}
+.sh-actions .hp-btn { text-shadow: none; }
+
+/* ---- the loading ring ----------------------------------------------------
+   An honest progress ring while the film streams, never a stuck spinner. */
+.sh-load {
+  position: absolute; z-index: 3;
+  right: clamp(1.5rem, 4vw, 3rem); bottom: clamp(1.5rem, 4vw, 3rem);
+  width: 48px; height: 48px; color: var(--gold);
+  opacity: 0.85; transition: opacity 400ms ease;
+}
+.sh-stage.video-ready .sh-load { opacity: 0; }
+.sh-load circle { transition: stroke-dashoffset 120ms linear; }
+
+.sh-cue {
+  position: absolute; z-index: 3;
+  right: clamp(1.5rem, 4vw, 3rem); bottom: clamp(1.5rem, 4vw, 3rem);
+  font-family: var(--sh-mono); font-size: 0.625rem; letter-spacing: 0.2em;
+  text-transform: uppercase; color: var(--stone);
+}
+
+/* A scrub-capable screen that is merely short has no room for the overlay. */
+@media (max-height: 560px) { .sh-load, .sh-cue { display: none; } }
+
+/* ---- the static hero -----------------------------------------------------
+   A designed layout, not a fallback apology: the ending frame with the
+   composed copy over it. THE FIVE GATES, matched exactly in ScrubHero.astro. */
+
+.sh-static { display: none; }
+
+@media (max-width: 720px),
+       (orientation: portrait) and (max-width: 1024px),
+       (orientation: portrait) and (pointer: coarse),
+       (orientation: landscape) and (pointer: coarse) and (max-height: 560px),
+       (prefers-reduced-motion: reduce) {
+  .sh { height: auto; }
+  .sh-stage { position: static; height: auto; min-height: 78vh; }
+  .sh-video, .sh-band, .sh-load, .sh-cue { display: none !important; }
+  .sh-static { display: block; }
+}
+
+.sh-static {
+  position: relative;
+  min-height: 78vh;
+  padding: clamp(3rem, 10vw, 6rem) clamp(1.5rem, 6vw, 4rem) clamp(2.5rem, 8vw, 5rem);
+  display: flex; flex-direction: column; justify-content: flex-end;
+  color: var(--cream);
+  text-shadow: var(--sh-tshadow);
+}
+.sh-static-copy { position: relative; z-index: 2; max-width: 34rem; }
+.sh-static .sh-line { font-size: clamp(2rem, 8vw, 3.4rem); }
+
+/* ---- reduced motion ------------------------------------------------------ */
+@media (prefers-reduced-motion: reduce) {
+  .sh-video { transition: none; }
+  .sh-band, .sh-band::before { transition: none; animation: none; }
+}
