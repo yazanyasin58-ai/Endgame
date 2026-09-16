@@ -535,6 +535,42 @@
   background: var(--paper); border: 1px solid var(--rule); border-radius: 0.5rem;
   box-shadow: 0 18px 40px rgb(20 17 13 / 0.14);
   padding: 0.5rem;
+
+  /* The panel carries the whole site: 35 links, which measures 2056px tall.
+     No viewport this site targets is anywhere near that, so without a cap it
+     runs off the bottom of the screen by 1275px at 1440x900 and 1473px at
+     390x667, and roughly two thirds of the navigation cannot be reached.
+
+     It used to be survivable by accident. The panel is absolutely positioned
+     against a header that was in normal flow, so scrolling the page dragged
+     the panel up and the rest of the list came into view. Making the header
+     sticky pinned the panel to the top of the screen with it, and scrolling
+     stopped revealing anything at all: the menu simply ended mid-list.
+
+     So the panel scrolls itself. 10rem covers the tallest case the header
+     reaches (76px bar plus the promo strip and the panel's own offset put
+     its top at 136px) and leaves a margin at the bottom, so the last link is
+     always reachable without the panel touching the edge of the screen.
+
+     dvh, with vh underneath it for engines that lack dvh: on mobile browsers
+     vh is the tallest the viewport ever gets, so a vh-based cap hides the
+     final item behind the address bar exactly when it is on screen.
+
+     overscroll-behavior stops a flick at the end of the list from handing
+     the scroll to the page underneath and moving the site behind an open
+     menu. */
+  max-height: calc(100vh - 10rem);
+  max-height: calc(100dvh - 10rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+/* Below 768px the call bar is fixed across the bottom of the screen, so the
+   panel has that much less room before it runs underneath it. */
+@media (max-width: 767px) {
+  .hp-menu-panel {
+    max-height: calc(100vh - 10rem - 3.5rem);
+    max-height: calc(100dvh - 10rem - 3.5rem);
+  }
 }
 .hp-menu-panel a {
   display: block; padding: 0.7rem 0.8rem; border-radius: 0.35rem;

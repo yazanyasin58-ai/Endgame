@@ -230,34 +230,36 @@ const isCurrent = (entry: NavEntry) =>
    * actually stuck and that space is still on screen, so the translate
    * leaves a bar-shaped hole of bare page background where the header was.
    *
-   * The first version decided "the film owns the viewport" by watching the
-   * hero against a band 10% of the viewport tall. That is a guess about
-   * where the hero starts, and it was wrong for most real visitors: the
-   * promo bar ships hidden and is revealed by script, and stays hidden for
-   * good once dismissed, which lifts the hero from y=131 to y=76. Under a
-   * 90px band the hero then counted as intersecting at scroll 0, so the
-   * header tucked on load and every returning visitor opened the site to a
-   * white gap where the navigation should be.
+   * An earlier version guessed at "the film owns the viewport" by watching
+   * the hero against a band 10% of the viewport tall. The promo bar ships
+   * hidden and is revealed by script, and stays hidden for good once
+   * dismissed, which lifts the hero from y=131 to y=76; under a 90px band
+   * the hero then counted as visible at scroll 0, the header tucked on load,
+   * and every returning visitor opened the site to a white gap where the
+   * navigation should be.
    *
-   * So the condition is not estimated any more, it is measured, by two 1px
-   * sentinels pinned inside the hero:
+   * A second version replaced the band with sentinel elements pinned inside
+   * the hero, which fixed the gap and introduced a quieter fault:
+   * IntersectionObserver reports CHANGES in intersection, and a jump from
+   * mid-hero to past the hero leaves a 1px sentinel non-intersecting on both
+   * sides of the jump, so no callback fires and the state goes stale. Normal
+   * wheel scrolling drags the sentinel through the viewport and hides this
+   * completely. Pressing End, or following an in-page anchor, does not, and
+   * the header stays tucked away for the rest of the page.
    *
-   *   top sentinel     at the hero's top
-   *   bottom sentinel  one viewport up from the hero's bottom, which is the
-   *                    exact point where the sticky stage stops sticking and
-   *                    the film has played out
+   * So the condition is evaluated directly, because it is two comparisons:
    *
-   * Tuck only between them: the top has gone above the viewport and the
-   * bottom has not. The first half of that is precisely "the header is
-   * stuck", because the header sits directly above the hero, so the hole
-   * cannot happen by construction rather than by a margin being lucky.
+   *   r.top <= 0              the hero's top is above the viewport, which is
+   *                           also exactly "the header is stuck", since the
+   *                           header sits immediately above the hero. The
+   *                           hole is therefore impossible by construction.
+   *   r.bottom > innerHeight  the sticky stage is still sticking, ie the film
+   *                           has not played out yet.
    *
-   * Sentinels rather than arithmetic on the hero's own rect because
-   * IntersectionObserver fires on threshold crossings, and a 700vh element
-   * does not cross one at the moment its top edge passes y=0. A 1px element
-   * crossing the viewport edge is exactly the event we want. It also means
-   * no scroll listener, no per-frame work, and nothing to recompute on
-   * resize, since both sentinels move with the hero.
+   * True at every scroll position, however it was reached, with no state to
+   * go stale and nothing to recompute on resize. The listener is passive and
+   * coalesced into one rAF, so a burst of scroll events costs a single rect
+   * read per frame, and it is only attached on the one page that has a hero.
    *
    * Reduced motion keeps the bar visible throughout rather than animating it
    * in and out. The header is then simply sticky, which is the accessible
@@ -269,48 +271,34 @@ const isCurrent = (entry: NavEntry) =>
   const sticky = window.matchMedia('(min-width: 768px)');
 
   if (header && hero) {
-    let io: IntersectionObserver | null = null;
-    let marks: HTMLElement[] = [];
+    let queued = false;
 
-    /* Inert, invisible, and out of the accessibility tree. .sh is
-       position: relative, so these anchor to the hero itself. */
-    const mark = (css: string) => {
-      const el = document.createElement('div');
-      el.setAttribute('aria-hidden', 'true');
-      el.style.cssText =
-        'position:absolute;left:0;width:1px;height:1px;pointer-events:none;visibility:hidden;' + css;
-      hero.appendChild(el);
-      return el;
+    const update = () => {
+      queued = false;
+      const r = hero.getBoundingClientRect();
+      header.classList.toggle('is-tucked', r.top <= 0 && r.bottom > window.innerHeight);
     };
 
-    let topGone = false;   // hero's top edge is above the viewport
-    let endGone = false;   // the film has finished playing
+    const onScroll = () => {
+      if (queued) return;
+      queued = true;
+      requestAnimationFrame(update);
+    };
 
-    const paint = () =>
-      header.classList.toggle('is-tucked', topGone && !endGone);
-
+    let armed = false;
     const arm = () => {
-      if (io) return;
-      if (!marks.length) marks = [mark('top:0'), mark('bottom:100vh')];
-      io = new IntersectionObserver(
-        (entries) => {
-          for (const e of entries) {
-            /* Above the viewport, not merely out of it: an element below the
-               fold is also "not intersecting" and must not count. */
-            const gone = !e.isIntersecting && e.boundingClientRect.top < 0;
-            if (e.target === marks[0]) topGone = gone;
-            else endGone = gone;
-          }
-          paint();
-        },
-        { threshold: 0 },
-      );
-      for (const m of marks) io.observe(m);
+      if (armed) return;
+      armed = true;
+      addEventListener('scroll', onScroll, { passive: true });
+      addEventListener('resize', onScroll, { passive: true });
+      update();
     };
 
     const disarm = () => {
-      io?.disconnect();
-      io = null;
+      if (!armed) return;
+      armed = false;
+      removeEventListener('scroll', onScroll);
+      removeEventListener('resize', onScroll);
       header.classList.remove('is-tucked');
     };
 
