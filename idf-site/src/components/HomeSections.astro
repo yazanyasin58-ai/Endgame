@@ -22,8 +22,12 @@ import {
   reviews,
   features,
   figures,
+  hours,
+  serviceArea,
 } from '../content/idf';
 import { optionalImage } from '../lib/images';
+
+const mapEmbed = `https://maps.google.com/maps?q=${encodeURIComponent(business.address)}&z=15&output=embed`;
 
 /**
  * Three cards for the homepage strip, chosen to show the whole job rather than
@@ -200,12 +204,50 @@ const homeCards = ['project-kitchen-blue-island', 'project-framing-interior', 'p
     </div>
   </section>
 
-  {/* The showroom block (address, hours, service area, map embed) used to
-      close the page. /contact/ carries all of it in more detail, and the
-      footer on every page already prints the address, the hours and the
-      service area, so the only thing that lived here alone was the map
-      iframe. Removing it also stops the homepage loading a Google Maps
-      frame nobody scrolled to. */}
+  {/* SHOWROOM. /contact/ carries all of this in more detail and the footer
+      prints the address, the hours and the service area on every page, so on
+      duplication grounds alone this band is redundant and it was cut once on
+      exactly that reasoning. It is here because the CLIENT ASKED FOR THE MAP
+      ON THE HOMEPAGE SPECIFICALLY. That is not a duplication question, so do
+      not cut it for length again without asking them first. */}
+  <section class="hp-showroom" aria-labelledby="hp-showroom-h">
+    <div class="hp-showroom-inner">
+      <div class="hp-showroom-text">
+        <h2 id="hp-showroom-h" class="hp-h2">Visit the showroom</h2>
+        <p class="hp-sub">
+          Contracts are signed here, and selections are made here. Open seven days.
+        </p>
+
+        <address class="hp-showroom-addr">
+          45431 Ruritan Circle, Suite 160<br />Sterling, VA 20164
+        </address>
+
+        <ul class="hp-showroom-hours">
+          {hours.map((h) => (<li><span>{h.days}</span><span>{h.open} – {h.close}</span></li>))}
+        </ul>
+
+        <p class="hp-showroom-area">
+          <strong>{serviceArea.short}</strong><br />{serviceArea.detail}
+        </p>
+
+        <a
+          class="hp-textlink"
+          href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(business.address)}`}
+          target="_blank"
+          rel="noopener noreferrer">Get directions</a
+        >
+      </div>
+
+      <div class="hp-showroom-map">
+        <iframe
+          title="Map showing Interior Design Flooring at 45431 Ruritan Circle, Suite 160, Sterling, VA 20164"
+          src={mapEmbed}
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          allowfullscreen></iframe>
+      </div>
+    </div>
+  </section>
 
 </main>
 
