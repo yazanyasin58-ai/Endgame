@@ -212,4 +212,68 @@ const isCurrent = (entry: NavEntry) =>
       }
     }
   });
+
+  /**
+   * The sticky header's one piece of behaviour: get out of the film's way.
+   *
+   * The header is sticky in CSS from 768px up. On pages with the scrubbed
+   * hero that would pin a paper-coloured bar across the top of a full-screen
+   * film for its whole seven screens, so while the hero owns the viewport
+   * the bar tucks up out of sight and comes back the moment it does not.
+   *
+   * Pages without a hero (every page but the homepage) have no .sh to watch,
+   * so they take the plain sticky behaviour and this whole block exits.
+   *
+   * An IntersectionObserver on the hero is enough and costs nothing per
+   * frame, which a scroll listener would not. The sentinel is the hero
+   * itself: while any part of it is still on screen below the header, the
+   * film is what the visitor is looking at.
+   *
+   * Reduced motion keeps the bar visible throughout rather than animating it
+   * in and out. The header is then simply sticky, which is the accessible
+   * behaviour anyway, and the CSS drops the transition to match.
+   */
+  const header = document.querySelector('.hp-nav');
+  const hero = document.querySelector('.sh');
+  const motionOk = window.matchMedia('(prefers-reduced-motion: no-preference)');
+  const sticky = window.matchMedia('(min-width: 768px)');
+
+  if (header && hero) {
+    let io: IntersectionObserver | null = null;
+
+    const untuck = () => header.classList.remove('is-tucked');
+
+    const arm = () => {
+      if (io) return;
+      io = new IntersectionObserver(
+        ([entry]) => header.classList.toggle('is-tucked', entry.isIntersecting),
+        /* The root is squeezed to a band across the TOP of the viewport, not
+           the whole viewport, and that is the whole trick. Watching the hero
+           against the full viewport reports it as visible the instant the
+           page loads, because at scroll 0 the hero is right there under the
+           header: the bar tucked itself away before the visitor had scrolled
+           a pixel, taking the one call to action off the first screen, which
+           is the opposite of the point.
+
+           Against a band at the very top, the hero only counts once it has
+           climbed far enough to sit under the header, which is exactly when
+           it is filling the screen and the bar is in its way. At rest the
+           hero starts well below the band, so the header stays put. */
+        { rootMargin: '0px 0px -90% 0px' },
+      );
+      io.observe(hero);
+    };
+
+    const disarm = () => {
+      io?.disconnect();
+      io = null;
+      untuck();
+    };
+
+    const apply = () => (sticky.matches && motionOk.matches ? arm() : disarm());
+
+    motionOk.addEventListener('change', apply);
+    sticky.addEventListener('change', apply);
+    apply();
+  }
 </script>

@@ -66,6 +66,46 @@
   border-bottom: 1px solid var(--rule);
   flex-wrap: wrap;
 }
+
+/* Sticky, but only where there is nothing else carrying the call to action.
+   Phones already get .callbar fixed to the bottom of the screen, and this
+   breakpoint is deliberately the same 768px that hides it, so exactly one of
+   the two is on at any width and neither doubles up on the other.
+
+   Why it is worth the pixels: the estimate form sits at the very bottom of
+   the homepage, and before this the "Free Estimate" button was visible once,
+   in the first screen, and then not again for the whole page. A visitor who
+   decided to act halfway down had nothing to act on.
+
+   background is not decoration here. .hp-nav had no background of its own
+   and inherited the page's, which is invisible until it is stuck: from then
+   on the content scrolls underneath it and would have shown straight
+   through. z-index sits above the page and below .callbar (80) and the
+   review chrome (90); the nav's own dropdown panels are 40 and 60 and are
+   children, so they stack inside this element rather than against it. */
+@media (min-width: 768px) {
+  .hp-nav {
+    position: sticky; top: 0; z-index: 70;
+    background: var(--paper);
+    transition: transform 0.28s ease;
+  }
+
+  /* Over the hero the bar gets out of the way. The film is the one thing on
+     this site that is meant to fill the screen, and a paper-coloured strip
+     pinned across the top of it for seven screens undoes that. The script
+     below adds this class while the hero owns the viewport and takes it off
+     the moment the hero is behind us. */
+  .hp-nav.is-tucked { transform: translateY(-100%); }
+
+  /* An anchor landing under a fixed bar is the classic sticky-header bug:
+     #count-on and #how-we-manage are both real nav destinations. Clear the
+     bar's own height plus a little air. */
+  :target { scroll-margin-top: 5.5rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hp-nav { transition: none; }
+}
 .logo {
   text-decoration: none; color: inherit;
   display: flex; align-items: center; gap: 0.6rem;
@@ -420,37 +460,6 @@
 
 .hp .cf-turnstile { margin-top: 1.5rem; }
 
-/* ---------- showroom band (homepage, above the footer) ---------- */
-.hp-showroom {
-  background: var(--cream);
-  border-top: 1px solid var(--rule);
-  padding: clamp(3rem, 6vw, 5rem) clamp(1.25rem, 4vw, 3.5rem);
-}
-.hp-showroom-inner { display: grid; gap: 2.5rem; align-items: start; }
-@media (min-width: 900px) {
-  .hp-showroom-inner { grid-template-columns: 1fr 1.1fr; gap: 4rem; }
-}
-.hp-showroom-addr {
-  font-style: normal; margin-top: 2rem; font-size: 1.0625rem; line-height: 1.7;
-  color: var(--charcoal);
-}
-.hp-showroom-hours {
-  list-style: none; margin: 1.5rem 0 0; padding: 0; font-size: 0.9063rem;
-  max-width: 22rem; color: var(--gray);
-}
-.hp-showroom-hours li {
-  display: flex; justify-content: space-between; gap: 1rem;
-  padding-block: 0.3rem; border-bottom: 1px solid var(--rule);
-}
-.hp-showroom-area {
-  margin-top: 1.75rem; font-size: 0.9063rem; line-height: 1.7; color: var(--gray);
-}
-.hp-showroom-area strong { color: var(--charcoal); }
-.hp-showroom-map {
-  border: 1px solid var(--rule); border-radius: 0.35rem; overflow: hidden;
-  aspect-ratio: 4 / 3;
-}
-.hp-showroom-map iframe { display: block; width: 100%; height: 100%; border: 0; }
 
 /* ---------- footer service area ---------- */
 .hp .foot-area { margin-top: 2.25rem; }
@@ -612,9 +621,21 @@
 .hp-nav-links { display: none; gap: 1.1rem; flex-wrap: nowrap; }
 /* The row used to carry nine links and needed ~1300px beside the logo, so it
    waited for 1340px. Grouping took it to five entries, which is a much
-   narrower row — the breakpoint below is measured against the new width, not
-   inherited from the old one. The Menu disclosure still carries every page. */
-@media (min-width: 1100px) { .hp-nav-links { display: flex; } }
+   narrower row, and the breakpoint came down to 1100 measured against that.
+
+   It is back to nine entries and 1100 was never re-measured against them.
+   Measured now: logo 370px + row 765px + actions 236px + gaps and padding
+   needs 1503px, so from 1100 to 1502 the header wrapped onto a second row
+   and stood 136px tall instead of 76px.
+
+   That was survivable while the header scrolled away with the page. It is
+   not survivable now that it is sticky, because a two-row bar pinned to the
+   top takes 15% of a laptop screen for the whole visit, and 1280, 1366 and
+   1440 are the three commonest laptop widths there are. So this is measured
+   against the row that actually exists: 1503px, rounded to 1520 for air, and
+   below it the Menu disclosure carries every page exactly as it already does
+   from 768 to 1100. */
+@media (min-width: 1520px) { .hp-nav-links { display: flex; } }
 .hp-nav-links a { font-size: 0.875rem; white-space: nowrap; }
 .hp-nav-links a[aria-current='page'] { border-bottom-color: var(--gold); }
 /* The collapsed menu button replaces the row below the breakpoint, so this
@@ -622,7 +643,7 @@
    not for one build: the links came down to 1100 and this stayed at 1340, so
    between those widths the header showed the full row AND the Menu button. */
 .hp-menu { display: block; }
-@media (min-width: 1100px) { .hp-menu { display: none; } }
+@media (min-width: 1520px) { .hp-menu { display: none; } }
 .hp-menu > summary { gap: 0.5rem; }
 .hp-menu > summary svg { width: 1rem; height: 0.75rem; }
 .hp-menu-label { font-size: 0.875rem; }
@@ -1004,7 +1025,12 @@
     font-family: 'Instrument Serif', serif; color: var(--gray); margin-right: 0.6rem;
   }
   .hp-est-steps li.is-featured { font-weight: 600; }
-  .hp-est-steps li.is-featured span { color: var(--gold); }
+  /* --gold-deep, not --gold, for the same reason the block below spells out:
+     this column is on the light ground. --gold measures 2.27:1 on paper,
+     which is the exact failure global.css defines --gold-deep to avoid, and
+     it lands on the one step of the five the page is trying to draw the eye
+     to. Measured after: 5.01:1. */
+  .hp-est-steps li.is-featured span { color: var(--gold-deep); }
   .hp-est .hp-call { display: inline-block; margin-top: 1.75rem; }
   /* form sits on the light ground here, not charcoal */
   .hp-est-form .ef-label { color: var(--gray); }

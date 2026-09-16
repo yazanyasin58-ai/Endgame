@@ -21,25 +21,9 @@ import {
   gallery,
   reviews,
   features,
-  processSteps,
   figures,
-  cta,
-  hours,
-  serviceArea,
-  countOn,
-  googleSnapshot,
 } from '../content/idf';
-import { optionalImage, firstImage, heroImages } from '../lib/images';
-
-const mapEmbed = `https://maps.google.com/maps?q=${encodeURIComponent(business.address)}&z=15&output=embed`;
-
-const heroSrc = firstImage(
-  heroImages.hero,
-  heroImages.heroAlt,
-  heroImages.heroAlt2,
-  heroImages.heroAlt3,
-);
-const heroSrcMobile = optionalImage(heroImages.heroMobile);
+import { optionalImage } from '../lib/images';
 
 /**
  * Three cards for the homepage strip, chosen to show the whole job rather than
@@ -49,8 +33,13 @@ const heroSrcMobile = optionalImage(heroImages.heroMobile);
  */
 /** Bytes of public/hero/hero-scrub.mp4, the fallback when Content-Length is
  *  missing so the loading ring still reports honest progress. Update it when
- *  the film is re-encoded. */
-const HERO_BYTES = 13807329;
+ *  the film is re-encoded.
+ *
+ *  This said 13807329 and the film has been 11739138 bytes since it was
+ *  recut, so on any host that does not send Content-Length the ring stalled
+ *  at 85% and never closed. ScrubHero's own default was already correct;
+ *  this prop was overriding it with the stale number. */
+const HERO_BYTES = 11739138;
 
 const homeCards = ['project-kitchen-blue-island', 'project-framing-interior', 'project-siding-crew']
   .map((slot) => gallery.find((g) => g.slot === slot))
@@ -127,34 +116,15 @@ const homeCards = ['project-kitchen-blue-island', 'project-framing-interior', 'p
   {/* THE INTERACTIVE MOMENT. The visitor performs the page's one idea. */}
   <FrameToFinish />
 
-  {/* WHAT YOU CAN COUNT ON. The section the customer research earned: it
-      answers, in order, the objections buyers actually raise about
-      contractors. Every point is approved copy. */}
-  <section class="hp-section rv" id="count-on" aria-labelledby="hp-count-h">
-    <div class="hco">
-      <DraftRule label="03 / What holds" />
-      <h2 id="hp-count-h" class="hp-h2">What you can count on</h2>
-      <ul class="hco-list">
-        {countOn.map((point) => (
-          <li>
-            <h3 class="hco-t">{point.title}</h3>
-            <p class="hco-d">
-              {point.detail}
-              {'showRating' in point && point.showRating && (
-                <span class="hco-rating" data-live-figure="googleRating">
-                  {googleSnapshot.rating} / 5 &middot; {googleSnapshot.total} reviews
-                </span>
-              )}
-            </p>
-          </li>
-        ))}
-      </ul>
-    </div>
-  </section>
+  {/* "What you can count on" used to sit here. It was removed, not lost: the
+      same countOn array renders under the same heading on /about/, and the
+      main nav already points at /about/#count-on rather than at this page.
+      The homepage was carrying a second copy that nothing linked to, for
+      1.1 screens of desktop and 1.4 of mobile. */}
 
   <!-- SELECTED PROJECTS -->
   <section class="hp-section rv" id="selected-projects" aria-labelledby="hp-projects-h">
-    <DraftRule label="04 / The work" />
+    <DraftRule label="03 / The work" />
     <h2 id="hp-projects-h" class="hp-h2">Selected projects</h2>
     <p class="hp-sub hp-italic">Real work, from the framing through to the finish.</p>
     <div class="hp-projects">
@@ -207,25 +177,11 @@ const homeCards = ['project-kitchen-blue-island', 'project-framing-interior', 'p
     </div>
   </section>
 
-  <!-- HOW IT WORKS -->
-  <section class="hp-section rv" id="how-it-works" aria-labelledby="hp-process-h">
-    <DraftRule label="05 / The order" />
-    <h2 id="hp-process-h" class="hp-h2">How it works</h2>
-    <p class="hp-sub hp-italic">Five steps, one of them unusually fast.</p>
-    <ol class="hp-steps">
-      {
-        processSteps.map((step) => (
-          <li class:list={['hp-step', { 'hp-step--featured': 'featured' in step && step.featured }]}>
-            <span class="hp-step-num">{step.number}</span>
-            <div>
-              <h3 class="hp-step-title">{step.title}</h3>
-              <p class="hp-step-detail">{step.detail}</p>
-            </div>
-          </li>
-        ))
-      }
-    </ol>
-  </section>
+  {/* "How it works" used to sit here, and it was the THIRD rendering of the
+      same processSteps array: /about/ has it as "How we manage a project"
+      and /estimate/ has it beside the form, which is the page where those
+      five steps actually answer a question the visitor is asking. The nav
+      points at /about/#how-we-manage. Nothing linked to this copy. */}
 
   <!-- PRICE YOUR PROJECT -->
   <section class="hp-final" id="estimate" aria-labelledby="hp-final-h">
@@ -244,45 +200,13 @@ const homeCards = ['project-kitchen-blue-island', 'project-framing-interior', 'p
     </div>
   </section>
 
-  <!-- SHOWROOM -->
-  <section class="hp-showroom" aria-labelledby="hp-showroom-h">
-    <div class="hp-showroom-inner">
-      <div class="hp-showroom-text">
-        <h2 id="hp-showroom-h" class="hp-h2">Visit the showroom</h2>
-        <p class="hp-sub">
-          Contracts are signed here, and selections are made here. Open seven days.
-        </p>
+  {/* The showroom block (address, hours, service area, map embed) used to
+      close the page. /contact/ carries all of it in more detail, and the
+      footer on every page already prints the address, the hours and the
+      service area, so the only thing that lived here alone was the map
+      iframe. Removing it also stops the homepage loading a Google Maps
+      frame nobody scrolled to. */}
 
-        <address class="hp-showroom-addr">
-          45431 Ruritan Circle, Suite 160<br />Sterling, VA 20164
-        </address>
-
-        <ul class="hp-showroom-hours">
-          {hours.map((h) => (<li><span>{h.days}</span><span>{h.open} – {h.close}</span></li>))}
-        </ul>
-
-        <p class="hp-showroom-area">
-          <strong>{serviceArea.short}</strong><br />{serviceArea.detail}
-        </p>
-
-        <a
-          class="hp-textlink"
-          href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(business.address)}`}
-          target="_blank"
-          rel="noopener noreferrer">Get directions</a
-        >
-      </div>
-
-      <div class="hp-showroom-map">
-        <iframe
-          title="Map showing Interior Design Flooring at 45431 Ruritan Circle, Suite 160, Sterling, VA 20164"
-          src={mapEmbed}
-          loading="lazy"
-          referrerpolicy="no-referrer-when-downgrade"
-          allowfullscreen></iframe>
-      </div>
-    </div>
-  </section>
 </main>
 
 <script>

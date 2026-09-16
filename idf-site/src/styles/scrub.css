@@ -6,8 +6,8 @@
    page settles exactly when the film reaches its composed resting frame.
 
    Sized in scroll distance, not seconds: a 24 second journey needs room for
-   every beat, which is why the hero is 1200vh rather than something tuned to
-   the clip's duration.
+   every beat, so the hero's height is chosen against how far a wheel moves,
+   not against the clip's duration. The .sh rule below carries the working.
 
    THE FIVE STATIC-HERO GATES appear here and in ScrubHero.astro. They must
    match character for character in both places, or one side loads assets the
@@ -21,9 +21,26 @@
                 0 10px 44px rgb(5 4 3 / 0.8);
 }
 
+/* The scroll distance, not the clip length: the 24s film is mapped across
+   this height, so the number sets how far you scroll per second of footage,
+   not how much of the film you see. All 578 frames play either way.
+
+   This was 1200vh, which made the hero 12 screens of a 23-screen page. Over
+   half the homepage's length was the film, before a single word of content,
+   and no amount of cutting sections could touch it. 700vh plays the same
+   film in 7 screens and takes 5 screens off the page for free.
+
+   What the number buys, at a 900px viewport: the scrub range is
+   (height - 100vh), so 5400px carries 578 frames, which is 9.4px of scroll
+   per frame and 75px per keyframe interval (the film is encoded -g 8). A
+   wheel notch of roughly 100px therefore advances about 11 frames, still
+   inside two keyframes, which is what keeps the seek landing quickly enough
+   to read as scrubbing. Halve this height again and a single notch crosses
+   more keyframes than the decoder can serve smoothly, so this is not a
+   number to keep lowering without re-encoding the film at a tighter GOP. */
 .sh {
   position: relative;
-  height: 1200vh;               /* the scroll distance, not the clip length */
+  height: 700vh;
   background: var(--ink);
 }
 
@@ -409,25 +426,6 @@
 .ftf.is-done .ftf-points li { color: var(--charcoal); transform: none; border-color: var(--gold-deep); }
 .ftf.is-done .ftf-points li:nth-child(2) { transition-delay: 140ms; }
 .ftf.is-done .ftf-points li:nth-child(3) { transition-delay: 280ms; }
-
-/* ---- what you can count on, on the homepage ----------------------------- */
-.hco { max-width: 62rem; margin-inline: auto; }
-.hco-list { list-style: none; margin: 2.5rem 0 0; padding: 0; }
-.hco-list li {
-  padding: 1.5rem 0; border-top: 1px solid var(--rule);
-  display: grid; gap: 0.4rem 2rem;
-}
-@media (min-width: 780px) {
-  .hco-list li { grid-template-columns: 18rem 1fr; align-items: baseline; }
-}
-.hco-list li:last-child { border-bottom: 1px solid var(--rule); }
-.hco-t { margin: 0; font-size: 1.0625rem; font-weight: 600; color: var(--gold-deep); }
-.hco-d { margin: 0; font-size: 0.9375rem; line-height: 1.7; color: var(--charcoal); max-width: 58ch; }
-.hco-rating {
-  display: inline-flex; align-items: baseline; gap: 0.4rem; margin-left: 0.5rem;
-  font-family: var(--sh-mono); font-size: 0.6875rem; letter-spacing: 0.1em;
-  color: var(--gray);
-}
 
 /* ---- entrances ----------------------------------------------------------
    Prefixed with the container class so a later rule cannot silently cancel
