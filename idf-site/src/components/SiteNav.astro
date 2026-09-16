@@ -218,16 +218,46 @@ const isCurrent = (entry: NavEntry) =>
    *
    * The header is sticky in CSS from 768px up. On pages with the scrubbed
    * hero that would pin a paper-coloured bar across the top of a full-screen
-   * film for its whole seven screens, so while the hero owns the viewport
-   * the bar tucks up out of sight and comes back the moment it does not.
+   * film for its whole seven screens, so while the film owns the viewport
+   * the bar tucks up out of sight and comes back when the film is done.
    *
    * Pages without a hero (every page but the homepage) have no .sh to watch,
    * so they take the plain sticky behaviour and this whole block exits.
    *
-   * An IntersectionObserver on the hero is enough and costs nothing per
-   * frame, which a scroll listener would not. The sentinel is the hero
-   * itself: while any part of it is still on screen below the header, the
-   * film is what the visitor is looking at.
+   * THE RULE THIS HAS TO OBEY, and the bug that taught it:
+   *
+   * A sticky element keeps its space in normal flow. Tuck it before it is
+   * actually stuck and that space is still on screen, so the translate
+   * leaves a bar-shaped hole of bare page background where the header was.
+   *
+   * The first version decided "the film owns the viewport" by watching the
+   * hero against a band 10% of the viewport tall. That is a guess about
+   * where the hero starts, and it was wrong for most real visitors: the
+   * promo bar ships hidden and is revealed by script, and stays hidden for
+   * good once dismissed, which lifts the hero from y=131 to y=76. Under a
+   * 90px band the hero then counted as intersecting at scroll 0, so the
+   * header tucked on load and every returning visitor opened the site to a
+   * white gap where the navigation should be.
+   *
+   * So the condition is not estimated any more, it is measured, by two 1px
+   * sentinels pinned inside the hero:
+   *
+   *   top sentinel     at the hero's top
+   *   bottom sentinel  one viewport up from the hero's bottom, which is the
+   *                    exact point where the sticky stage stops sticking and
+   *                    the film has played out
+   *
+   * Tuck only between them: the top has gone above the viewport and the
+   * bottom has not. The first half of that is precisely "the header is
+   * stuck", because the header sits directly above the hero, so the hole
+   * cannot happen by construction rather than by a margin being lucky.
+   *
+   * Sentinels rather than arithmetic on the hero's own rect because
+   * IntersectionObserver fires on threshold crossings, and a 700vh element
+   * does not cross one at the moment its top edge passes y=0. A 1px element
+   * crossing the viewport edge is exactly the event we want. It also means
+   * no scroll listener, no per-frame work, and nothing to recompute on
+   * resize, since both sentinels move with the hero.
    *
    * Reduced motion keeps the bar visible throughout rather than animating it
    * in and out. The header is then simply sticky, which is the accessible
@@ -240,34 +270,48 @@ const isCurrent = (entry: NavEntry) =>
 
   if (header && hero) {
     let io: IntersectionObserver | null = null;
+    let marks: HTMLElement[] = [];
 
-    const untuck = () => header.classList.remove('is-tucked');
+    /* Inert, invisible, and out of the accessibility tree. .sh is
+       position: relative, so these anchor to the hero itself. */
+    const mark = (css: string) => {
+      const el = document.createElement('div');
+      el.setAttribute('aria-hidden', 'true');
+      el.style.cssText =
+        'position:absolute;left:0;width:1px;height:1px;pointer-events:none;visibility:hidden;' + css;
+      hero.appendChild(el);
+      return el;
+    };
+
+    let topGone = false;   // hero's top edge is above the viewport
+    let endGone = false;   // the film has finished playing
+
+    const paint = () =>
+      header.classList.toggle('is-tucked', topGone && !endGone);
 
     const arm = () => {
       if (io) return;
+      if (!marks.length) marks = [mark('top:0'), mark('bottom:100vh')];
       io = new IntersectionObserver(
-        ([entry]) => header.classList.toggle('is-tucked', entry.isIntersecting),
-        /* The root is squeezed to a band across the TOP of the viewport, not
-           the whole viewport, and that is the whole trick. Watching the hero
-           against the full viewport reports it as visible the instant the
-           page loads, because at scroll 0 the hero is right there under the
-           header: the bar tucked itself away before the visitor had scrolled
-           a pixel, taking the one call to action off the first screen, which
-           is the opposite of the point.
-
-           Against a band at the very top, the hero only counts once it has
-           climbed far enough to sit under the header, which is exactly when
-           it is filling the screen and the bar is in its way. At rest the
-           hero starts well below the band, so the header stays put. */
-        { rootMargin: '0px 0px -90% 0px' },
+        (entries) => {
+          for (const e of entries) {
+            /* Above the viewport, not merely out of it: an element below the
+               fold is also "not intersecting" and must not count. */
+            const gone = !e.isIntersecting && e.boundingClientRect.top < 0;
+            if (e.target === marks[0]) topGone = gone;
+            else endGone = gone;
+          }
+          paint();
+        },
+        { threshold: 0 },
       );
-      io.observe(hero);
+      for (const m of marks) io.observe(m);
     };
 
     const disarm = () => {
       io?.disconnect();
       io = null;
-      untuck();
+      header.classList.remove('is-tucked');
     };
 
     const apply = () => (sticky.matches && motionOk.matches ? arm() : disarm());
