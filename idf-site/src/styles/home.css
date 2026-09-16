@@ -365,6 +365,22 @@
   color: var(--gold-bright); text-decoration: underline; text-underline-offset: 3px;
 }
 
+/* The estimate form renders on three different grounds, and the two rules
+   above are correct on only one of them:
+     .hp-final  (home)      dark charcoal   --stone + gold read well
+     .ct-form   (/contact/) light paper     overridden further down this file
+     .hp-est    (/estimate/) light paper    was NOT overridden, so the dark
+                                            ground values landed on paper
+   Measured on /estimate/ before this: the hint 2.39:1 and its phone link
+   1.65:1, gold on cream being effectively invisible. /contact/ already had
+   the right answer, so this mirrors it rather than inventing one. Measured
+   after: 5.36:1 and 15.31:1.
+
+   Scoped to the section rather than changing the tokens, because --stone and
+   --gold-bright are right where the form sits on dark. */
+.hp-est .ef-hint { color: var(--gray); }
+.hp-est .ef-hint a { color: var(--charcoal); }
+
 /* File input. Browsers will not style the native button consistently, so the
    button half is restyled through ::file-selector-button and the field itself
    is left transparent — a bordered box around a bordered button reads as two
@@ -1437,9 +1453,20 @@
 .foot-legal-links a:hover { color: var(--cream); }
 
 /* The hero film is generated, and the footer says so. A visitor could
-   otherwise reasonably read it as one of this company's own jobs. */
+   otherwise reasonably read it as one of this company's own jobs.
+
+   --stone, not --gray, and the distinction is the whole point of that token:
+   global.css defines --stone precisely because --gray fails AA on ink. This
+   rule used --gray on the charcoal footer and measured 2.86:1, which is the
+   exact failure the token exists to prevent. It is also the least acceptable
+   place on the site to have unreadable text, because a disclosure nobody can
+   read is not a disclosure. --stone measures 6.41:1 here.
+
+   .hp .foot already sets colour: --stone, so this could inherit. It is stated
+   explicitly anyway, so the value cannot drift if the footer's own colour is
+   ever changed for unrelated reasons. */
 .foot-ai {
   flex: 1 1 26rem; margin: 0;
-  font-size: 0.75rem; line-height: 1.6; color: var(--gray);
+  font-size: 0.75rem; line-height: 1.6; color: var(--stone);
 }
 .hp .foot .foot-ai a { padding-block: 0; }
