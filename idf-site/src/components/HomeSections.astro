@@ -1,0 +1,299 @@
+---
+/**
+ * The homepage, as one shared body.
+ *
+ * All three variants render this identical markup and differ only in their
+ * stylesheet and type pairing. Keeping one DOM means the content cannot
+ * drift between variants and a copy change lands in all three at once.
+ */
+import ScrubHero from './ScrubHero.astro';
+import DraftRule from './DraftRule.astro';
+import FrameToFinish from './FrameToFinish.astro';
+import Placeholder from './Placeholder.astro';
+import ReviewCarousel from './ReviewCarousel.astro';
+import EstimateForm from './EstimateForm.astro';
+import SocialLinks from './SocialLinks.astro';
+import {
+  business,
+  trustBar,
+  pillars,
+  wedge,
+  gallery,
+  reviews,
+  features,
+  figures,
+  hours,
+  serviceArea,
+} from '../content/idf';
+import { optionalImage } from '../lib/images';
+
+const mapEmbed = `https://maps.google.com/maps?q=${encodeURIComponent(business.address)}&z=15&output=embed`;
+
+/**
+ * Three cards for the homepage strip, chosen to show the whole job rather than
+ * three versions of the same thing: a finished kitchen, framing going in, and
+ * a crew on ladders outside. The owner asked for work actually in progress to
+ * appear alongside the finished rooms.
+ */
+/** Bytes of public/hero/hero-scrub.mp4, the fallback when Content-Length is
+ *  missing so the loading ring still reports honest progress. Update it when
+ *  the film is re-encoded.
+ *
+ *  This said 13807329 and the film has been 11739138 bytes since it was
+ *  recut, so on any host that does not send Content-Length the ring stalled
+ *  at 85% and never closed. ScrubHero's own default was already correct;
+ *  this prop was overriding it with the stale number. */
+const HERO_BYTES = 11739138;
+
+const homeCards = ['project-kitchen-blue-island', 'project-framing-interior', 'project-siding-crew']
+  .map((slot) => gallery.find((g) => g.slot === slot))
+  .filter((g): g is (typeof gallery)[number] => Boolean(g))
+  .map((g) => ({ ...g, src: optionalImage(`img/${g.slot}`) }));
+---
+
+<main id="main" tabindex="-1">
+  {/* HERO. The scroll-scrubbed film: a house from open framing to a finished
+      floor, played by the scroll. Phones and reduced motion get the composed
+      still hero inside the same component. */}
+  <ScrubHero videoBytes={HERO_BYTES} />
+
+  <!-- TRUST BAR -->
+  <section class="hp-trust" aria-label="Credentials">
+    <ul>{trustBar.map((item) => <li>{item}</li>)}</ul>
+  </section>
+
+  <!-- FIGURES. Every one verifiable -->
+  <section class="hp-section hp-figures-wrap" aria-labelledby="hp-figures-h">
+    <h2 id="hp-figures-h" class="hp-visually-hidden">By the numbers</h2>
+    <div class="hp-figures">
+      {
+        figures.map((f) => (
+          <div class="hp-figure">
+            <span
+              class="hp-figure-value"
+              data-live-figure={features.googleReviews && 'live' in f ? f.live : null}
+            >
+              {f.value}
+            </span>
+            <span class="hp-figure-label">{f.label}</span>
+            <span class="hp-figure-note">{f.note}</span>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- WHAT WE BUILD -->
+  <section class="hp-section rv" id="what-we-build" aria-labelledby="hp-pillars-h">
+    <DraftRule label="01 / Scope" />
+    <h2 id="hp-pillars-h" class="hp-h2">What we build</h2>
+    <p class="hp-sub hp-italic">Three ways to start, one team throughout.</p>
+    <div class="hp-pillars">
+      {
+        pillars.map((p) => (
+          <article class="hp-pillar">
+            <span class="hp-pillar-num">{p.number}</span>
+            <h3 class="hp-pillar-title">{p.title.charAt(0) + p.title.slice(1).toLowerCase()}</h3>
+            <ul class="hp-pillar-list">
+              {p.services.map((s) => (
+                <li>{s}</li>
+              ))}
+            </ul>
+            <a class="hp-pillar-link" href="/estimate/">Start an estimate</a>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- WHY ONE TEAM -->
+  <section class="hp-section hp-wedge rv" id="why-one-team" aria-labelledby="hp-wedge-h">
+    <DraftRule label="02 / Who does it" />
+    <h2 id="hp-wedge-h" class="hp-h2">Why one team</h2>
+    <p class="hp-wedge-tagline hp-italic">&ldquo;{wedge.tagline}&rdquo;</p>
+    <div class="hp-wedge-copy">
+      <h3 class="hp-wedge-heading">{wedge.heading}</h3>
+      {wedge.body.map((para) => <p>{para}</p>)}
+    </div>
+  </section>
+
+  {/* THE INTERACTIVE MOMENT. The visitor performs the page's one idea. */}
+  <FrameToFinish />
+
+  {/* "What you can count on" used to sit here. It was removed, not lost: the
+      same countOn array renders under the same heading on /about/, and the
+      main nav already points at /about/#count-on rather than at this page.
+      The homepage was carrying a second copy that nothing linked to, for
+      1.1 screens of desktop and 1.4 of mobile. */}
+
+  <!-- SELECTED PROJECTS -->
+  <section class="hp-section rv" id="selected-projects" aria-labelledby="hp-projects-h">
+    <DraftRule label="03 / The work" />
+    <h2 id="hp-projects-h" class="hp-h2">Selected projects</h2>
+    <p class="hp-sub hp-italic">Real work, from the framing through to the finish.</p>
+    <div class="hp-projects">
+      {
+        homeCards.map((card) => (
+          <figure class="hp-project">
+            <Placeholder
+              ratio="4 / 3"
+              label={`Reserved: ${card.caption.toLowerCase()}`}
+              src={card.src}
+              alt={card.alt}
+              real
+              class="hp-ph"
+            />
+            <figcaption>{card.caption}</figcaption>
+          </figure>
+        ))
+      }
+    </div>
+    <a class="hp-textlink" href="/projects/">See projects completed</a>
+  </section>
+
+  <!-- REVIEWS -->
+  <ReviewCarousel
+    reviews={reviews}
+    headingId="hp-reviews-h"
+    standfirst="Swipe, or use the arrows, to read more."
+    live={features.googleReviews}
+  />
+
+  <!-- LIST YOUR HOME -->
+  <section class="hp-section" aria-labelledby="hp-lyh-h">
+    <div class="lyh-band">
+      <span class="lyh-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+             stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 10.5 12 3l9 7.5" />
+          <path d="M5.5 9.5V20a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1V9.5" />
+          <path d="M9.5 21v-6h5v6" />
+        </svg>
+      </span>
+      <div>
+        <h2 id="hp-lyh-h">Selling a home?</h2>
+        <p>
+          Talk to us before it goes on the market. Thirty-seven years of renovation work
+          behind a straight answer on what is worth doing first.
+        </p>
+      </div>
+      <a class="hp-btn" href="/list-your-home/">Tell us about it</a>
+    </div>
+  </section>
+
+  {/* "How it works" used to sit here, and it was the THIRD rendering of the
+      same processSteps array: /about/ has it as "How we manage a project"
+      and /estimate/ has it beside the form, which is the page where those
+      five steps actually answer a question the visitor is asking. The nav
+      points at /about/#how-we-manage. Nothing linked to this copy. */}
+
+  <!-- PRICE YOUR PROJECT -->
+  <section class="hp-final" id="estimate" aria-labelledby="hp-final-h">
+    <div class="hp-final-inner">
+      <div class="hp-final-intro">
+        <h2 id="hp-final-h" class="hp-final-heading">Price your project today.</h2>
+        <p class="hp-final-sub hp-italic">
+          A site visit first, then a written estimate within 24 hours.
+        </p>
+        <a class="hp-call hp-call--light" href={business.phonePrimaryHref}>
+          Prefer to talk? {business.phonePrimary}
+        </a>
+        <SocialLinks class="hp-final-social" />
+      </div>
+      <EstimateForm idPrefix="hp" />
+    </div>
+  </section>
+
+  {/* SHOWROOM. /contact/ carries all of this in more detail and the footer
+      prints the address, the hours and the service area on every page, so on
+      duplication grounds alone this band is redundant and it was cut once on
+      exactly that reasoning. It is here because the CLIENT ASKED FOR THE MAP
+      ON THE HOMEPAGE SPECIFICALLY. That is not a duplication question, so do
+      not cut it for length again without asking them first. */}
+  <section class="hp-showroom" aria-labelledby="hp-showroom-h">
+    <div class="hp-showroom-inner">
+      <div class="hp-showroom-text">
+        <h2 id="hp-showroom-h" class="hp-h2">Visit the showroom</h2>
+        <p class="hp-sub">
+          Contracts are signed here, and selections are made here. Open seven days.
+        </p>
+
+        <address class="hp-showroom-addr">
+          45431 Ruritan Circle, Suite 160<br />Sterling, VA 20164
+        </address>
+
+        <ul class="hp-showroom-hours">
+          {hours.map((h) => (<li><span>{h.days}</span><span>{h.open} – {h.close}</span></li>))}
+        </ul>
+
+        <p class="hp-showroom-area">
+          <strong>{serviceArea.short}</strong><br />{serviceArea.detail}
+        </p>
+
+        <a
+          class="hp-textlink"
+          href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(business.address)}`}
+          target="_blank"
+          rel="noopener noreferrer">Get directions</a
+        >
+      </div>
+
+      <div class="hp-showroom-map">
+        <iframe
+          title="Map showing Interior Design Flooring at 45431 Ruritan Circle, Suite 160, Sterling, VA 20164"
+          src={mapEmbed}
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          allowfullscreen></iframe>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+  /**
+   * Entrances for the page below the hero.
+   *
+   * One observer drives both the section arrivals and the drafting rules
+   * drawing themselves. Elements are unobserved once they have arrived, so
+   * nothing keeps running after it is done.
+   *
+   * Reduced motion is honored live and in BOTH directions: flipping it on
+   * pins everything to its finished state, flipping it back off re-arms the
+   * observer rather than leaving the page pinned.
+   */
+  (() => {
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)');
+    const targets = () => [...document.querySelectorAll('.rv, [data-draft-rule]')];
+    let io = null;
+
+    function pinAll() {
+      if (io) { io.disconnect(); io = null; }
+      targets().forEach((el) => el.classList.add('in'));
+    }
+
+    function arm() {
+      if (io) return;
+      io = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add('in');
+          io.unobserve(entry.target);        // arrived: stop watching it
+        });
+      }, { rootMargin: '0px 0px -12% 0px', threshold: 0.08 });
+      targets().forEach((el) => { if (!el.classList.contains('in')) io.observe(el); });
+    }
+
+    function apply() { reduce.matches ? pinAll() : arm(); }
+    reduce.addEventListener('change', apply);
+    apply();
+
+    /* Pause every animation and pseudo-element animation on a hidden tab.
+       animation-play-state does not inherit, so it has to hit each element
+       directly rather than being set on a container. */
+    document.addEventListener('visibilitychange', () => {
+      document.body.classList.toggle('paused', document.hidden);
+    });
+  })();
+</script>

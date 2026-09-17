@@ -1,0 +1,137 @@
+---
+/**
+ * Terms and conditions for using this website.
+ *
+ * Deliberately narrow: these are website terms, not construction contract
+ * terms. The company's actual obligations to a customer live in the signed
+ * contract and estimate for that job, and a web page must not appear to
+ * modify them. Section "These terms are not your contract" says so outright,
+ * because a site that quietly implies otherwise is the real risk here.
+ *
+ * Original wording, as the client asked. Should be read by the company's
+ * attorney before launch.
+ */
+import Page from '../layouts/Page.astro';
+import { business, legalUpdated } from '../content/idf';
+---
+
+<Page
+  title={`Terms & Conditions — ${business.name}`}
+  description={`The terms that apply to using the ${business.name} website.`}
+  heading="Terms & Conditions"
+  standfirst={`The terms for using this website. Last updated ${legalUpdated}.`}
+>
+  <section class="hp-section hp-section--tight">
+    <div class="legal">
+      <h2>These terms are not your contract</h2>
+      <p>
+        This page covers your use of this website and nothing else. If you hire us, the
+        agreement between us is the written contract and estimate you sign for that job.
+        Those documents govern the work, the price, the schedule and any warranty.
+        Nothing on this website changes them, adds to them, or takes anything away from
+        them, and where this page and your signed contract appear to disagree, your
+        contract is the one that counts.
+      </p>
+
+      <h2>Using this site</h2>
+      <p>
+        You are welcome to read this site, and to use its forms to contact us about
+        actual work. Please do not use it to send anything unlawful, to try to break or
+        overload it, to scrape it automatically, or to submit forms in someone else's
+        name.
+      </p>
+
+      <h2>Estimates and enquiries</h2>
+      <p>
+        Sending an enquiry through this site does not create a contract and does not
+        oblige either of us to anything. It starts a conversation.
+      </p>
+      <p>
+        We aim to provide a written estimate within 24 hours of visiting the site. An
+        estimate is valid for the scope described in it and is subject to what we find
+        once work begins — concealed damage behind a wall is the usual example. Where
+        that happens we tell you, in writing, before the extra work is done.
+      </p>
+      <p>
+        Nothing on this site is a price. We do not publish prices, and no page here is
+        an offer capable of being accepted.
+      </p>
+
+      <h2>Offers</h2>
+      <p>
+        Where this site advertises an offer, it applies to new customers, to work
+        contracted with us, and only where we have confirmed it to you in writing as
+        part of your estimate. Offers cannot be combined with each other, cannot be
+        applied to work already contracted or completed, and can be withdrawn or changed
+        at any time. Ask us for the terms of a current offer when you request your
+        estimate and we will confirm them to you before you commit to anything.
+      </p>
+
+      <h2>What is on these pages</h2>
+      <p>
+        We work to keep this site accurate, but descriptions of our services are
+        general. What we will do on your property is what your estimate says we will do.
+        Photographs of completed work show that project, not a promise about yours.
+      </p>
+      <p>
+        Reviews shown on this site come from Google and are the words of the people who
+        wrote them. Where we show a selection of reviews, we show our overall Google
+        rating and total review count alongside it, so the selection cannot leave a
+        misleading impression.
+      </p>
+
+      <h2>Licensing, and what we do not do</h2>
+      <p>
+        {business.name} holds Virginia Class A contractor licence {business.license}.
+      </p>
+      <p>
+        We do not negotiate or settle insurance claims. Acting for a policyholder in
+        negotiating or settling a claim is public adjusting, which is licensed
+        separately in Virginia and is not something we are licensed for. We document
+        damage, write our own estimate for your file, answer your insurer's questions
+        about our own scope, and carry out the repair work.
+      </p>
+      <p>
+        We are a contractor, not a real estate brokerage. Where this site mentions
+        selling a home, we are describing renovation work that prepares a property for
+        sale. If you need an agent we can introduce you to a licensed one; the listing
+        is handled by them, and the work is handled by us.
+      </p>
+
+      <h2>Other people's websites</h2>
+      <p>
+        Where we link out — to a lender, to Google, to a social account — we are not
+        responsible for what is on the other end of the link or for how that company
+        handles your information.
+      </p>
+
+      <h2>Our content</h2>
+      <p>
+        The text, photographs and design on this site belong to us or are used with
+        permission. Please do not republish them as your own. You are of course welcome
+        to link to us.
+      </p>
+
+      <h2>Liability</h2>
+      <p>
+        This website is provided as it is. We are not liable for loss arising from using
+        it, or from being unable to use it, or from relying on general information here
+        instead of the written estimate we would give you. Nothing in this paragraph
+        limits any liability that cannot lawfully be limited, and nothing in it affects
+        our obligations under a contract you have signed with us.
+      </p>
+
+      <h2>Governing law</h2>
+      <p>
+        These terms are governed by the law of the Commonwealth of Virginia.
+      </p>
+
+      <h2>Getting in touch</h2>
+      <p>
+        Questions about this page go to
+        <a href={`mailto:${business.email}`}>{business.email}</a>, or call
+        <a href={business.phonePrimaryHref}>{business.phonePrimary}</a>.
+      </p>
+    </div>
+  </section>
+</Page>

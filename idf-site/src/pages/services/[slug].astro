@@ -1,0 +1,63 @@
+---
+/**
+ * One page per service, from `servicePages`.
+ *
+ * Twelve services share this layout exactly, so they share one file. Adding or
+ * editing a service is a content change in src/content/services-detail.ts —
+ * the same rule the gallery slots follow, and the reason no two service pages
+ * can drift apart in structure.
+ */
+import Page from '../../layouts/Page.astro';
+import { servicePages } from '../../content/services-detail';
+import { business, cta } from '../../content/idf';
+
+export function getStaticPaths() {
+  return servicePages.map((service) => ({
+    params: { slug: service.slug },
+    props: { service },
+  }));
+}
+
+const { service } = Astro.props;
+
+const others = servicePages.filter((s) => s.slug !== service.slug);
+---
+
+<Page
+  title={`${service.title} — ${business.name}`}
+  description={service.standfirst}
+  heading={service.title}
+  standfirst={service.standfirst}
+  current="services"
+>
+  <section class="hp-section hp-section--tight">
+    <div class="svc-body">
+      <div class="svc-prose">
+        {service.intro.map((p) => <p>{p}</p>)}
+      </div>
+
+      <div class="svc-scope">
+        <h2 class="svc-scope-title">{service.scopeTitle}</h2>
+        <ul class="svc-list">
+          {service.scope.map((item) => <li>{item}</li>)}
+        </ul>
+        {service.notes && <p class="svc-note">{service.notes}</p>}
+      </div>
+    </div>
+
+    <div class="svc-cta">
+      <a class="hp-btn" href="/estimate/">{cta.primary}</a>
+      <a class="hp-call" href={business.phonePrimaryHref}>or call {business.phonePrimary}</a>
+    </div>
+  </section>
+
+  <section class="hp-section hp-section--tight svc-more">
+    <h2 class="hp-h2">Other services</h2>
+    <ul class="svc-more-list">
+      {others.map((s) => (
+        <li><a href={`/services/${s.slug}/`}>{s.label}</a></li>
+      ))}
+    </ul>
+    <a class="hp-textlink" href="/services/">All services</a>
+  </section>
+</Page>
