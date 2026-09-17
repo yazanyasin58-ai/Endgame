@@ -615,6 +615,39 @@
   display: block; font-size: 0.8125rem; color: var(--gray); margin-top: 0.15rem;
 }
 .hp-menu-panel hr { border: 0; border-top: 1px solid var(--rule); margin: 0.4rem 0.8rem; }
+
+/* Columns, so the menu is a menu rather than a list you scroll.
+   
+   This panel carries every page on the site. In one column that is 2056px of
+   links, and since the inline row now waits for 1520px, it is what a laptop
+   visitor gets. Capping its height made it reachable; columns make it
+   readable, which is not the same thing.
+
+   Multi-column rather than a grid: the groups are different heights, and a
+   row-based grid sizes every row to its tallest item, so a two-column grid
+   of uneven blocks is mostly gaps. `columns` balances the flow instead and
+   break-inside keeps a group from being split down the middle of itself.
+
+   The column count is tied to the room the panel actually has, not to the
+   viewport: under 1100px the panel spans the header, above it the panel is a
+   dropdown that has to be widened to hold the columns, which is what the
+   min-width below does. Wider than the screen is never a risk because the
+   min() takes the viewport as its other bound. */
+@media (min-width: 640px) {
+  .hp-menu-items { columns: 2; column-gap: 1.75rem; }
+  .hp-menu-items > a,
+  .hp-menu-block { break-inside: avoid; }
+  /* Multi-column keeps the first child's top margin, which pushes the second
+     and third columns down out of alignment with the first. */
+  .hp-menu-block:first-child { padding-top: 0; }
+}
+@media (min-width: 1000px) {
+  .hp-menu-items { columns: 3; }
+}
+@media (min-width: 1100px) {
+  .hp-menu-panel { min-width: min(46rem, calc(100vw - 4rem)); }
+}
+.hp-menu-cta { display: grid; }
 /*
  * A closed <details> hides its content with display: none from the UA
  * stylesheet — but `display: grid` above overrides that, so the panel was
@@ -1321,6 +1354,22 @@
 }
 .hp-menu-block a { padding-left: 1.4rem; }
 
+/* The hairline between groups is correct in one column and wrong the moment
+   there are several: a group that lands at the top of a column draws its rule
+   across the top of that column with nothing above it to separate it from,
+   and it reads as the menu having been cut off mid-list.
+
+   CSS cannot be asked whether an element starts a column, so in columned mode
+   the groups are separated by space and their own labels instead, which is
+   what a menu this wide wants anyway.
+
+   This sits HERE, after the rule it overrides, rather than up with the other
+   column rules 700 lines above. Same specificity, so source order decides,
+   and next to its own declaration is the only place it reliably wins. */
+@media (min-width: 640px) {
+  .hp-menu-block + .hp-menu-block { border-top: 0; margin-top: 1.1rem; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .hp-nav-group > summary svg { transition: none; }
 }
@@ -1564,3 +1613,61 @@
   font-size: 0.75rem; line-height: 1.6; color: var(--stone);
 }
 .hp .foot .foot-ai a { padding-block: 0; }
+
+/* ---------- 404 ---------- */
+.nf-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.5rem; max-width: 34rem; }
+.nf-list a {
+  display: block; text-decoration: none; color: inherit;
+  padding: 0.9rem 1rem; border: 1px solid var(--rule); border-radius: 0.4rem;
+  background: var(--paper);
+}
+.nf-list a:hover { background: var(--cream); border-color: var(--gold); }
+.nf-list strong { display: block; color: var(--ink); font-weight: 600; }
+.nf-list span { display: block; margin-top: 0.15rem; font-size: 0.875rem; color: var(--gray); }
+.nf-call { margin-top: 2rem; font-size: 1rem; color: var(--charcoal); max-width: 34rem; }
+.nf-call a { color: var(--gold-deep); font-weight: 600; }
+
+/* ---------- tap targets ----------
+   Measured on a 390px phone before this: the promo bar's close button was
+   21x22, its "Free estimate" link 77x20, and the Menu button, which is the
+   entire navigation on a phone, 16x15. The guideline is 44x44 and the menu
+   button was under a tenth of that area.
+
+   The hit area is expanded with a pseudo-element rather than by padding the
+   controls, because padding moves things: the promo bar is deliberately short
+   so it does not eat the fold on a phone, and the Menu button's hover
+   underline sits on its own box, which a taller box would drag away from the
+   word. An overlay grows what a thumb can hit and changes no layout at all.
+
+   The close button's overlay is anchored to its right edge rather than
+   centred on it. Centred, a 44px box would reach back across the gap and
+   sit on top of the estimate link beside it, and two overlapping targets
+   send some taps to the wrong one, which is worse than a small target. */
+.promo-close, .promo-cta, .hp-menu > summary { position: relative; }
+
+/* Grown RIGHTWARDS, into the bar's own end padding, rather than leftwards
+   across the gap. The button's visual box is 21px wide, so a 44px overlay has
+   23px to put somewhere; spent on the left it lands on the estimate link
+   beside it, spent on the right it lands on empty padding and finishes flush
+   with the edge of the screen, which is the easiest place on a phone to hit. */
+.promo-close::after {
+  content: ''; position: absolute;
+  right: -1rem; top: 50%; transform: translateY(-50%);
+  width: 44px; height: 44px;
+}
+.promo-cta::after {
+  content: ''; position: absolute;
+  left: 0; top: 50%; transform: translateY(-50%);
+  width: 100%; height: 44px;
+}
+.hp-menu > summary::after {
+  content: ''; position: absolute;
+  left: 50%; top: 50%; transform: translate(-50%, -50%);
+  width: max(100%, 44px); height: 44px;
+}
+
+/* Room for the two expanded targets to sit side by side without touching,
+   and a bar tall enough to hold a 44px target inside it. */
+@media (max-width: 719px) {
+  .promo { gap: 0.9rem; min-height: 44px; }
+}

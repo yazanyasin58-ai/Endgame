@@ -60,6 +60,14 @@ const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : un
     <link rel="stylesheet" href={fontsHref} />
   </head>
   <body class:list={[bodyClass, { 'with-callbar': withCallbar }]}>
+    {/* Keyboard and screen reader users otherwise tab through the promo bar,
+        the logo and every item of a nine-entry menu before reaching the page,
+        on every page. Hidden until focused, so it costs sighted visitors
+        nothing. Every page's content is inside <main>, which is what this
+        targets, and the target takes tabindex="-1" so that browsers actually
+        move focus there and not just the scroll position. */}
+    <a class="skip-link" href="#main">Skip to content</a>
+
     <slot />
 
     {features.promoPopup && <LeadPopup />}

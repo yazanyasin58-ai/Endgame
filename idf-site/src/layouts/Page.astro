@@ -30,7 +30,7 @@ const fonts =
 <Base title={title} description={description} fontsHref={fonts} bodyClass="hp vb" withCallbar noindex={noindex}>
   <PromoBar />
   <SiteNav current={current} />
-  <main>
+  <main id="main" tabindex="-1">
     <section class="hp-section hp-pagehead">
       <h1 class="hp-h2">{heading}</h1>
       {standfirst && <p class="hp-sub hp-italic">{standfirst}</p>}

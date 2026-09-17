@@ -293,3 +293,38 @@ body {
   letter-spacing: 0.14em;
   text-transform: uppercase;
 }
+
+/* ---------- skip link ----------
+   Without this, reaching the page content by keyboard means tabbing past the
+   promo bar, its close button, the logo, the phone number, the estimate
+   button and a nine-entry menu, on every page.
+
+   Off-screen rather than display: none, because a hidden element is not
+   focusable and a skip link that cannot be focused is not a skip link. It
+   comes back on :focus-visible only, so a mouse user who happens to click
+   near it never sees it. */
+.skip-link {
+  position: absolute;
+  left: 0.5rem;
+  top: -4rem;
+  z-index: 300;
+  background: var(--ink);
+  color: var(--cream);
+  padding: 0.7rem 1.1rem;
+  border-radius: 0 0 0.35rem 0.35rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: top 0.15s ease;
+}
+.skip-link:focus-visible {
+  top: 0;
+  outline: 2px solid var(--gold-bright);
+  outline-offset: 2px;
+}
+@media (prefers-reduced-motion: reduce) { .skip-link { transition: none; } }
+
+/* The skip target must not draw a focus ring around the whole page when it
+   receives focus programmatically; the point is to move the caret, not to
+   outline everything below the header. */
+main:focus { outline: none; }

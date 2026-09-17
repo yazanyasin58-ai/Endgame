@@ -1,0 +1,157 @@
+---
+/**
+ * LocalBusiness structured data, as a GeneralContractor.
+ *
+ * This is the machine-readable version of the facts a person reads in the
+ * footer and the showroom band. It is what lets Google show the knowledge
+ * panel, the hours, and the call button for "general contractor Sterling VA"
+ * rather than just a blue link, which is the whole commercial point of it for
+ * a business whose customers search locally.
+ *
+ * GeneralContractor, not the generic LocalBusiness: it is a real schema.org
+ * type under HomeAndConstructionBusiness, and the more specific type is the
+ * one to use when it fits exactly, which here it does.
+ *
+ * ONE NODE, ON THE HOMEPAGE ONLY. Two LocalBusiness nodes on two pages with
+ * no shared @id describe two businesses as far as a parser is concerned, and
+ * @id needs an absolute origin this site does not have yet. When the domain
+ * is configured, this gains @id and url automatically and can then safely be
+ * repeated on /contact/ if that is ever wanted.
+ *
+ * WHAT IS DELIBERATELY ABSENT, and none of it is an oversight:
+ *
+ *   aggregateRating  The 4.8 from 32 reviews is real, and it is Google's,
+ *                    read off the Google Business Profile. Google's own
+ *                    structured data policy forbids marking up ratings a site
+ *                    did not collect itself, and self-serving review markup is
+ *                    a documented cause of manual actions. Google already
+ *                    knows this rating; it does not need to be told, and
+ *                    telling it risks the rich result this file exists to
+ *                    earn. If first-party reviews are ever collected on the
+ *                    site, they can be marked up honestly and this can change.
+ *
+ *   geo              No verified coordinates. Google geocodes the postal
+ *                    address anyway, and a guessed lat/long that lands on the
+ *                    wrong unit in a business park is worse than none.
+ *
+ *   priceRange       No pricing has been agreed for publication. Inventing a
+ *                    band to fill a recommended field would be a claim about
+ *                    the client's prices that the client never made.
+ *
+ * Everything below appears somewhere on the site already. Nothing here is a
+ * new claim, which is the test each field had to pass.
+ */
+import { business, hours, serviceArea, social } from '../content/idf';
+
+/**
+ * The postal address, split for schema.org.
+ *
+ * business.address is a single display string and splitting it with a regex
+ * would be fragile, so the parts are stated once here and then CHECKED
+ * against it at build time. If anyone edits the address in the content file
+ * and not here, the build fails with a message rather than shipping markup
+ * that quietly disagrees with the address printed in the footer.
+ */
+const addr = {
+  street: '45431 Ruritan Circle, Suite 160',
+  locality: 'Sterling',
+  region: 'VA',
+  postalCode: '20164',
+  country: 'US',
+} as const;
+
+const rejoined = `${addr.street}, ${addr.locality}, ${addr.region} ${addr.postalCode}`;
+if (rejoined !== business.address) {
+  throw new Error(
+    `LocalBusinessSchema: address parts no longer match business.address.\n` +
+      `  content/idf.ts: ${business.address}\n` +
+      `  this file:      ${rejoined}\n` +
+      `Update the parts in LocalBusinessSchema.astro to match.`,
+  );
+}
+
+const DAYS = [
+  'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday',
+] as const;
+
+/** "7:30 PM" to "19:30", which is the only time format schema.org accepts. */
+function to24h(t: string): string {
+  const m = /^(\d{1,2}):(\d{2})\s*(AM|PM)$/i.exec(t.trim());
+  if (!m) throw new Error(`LocalBusinessSchema: cannot parse time "${t}"`);
+  const [, h, min, mer] = m;
+  let hour = Number(h) % 12;
+  if (mer.toUpperCase() === 'PM') hour += 12;
+  return `${String(hour).padStart(2, '0')}:${min}`;
+}
+
+/** "Monday – Friday" to the five day names; "Sunday" to one. */
+function expandDays(label: string): string[] {
+  const parts = label.split(/[–-]/).map((s) => s.trim()).filter(Boolean);
+  if (parts.length === 1) {
+    if (!DAYS.includes(parts[0] as (typeof DAYS)[number])) {
+      throw new Error(`LocalBusinessSchema: unknown day "${parts[0]}"`);
+    }
+    return parts;
+  }
+  const from = DAYS.indexOf(parts[0] as (typeof DAYS)[number]);
+  const to = DAYS.indexOf(parts[1] as (typeof DAYS)[number]);
+  if (from < 0 || to < 0) throw new Error(`LocalBusinessSchema: unknown day range "${label}"`);
+  return DAYS.slice(from, to + 1) as unknown as string[];
+}
+
+/* Derived from the same `hours` array the showroom band and the footer
+   render, so the hours a crawler is told can never drift from the hours a
+   visitor is shown. */
+const openingHoursSpecification = hours.map((h) => ({
+  '@type': 'OpeningHoursSpecification',
+  dayOfWeek: expandDays(h.days),
+  opens: to24h(h.open),
+  closes: to24h(h.close),
+}));
+
+/* Only emitted once a real origin exists. Until then the node is still valid
+   and useful, it just has no URL to point at, which is better than pointing
+   at a guessed one. */
+const origin = Astro.site?.origin;
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'GeneralContractor',
+  name: business.name,
+  description:
+    `Virginia Class A general contractor in Sterling, owner-operated since ` +
+    `${business.established}. Custom homes, additions and remodeling across ${business.region}.`,
+  ...(origin ? { '@id': `${origin}/#business`, url: `${origin}/` } : {}),
+  ...(origin
+    ? { logo: `${origin}/img/logo.webp`, image: [`${origin}/img/project-kitchen-blue-island.webp`] }
+    : {}),
+  telephone: business.phonePrimaryHref.replace('tel:', ''),
+  email: business.email,
+  foundingDate: business.established,
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: addr.street,
+    addressLocality: addr.locality,
+    addressRegion: addr.region,
+    postalCode: addr.postalCode,
+    addressCountry: addr.country,
+  },
+  openingHoursSpecification,
+  areaServed: serviceArea.regions.map((r) => ({ '@type': 'AdministrativeArea', name: r })),
+  /* The licence number is the single most checkable fact the business has,
+     and it is already printed in the footer of every page. */
+  identifier: {
+    '@type': 'PropertyValue',
+    name: 'Virginia Class A General Contractor License',
+    value: business.licenseNumber,
+  },
+  founder: business.owners.split(' and ').map((first, i, all) => ({
+    '@type': 'Person',
+    // "Shawn and Nancy Waziri": the surname trails the last name only.
+    name: i === all.length - 1 ? first : `${first} ${all[all.length - 1].split(' ').slice(1).join(' ')}`,
+  })),
+  sameAs: social.map((s) => s.href),
+};
+---
+
+<script type="application/ld+json" set:html={JSON.stringify(schema)} is:inline />

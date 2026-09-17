@@ -97,27 +97,34 @@ const isCurrent = (entry: NavEntry) =>
       {/* Flattened rather than nested: a disclosure inside a disclosure is a
           poor thing to operate on a phone. Groups become labelled blocks. */}
       <div class="hp-menu-panel">
-        {
-          items.map((i) =>
-            i.children ? (
-              <div class="hp-menu-block">
-                <p class="hp-menu-block-label">{i.label}</p>
-                {i.children.map((c) => (
-                  <a href={c.href} aria-current={current === c.href ? 'page' : undefined}>
-                    {c.label}
-                  </a>
-                ))}
-              </div>
-            ) : (
-              <a href={i.href} aria-current={current === i.href ? 'page' : undefined}>
-                {i.label}
-              </a>
-            ),
-          )
-        }
+        {/* The links sit in their own box so the panel can set them in
+            columns on a wide screen without the rule and the two calls to
+            action below being dragged into a column with them. */}
+        <div class="hp-menu-items">
+          {
+            items.map((i) =>
+              i.children ? (
+                <div class="hp-menu-block">
+                  <p class="hp-menu-block-label">{i.label}</p>
+                  {i.children.map((c) => (
+                    <a href={c.href} aria-current={current === c.href ? 'page' : undefined}>
+                      {c.label}
+                    </a>
+                  ))}
+                </div>
+              ) : (
+                <a href={i.href} aria-current={current === i.href ? 'page' : undefined}>
+                  {i.label}
+                </a>
+              ),
+            )
+          }
+        </div>
         <hr />
-        <a href="/estimate/"><strong>Request an Estimate</strong></a>
-        <a href="/list-your-home/"><strong>Tell us about your property</strong></a>
+        <div class="hp-menu-cta">
+          <a href="/estimate/"><strong>Request an Estimate</strong></a>
+          <a href="/list-your-home/"><strong>Tell us about your property</strong></a>
+        </div>
       </div>
     </details>
   </div>
