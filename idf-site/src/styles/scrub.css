@@ -1,0 +1,451 @@
+/* ===========================================================================
+   The scroll-scrubbed hero.
+
+   A tall pinned region containing a sticky full-viewport stage. Progress
+   through the pinned region maps 0 to 1 and drives the film's time, so the
+   page settles exactly when the film reaches its composed resting frame.
+
+   Sized in scroll distance, not seconds: a 24 second journey needs room for
+   every beat, so the hero's height is chosen against how far a wheel moves,
+   not against the clip's duration. The .sh rule below carries the working.
+
+   THE FIVE STATIC-HERO GATES appear here and in ScrubHero.astro. They must
+   match character for character in both places, or one side loads assets the
+   other side hides.
+   =========================================================================== */
+
+:root {
+  --sh-mono: 'IBM Plex Mono', ui-monospace, Menlo, monospace;
+  /* three layers: a tight edge, a mid glow, a wide falloff */
+  --sh-tshadow: 0 1px 2px rgb(5 4 3 / 0.95), 0 3px 12px rgb(5 4 3 / 0.78),
+                0 10px 44px rgb(5 4 3 / 0.8);
+}
+
+/* The scroll distance, not the clip length: the 24s film is mapped across
+   this height, so the number sets how far you scroll per second of footage,
+   not how much of the film you see. All 578 frames play either way.
+
+   This was 1200vh, which made the hero 12 screens of a 23-screen page. Over
+   half the homepage's length was the film, before a single word of content,
+   and no amount of cutting sections could touch it. 700vh plays the same
+   film in 7 screens and takes 5 screens off the page for free.
+
+   What the number buys, at a 900px viewport: the scrub range is
+   (height - 100vh), so 5400px carries 578 frames, which is 9.4px of scroll
+   per frame and 75px per keyframe interval (the film is encoded -g 8). A
+   wheel notch of roughly 100px therefore advances about 11 frames, still
+   inside two keyframes, which is what keeps the seek landing quickly enough
+   to read as scrubbing. Halve this height again and a single notch crosses
+   more keyframes than the decoder can serve smoothly, so this is not a
+   number to keep lowering without re-encoding the film at a tighter GOP. */
+.sh {
+  position: relative;
+  height: 700vh;
+  background: var(--ink);
+}
+
+.sh-stage {
+  position: sticky; top: 0;
+  height: 100vh; width: 100%;
+  overflow: hidden;
+  background: var(--ink);
+}
+
+.sh-video {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 600ms ease;
+  /* its own compositor layer, so its repaints never drag the page */
+  will-change: transform;
+  transform: translateZ(0);
+}
+.sh-stage.video-ready .sh-video { opacity: 1; }
+.sh-stage.video-failed .sh-video { display: none; }
+
+.sh-poster {
+  position: absolute; inset: 0;
+  background-size: cover; background-position: center;
+  background-color: var(--ink);
+}
+
+/* 1. The global base scrim. Always on, so no frame is ever raw behind type. */
+.sh-scrim {
+  position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(ellipse 120% 90% at 50% 45%,
+    rgb(10 9 6 / 0) 35%, rgb(10 9 6 / 0.62) 100%);
+}
+
+/* ---- the caption bands ---------------------------------------------------
+   Four beats sit in the calm left column the frame was composed to leave.
+   The settle centres, because by then the camera has come to rest and the
+   floor fills the lower half. */
+
+.sh-band {
+  position: absolute; z-index: 2;
+  left: clamp(1.5rem, 6vw, 6rem);
+  right: clamp(1.5rem, 6vw, 6rem);
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0;
+  max-width: 46rem;
+  color: var(--cream);
+  text-shadow: var(--sh-tshadow);
+  pointer-events: none;
+}
+.sh-band.is-settle { max-width: 54rem; }
+
+/* 2. The per-band scrim. Rides the band's own opacity and deepens with its
+      assembly progress, so the footage dims exactly while this text is on and
+      nowhere else. Dies out by 76 percent so the corners stay alive. */
+.sh-band::before {
+  content: ""; position: absolute; inset: -8% -6%;
+  pointer-events: none; z-index: -1;
+  opacity: calc(0.25 + 0.75 * var(--k, 1));
+  background: radial-gradient(ellipse 74% 68% at 34% 50%,
+    rgb(5 4 3 / 0.70) 0%, rgb(5 4 3 / 0.46) 46%, rgb(5 4 3 / 0) 76%);
+}
+.sh-band.is-settle::before {
+  background: radial-gradient(ellipse 80% 70% at 50% 50%,
+    rgb(5 4 3 / 0.72) 0%, rgb(5 4 3 / 0.48) 46%, rgb(5 4 3 / 0) 76%);
+}
+
+.sh-kicker {
+  margin: 0 0 1.1rem;
+  font-family: var(--sh-mono);
+  font-size: 0.6875rem; font-weight: 500;
+  letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--gold);
+}
+.sh-line {
+  margin: 0;
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 300;
+  font-size: clamp(2.1rem, 6.2vw, 5rem);
+  line-height: 1.02;
+  letter-spacing: -0.015em;
+}
+.sh-sub {
+  margin: 1.2rem 0 0;
+  font-size: clamp(1rem, 1.7vw, 1.28rem);
+  line-height: 1.5;
+  color: var(--cream);
+  font-style: italic;
+  opacity: 0.92;
+}
+
+/* ---- text choreography ---------------------------------------------------
+   Every entrance is transform and opacity only, scrubbed off the band's --k,
+   and fully reversible. Band one carries a one-time load ramp so the hero
+   never opens on footage with no words. */
+
+.sh-line .w { display: inline-block; white-space: nowrap; }
+.sh-line .c { display: inline-block; will-change: transform, opacity; }
+.sh-sr {
+  position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
+  overflow: hidden; clip-path: inset(50%); white-space: nowrap;
+}
+
+/* (f) drift-down. Echoes the fall through the roof. */
+.e-drift .w {
+  --kc: clamp(0, (var(--k, 0) - var(--th, 0)) * 2.8, 1);
+  opacity: var(--kc);
+  transform: translateY(calc((1 - var(--kc)) * -26px));
+}
+
+/* (i) weave. Characters arrive alternately from above and below, echoing the
+       camera passing between the rafters. */
+.e-weave .c {
+  --kc: clamp(0, (var(--k, 0) - var(--th, 0)) * 2.6, 1);
+  opacity: var(--kc);
+  transform: translateY(calc((1 - var(--kc)) * var(--jy, 0px)));
+}
+
+/* (h) halves parting. Echoes the camera passing through the door opening. */
+.e-part .w {
+  --kc: clamp(0, (var(--k, 0) - var(--th, 0)) * 2.4, 1);
+  opacity: var(--kc);
+  transform: translateX(calc((1 - var(--kc)) * var(--jx, 0px)));
+}
+
+/* (c) blur-to-sharp. Echoes the room resolving into finish. Two stacked
+       copies crossfaded by opacity; the soft copy's blur is STATIC, because
+       animating filter is not compositor friendly. */
+.e-focus { position: relative; }
+.e-focus .soft {
+  position: absolute; inset: 0;
+  filter: blur(12px);
+  opacity: calc(1 - var(--k, 0));
+}
+.e-focus .sharp { opacity: var(--k, 0); }
+
+/* (e) word-by-word rise into a staged settle. Three arrivals, one band. */
+.e-rise .w {
+  --kc: clamp(0, (var(--k, 0) - var(--th, 0)) * 2.6, 1);
+  opacity: var(--kc);
+  transform: translateY(calc((1 - var(--kc)) * 30px));
+}
+.e-rise .sh-sub {
+  opacity: clamp(0, (var(--k, 0) - 0.66) * 4, 1);
+  transform: translateY(calc((1 - clamp(0, (var(--k, 0) - 0.66) * 4, 1)) * 14px));
+}
+.sh-actions {
+  margin-top: 2rem;
+  display: flex; flex-wrap: wrap; gap: 1rem 1.5rem; align-items: baseline;
+  pointer-events: auto;
+  opacity: clamp(0, (var(--k, 0) - 0.78) * 5, 1);
+  transform: translateY(calc((1 - clamp(0, (var(--k, 0) - 0.78) * 5, 1)) * 14px));
+}
+.sh-actions .hp-btn { text-shadow: none; }
+
+/* ---- the loading ring ----------------------------------------------------
+   An honest progress ring while the film streams, never a stuck spinner. */
+.sh-load {
+  position: absolute; z-index: 3;
+  right: clamp(1.5rem, 4vw, 3rem); bottom: clamp(1.5rem, 4vw, 3rem);
+  width: 48px; height: 48px; color: var(--gold);
+  opacity: 0.85; transition: opacity 400ms ease;
+}
+.sh-stage.video-ready .sh-load { opacity: 0; }
+.sh-load circle { transition: stroke-dashoffset 120ms linear; }
+
+.sh-cue {
+  position: absolute; z-index: 3;
+  right: clamp(1.5rem, 4vw, 3rem); bottom: clamp(1.5rem, 4vw, 3rem);
+  font-family: var(--sh-mono); font-size: 0.625rem; letter-spacing: 0.2em;
+  text-transform: uppercase; color: var(--stone);
+}
+
+/* A scrub-capable screen that is merely short has no room for the overlay. */
+@media (max-height: 560px) { .sh-load, .sh-cue { display: none; } }
+
+/* ---- the static hero -----------------------------------------------------
+   A designed layout, not a fallback apology: the ending frame with the
+   composed copy over it. THE FIVE GATES, matched exactly in ScrubHero.astro. */
+
+/* Everything about the static hero EXCEPT its display, which belongs to the
+   gates below and nowhere else. Declaring `display: flex` out here is what
+   broke this once: it sat after both `display: none` and the media query's
+   own display, won at equal specificity, and put a second hero on every
+   desktop page underneath the film. If you add a property here, make sure it
+   is not `display`. */
+.sh-static {
+  display: none;
+  position: relative;
+  min-height: 78vh;
+  padding: clamp(3rem, 10vw, 6rem) clamp(1.5rem, 6vw, 4rem) clamp(2.5rem, 8vw, 5rem);
+  flex-direction: column;
+  justify-content: flex-end;
+  color: var(--cream);
+  text-shadow: var(--sh-tshadow);
+}
+
+@media (max-width: 720px),
+       (orientation: portrait) and (max-width: 1024px),
+       (orientation: portrait) and (pointer: coarse),
+       (orientation: landscape) and (pointer: coarse) and (max-height: 560px),
+       (prefers-reduced-motion: reduce) {
+  .sh { height: auto; }
+
+  /* The stage goes entirely, and this is not tidying. Leaving it in flow with
+     min-height: 78vh left an empty screen-height block standing above the
+     static hero, because everything inside it is hidden here. The result on a
+     phone was the promo bar, the header, a full blank screen, and only then
+     the hero: the hero was below the fold on every handset.
+
+     Collapsing min-height alone is not enough either. .sh-poster is absolutely
+     positioned, and once .sh-stage is position: static its containing block
+     becomes .sh, so the poster stretches over the whole section rather than
+     the stage, and paints behind the static hero. Removing the stage removes
+     both problems at once. */
+  .sh-stage { display: none; }
+
+  .sh-video, .sh-band, .sh-load, .sh-cue { display: none !important; }
+  .sh-static { display: flex; }
+}
+/* The static hero needs a scrim of its own, and the reason is worth keeping.
+   The global .sh-scrim is a radial gradient that is CLEAR through the middle
+   by design, which was right when the ending frame was a dim interior. The
+   ending is now a golden-hour exterior whose brightest region, the pale stone
+   motor court, falls exactly where this copy sits. Measured over the finished
+   frame at 390px, the headline came out at 1.05:1 and the subline at 1.02:1:
+   not low contrast, invisible.
+
+   So: a lower-third gradient, and it is heavy on purpose. The strength was set
+   by measurement, not by eye. The gold kicker is the binding constraint,
+   because gold on a light ground cannot reach 4.5:1 at any opacity and has to
+   be darkened to roughly 60/255 behind it instead. The house, the sky and the
+   fountains above the copy are untouched. */
+.sh-static::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    to top,
+    rgb(8 7 5 / 0.92) 0%,
+    rgb(8 7 5 / 0.9) 30%,
+    rgb(8 7 5 / 0.84) 58%,
+    rgb(8 7 5 / 0.34) 73%,
+    rgb(8 7 5 / 0) 88%
+  );
+}
+
+.sh-static-copy { position: relative; z-index: 2; max-width: 34rem; }
+.sh-static .sh-line { font-size: clamp(2rem, 8vw, 3.4rem); }
+
+/* ---- reduced motion ------------------------------------------------------ */
+@media (prefers-reduced-motion: reduce) {
+  .sh-video { transition: none; }
+  .sh-band, .sh-band::before { transition: none; animation: none; }
+}
+
+/* ===========================================================================
+   The page below the hero.
+
+   One environment rather than stacked sections, and one signature element (the
+   drafting rule) carrying the boldness budget so everything else can stay
+   quiet. Everything eases; nothing snaps.
+   =========================================================================== */
+
+/* ---- the signature: a drafting rule that draws itself -------------------- */
+.dr {
+  display: flex; align-items: center; gap: 0.75rem;
+  margin: 0 0 1.6rem;
+  max-width: min(26rem, 100%);
+}
+/* min-width: 0 is load-bearing. A flex item defaults to min-width: auto,
+   which resolves to min-content, and for an SVG that is its intrinsic width
+   from the viewBox (400px). Without this the rule refuses to shrink and
+   pushes the whole page sideways on a phone. */
+.dr-svg { flex: 1 1 auto; min-width: 0; width: 100%; height: 8px; overflow: visible; }
+.dr-line, .dr-tick {
+  stroke: var(--gold-deep); stroke-width: 1; vector-effect: non-scaling-stroke;
+}
+.dr-line {
+  stroke-dasharray: 400; stroke-dashoffset: 400;
+  transition: stroke-dashoffset 1100ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.dr-tick { opacity: 0; transition: opacity 300ms ease 900ms; }
+.dr-label {
+  flex: none;
+  font-family: var(--sh-mono); font-size: 0.625rem; font-weight: 500;
+  letter-spacing: 0.18em; text-transform: uppercase; color: var(--gray);
+  opacity: 0; transform: translateX(-6px);
+  transition: opacity 400ms ease 900ms, transform 400ms ease 900ms;
+}
+.dr.in .dr-line { stroke-dashoffset: 0; }
+.dr.in .dr-tick { opacity: 0.8; }
+.dr.in .dr-label { opacity: 1; transform: none; }
+
+/* ---- frame to finish: the one interactive moment ------------------------- */
+.ftf { --p: 0; }
+/* Left aligned, because this site's whole direction is left aligned and
+   editorial. A centred block here read as a different template stamped in. */
+.ftf-head { max-width: 46rem; margin: 0 auto 2.5rem; }
+.ftf-head .hp-h2, .ftf-head .hp-sub { text-align: left; }
+.ftf-kicker {
+  margin: 0 0 0.9rem;
+  font-family: var(--sh-mono); font-size: 0.625rem; font-weight: 500;
+  letter-spacing: 0.22em; text-transform: uppercase; color: var(--gold-deep);
+}
+
+.ftf-stage { position: relative; max-width: 62rem; margin-inline: auto; }
+.ftf-frames {
+  position: relative; border-radius: 3px; overflow: hidden;
+  border: 1px solid var(--rule); background: var(--ink);
+  aspect-ratio: 16 / 9;
+}
+.ftf-img {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%; object-fit: cover; display: block;
+}
+/* The finished state fades in over the raw one as the hold progresses. Opacity
+   only, so it stays on the compositor. */
+.ftf-img--done { opacity: var(--p); }
+/* A warm wash that lifts as the room finishes, so the change reads as light
+   arriving rather than only as a crossfade. */
+.ftf-veil {
+  position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(to top, rgb(20 17 13 / 0.55), rgb(20 17 13 / 0.12));
+  opacity: calc(1 - var(--p) * 0.8);
+}
+
+.ftf-hold {
+  position: absolute; left: 50%; bottom: 1.5rem; transform: translateX(-50%);
+  display: inline-flex; align-items: center; gap: 0.85rem;
+  padding: 0.55rem 1.4rem 0.55rem 0.6rem;
+  background: rgb(8 7 5 / 0.62); backdrop-filter: blur(10px);
+  border: 1px solid rgb(201 162 39 / 0.4); border-radius: 999px;
+  color: var(--cream); font: inherit; font-size: 0.875rem;
+  cursor: pointer; touch-action: none;
+  transition: border-color 240ms ease, background 240ms ease;
+}
+.ftf-hold:hover { border-color: var(--gold); background: rgb(8 7 5 / 0.75); }
+.ftf-hold:focus-visible { outline: 2px solid var(--gold-bright); outline-offset: 3px; }
+.ftf-hold-ring { width: 2.25rem; height: 2.25rem; flex: none; }
+.ftf-hold-ring svg { width: 100%; height: 100%; display: block; }
+.ftf-ring-bg { fill: none; stroke: rgb(246 241 231 / 0.22); stroke-width: 3; }
+.ftf-ring-fg {
+  fill: none; stroke: var(--gold); stroke-width: 3; stroke-linecap: round;
+  stroke-dasharray: 151;                       /* 2 * pi * 24 */
+  stroke-dashoffset: calc(151 - 151 * var(--p));
+}
+.ftf.is-done .ftf-hold { border-color: var(--gold); }
+
+.ftf-points {
+  list-style: none; counter-reset: ftf;
+  max-width: 62rem; margin: 2.5rem auto 0; padding: 0;
+  display: grid; gap: 1.5rem;
+}
+@media (min-width: 860px) { .ftf-points { grid-template-columns: repeat(3, 1fr); gap: 2.5rem; } }
+.ftf-points li {
+  counter-increment: ftf;
+  position: relative; padding-top: 1.1rem;
+  border-top: 1px solid var(--rule);
+  font-size: 0.9375rem; line-height: 1.65;
+  /* Readable BEFORE the visitor interacts. Dimming body copy with opacity
+     until someone presses a button fails contrast for everyone who does not,
+     so the unlit state is a real colour that passes and the reward is a
+     colour and rule change instead. */
+  color: var(--gray);
+  transform: translateY(6px);
+  transition: color 500ms ease, transform 500ms ease, border-color 500ms ease;
+}
+.ftf-points li::before {
+  content: counter(ftf, decimal-leading-zero);
+  display: block; margin-bottom: 0.5rem;
+  font-family: var(--sh-mono); font-size: 0.625rem; letter-spacing: 0.16em;
+  color: var(--gold-deep);
+}
+.ftf-points li strong { color: var(--charcoal); font-weight: 600; transition: color 500ms ease; }
+.ftf.is-done .ftf-points li strong { color: var(--ink); }
+/* the visitor's action earns something: the points light in sequence */
+.ftf.is-done .ftf-points li { color: var(--charcoal); transform: none; border-color: var(--gold-deep); }
+.ftf.is-done .ftf-points li:nth-child(2) { transition-delay: 140ms; }
+.ftf.is-done .ftf-points li:nth-child(3) { transition-delay: 280ms; }
+
+/* ---- entrances ----------------------------------------------------------
+   Prefixed with the container class so a later rule cannot silently cancel
+   them, and the stagger delays are retired after arrival so hovers on the
+   later siblings never lag. */
+.rv { opacity: 0; transform: translateY(18px); }
+.rv.in { opacity: 1; transform: none;
+  transition: opacity 700ms cubic-bezier(0.22,1,0.36,1), transform 700ms cubic-bezier(0.22,1,0.36,1); }
+
+@media (prefers-reduced-motion: reduce) {
+  .rv, .rv.in { opacity: 1; transform: none; transition: none; }
+  .dr-line { stroke-dashoffset: 0; transition: none; }
+  .dr-tick, .dr-label { opacity: 0.8; transform: none; transition: none; }
+  .dr-label { opacity: 1; }
+  .ftf-points li { transform: none; transition: none; }
+  .ftf-hold { display: none; }
+}
+
+/* animation-play-state is not inherited, so the pause has to reach every
+   element and pseudo-element directly rather than being set on a container. */
+body.paused *,
+body.paused *::before,
+body.paused *::after { animation-play-state: paused !important; }

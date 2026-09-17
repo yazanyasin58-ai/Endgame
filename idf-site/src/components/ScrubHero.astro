@@ -1,0 +1,411 @@
+---
+/**
+ * The scroll-scrubbed hero.
+ *
+ * A 24 second film of a house going from open framing to a finished floor,
+ * scrubbed by scroll: the page settles exactly when the camera comes to rest.
+ * Five caption beats sit in the calm left column the footage was composed to
+ * leave, each with an entrance that echoes what the film is doing at that
+ * moment.
+ *
+ * Every line of copy here is already approved content from src/content/idf.ts,
+ * quoted verbatim. Nothing new is claimed; in particular nothing promises a
+ * price that holds, because the signed estimate governs that.
+ *
+ * Engineering notes worth keeping in mind before editing:
+ *   - The film is fetched as a Blob, not streamed by the video element. Many
+ *     hosts lack partial-download support, and without it every seek clamps to
+ *     zero: scrubbing works locally and silently does nothing live.
+ *   - Seeks are gated. Un-gated seeks pile up and that is the whole difference
+ *     between smooth and choppy in Chrome.
+ *   - The DOM is written only on change. Per-frame writes are the other half.
+ *   - THE FIVE STATIC-HERO GATES below must match scrub.css character for
+ *     character, or one side loads assets the other side hides.
+ */
+import { business, cta } from '../content/idf';
+
+interface Props {
+  /** Bytes of the encoded film. The fallback when Content-Length is absent. */
+  videoBytes?: number;
+}
+const { videoBytes = 11739138 } = Astro.props;
+
+const bands = [
+  {
+    k: 'Class A Contractor . Since 1989 . Northern Virginia',
+    line: 'A home built the way you asked for it.',
+    entrance: 'e-drift',
+    a: 0.0,
+    b: 0.16,
+  },
+  { line: 'Thirty-seven years in the same trade.', entrance: 'e-weave', a: 0.19, b: 0.35 },
+  { line: 'You talk to the owner. Start to finish.', entrance: 'e-part', a: 0.38, b: 0.54 },
+  { line: 'A written estimate within 24 hours.', entrance: 'e-focus', a: 0.57, b: 0.73 },
+];
+---
+
+<section class="sh" data-scrub aria-label="Introduction">
+  <div class="sh-stage" data-stage>
+    <div class="sh-poster" data-poster></div>
+
+    {/* Decorative. Kept out of the tab order and hidden from screen readers,
+        so keyboard and screen reader users land on the captions instead. */}
+    <video
+      class="sh-video"
+      data-video
+      preload="none"
+      muted
+      playsinline
+      aria-hidden="true"
+      tabindex="-1"></video>
+
+    <div class="sh-scrim" aria-hidden="true"></div>
+
+    {bands.map((band, i) => (
+      <div class={`sh-band ${band.entrance}`} data-band data-a={band.a} data-b={band.b}>
+        {band.k && <p class="sh-kicker">{band.k}</p>}
+        <p class="sh-line" data-split={i === 2 ? 'part' : i === 1 ? 'char' : 'word'}>
+          {band.line}
+        </p>
+      </div>
+    ))}
+
+    {/* The settle. The camera has come to rest, so the copy centres and the
+        call to action arrives last, after the words and the subline. */}
+    <div class="sh-band is-settle e-rise" data-band data-a="0.78" data-b="1.0">
+      <p class="sh-line" data-split="word">Custom homes, additions and remodeling.</p>
+      <p class="sh-sub">Owner run in Northern Virginia since 1989.</p>
+      <div class="sh-actions">
+        <a class="hp-btn" href="/estimate/">{cta.primary}</a>
+        <a class="hp-call hp-call--light" href={business.phonePrimaryHref}>
+          or call {business.phonePrimary}
+        </a>
+      </div>
+    </div>
+
+    <svg class="sh-load" data-ring viewBox="0 0 48 48" aria-hidden="true">
+      <circle cx="24" cy="24" r="20" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-dasharray="126" style="stroke-dashoffset:var(--ld,126)"
+              transform="rotate(-90 24 24)"></circle>
+    </svg>
+  </div>
+
+  {/* The static hero. Not an apology: the ending frame with composed copy over
+      it, for phones, portrait tablets and anyone who asked for less motion. */}
+  <div class="sh-static" data-static>
+    <div class="sh-scrim" aria-hidden="true"></div>
+    <div class="sh-static-copy">
+      <p class="sh-kicker">Class A Contractor . Since 1989 . Northern Virginia</p>
+      <h1 class="sh-line">A home built the way you asked for it.</h1>
+      <p class="sh-sub">Custom homes, additions and remodeling</p>
+      <div class="sh-actions" style="opacity:1;transform:none">
+        <a class="hp-btn" href="/estimate/">{cta.primary}</a>
+        <a class="hp-call hp-call--light" href={business.phonePrimaryHref}>
+          or call {business.phonePrimary}
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script define:vars={{ videoBytes }}>
+  (() => {
+    const root = document.querySelector('[data-scrub]');
+    if (!root) return;
+
+    const stage = root.querySelector('[data-stage]');
+    const video = root.querySelector('[data-video]');
+    const poster = root.querySelector('[data-poster]');
+    const ring = root.querySelector('[data-ring]');
+    const staticHero = root.querySelector('[data-static]');
+
+    const VIDEO_URL = '/hero/hero-scrub.mp4';
+    const POSTER_URL = '/hero/hero-poster.jpg';
+    const ENDING_URL = '/hero/hero-ending.jpg';
+
+    staticHero.style.backgroundImage = `url('${ENDING_URL}')`;
+    staticHero.style.backgroundSize = 'cover';
+    staticHero.style.backgroundPosition = 'center';
+
+    /* ---- split the headlines once, at load -------------------------------
+       A seeded generator, so the "random" offsets are identical every load. */
+    function rng(seed) {
+      let s = seed >>> 0;
+      return () => (s = (s * 1664525 + 1013904223) >>> 0) / 4294967296;
+    }
+
+    root.querySelectorAll('[data-split]').forEach((el, bandIndex) => {
+      const mode = el.dataset.split;
+      const text = el.textContent.trim();
+      const rand = rng(0x9e3779b9 + bandIndex * 2654435761);
+      const words = text.split(' ');
+
+      const sr = document.createElement('span');
+      sr.className = 'sh-sr';
+      sr.textContent = text;
+
+      const vis = document.createElement('span');
+      vis.setAttribute('aria-hidden', 'true');
+
+      words.forEach((word, wi) => {
+        const w = document.createElement('span');
+        w.className = 'w';
+        if (mode === 'word') {
+          w.style.setProperty('--th', (wi / Math.max(1, words.length) * 0.5).toFixed(3));
+        } else if (mode === 'part') {
+          // halves parting: the first half pulls in from the left, the second
+          // from the right, so the line opens like the doorway it echoes.
+          const half = wi < words.length / 2 ? -1 : 1;
+          w.style.setProperty('--jx', `${half * (40 + rand() * 26)}px`);
+          w.style.setProperty('--th', (rand() * 0.18).toFixed(3));
+        }
+        if (mode === 'char') {
+          [...word].forEach((ch, ci) => {
+            const c = document.createElement('span');
+            c.className = 'c';
+            c.textContent = ch;
+            // alternate above and below, echoing passing between the studs
+            const dir = (ci + wi) % 2 === 0 ? -1 : 1;
+            c.style.setProperty('--jy', `${dir * (26 + rand() * 20)}px`);
+            c.style.setProperty('--th', (((wi * 4 + ci) / (text.length + 4)) * 0.55).toFixed(3));
+            w.appendChild(c);
+          });
+        } else {
+          w.textContent = word;
+        }
+        vis.appendChild(w);
+        if (wi < words.length - 1) vis.appendChild(document.createTextNode(' '));
+      });
+
+      el.textContent = '';
+      el.appendChild(sr);
+      el.appendChild(vis);
+
+      // blur-to-sharp needs two stacked copies crossfaded by opacity only
+      if (el.closest('.e-focus')) {
+        const sharp = vis.cloneNode(true);
+        sharp.className = 'sharp';
+        const soft = vis.cloneNode(true);
+        soft.className = 'soft';
+        soft.setAttribute('aria-hidden', 'true');
+        el.removeChild(vis);
+        el.appendChild(soft);
+        el.appendChild(sharp);
+      }
+    });
+
+    /* ---- band state, cached so the DOM is touched only on change --------- */
+    const bands = [...root.querySelectorAll('[data-band]')].map((el) => ({
+      el,
+      a: parseFloat(el.dataset.a),
+      b: parseFloat(el.dataset.b),
+      op: -1,
+      k: -1,
+    }));
+    const lastBand = bands.length - 1;
+
+    const smoothstep = (p, e0, e1) => {
+      const t = Math.min(1, Math.max(0, (p - e0) / (e1 - e0)));
+      return t * t * (3 - 2 * t);
+    };
+    const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
+
+    let loadK = 0;              // band one's one-time assembly ramp
+    let loadStart = 0;
+
+    function updateCaptions(p) {
+      for (let i = 0; i < bands.length; i++) {
+        const band = bands[i];
+        const { a, b } = band;
+        const f = Math.min(0.02, (b - a) / 3);
+        // the first band skips its ease-in and the last its ease-out, so the
+        // journey starts and ends with the words already settled
+        const inOp = i === 0 ? 1 : smoothstep(p, a, a + f);
+        const outOp = i === lastBand ? 1 : 1 - smoothstep(p, b - f, b);
+        const op = Math.round(inOp * outOp * 1000) / 1000;
+
+        let k = clamp((p - a) / Math.min(0.025, (b - a) * 0.35), 0, 1);
+        if (i === 0) k = Math.max(k, loadK);
+        k = Math.round(k * 1000) / 1000;
+
+        if (op !== band.op) {
+          band.op = op;
+          band.el.style.opacity = op;
+        }
+        if (Math.abs(k - band.k) > 0.008 || k === 0 || k === 1) {
+          band.k = k;
+          band.el.style.setProperty('--k', k);
+        }
+      }
+    }
+
+    /* ---- gated seeks, deadlock safe -------------------------------------- */
+    let seekBusy = false;
+    let pendingTime = null;
+
+    function requestSeek(t) {
+      if (!video.duration || !isFinite(t)) return;
+      if (seekBusy) { pendingTime = t; return; }
+      seekBusy = true;
+      try { video.currentTime = t; } catch { seekBusy = false; }
+    }
+    video.addEventListener('seeked', () => {
+      seekBusy = false;
+      if (pendingTime !== null) {
+        const t = pendingTime;
+        pendingTime = null;
+        requestSeek(t);
+      }
+    });
+    video.addEventListener('error', () => {   // the deadlock escape
+      seekBusy = false;
+      pendingTime = null;
+      failVideo();
+    });
+
+    /* ---- the rAF loop that rests ----------------------------------------- */
+    let target = 0, shown = 0, rafId = null, lastTick = 0;
+    let heroOnScreen = true;
+
+    function heroProgress() {
+      const range = root.offsetHeight - window.innerHeight;
+      if (range <= 0) return 0;
+      return clamp(-root.getBoundingClientRect().top / range, 0, 1);
+    }
+
+    function tick(now) {
+      const dt = Math.min(100, now - (lastTick || now));
+      lastTick = now;
+      const k = 0.16;
+      // normalized to a 60fps reference so every refresh rate feels the same
+      shown += (target - shown) * (1 - Math.pow(1 - k, dt / 16.667));
+
+      if (loadK < 1 && loadStart) {
+        loadK = clamp((now - loadStart) / 900, 0, 1);
+      }
+
+      const settled = Math.abs(target - shown) < 0.0005 && loadK >= 1;
+      if (settled) { shown = target; rafId = null; lastTick = 0; }
+      else { rafId = requestAnimationFrame(tick); }
+
+      if (video.duration) requestSeek(shown * video.duration);
+      updateCaptions(shown);
+    }
+
+    function kick() {
+      if (rafId === null && heroOnScreen) {
+        lastTick = 0;
+        rafId = requestAnimationFrame(tick);
+      }
+    }
+    function onScroll() { target = heroProgress(); kick(); }
+
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver((entries) => {
+        heroOnScreen = entries[0].isIntersecting;
+        if (heroOnScreen) kick();
+      }, { rootMargin: '10% 0px' }).observe(root);
+    }
+
+    /* ---- the streamed Blob, behind an honest ring ------------------------ */
+    let started = false;
+    function startBlobFetch() {
+      if (started) return;
+      started = true;
+      loadHeroBlob().catch(failVideo);
+    }
+
+    async function loadHeroBlob() {
+      const ctrl = new AbortController();
+      let watchdog = setTimeout(() => ctrl.abort(), 20000);
+      const res = await fetch(VIDEO_URL, { signal: ctrl.signal });
+      if (!res.ok) throw new Error('hero ' + res.status);
+      const total = Number(res.headers.get('Content-Length')) || videoBytes;
+      const reader = res.body.getReader();
+      const chunks = [];
+      let got = 0, lastRing = 0;
+      for (;;) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        clearTimeout(watchdog);
+        watchdog = setTimeout(() => ctrl.abort(), 20000);
+        chunks.push(value);
+        got += value.length;
+        const frac = Math.min(1, got / total);
+        const now = performance.now();
+        if (now - lastRing > 100 || frac === 1) {
+          lastRing = now;
+          ring.style.setProperty('--ld', Math.round(126 * (1 - frac)));
+        }
+      }
+      clearTimeout(watchdog);
+      ring.style.setProperty('--ld', 0);
+      // The type matters: a Blob built without one carries an empty MIME type
+      // and the video element rejects it with MEDIA_ELEMENT_ERROR code 4,
+      // having downloaded the whole file perfectly.
+      video.src = URL.createObjectURL(new Blob(chunks, { type: 'video/mp4' }));
+      video.load();
+      video.addEventListener('canplay', () => {
+        requestSeek(heroProgress() * video.duration);
+        stage.classList.add('video-ready');
+      }, { once: true });
+    }
+
+    function failVideo() {
+      // an honest scroll cue, never a stuck ring
+      if (ring && ring.parentNode) {
+        const cue = document.createElement('p');
+        cue.className = 'sh-cue';
+        cue.textContent = 'Scroll';
+        ring.replaceWith(cue);
+      }
+      stage.classList.add('video-failed');
+    }
+
+    /* ---- the five gates, decided live, not once at load ------------------ */
+    const GATES = [
+      '(max-width: 720px)',
+      '(orientation: portrait) and (max-width: 1024px)',
+      '(orientation: portrait) and (pointer: coarse)',
+      '(orientation: landscape) and (pointer: coarse) and (max-height: 560px)',
+      '(prefers-reduced-motion: reduce)'
+    ];
+    const MQLS = GATES.map((q) => matchMedia(q));
+    let scrubOn = false;
+    let inited = false;
+
+    function initHeroOnce() {
+      if (inited) return;
+      inited = true;
+      poster.style.backgroundImage = `url('${POSTER_URL}')`;
+      const img = new Image();
+      img.onload = startBlobFetch;
+      img.onerror = startBlobFetch;
+      img.src = POSTER_URL;
+      setTimeout(startBlobFetch, 4000);   // a hung poster never blocks forever
+      loadStart = performance.now();
+    }
+
+    function enableScrub() {
+      if (scrubOn) return;
+      scrubOn = true;
+      initHeroOnce();
+      addEventListener('scroll', onScroll, { passive: true });
+      bands.forEach((b) => { b.op = -1; b.k = -1; });
+      updateCaptions(heroProgress());
+      onScroll();
+    }
+    function disableScrub() {
+      if (!scrubOn) return;
+      scrubOn = false;
+      removeEventListener('scroll', onScroll);
+      if (rafId !== null) { cancelAnimationFrame(rafId); rafId = null; }
+    }
+    function applyHeroMode() {
+      if (MQLS.some((m) => m.matches)) disableScrub();
+      else enableScrub();
+    }
+    MQLS.forEach((m) => m.addEventListener('change', applyHeroMode));
+    applyHeroMode();
+  })();
+</script>

@@ -1,0 +1,92 @@
+---
+import Page from '../layouts/Page.astro';
+import Placeholder from '../components/Placeholder.astro';
+import { business, serviceGroups, insuranceRestoration, gallery, cta } from '../content/idf';
+import { optionalImage } from '../lib/images';
+
+// Exterior work under way — the closest of the photographs to what a storm or
+// water loss actually looks like being repaired. Optional on purpose: a
+// renamed slot should leave a reserved slot behind, not fail the build.
+const irPhoto = gallery.find((g) => g.slot === 'project-siding-crew');
+const irSrc = irPhoto ? optionalImage(`img/${irPhoto.slot}`) : undefined;
+---
+
+<Page
+  title="Services — Interior Design Flooring"
+  description="Remodeling, additions, kitchens, bathrooms, basements, flooring, restoration, permits and inspections in Northern Virginia."
+  heading="Services"
+  standfirst="One licensed contractor for the whole job, including the paperwork."
+  current="/services/"
+>
+  <section class="hp-section hp-section--tight">
+    <div class="sv-list">
+      {
+        serviceGroups.map((g) => (
+          <article class="sv-group" id={g.id}>
+            <h2 class="sv-title">{g.title}</h2>
+            <ul class="sv-items">
+              {g.items.map((i) => <li>{i}</li>)}
+            </ul>
+            <a class="hp-pillar-link" href="/estimate/">Start an estimate</a>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="hp-section hp-section--tight ir-section" id="insurance-restoration">
+    <h2 class="hp-h2">{insuranceRestoration.title}</h2>
+    <p class="hp-sub hp-italic">{insuranceRestoration.standfirst}</p>
+
+    <div class="ir-lede">
+      <div class="ir-intro">
+        {insuranceRestoration.intro.map((para) => <p>{para}</p>)}
+      </div>
+      <figure class="ir-figure">
+        <Placeholder
+          ratio="4 / 3"
+          label="Reserved — exterior repair under way"
+          src={irSrc}
+          alt={irPhoto?.alt ?? ''}
+          real
+          class="gal-ph"
+        />
+        {irPhoto && <figcaption class="gal-cap-detail">{irPhoto.detail}</figcaption>}
+      </figure>
+    </div>
+
+    <ol class="ir-items">
+      {
+        insuranceRestoration.items.map((item, i) => (
+          <li class="ir-item">
+            <span class="ir-num">{String(i + 1).padStart(2, '0')}</span>
+            <h3 class="ir-item-title">{item.title}</h3>
+            <p class="ir-item-detail">{item.detail}</p>
+          </li>
+        ))
+      }
+    </ol>
+
+    <aside class="ir-limit">
+      <h3 class="ir-limit-title">{insuranceRestoration.limit.title}</h3>
+      <p>{insuranceRestoration.limit.body}</p>
+    </aside>
+
+    <a class="hp-textlink" href="/estimate/">Request an estimate for damage repair</a>
+  </section>
+
+  <section class="hp-final">
+    <div class="hp-final-inner hp-final-inner--single">
+      <div>
+        <h2 class="hp-final-heading">Not sure which one you need?</h2>
+        <p class="hp-final-sub hp-italic">Describe the work and we will tell you straight.</p>
+        <div class="hp-hero-actions">
+          <a class="hp-btn" href="/estimate/">{cta.primary}</a>
+          <a class="hp-call hp-call--light" href={business.phonePrimaryHref}>
+            or call {business.phonePrimary}
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</Page>
