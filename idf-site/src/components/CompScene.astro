@@ -1,0 +1,206 @@
+---
+/**
+ * Vector comp scene for a reserved image slot.
+ *
+ * NOT photography and not pretending to be. This is flat architectural
+ * massing drawn in the version's palette so hero composition — where the
+ * horizon sits, where the light falls, how type reads over the field — can
+ * be judged at the right visual weight before real project photography
+ * exists. Every slot using one stays visibly labelled.
+ *
+ * Slices to fill any aspect ratio, so swapping in a real photo changes
+ * nothing about the layout.
+ */
+interface Props {
+  kind: 'exterior-dusk' | 'exterior-day' | 'exterior-night' | 'interior';
+  id: string;
+}
+
+const { kind, id } = Astro.props;
+const g = (n: string) => `${id}-${n}`;
+---
+
+<svg
+  class="comp"
+  viewBox="0 0 1600 900"
+  preserveAspectRatio="xMidYMid slice"
+  aria-hidden="true"
+  focusable="false"
+>
+  {
+    kind === 'exterior-dusk' && (
+      <>
+        <defs>
+          <linearGradient id={g('sky')} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#1d2230" />
+            <stop offset="52%" stop-color="#4a3d2f" />
+            <stop offset="78%" stop-color="#8a6438" />
+            <stop offset="100%" stop-color="#c08a45" />
+          </linearGradient>
+          <radialGradient id={g('sun')} cx="0.68" cy="0.82" r="0.55">
+            <stop offset="0%" stop-color="#f0c078" stop-opacity="0.85" />
+            <stop offset="100%" stop-color="#f0c078" stop-opacity="0" />
+          </radialGradient>
+          <linearGradient id={g('ground')} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#241f18" />
+            <stop offset="100%" stop-color="#100e0a" />
+          </linearGradient>
+        </defs>
+        <rect width="1600" height="900" fill={`url(#${g('sky')})`} />
+        <ellipse cx="1090" cy="560" rx="700" ry="260" fill={`url(#${g('sun')})`} />
+        {/* distant ridge */}
+        <path d="M0 528 L210 486 L430 512 L640 470 L900 508 L1180 474 L1420 506 L1600 486 L1600 560 L0 560 Z" fill="#2a2620" opacity="0.85" />
+        {/* tree line */}
+        <path d="M0 556 L120 534 L250 552 L390 528 L520 550 L700 532 L880 552 L1060 530 L1240 552 L1420 534 L1600 552 L1600 580 L0 580 Z" fill="#1c1a15" />
+        <rect y="556" width="1600" height="344" fill={`url(#${g('ground')})`} />
+        {/* house massing */}
+        <g>
+          <path d="M300 556 L300 400 L470 306 L640 400 L640 556 Z" fill="#17150f" />
+          <rect x="640" y="372" width="360" height="184" fill="#1b1812" />
+          <path d="M624 404 L470 292 L316 404 L470 318 Z" fill="#0f0d09" />
+          <rect x="1000" y="430" width="182" height="126" fill="#141209" opacity="0.92" />
+          {/* warm windows */}
+          <g fill="#e8b968">
+            <rect x="352" y="440" width="52" height="76" opacity="0.88" />
+            <rect x="430" y="440" width="52" height="76" opacity="0.8" />
+            <rect x="508" y="440" width="52" height="76" opacity="0.88" />
+            <rect x="686" y="426" width="118" height="96" opacity="0.72" />
+            <rect x="838" y="426" width="118" height="96" opacity="0.82" />
+            <rect x="1030" y="466" width="60" height="62" opacity="0.6" />
+            <rect x="1108" y="466" width="46" height="62" opacity="0.5" />
+          </g>
+          {/* light spill onto ground */}
+          <path d="M352 556 L404 556 L446 646 L318 646 Z" fill="#c9a05a" opacity="0.16" />
+          <path d="M686 556 L804 556 L862 660 L636 660 Z" fill="#c9a05a" opacity="0.13" />
+        </g>
+      </>
+    )
+  }
+
+  {
+    kind === 'exterior-day' && (
+      <>
+        <defs>
+          <linearGradient id={g('sky')} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#c9c4b6" />
+            <stop offset="70%" stop-color="#e4ddcc" />
+            <stop offset="100%" stop-color="#efe8d8" />
+          </linearGradient>
+        </defs>
+        <rect width="1600" height="900" fill={`url(#${g('sky')})`} />
+        {/* tree mass behind */}
+        <path d="M0 540 L160 498 L330 534 L470 492 L640 528 L860 496 L1080 530 L1300 500 L1600 532 L1600 580 L0 580 Z" fill="#5f5a4a" opacity="0.5" />
+        {/* modern low massing */}
+        <g>
+          <rect x="150" y="404" width="700" height="182" fill="#4a463c" />
+          <rect x="150" y="392" width="760" height="20" fill="#3a372f" />
+          <rect x="850" y="352" width="520" height="234" fill="#57523f" />
+          <rect x="838" y="340" width="546" height="20" fill="#3a372f" />
+          {/* glazing bands */}
+          <g fill="#2b2b2c" opacity="0.82">
+            <rect x="196" y="440" width="248" height="122" />
+            <rect x="470" y="440" width="150" height="122" />
+            <rect x="900" y="392" width="200" height="162" />
+          </g>
+          {/* vertical timber battens */}
+          <g fill="#8a6b41" opacity="0.9">
+            <rect x="1130" y="392" width="210" height="162" />
+          </g>
+          <g stroke="#6d5433" stroke-width="3" opacity="0.55">
+            {Array.from({ length: 14 }, (_, i) => (
+              <line x1={1140 + i * 15} y1="392" x2={1140 + i * 15} y2="554" />
+            ))}
+          </g>
+        </g>
+        {/* ground + reflecting pool */}
+        <rect y="586" width="1600" height="314" fill="#cfc8b6" />
+        <rect x="240" y="646" width="900" height="150" fill="#9aa9a6" />
+        <rect x="240" y="646" width="900" height="150" fill="#4a463c" opacity="0.18" />
+      </>
+    )
+  }
+
+  {
+    kind === 'exterior-night' && (
+      <>
+        <defs>
+          <linearGradient id={g('sky')} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#121620" />
+            <stop offset="60%" stop-color="#20211f" />
+            <stop offset="100%" stop-color="#39301f" />
+          </linearGradient>
+          <radialGradient id={g('glow')} cx="0.5" cy="0.78" r="0.6">
+            <stop offset="0%" stop-color="#b98f45" stop-opacity="0.5" />
+            <stop offset="100%" stop-color="#b98f45" stop-opacity="0" />
+          </radialGradient>
+        </defs>
+        <rect width="1600" height="900" fill={`url(#${g('sky')})`} />
+        <ellipse cx="800" cy="640" rx="820" ry="300" fill={`url(#${g('glow')})`} />
+        <path d="M0 548 L240 512 L520 544 L820 506 L1120 542 L1400 512 L1600 540 L1600 600 L0 600 Z" fill="#15140f" />
+        <rect y="576" width="1600" height="324" fill="#0d0c08" />
+        <g>
+          <rect x="420" y="384" width="420" height="192" fill="#0c0b07" />
+          <path d="M404 388 L630 286 L856 388 Z" fill="#080705" />
+          <rect x="840" y="440" width="300" height="136" fill="#0a0906" />
+          <g fill="#e2b866">
+            <rect x="470" y="424" width="86" height="104" opacity="0.85" />
+            <rect x="586" y="424" width="86" height="104" opacity="0.7" />
+            <rect x="702" y="424" width="86" height="104" opacity="0.9" />
+            <rect x="880" y="478" width="100" height="72" opacity="0.6" />
+            <rect x="1004" y="478" width="80" height="72" opacity="0.45" />
+          </g>
+          <path d="M470 576 L556 576 L604 680 L420 680 Z" fill="#c9a05a" opacity="0.14" />
+          <path d="M702 576 L788 576 L840 680 L654 680 Z" fill="#c9a05a" opacity="0.12" />
+        </g>
+      </>
+    )
+  }
+
+  {
+    kind === 'interior' && (
+      <>
+        <defs>
+          <linearGradient id={g('wall')} x1="0.15" y1="0" x2="0.9" y2="1">
+            <stop offset="0%" stop-color="#efe9dc" />
+            <stop offset="45%" stop-color="#e6dfce" />
+            <stop offset="100%" stop-color="#d3c9b4" />
+          </linearGradient>
+          <linearGradient id={g('floor')} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#c3b393" />
+            <stop offset="100%" stop-color="#ab9877" />
+          </linearGradient>
+          <linearGradient id={g('pool')} x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#fff8e6" stop-opacity="0.75" />
+            <stop offset="100%" stop-color="#fff8e6" stop-opacity="0" />
+          </linearGradient>
+        </defs>
+        {/* quiet upper wall — the headline sits here */}
+        <rect width="1600" height="900" fill={`url(#${g('wall')})`} />
+        {/* soft window light falling across the wall */}
+        <g opacity="0.5">
+          <path d="M120 0 L470 0 L330 620 L40 620 Z" fill={`url(#${g('pool')})`} />
+          <path d="M520 0 L720 0 L600 620 L410 620 Z" fill={`url(#${g('pool')})`} opacity="0.6" />
+        </g>
+        {/* floor plane */}
+        <rect y="646" width="1600" height="254" fill={`url(#${g('floor')})`} />
+        <line x1="0" y1="646" x2="1600" y2="646" stroke="#9d8c6d" stroke-width="2" opacity="0.6" />
+        {/* light pooling on the floor */}
+        <path d="M40 646 L330 646 L250 900 L0 900 Z" fill="#fff8e6" opacity="0.28" />
+        {/* low furniture silhouette, right of the type zone */}
+        <g>
+          <rect x="1080" y="536" width="330" height="112" rx="14" fill="#b9ad94" />
+          <rect x="1104" y="512" width="120" height="40" rx="12" fill="#c8bda6" />
+          <rect x="1252" y="512" width="120" height="40" rx="12" fill="#c8bda6" />
+          <rect x="1112" y="648" width="16" height="30" fill="#8d7f63" />
+          <rect x="1362" y="648" width="16" height="30" fill="#8d7f63" />
+          {/* small round table */}
+          <ellipse cx="930" cy="628" rx="86" ry="20" fill="#a08a63" />
+          <rect x="922" y="628" width="14" height="52" fill="#8d7f63" />
+          <ellipse cx="929" cy="682" rx="42" ry="11" fill="#8d7f63" opacity="0.7" />
+        </g>
+        {/* contact shadow */}
+        <ellipse cx="1245" cy="678" rx="200" ry="18" fill="#8d7f63" opacity="0.28" />
+      </>
+    )
+  }
+</svg>

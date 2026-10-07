@@ -1,0 +1,65 @@
+---
+/**
+ * Human sitemap, for the footer link the client asked for.
+ *
+ * Distinct from /sitemap.xml, which is the machine one. This is built from the
+ * same `nav` the header uses, so it cannot list a page the menu does not have
+ * or miss one the menu gained — including gated entries, which are filtered
+ * out of both by the same rule.
+ */
+import Page from '../layouts/Page.astro';
+import { business, nav, features } from '../content/idf';
+import { servicePages } from '../content/services-detail';
+
+const open = (entry: { gated?: string }) =>
+  !('gated' in entry) || features[entry.gated as keyof typeof features] === true;
+
+/* Unique destinations only: the menu points several labels at the same anchor,
+   which is right for a dropdown and wrong for a sitemap. */
+const groups = nav.filter(open).map((group) => {
+  const seen = new Set<string>();
+  const children = (group.children ?? []).filter(open).filter((c) => {
+    if (seen.has(c.href)) return false;
+    seen.add(c.href);
+    return true;
+  });
+  return { label: group.label, href: group.href, children };
+});
+---
+
+<Page
+  title={`Sitemap — ${business.name}`}
+  description={`Every page on the ${business.name} website.`}
+  heading="Sitemap"
+  standfirst="Every page on this site, in the order the menu presents them."
+>
+  <section class="hp-section hp-section--tight">
+    <div class="sm-grid">
+      {groups.map((g) => (
+        <div class="sm-group">
+          <h2 class="sm-head"><a href={g.href}>{g.label}</a></h2>
+          {g.children.length > 0 && (
+            <ul class="sm-list">
+              {g.children.map((c) => (
+                <li><a href={c.href}>{c.label}</a></li>
+              ))}
+            </ul>
+          )}
+        </div>
+      ))}
+
+      <div class="sm-group">
+        <h2 class="sm-head">Legal</h2>
+        <ul class="sm-list">
+          <li><a href="/privacy/">Privacy Policy</a></li>
+          <li><a href="/terms/">Terms &amp; Conditions</a></li>
+          <li><a href="/sitemap.xml">XML sitemap</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <p class="sm-note">
+      {servicePages.length} service pages, listed under Services above.
+    </p>
+  </section>
+</Page>

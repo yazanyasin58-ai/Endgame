@@ -1,0 +1,65 @@
+---
+/**
+ * Not found.
+ *
+ * Astro writes this to /404.html and Cloudflare Pages serves it for any path
+ * that does not resolve, so it needs no configuration to work.
+ *
+ * It is a lead-capture page, not an apology. Someone reaching a dead URL on a
+ * contractor's site is almost always a customer who mistyped, followed an old
+ * link off a printed card, or came in from a search result for a page that has
+ * since moved. The default host 404 sends them back to Google. This one puts
+ * the phone number and the estimate form one tap away, and lists the pages
+ * they were most likely trying to reach.
+ *
+ * noindex is set explicitly rather than relying on the site-wide pre-launch
+ * block, because it must still be true after launch. Cloudflare serves this
+ * body with a 404 status, which is the real signal to a crawler, but a soft
+ * 404 indexed by accident is a well known way to get a junk page into search
+ * results and the tag costs nothing.
+ */
+import Page from '../layouts/Page.astro';
+import { business } from '../content/idf';
+
+/* The pages a lost visitor most plausibly wanted, in the order a contractor
+   would want them tried. Not the whole sitemap: a wall of links is the same
+   dead end as no links. */
+const routes = [
+  { href: '/', label: 'Home', note: 'Start again from the top.' },
+  { href: '/services/', label: 'Services', note: 'Everything we build, remodel and repair.' },
+  { href: '/projects/', label: 'Projects', note: 'Completed work, with photographs.' },
+  { href: '/estimate/', label: 'Request an estimate', note: 'A written price after a site visit.' },
+  { href: '/contact/', label: 'Contact and showroom', note: 'Address, hours and directions.' },
+];
+---
+
+<Page
+  title={`Page not found — ${business.name}`}
+  description="That page does not exist. Here is how to find what you were looking for, or reach us directly."
+  heading="We could not find that page"
+  standfirst="The link may be out of date, or the address may have a typo in it. Either way, here is the quickest way on."
+  noindex
+>
+  <section class="hp-section hp-section--tight" aria-labelledby="nf-h">
+    <h2 id="nf-h" class="hp-visually-hidden">Where to go next</h2>
+
+    <ul class="nf-list">
+      {
+        routes.map((r) => (
+          <li>
+            <a href={r.href}>
+              <strong>{r.label}</strong>
+              <span>{r.note}</span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+
+    <p class="nf-call">
+      Or skip the site entirely and call us on{' '}
+      <a href={business.phonePrimaryHref}>{business.phonePrimary}</a>. Someone who
+      works here answers.
+    </p>
+  </section>
+</Page>
