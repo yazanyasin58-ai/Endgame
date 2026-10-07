@@ -30,6 +30,20 @@
 .promo-text { display: flex; gap: 0.6rem; flex-wrap: wrap; align-items: baseline; flex: 1; }
 .promo-text strong { color: var(--gold-bright); }
 .promo-text span { color: rgb(246 241 231 / 0.75); font-size: 0.8125rem; }
+/* The qualifying terms for the "up to" figure. flex-basis: 100% drops them to
+   their own line inside .promo-text rather than letting them compete with the
+   offer for the first one. --stone measures 7.44:1 on --ink, which clears AA
+   for small text with room to spare; it is the token this codebase already
+   uses for muted text on dark grounds. Written AFTER the rule above because
+   they share specificity and source order decides. */
+.promo-text .promo-fine {
+  flex-basis: 100%;
+  margin: 0.15rem 0 0;
+  color: var(--stone);
+  font-size: 0.6875rem;
+  line-height: 1.45;
+  max-width: 92ch;
+}
 .promo-cta {
   color: var(--ink); background: var(--gold); text-decoration: none;
   font-size: 0.75rem; font-weight: 600; padding: 0.5em 1.2em; border-radius: 999px;
@@ -1035,6 +1049,40 @@
 .lyh-band p { margin: 0; color: var(--charcoal); max-width: 52ch; }
 .lyh-band .hp-btn { flex: none; white-space: nowrap; }
 
+/* ---------- military and veteran appreciation ---------- */
+/* An ink band, so it reads as a statement rather than another offer card. It
+   sits directly above the showroom, which is also dark, so the two dark bands
+   meet and the page ends on one block of ink instead of alternating twice more. */
+.hp-mil {
+  background: var(--ink);
+  padding: clamp(2.25rem, 5vw, 3.25rem) clamp(1.25rem, 5vw, 3.5rem);
+}
+.hp-mil-inner {
+  max-width: var(--wide, 76rem); margin: 0 auto;
+  display: grid; gap: 1.5rem; align-items: center; justify-items: start;
+}
+@media (min-width: 880px) {
+  .hp-mil-inner { grid-template-columns: auto 1fr auto; gap: 2rem; }
+}
+.hp-mil-emblem {
+  width: 4rem; height: 4rem; flex: none; color: var(--gold);
+  display: grid; place-items: center;
+}
+.hp-mil-emblem svg { width: 100%; height: 100%; }
+.hp-mil-h {
+  margin: 0 0 0.3rem;
+  font-family: 'Fraunces', 'Instrument Serif', serif; font-weight: 400;
+  font-size: clamp(1.3rem, 2.6vw, 1.7rem); color: var(--cream);
+}
+/* --gold-bright is 10.74:1 on ink; --gold is 7.82:1. Both clear AA, and the
+   brighter one keeps this line distinct from the body beneath it. */
+.hp-mil-sub {
+  margin: 0 0 0.45rem; color: var(--gold-bright);
+  font-size: 0.8125rem; letter-spacing: 0.12em; text-transform: uppercase;
+}
+.hp-mil-detail { margin: 0; color: var(--stone); max-width: 54ch; }
+.hp-mil-cta { flex: none; white-space: nowrap; }
+
 /* ---------- preview notice ---------- */
 .pv-notice {
   margin: 0 0 2rem; padding: 1.1rem 1.25rem;
@@ -1503,6 +1551,14 @@
 .lp-status.is-ok { border-left-color: var(--gold-deep); }
 .lp-status.is-err { border-left-color: #a8341f; }
 .lp-fine { margin: 1rem 0 0; font-size: 0.75rem; line-height: 1.55; color: var(--gray); }
+/* Offer terms, below the privacy line and separated by a rule so the two are
+   not read as one paragraph. --gray on --paper measures 5.36:1, which clears
+   AA for small text. */
+.lp-terms {
+  margin: 0.85rem 0 0; padding-top: 0.85rem;
+  border-top: 1px solid var(--rule);
+  font-size: 0.6875rem; line-height: 1.5; color: var(--gray);
+}
 /* Honeypot, clipped in place rather than parked off-page — see .ef-hp. */
 .lp-hp {
   position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;

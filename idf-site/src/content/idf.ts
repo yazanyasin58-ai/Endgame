@@ -424,12 +424,30 @@ export const cta = {
  * Showroom hours — confirmed by the owner (supersedes both the intake form
  * and the older Google Business Profile figures quoted in the brief).
  * Must stay identical to the Google Business Profile for NAP consistency.
+ *
+ * Sunday became "By Appointment" on the owner's instruction of 6 October.
+ * That is why an entry carries EITHER `open`/`close` OR a `note`: a day the
+ * showroom opens by arrangement has no opening time, and inventing one so the
+ * shape stays uniform would put a time on the website that nobody is there to
+ * keep. Render with `hoursLabel` rather than reading the fields directly.
+ *
+ * Monday to Saturday here have NOT been re-checked against the Google
+ * Business Profile. The owner asked for the whole site to match the profile
+ * and only specified Sunday, so if the weekday hours have moved too, they
+ * need to be corrected here and nowhere else.
  */
 export const hours = [
   { days: 'Monday – Friday', open: '10:00 AM', close: '7:30 PM' },
   { days: 'Saturday', open: '10:00 AM', close: '6:00 PM' },
-  { days: 'Sunday', open: '11:00 AM', close: '4:00 PM' },
+  { days: 'Sunday', note: 'By Appointment' },
 ] as const;
+
+export type HoursEntry = (typeof hours)[number];
+
+/** The right-hand side of an hours row, whichever shape the entry has. */
+export function hoursLabel(h: HoursEntry): string {
+  return 'note' in h ? h.note : `${h.open} – ${h.close}`;
+}
 
 export const social = [
   {
@@ -449,8 +467,8 @@ export const social = [
  */
 export const googleSnapshot = {
   rating: '4.8',
-  total: '32',
-  readOn: '4 September 2026',
+  total: '34',
+  readOn: '6 October 2026',
 } as const;
 
 /**
@@ -515,8 +533,9 @@ export const figures = [
    * `live: 'googleRating'` marks this one for the reviews fetch to overwrite,
    * so it can never contradict the average the carousel prints from the same
    * response. The value here is the fallback when that fetch does not run or
-   * does not answer — 4.8 across 32 reviews, read from the Places API on
-   * 4 Sep 2026. It was 4.7, which had already drifted.
+   * does not answer — 4.8 across 34 reviews. The count came from the owner on
+   * 6 Oct 2026, who reported the footer still showing the older 32. It was
+   * 4.7 before that, which had already drifted.
    */
   { value: googleSnapshot.rating, label: 'Google rating', note: 'From verified reviews', live: 'googleRating' },
   { value: '24 hrs', label: 'Estimate turnaround', note: 'After the site visit' },
@@ -535,13 +554,58 @@ export const figures = [
  */
 export const legalUpdated = '5 September 2026';
 
+/**
+ * The first-project offer, as it appears in the promo bar and the pop-up.
+ *
+ * "Up to 25% off" replaced a flat "15% off" on the owner's instruction of
+ * 6 October, and it only became publishable in the same breath, because they
+ * supplied the qualifying terms with it. An "up to" figure is true of one job
+ * and misleading about every other one unless the page says what moves it, and
+ * Virginia's Consumer Protection Act reaches advertising that leaves that out.
+ * `fine` is the owner's own wording for that, close to verbatim, and it is not
+ * decoration: if the headline is ever shown somewhere `fine` is not, the claim
+ * goes back to being bare. Both surfaces that carry `headline` carry `fine`.
+ *
+ * "your first project" is kept from the previous wording, so the offer stays
+ * scoped to new customers exactly as it was. The owner changed the percentage
+ * and did not mention eligibility, so eligibility was not changed.
+ *
+ * TWO THINGS ARE STILL MISSING and should be asked for before this runs long:
+ * an end date, and whether it combines with the military and veteran discount.
+ * "Restrictions may apply" is doing that work at the moment, which is thin.
+ */
 export const promo = {
-  headline: '15% off your first project',
+  headline: 'Up to 25% off your first project',
   detail: 'New customers. Ask us for details when you request your estimate.',
+  fine:
+    'Discounts are subject to project review and may vary based on project size, ' +
+    'scope and type of work, materials, and other applicable factors. ' +
+    'Restrictions may apply.',
   cta: 'Request a Free Estimate',
   // Phone label. The bar sits above the fold and the full label crowds the
   // headline off the line at 375px.
   ctaShort: 'Free estimate',
+} as const;
+
+/**
+ * Military and veteran appreciation.
+ *
+ * The owner asked for this on 6 October and was explicit that NO PERCENTAGE is
+ * to be advertised, unlike the first-project offer. That is a deliberate
+ * difference, not an omission to tidy up later: a discount with no number
+ * needs no qualifying terms, which is why this block has no `fine` and must
+ * not acquire one by copying the promo block.
+ *
+ * It is an appreciation badge and nothing more. It must never carry a service
+ * branch insignia, a Department of Defense or VA seal, or any mark that would
+ * read as an official endorsement, because those are protected and because
+ * this company has no such affiliation to claim. The emblem beside it is drawn
+ * from scratch for this site.
+ */
+export const militaryDiscount = {
+  heading: 'Proud to Support Our Military & Veterans',
+  subheading: 'Special Discounts Available',
+  detail: 'Ask us about our Military & Veteran Discount.',
 } as const;
 
 // Slots that exist but are blocked pending client confirmation. Render these

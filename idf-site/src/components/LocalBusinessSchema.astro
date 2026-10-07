@@ -101,13 +101,22 @@ function expandDays(label: string): string[] {
 
 /* Derived from the same `hours` array the showroom band and the footer
    render, so the hours a crawler is told can never drift from the hours a
-   visitor is shown. */
-const openingHoursSpecification = hours.map((h) => ({
-  '@type': 'OpeningHoursSpecification',
-  dayOfWeek: expandDays(h.days),
-  opens: to24h(h.open),
-  closes: to24h(h.close),
-}));
+   visitor is shown.
+
+   A by-appointment day is OMITTED rather than translated. schema.org wants
+   real clock times, and there is no honest pair for "By Appointment": giving
+   it one would put opening hours in the knowledge panel that nobody is at the
+   showroom to keep, which is worse than the day being absent. Absent means
+   Google falls back to the Business Profile, which is the authority for it
+   anyway. If Sunday should appear, it has to be set there, not invented here. */
+const openingHoursSpecification = hours
+  .filter((h): h is Extract<typeof h, { open: string }> => 'open' in h)
+  .map((h) => ({
+    '@type': 'OpeningHoursSpecification',
+    dayOfWeek: expandDays(h.days),
+    opens: to24h(h.open),
+    closes: to24h(h.close),
+  }));
 
 /* Only emitted once a real origin exists. Until then the node is still valid
    and useful, it just has no URL to point at, which is better than pointing

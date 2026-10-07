@@ -1,5 +1,5 @@
 ---
-import { business, hours, serviceArea, writeReviewUrl, googleSnapshot } from '../content/idf';
+import { business, hours, hoursLabel, serviceArea, writeReviewUrl, googleSnapshot } from '../content/idf';
 import SocialLinks from './SocialLinks.astro';
 import Logo from './Logo.astro';
 ---
@@ -32,7 +32,7 @@ import Logo from './Logo.astro';
             hours.map((h) => (
               <li>
                 <span>{h.days}</span>
-                <span>{h.open} – {h.close}</span>
+                <span>{hoursLabel(h)}</span>
               </li>
             ))
           }

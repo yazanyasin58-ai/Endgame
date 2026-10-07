@@ -2,7 +2,7 @@
 import Page from '../layouts/Page.astro';
 import EstimateForm from '../components/EstimateForm.astro';
 import SocialLinks from '../components/SocialLinks.astro';
-import { business, hours, serviceArea } from '../content/idf';
+import { business, hours, hoursLabel, serviceArea } from '../content/idf';
 
 /**
  * Google Maps embed, built from business.address so the pin and the printed
@@ -15,7 +15,7 @@ const mapEmbed = `https://maps.google.com/maps?q=${encodeURIComponent(business.a
 
 <Page
   title="Contact — Interior Design Flooring"
-  description="Call, text or visit the Interior Design Flooring showroom at 45431 Ruritan Circle, Suite 160, Sterling, VA 20164. Open seven days."
+  description="Call, text or visit the Interior Design Flooring showroom at 45431 Ruritan Circle, Suite 160, Sterling, VA 20164. Open six days, Sundays by appointment."
   heading="Contact"
   standfirst="Call, text, or come by the showroom."
   current="/contact/"
@@ -36,7 +36,7 @@ const mapEmbed = `https://maps.google.com/maps?q=${encodeURIComponent(business.a
 
         <h2 class="ab-h3">Hours</h2>
         <ul class="ct-hours">
-          {hours.map((h) => (<li><span>{h.days}</span><span>{h.open} – {h.close}</span></li>))}
+          {hours.map((h) => (<li><span>{h.days}</span><span>{hoursLabel(h)}</span></li>))}
         </ul>
 
         <h2 class="ab-h3">Phone &amp; email</h2>

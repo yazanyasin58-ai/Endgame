@@ -23,6 +23,8 @@ import {
   features,
   figures,
   hours,
+  hoursLabel,
+  militaryDiscount,
   serviceArea,
 } from '../content/idf';
 import { optionalImage } from '../lib/images';
@@ -204,6 +206,38 @@ const homeCards = ['project-kitchen-blue-island', 'project-framing-interior', 'p
     </div>
   </section>
 
+  {/* MILITARY AND VETERAN APPRECIATION. Asked for on 6 October.
+
+      The emblem is drawn here rather than imported: a shield, a five-point
+      star and a ribbon, all original geometry. It carries NO service branch
+      insignia and no Department of Defense or VA seal. Those are protected
+      marks, and using one would also imply an official affiliation this
+      company does not have. If anyone is ever tempted to swap in a "more
+      official looking" graphic, that is the reason not to.
+
+      No percentage appears, by instruction, which is also why this band has no
+      fine print while the first-project offer does. A discount with no number
+      makes no quantitative claim to qualify. */}
+  <section class="hp-mil" aria-labelledby="hp-mil-h">
+    <div class="hp-mil-inner">
+      <span class="hp-mil-emblem" aria-hidden="true">
+        <svg viewBox="0 0 48 56" fill="none" stroke="currentColor"
+             stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M24 2 4 9v18c0 12.5 8.4 22.3 20 27 11.6-4.7 20-14.5 20-27V9L24 2Z" />
+          <path d="m24 17 2.9 5.9 6.5.9-4.7 4.6 1.1 6.5-5.8-3-5.8 3 1.1-6.5-4.7-4.6 6.5-.9L24 17Z"
+                fill="currentColor" stroke="none" />
+          <path d="M16 41h16" opacity="0.55" />
+        </svg>
+      </span>
+      <div class="hp-mil-text">
+        <h2 id="hp-mil-h" class="hp-mil-h">{militaryDiscount.heading}</h2>
+        <p class="hp-mil-sub">{militaryDiscount.subheading}</p>
+        <p class="hp-mil-detail">{militaryDiscount.detail}</p>
+      </div>
+      <a class="hp-btn hp-mil-cta" href="/estimate/">Request a Free Estimate</a>
+    </div>
+  </section>
+
   {/* SHOWROOM. /contact/ carries all of this in more detail and the footer
       prints the address, the hours and the service area on every page, so on
       duplication grounds alone this band is redundant and it was cut once on
@@ -214,8 +248,12 @@ const homeCards = ['project-kitchen-blue-island', 'project-framing-interior', 'p
     <div class="hp-showroom-inner">
       <div class="hp-showroom-text">
         <h2 id="hp-showroom-h" class="hp-h2">Visit the showroom</h2>
+        {/* Said "Open seven days" until 6 October. Sunday became
+            by-appointment that day, so the line stopped being true and the
+            hours list directly beneath it said so. */}
         <p class="hp-sub">
-          Contracts are signed here, and selections are made here. Open seven days.
+          Contracts are signed here, and selections are made here. Open six days,
+          and Sundays by appointment.
         </p>
 
         <address class="hp-showroom-addr">
@@ -223,7 +261,7 @@ const homeCards = ['project-kitchen-blue-island', 'project-framing-interior', 'p
         </address>
 
         <ul class="hp-showroom-hours">
-          {hours.map((h) => (<li><span>{h.days}</span><span>{h.open} – {h.close}</span></li>))}
+          {hours.map((h) => (<li><span>{h.days}</span><span>{hoursLabel(h)}</span></li>))}
         </ul>
 
         <p class="hp-showroom-area">
