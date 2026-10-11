@@ -410,6 +410,9 @@ export const realEstate = {
       title: 'An introduction, if you want one',
       detail:
         'We work alongside licensed agents in the area and are glad to introduce you. The listing is theirs; the work is ours.',
+      /* Carries the agent's credential line in small text beneath the card.
+         See `realEstateLicense.agent`. */
+      agent: true,
     },
   ],
   cta: 'Reach out and we will go through the details with you.',
@@ -988,6 +991,34 @@ export const realEstateLicense = {
    * a house-style artefact rather than part of the name.
    */
   firmName: 'Samson Companies LLC',
+  /**
+   * The agent the "introduction" on /real-estate/ is to. Published in small
+   * text on that page at the owner's request of 11 October, with the firm
+   * named beside it.
+   *
+   * WHY THIS IS ALLOWED WHEN "IN-HOUSE REALTOR" WAS NOT. Naming a licensed
+   * agent together with the brokerage his license hangs under is the
+   * disclosure Virginia asks real estate advertising to make; it is the
+   * firm-less version that was the problem. The page says in the same breath
+   * that Samson Companies LLC is a separate company from Interior Design
+   * Flooring, so none of the three things listed above `realEstate` comes
+   * back: he is not presented as in-house, IDF offers no brokerage services,
+   * and nothing of value is tied to using him.
+   *
+   * The number was recorded on 30 August from the owner's brief and taken off
+   * the page on 5 September with the in-house copy, not because it was wrong.
+   * Ali Waziri (0225273277) stays off: his license was reported inactive.
+   * Confirm the number and status on the DPOR license lookup before launch;
+   * publishing a wrong number is worse than publishing none.
+   *
+   * "Salesperson", not "Realtor": REALTOR® is a trademark for members of the
+   * National Association of Realtors, and membership has not been confirmed.
+   */
+  agent: {
+    name: 'Sameer Waziri',
+    title: 'Licensed real estate salesperson',
+    licenseNumber: '0225273319',
+  },
   /**
    * The firm's own license. A different series from the 0225 salesperson
    * numbers, consistent with a firm license — worth confirming once on the

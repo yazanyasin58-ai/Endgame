@@ -19,7 +19,9 @@
  * `realEstate` in content/idf.ts.
  */
 import Page from '../layouts/Page.astro';
-import { business, realEstate, serviceArea } from '../content/idf';
+import { business, realEstate, realEstateLicense, serviceArea } from '../content/idf';
+
+const agent = realEstateLicense.agent;
 ---
 
 <Page
@@ -41,6 +43,14 @@ import { business, realEstate, serviceArea } from '../content/idf';
           <div class="re-item">
             <h3>{point.title}</h3>
             <p>{point.detail}</p>
+            {'agent' in point && point.agent && (
+              <p class="re-credential">
+                <span class="re-credential-name">{agent.name}</span>
+                <span class="re-credential-line">{agent.title}</span>
+                <span class="re-credential-line">Virginia license {agent.licenseNumber}</span>
+                <span class="re-credential-line">{realEstateLicense.firmName}</span>
+              </p>
+            )}
           </div>
         ))
       }
@@ -57,7 +67,8 @@ import { business, realEstate, serviceArea } from '../content/idf';
     <p class="re-note">
       Interior Design Flooring is a {business.license}. We are contractors, not a real
       estate brokerage — the listing is handled by a licensed agent, and we are glad to
-      introduce you to one. Serving {serviceArea.short}.
+      introduce you to one. {agent.name} is licensed with {realEstateLicense.firmName},
+      a separate company from Interior Design Flooring. Serving {serviceArea.short}.
     </p>
   </section>
 </Page>
