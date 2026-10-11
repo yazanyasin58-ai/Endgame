@@ -973,12 +973,24 @@
      clamp. This is the only horizontal scroller on the site, which is why the
      drift was reported on the homepage and nowhere else. */
   overscroll-behavior-x: contain;
-  padding-bottom: 0.5rem; scrollbar-width: thin;
+  /* The bar itself is hidden, not the scrolling. A visible track bar under a
+     strip that already drifts on its own, with arrows above it and a swipe
+     hint beside them, is a fourth way of saying the same thing and the only
+     one that looks like furniture. Everything it afforded still works: wheel,
+     trackpad, touch, drag, arrow keys and the buttons.
+     scrollbar-width covers Firefox and current Chrome; the ::-webkit rule
+     below covers Safari and older Chrome. */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  /* Was 0.5rem to clear the bar that is no longer drawn. What is left is the
+     gap between the cards and the Read more controls under them. */
+  padding-bottom: 0.25rem;
   /* room for the focus ring, which a clipping scroller would cut off */
   padding-inline: 3px; margin-inline: -3px;
   max-width: 100%;
   min-width: 0;
 }
+.rc-track::-webkit-scrollbar { width: 0; height: 0; display: none; }
 /* Snapping and a per-frame scrollLeft fight each other: mandatory snap drags
    the strip back to the nearest card every time the drift nudges it, and the
    result stutters. The drifting track is a free scroller, which is still
