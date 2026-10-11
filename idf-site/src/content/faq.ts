@@ -33,6 +33,7 @@
  * markup on two pages describes two things to a parser.
  */
 import { business, hours, hoursLabel, serviceArea, promo } from './idf';
+import { assertSafeFaq } from './faq-safety';
 
 export type FaqItem = {
   q: string;
@@ -212,62 +213,12 @@ export const faqItems: FaqItem[] = faqGroups.flatMap((g) => g.items);
 export const faqHome: FaqItem[] = faqItems.filter((i) => i.home);
 
 /*
- * Build-time guards.
- *
- * The phrase guard is not decoration. "We handle your insurance claim" is the
- * single most natural sentence to write in a contractor FAQ, it is what the
- * client was told not to advertise, and it describes a licensed activity this
- * company is not licensed for. A future edit that reaches for it should fail
- * the build rather than reach the website.
+ * Checked by the shared rules in faq-safety.ts, which the service-page FAQs
+ * use too. The cross-page duplicate check lives in service-faq.ts, where
+ * both sets are in scope at once.
  */
-{
-  const seen = new Set<string>();
-  for (const item of faqItems) {
-    const key = item.q.trim().toLowerCase();
-    if (seen.has(key)) throw new Error(`faq: the same question twice — "${item.q}"`);
-    seen.add(key);
-    if (!item.a.length || item.a.some((p) => !p.trim())) {
-      throw new Error(`faq: empty answer for "${item.q}"`);
-    }
-  }
+assertSafeFaq(faqItems, 'faq');
 
-  if (!faqHome.length) {
-    throw new Error('faq: nothing marked `home`, so the homepage band would render empty.');
-  }
-
-  /*
-   * A flat ban on the words does not work, and finding that out is the
-   * useful part: the one answer that MUST discuss claim negotiation is the
-   * one that disowns it, and a ban fails the build on its own disclaimer.
-   * Writing the rule as a ban caught this file on the first run.
-   *
-   * So the rule is conditional instead, and it is stronger than a ban. Any
-   * item that raises negotiating, settling, handling or fighting a claim has
-   * to say in the same breath that this is public adjusting and not what we
-   * do. The honest sentence passes. "We handle your insurance claim" does
-   * not, because it carries no such qualification, and neither does anything
-   * a future edit reaches for to sound more helpful.
-   */
-  const CLAIM_HANDLING =
-    /\b(negotiat|settl|fight|maximi[sz]|handl|manag)\w*\b[^.]{0,40}\bclaims?\b|\bclaims?\b[^.]{0,40}\b(negotiat|settl|fight|maximi[sz])\w*/i;
-
-  for (const item of faqItems) {
-    const whole = [item.q, ...item.a].join(' ');
-
-    if (CLAIM_HANDLING.test(whole) && !/public adjusting/i.test(whole)) {
-      throw new Error(
-        `faq: "${item.q}" raises negotiating or handling an insurance claim without ` +
-          `saying that this is public adjusting and not something we do. That is a ` +
-          `licensed activity in Virginia and a verbatim client instruction forbids ` +
-          `advertising it. Either remove the claim language or keep the disclaimer with it.`,
-      );
-    }
-
-    /* No conditional version of this one. A deductible must never be
-       mentioned in any direction, which is recorded above the insurance
-       content in idf.ts. */
-    if (/\bdeductible\b/i.test(whole)) {
-      throw new Error(`faq: "${item.q}" mentions a deductible, which must never appear here.`);
-    }
-  }
+if (!faqHome.length) {
+  throw new Error('faq: nothing marked `home`, so the homepage band would render empty.');
 }

@@ -1626,6 +1626,17 @@
   font-size: 0.8438rem; line-height: 1.65; color: var(--gray);
 }
 
+/* The service-page FAQ. Same 62rem measure as the prose above it so the
+   three blocks on the page share one left edge. The list brings its own top
+   rule, so this block does not add a second one. */
+.svc-faq { margin-top: 3rem; max-width: 62rem; margin-inline: auto; }
+.svc-faq .faq-list { margin-top: 1rem; }
+/* Narrower than the general FAQ: these sit under a column of prose rather
+   than filling a page, and a question set the full width of a 62rem block
+   reads as a different component from the one above it. */
+.svc-faq .faq-q { font-size: 1rem; }
+.svc-faq .faq-a { max-width: 62ch; }
+
 .svc-cta {
   margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--rule);
   max-width: 62rem; margin-inline: auto;

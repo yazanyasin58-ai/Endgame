@@ -8,7 +8,9 @@
  * can drift apart in structure.
  */
 import Page from '../../layouts/Page.astro';
+import FaqList from '../../components/FaqList.astro';
 import { servicePages } from '../../content/services-detail';
+import { serviceFaq } from '../../content/service-faq';
 import { business, cta } from '../../content/idf';
 
 export function getStaticPaths() {
@@ -21,6 +23,35 @@ export function getStaticPaths() {
 const { service } = Astro.props;
 
 const others = servicePages.filter((s) => s.slug !== service.slug);
+
+/* Guaranteed present: service-faq.ts fails the build if any service page
+   has no questions, so this is never an empty section. */
+const questions = serviceFaq[service.slug];
+
+/**
+ * FAQPage markup, one set per service page.
+ *
+ * Twelve pages each carrying their own is fine, and is not the thing the
+ * homepage was kept clear of: these are twelve DIFFERENT sets of questions
+ * on twelve different URLs, and no question may appear on two of them, which
+ * the build enforces. Repeating one set across pages is what makes the
+ * markup worthless, not having it on more than one page.
+ *
+ * Worth being honest about the payoff: Google narrowed FAQ rich results to
+ * authoritative government and health sites, so this is unlikely to draw a
+ * dropdown in search. It is still valid, still describes the page correctly,
+ * and it is exactly the machine-readable Q and A the client's brief asks for
+ * under AI and generative-engine visibility.
+ */
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: questions.map((item) => ({
+    '@type': 'Question',
+    name: item.q,
+    acceptedAnswer: { '@type': 'Answer', text: item.a.join(' ') },
+  })),
+};
 ---
 
 <Page
@@ -45,11 +76,21 @@ const others = servicePages.filter((s) => s.slug !== service.slug);
       </div>
     </div>
 
+    {/* Questions before the call to action: answer the hesitation, then
+        ask. The other way round, the FAQ reads as an afterthought under a
+        button nobody pressed yet. */}
+    <div class="svc-faq">
+      <h2 class="svc-scope-title" id="svc-faq-h">Common questions</h2>
+      <FaqList items={questions} name={`svc-faq-${service.slug}`} />
+    </div>
+
     <div class="svc-cta">
       <a class="hp-btn" href="/estimate/">{cta.primary}</a>
       <a class="hp-call" href={business.phonePrimaryHref}>or call {business.phonePrimary}</a>
     </div>
   </section>
+
+  <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} is:inline />
 
   <section class="hp-section hp-section--tight svc-more">
     <h2 class="hp-h2">Other services</h2>
