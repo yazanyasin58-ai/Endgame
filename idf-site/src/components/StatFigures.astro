@@ -86,11 +86,17 @@ const tiles = figures.map((f) => ({
    */
   (() => {
     const reduce = matchMedia('(prefers-reduced-motion: reduce)');
-    /* Quick, as asked. The roll itself is short and the gap between tiles is
-       shorter, so the whole sweep across six reads as one gesture rather than
-       a queue: 900 + 5 x 110 is about 1.45s end to end. */
-    const DURATION = 900;
-    const STAGGER = 110;
+    /* Brisk, not hurried. This was 900 and 110, which measured at 1.4s end to
+       end and read as a flicker rather than a count: the digits moved too
+       fast to follow, so the effect was motion without the number landing.
+       1500 and 150 is about 2.25s across the six, slow enough to watch a
+       figure arrive and still well short of making anyone wait for it.
+
+       The gap stays well under the roll so the tiles overlap. Pushing the
+       stagger past the duration would turn one sweep into a queue of six
+       separate animations. */
+    const DURATION = 1500;
+    const STAGGER = 150;
 
     /* Grouped thousands, so the new 1,000+ does not read as a stray digit
        string mid-roll. toFixed for anything with decimals, because the rating
