@@ -29,6 +29,9 @@ const SPOT = [
   '.re-item',
   '.inv-card',
   '.ab-count-item',
+  '.ir-item',
+  '.sv-group',
+  '.nf-list a',
 ].join(',');
 
 /**
@@ -48,7 +51,7 @@ const REVEALED = [
 ].join(',');
 
 /** Grids whose children stagger in, from reveal.css. */
-const STAGGERED = ':is(.hp-explore, .re-grid) > *';
+const STAGGERED = ':is(.hp-explore, .re-grid, .hp-pillars) > *';
 
 /** Per-word delay, capped so a long heading still finishes inside ~0.6s. */
 const WORD_STEP = 70;

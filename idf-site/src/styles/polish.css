@@ -345,8 +345,8 @@ body.hp .hp-xlink:focus-visible { background-size: 100% 100%; }
 
    polish.ts adds .pl-settled to a child once its entrance has finished, and
    from then on the hover transition is this one, with no delay. */
-.js body.hp :is(.hp-explore, .re-grid) > .pl-settled {
-  transition: border-color 0.3s ease, box-shadow 0.4s var(--pl-ease), transform 0.4s var(--pl-ease), opacity 0.6s ease;
+.js body.hp :is(.hp-explore, .re-grid, .hp-pillars) > .pl-settled {
+  transition: border-color 0.3s ease, box-shadow 0.4s var(--pl-ease), transform 0.4s var(--pl-ease), opacity 0.6s ease, background-color 0.3s ease;
   transition-delay: 0ms;
 }
 

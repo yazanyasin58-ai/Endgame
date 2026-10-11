@@ -449,6 +449,30 @@ Reduced motion turns every loop and entrance off, and no heading is split into
 words. Split headings carry their full text as `aria-label`, so section names
 are unchanged. Nothing is hidden unless the `.js` class is present.
 
+## The other pages
+
+`src/styles/pages.css` carries the same language onto every page but the
+homepage, one or two moves per page rather than a repeat of everything:
+
+| Page | Change |
+|---|---|
+| Every page | Breadcrumb in the midnight page head; midnight closing band; ink credentials strip |
+| About, Custom homes | Process steps as a timeline whose gold rail fills as you scroll |
+| About | Portrait framed as on the homepage |
+| Services | A photograph beside each group, the homepage's pairing; pill calls to action |
+| Insurance restoration | Numbered cards; the "what we do not do" notice on midnight |
+| Service pages | Scope card on midnight, sticky beside the prose; other services as chips |
+| Projects | Filter tabs with a sliding gold pill and counts, announced to screen readers |
+| Questions | Topic index on the left that marks the topic being read |
+| Investors | Numbered cards with the pointer spotlight |
+| Contact | Details on a midnight card beside the form |
+| Estimate | Intro on a midnight card, the offer on gold; now on the site's own type |
+| Not found, legal | Link cards with an arrow; numbered legal sections |
+
+The filter tabs are added by script and hidden until then, so without script
+the whole gallery shows. The estimate page moved from Instrument Serif and
+Source Sans to Fraunces and Public Sans, the pairing every other page uses.
+
 ## Accessibility — measured contrast
 
 Measured against WCAG 2.1 (4.5:1 for body text, 3:1 for large and interactive elements):

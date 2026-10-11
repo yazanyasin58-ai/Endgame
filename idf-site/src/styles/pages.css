@@ -1,0 +1,541 @@
+/* ============================================================
+   Every page but the homepage: the same language, applied lightly.
+
+   The homepage got photographs, dark grounds, a coverflow and an animated
+   menu. The other pages share the header, page head, buttons, FAQ and
+   footer already; this file brings their bodies in line without piling on.
+   One or two moves per page, each borrowed from something the homepage or
+   the owner's saved 21st.dev components already do:
+
+     every page ..... breadcrumb in the page head, midnight closing band,
+                      ink credentials strip
+     about, custom .. process steps as a timeline that draws as you read
+                      ("How It Works Timeline" / "Process Timeline")
+     about .......... the portrait opens from an arch, as on the homepage
+     services ....... a photograph per group, the homepage's pairing
+     insurance ...... numbered cards; the limits notice on midnight
+     service pages .. scope card on midnight; other services as chips
+     projects ....... filter tabs with a sliding pill (animated tab bars)
+     questions ...... topic index, two columns, current topic marked
+     investors ...... numbered cards with the spotlight
+     contact ........ details on a midnight card beside the form
+     estimate ....... intro on a midnight card, offer on gold
+     not found ...... link cards with an arrow
+
+   Anchored on body.hp, like the rest of the layer. Every text pairing on a
+   dark ground is one already measured in the README.
+   ============================================================ */
+
+/* ---- page head: breadcrumb ------------------------------------------------ */
+.pg-crumbs ol {
+  list-style: none;
+  margin: 0 0 1.1rem;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.2rem 0.6rem;
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 0.6875rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--on-dark);
+}
+.pg-crumbs li + li::before {
+  /* The second declaration gives the slash empty alt text, so screen readers
+     do not read it out; engines that do not know the syntax keep the first. */
+  content: '/';
+  content: '/' / '';
+  margin-right: 0.6rem;
+  color: var(--gold-bright);
+}
+.pg-crumbs a {
+  display: inline-block;
+  padding-block: 0.35rem;
+  color: var(--gold-bright);
+  text-decoration: none;
+}
+.pg-crumbs a:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+/* ---- closing band and credentials strip, everywhere ----------------------- */
+body.hp .hp-final {
+  color: var(--cream);
+  background:
+    radial-gradient(50% 70% at 100% 100%, rgb(60 100 160 / 0.25), transparent 70%),
+    linear-gradient(160deg, var(--midnight-2), var(--midnight) 60%, var(--midnight-deep));
+}
+body.hp .hp-trust {
+  margin-top: 0;
+  border: 0;
+  background: var(--ink);
+}
+body.hp .hp-trust ul { color: var(--stone); }
+body.hp .hp-trust li:not(:last-child)::after { color: var(--gold-bright); }
+
+/* ---- process steps: a timeline ------------------------------------------- */
+/* A rail runs through the step numbers, which become nodes on it. A gold
+   line fills the rail as the list scrolls past, so the reader watches the
+   process advance. Without scroll-driven animation the gold rail is simply
+   drawn. */
+body.hp .hp-steps { position: relative; }
+body.hp .hp-step {
+  position: relative;
+  grid-template-columns: 2.4rem 1fr;
+  gap: 1.4rem;
+  border-top: 0;
+  padding-block: 1rem;
+}
+body.hp .hp-steps::before,
+body.hp .hp-steps::after {
+  content: '';
+  position: absolute;
+  left: calc(1.2rem - 0.5px);
+  top: 2.2rem;
+  bottom: 2.2rem;
+  width: 1px;
+  pointer-events: none;
+}
+body.hp .hp-steps::before { background: var(--rule); }
+body.hp .hp-steps::after {
+  background: linear-gradient(180deg, var(--gold-bright), var(--gold-deep));
+  transform-origin: 50% 0;
+}
+body.hp .hp-step-num {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  border: 1px solid var(--gold);
+  border-radius: 50%;
+  background: var(--paper);
+  font-family: 'Fraunces', serif;
+  font-size: 1rem;
+  color: var(--gold-deep);
+  transition: background-color 0.3s ease, color 0.3s ease, transform 0.4s var(--pl-ease);
+}
+body.hp .hp-step:hover .hp-step-num { background: var(--gold); color: var(--ink); transform: scale(1.08); }
+body.hp .hp-step--featured .hp-step-num { background: var(--gold); color: var(--ink); }
+body.hp .hp-step-title { font-size: 1.0625rem; }
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    body.hp .hp-steps::after {
+      animation: pg-rail linear both;
+      animation-timeline: view();
+      animation-range: entry 30% cover 65%;
+    }
+  }
+}
+@keyframes pg-rail {
+  from { transform: scaleY(0); }
+  to { transform: scaleY(1); }
+}
+
+/* ---- about: the portrait framed as on the homepage ----------------------- */
+/* Framed only. The homepage's arch reveal is scroll-driven, and here the
+   portrait is above the fold, so it would load half-arched and sit that way
+   until the visitor scrolled. */
+body.hp .ab-portrait .ph {
+  border-radius: 6px;
+  box-shadow: 0 0 0 1px var(--rule), 0 40px 70px -40px rgb(14 24 40 / 0.55);
+}
+
+/* ---- services: a photograph per group ------------------------------------ */
+body.hp .sv-group {
+  padding-inline: 1rem;
+  margin-inline: -1rem;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+}
+body.hp .sv-group:hover { background-color: rgb(226 192 107 / 0.07); }
+.sv-photo {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: 6px;
+  box-shadow: 0 18px 36px -24px rgb(14 24 40 / 0.55);
+  transition: filter 0.5s ease, transform 0.6s var(--pl-ease);
+}
+body.hp .sv-group:hover .sv-photo { filter: saturate(1.12); transform: scale(1.03); }
+@media (min-width: 820px) {
+  body.hp .sv-group--photo {
+    grid-template-columns: 11rem 17rem 1fr auto;
+    align-items: center;
+  }
+  .sv-photo { aspect-ratio: 4 / 3; }
+}
+/* Custom homes uses the same row with the same call to action. */
+body.hp .hp-pillar {
+  padding-inline: 1rem;
+  margin-inline: -1rem;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+}
+body.hp .hp-pillar:hover { background-color: rgb(226 192 107 / 0.07); }
+body.hp :is(.sv-group, .hp-pillar) .hp-pillar-link {
+  justify-self: start;
+  margin-top: 0;
+  padding: 0.55rem 1rem;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+body.hp :is(.sv-group, .hp-pillar) .hp-pillar-link:hover,
+body.hp :is(.sv-group, .hp-pillar) .hp-pillar-link:focus-visible {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: var(--ink);
+}
+
+/* ---- insurance restoration: numbered cards, limits on midnight ----------- */
+body.hp .ir-items { gap: 1rem; }
+body.hp .ir-item {
+  padding: 1.4rem 1.35rem 1.5rem;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  background:
+    radial-gradient(120% 60% at 50% 0%, rgb(226 192 107 / 0.10), transparent 70%),
+    var(--paper);
+  transition: border-color 0.3s ease, box-shadow 0.4s var(--pl-ease), transform 0.4s var(--pl-ease);
+}
+body.hp .ir-item:hover {
+  border-color: var(--gold);
+  transform: translateY(-3px);
+  box-shadow: 0 18px 40px -26px rgb(20 17 13 / 0.35);
+}
+body.hp :is(.ir-num, .inv-num) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2rem;
+  height: 1.5rem;
+  margin-bottom: 0.9rem;
+  padding: 0 0.5rem;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 0.6875rem;
+  letter-spacing: 0.1em;
+  color: var(--gold-deep);
+}
+body.hp .ir-limit {
+  padding: 1.6rem 1.85rem;
+  border-left: 0;
+  border-radius: 8px;
+  color: var(--cream);
+  background:
+    radial-gradient(60% 120% at 100% 0%, rgb(200 162 74 / 0.18), transparent 65%),
+    linear-gradient(160deg, var(--midnight-2), var(--midnight));
+  box-shadow: inset 3px 0 0 var(--gold);
+}
+body.hp .ir-limit-title { color: var(--gold-bright); }
+body.hp .ir-limit p { color: var(--on-dark); }
+
+/* ---- service pages: scope on midnight, other services as chips ----------- */
+body.hp .svc-scope {
+  border: 0;
+  border-radius: 10px;
+  padding: 1.9rem;
+  color: var(--cream);
+  background:
+    radial-gradient(70% 60% at 100% 0%, rgb(200 162 74 / 0.2), transparent 65%),
+    linear-gradient(160deg, var(--midnight-2), var(--midnight));
+  box-shadow: 0 30px 60px -34px rgb(14 24 40 / 0.6);
+}
+@media (min-width: 900px) {
+  body.hp .svc-scope { position: sticky; top: 7rem; }
+}
+body.hp .svc-scope .svc-scope-title { color: var(--gold-bright); }
+body.hp .svc-scope .svc-list li { color: var(--on-dark); }
+body.hp .svc-scope .svc-list li::before { background: var(--gold-bright); width: 7px; }
+body.hp .svc-scope .svc-note { color: var(--stone); border-top-color: rgb(226 192 107 / 0.22); }
+
+body.hp .svc-more-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+body.hp .svc-more-list a {
+  display: inline-block;
+  padding: 0.6rem 1.05rem;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  background: var(--paper);
+  text-decoration: none;
+  transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease, transform 0.35s var(--pl-ease);
+}
+body.hp .svc-more-list a:hover,
+body.hp .svc-more-list a:focus-visible {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: var(--ink);
+  transform: translateY(-2px);
+}
+
+/* ---- projects: filter tabs ----------------------------------------------- */
+.gal-filter { margin-bottom: 2.5rem; }
+.gal-filter[hidden] { display: none; }
+.gal-filter-bar {
+  position: relative;
+  display: inline-flex;
+  max-width: 100%;
+  gap: 0.2rem;
+  padding: 0.35rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+  border-radius: 999px;
+  background: linear-gradient(160deg, var(--midnight-2), var(--midnight));
+  box-shadow: 0 16px 34px -22px rgb(14 24 40 / 0.6);
+}
+.gal-filter-bar::-webkit-scrollbar { display: none; }
+.gal-filter-pill {
+  position: absolute;
+  top: 0.35rem;
+  bottom: 0.35rem;
+  left: 0;
+  width: 0;
+  border-radius: 999px;
+  background: linear-gradient(115deg, var(--gold-bright), var(--gold));
+}
+.gal-filter-bar.is-ready .gal-filter-pill {
+  transition: transform 0.5s var(--pl-ease), width 0.5s var(--pl-ease);
+}
+.gal-filter-btn {
+  position: relative;
+  z-index: 1;
+  min-height: 44px;
+  padding: 0.6rem 1.15rem;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--cream);
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+.gal-filter-btn:hover { color: var(--gold-bright); }
+.gal-filter-btn[aria-pressed='true'] { color: var(--ink); }
+.gal-filter-btn:focus-visible { outline: 2px solid var(--gold-bright); outline-offset: 2px; }
+.gal-filter-n {
+  margin-left: 0.3rem;
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 0.6875rem;
+  opacity: 0.75;
+}
+.gal-item[hidden] { display: none; }
+.gal-item.is-entering { animation: pg-gal-in 0.55s var(--pl-ease) both; }
+@keyframes pg-gal-in {
+  from { opacity: 0; transform: translateY(14px) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}
+body.hp .gal-tag { background: var(--paper); }
+
+/* ---- questions page: topic index ----------------------------------------- */
+.faqp-index-label {
+  margin: 0 0 0.75rem;
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 0.625rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gold-deep);
+}
+.faqp-index ol {
+  list-style: none;
+  margin: 0 0 2.5rem;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.faqp-index a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.9rem;
+  min-height: 44px;
+  padding: 0.5rem 0.95rem;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  color: var(--charcoal);
+  font-size: 0.875rem;
+  text-decoration: none;
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+.faqp-index a:hover { border-color: var(--gold); color: var(--ink); }
+.faqp-index a[aria-current='true'] {
+  background: var(--midnight);
+  border-color: var(--midnight);
+  color: var(--cream);
+}
+.faqp-n {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 0.6875rem;
+  opacity: 0.7;
+}
+@media (min-width: 960px) {
+  .faqp-grid {
+    display: grid;
+    grid-template-columns: 16rem minmax(0, 1fr);
+    gap: clamp(2.5rem, 5vw, 5rem);
+    align-items: start;
+  }
+  .faqp-index { position: sticky; top: 7rem; }
+  .faqp-index ol { display: grid; gap: 0.3rem; margin: 0; }
+  .faqp-index a { border-radius: 8px; border-color: transparent; }
+}
+body.hp .faqp-groups .faq-group-title {
+  font-family: 'Fraunces', serif;
+  font-weight: 300;
+  font-size: clamp(1.4rem, 2.2vw, 1.75rem);
+  letter-spacing: -0.01em;
+  text-transform: none;
+  color: var(--ink);
+}
+.faqp-groups .faq-group:first-child { margin-top: 0; }
+
+/* ---- investors: numbered cards ------------------------------------------- */
+body.hp .inv-card {
+  padding: 1.4rem 1.35rem 1.5rem;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  background:
+    radial-gradient(120% 60% at 50% 0%, rgb(226 192 107 / 0.10), transparent 70%),
+    var(--paper);
+  transition: border-color 0.3s ease, box-shadow 0.4s var(--pl-ease), transform 0.4s var(--pl-ease);
+}
+body.hp .inv-card:hover {
+  border-color: var(--gold);
+  transform: translateY(-3px);
+  box-shadow: 0 18px 40px -26px rgb(20 17 13 / 0.35);
+}
+
+/* ---- contact: details on midnight beside the form ------------------------ */
+body.hp .ct-details {
+  align-self: start;
+  padding: clamp(1.5rem, 3vw, 2.25rem);
+  border-radius: 10px;
+  color: var(--cream);
+  background:
+    radial-gradient(70% 50% at 100% 0%, rgb(200 162 74 / 0.18), transparent 65%),
+    linear-gradient(160deg, var(--midnight-2), var(--midnight));
+  box-shadow: 0 30px 60px -34px rgb(14 24 40 / 0.6);
+}
+body.hp .ct-details .ab-h3 { color: var(--gold-bright); }
+body.hp .ct-details p,
+body.hp .ct-details address,
+body.hp .ct-details .ct-regions { color: var(--on-dark); }
+body.hp .ct-details a,
+body.hp .ct-details .hp-pillar-link { color: var(--gold-bright); }
+body.hp .ct-details a:hover { color: var(--cream); }
+body.hp .ct-details .ct-hours li { color: var(--on-dark); border-color: rgb(226 192 107 / 0.18); }
+body.hp .ct-details .social a { color: var(--cream); }
+body.hp .ct-map {
+  overflow: hidden;
+  border-radius: 8px;
+  box-shadow: 0 0 0 1px rgb(226 192 107 / 0.3);
+}
+
+/* ---- estimate: intro on midnight, offer on gold -------------------------- */
+body.hp .hp-est-intro {
+  align-self: start;
+  padding: clamp(1.75rem, 3vw, 2.5rem);
+  border-radius: 12px;
+  color: var(--cream);
+  background:
+    radial-gradient(70% 50% at 100% 0%, rgb(200 162 74 / 0.2), transparent 65%),
+    radial-gradient(50% 50% at 0% 100%, rgb(60 100 160 / 0.25), transparent 70%),
+    linear-gradient(160deg, var(--midnight-2), var(--midnight));
+  box-shadow: 0 30px 60px -34px rgb(14 24 40 / 0.6);
+}
+@media (min-width: 1024px) {
+  body.hp .hp-est-intro { position: sticky; top: 6.5rem; }
+}
+body.hp .hp-est-h1 {
+  font-family: 'Fraunces', serif;
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  color: var(--cream);
+}
+body.hp .hp-est-sub { color: var(--on-dark); }
+body.hp .hp-est-promo {
+  border: 0;
+  color: var(--ink);
+  background: linear-gradient(115deg, var(--gold-bright), var(--gold) 70%);
+  box-shadow: 0 16px 30px -20px rgb(133 103 25 / 0.8);
+}
+body.hp .hp-est-promo span { color: var(--ink); }
+body.hp .hp-est-steps { color: var(--on-dark); }
+body.hp .hp-est-steps li { border-top-color: rgb(226 192 107 / 0.2); }
+body.hp .hp-est-steps li span {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 0.75rem;
+  color: var(--gold-bright);
+}
+body.hp .hp-est-steps li.is-featured { color: var(--cream); }
+body.hp .hp-est-steps li.is-featured span { color: var(--gold-bright); }
+body.hp .hp-est-intro .hp-call { color: var(--gold-bright); }
+
+/* ---- not found: link cards with an arrow --------------------------------- */
+body.hp .nf-list a {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  column-gap: 1rem;
+  padding: 1rem 1.2rem;
+  border-radius: 8px;
+  transition: border-color 0.3s ease, box-shadow 0.4s var(--pl-ease), transform 0.4s var(--pl-ease);
+}
+body.hp .nf-list a::after {
+  content: '';
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  align-self: center;
+  width: 1rem;
+  height: 1rem;
+  background: var(--gold-deep);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 8h9M8.5 4l4 4-4 4'/%3E%3C/svg%3E") center / contain no-repeat;
+          mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 8h9M8.5 4l4 4-4 4'/%3E%3C/svg%3E") center / contain no-repeat;
+  transition: transform 0.35s var(--pl-ease);
+}
+body.hp .nf-list a:hover { transform: translateX(4px); box-shadow: 0 14px 30px -22px rgb(20 17 13 / 0.4); }
+body.hp .nf-list a:hover::after { transform: translateX(3px); }
+
+/* ---- legal pages: numbered sections -------------------------------------- */
+body.hp .legal { counter-reset: pg-legal; }
+body.hp .legal h2::before {
+  counter-increment: pg-legal;
+  content: counter(pg-legal, decimal-leading-zero);
+  display: block;
+  margin-bottom: 0.35rem;
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  color: var(--gold-deep);
+}
+
+/* ---- reduced motion ------------------------------------------------------ */
+@media (prefers-reduced-motion: reduce) {
+  body.hp .hp-step-num,
+  .sv-photo,
+  body.hp .ir-item,
+  body.hp .inv-card,
+  body.hp .svc-more-list a,
+  body.hp .nf-list a,
+  body.hp .nf-list a::after,
+  .gal-filter-bar.is-ready .gal-filter-pill { transition: none; }
+  body.hp .hp-step:hover .hp-step-num,
+  body.hp .sv-group:hover .sv-photo,
+  body.hp .ir-item:hover,
+  body.hp .inv-card:hover,
+  body.hp .svc-more-list a:hover,
+  body.hp .nf-list a:hover,
+  body.hp .nf-list a:hover::after { transform: none; }
+  .gal-item.is-entering { animation: none; }
+}

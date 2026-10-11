@@ -9,6 +9,21 @@ import { optionalImage } from '../lib/images';
 // renamed slot should leave a reserved slot behind, not fail the build.
 const irPhoto = gallery.find((g) => g.slot === 'project-siding-crew');
 const irSrc = irPhoto ? optionalImage(`img/${irPhoto.slot}`) : undefined;
+
+/* A photograph beside each group, the same pairing the homepage uses for
+   its service cards so the two pages agree. The company's own photographs;
+   decorative here, so alt is empty. A group without one simply has none. */
+const groupPhotoSlots: Record<string, { slot: string; pos: string }> = {
+  remodeling: { slot: 'project-kitchen-blue-island-wide', pos: '50% 62%' },
+  'interior-exterior': { slot: 'project-stairs-hardwood', pos: '50% 55%' },
+  restoration: { slot: 'project-soffit-insulation', pos: '50% 30%' },
+  permits: { slot: 'project-framing-joists', pos: '50% 45%' },
+};
+const groupPhoto = (id: string) => {
+  const p = groupPhotoSlots[id];
+  const src = p ? optionalImage(`img/${p.slot}`) : undefined;
+  return src ? { src, pos: p.pos } : undefined;
+};
 ---
 
 <Page
@@ -22,7 +37,17 @@ const irSrc = irPhoto ? optionalImage(`img/${irPhoto.slot}`) : undefined;
     <div class="sv-list">
       {
         serviceGroups.map((g) => (
-          <article class="sv-group" id={g.id}>
+          <article class:list={['sv-group', { 'sv-group--photo': groupPhoto(g.id) }]} id={g.id}>
+            {groupPhoto(g.id) && (
+              <img
+                class="sv-photo"
+                src={groupPhoto(g.id)!.src}
+                style={`object-position: ${groupPhoto(g.id)!.pos}`}
+                alt=""
+                loading="lazy"
+                decoding="async"
+              />
+            )}
             <h2 class="sv-title">{g.title}</h2>
             <ul class="sv-items">
               {g.items.map((i) => <li>{i}</li>)}

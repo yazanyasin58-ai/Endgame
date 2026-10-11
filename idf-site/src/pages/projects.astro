@@ -19,6 +19,11 @@ import { optionalImage } from '../lib/images';
 const named = projects.filter((p) => p.named);
 const items = gallery.map((g) => ({ ...g, src: optionalImage(`img/${g.slot}`) }));
 const awaiting = items.filter((i) => !i.src).length;
+
+/* Filter tabs, one per tag in the gallery, in the order they first appear,
+   each with its count. Derived from the data so a new tag gets a tab. */
+const tags = [...new Set(items.flatMap((i) => i.tags))];
+const countOf = (t: string) => items.filter((i) => (i.tags as readonly string[]).includes(t)).length;
 ---
 
 <Page
@@ -29,10 +34,30 @@ const awaiting = items.filter((i) => !i.src).length;
   current="/projects/"
 >
   <section class="hp-section hp-section--tight" aria-label="Completed projects">
+    {/* Filter tabs, after the animated tab bars in the 21st.dev catalogue: a
+        gold pill slides to the chosen tab. Added by script and hidden until
+        then, so without script the whole gallery simply shows. */}
+    <div class="gal-filter" data-gal-filter hidden>
+      <div class="gal-filter-bar" role="group" aria-label="Filter projects">
+        <span class="gal-filter-pill" aria-hidden="true"></span>
+        <button type="button" class="gal-filter-btn" data-tag="" aria-pressed="true">
+          All <span class="gal-filter-n">{items.length}</span>
+        </button>
+        {tags.map((t) => (
+          <button type="button" class="gal-filter-btn" data-tag={t} aria-pressed="false">
+            {t} <span class="gal-filter-n">{countOf(t)}</span>
+          </button>
+        ))}
+      </div>
+      <p class="hp-visually-hidden" aria-live="polite" data-gal-status></p>
+    </div>
     <div class="gal">
       {
         items.map((item) => (
-          <figure class:list={['gal-item', { 'gal-item--tall': item.ratio === '3 / 4' }]}>
+          <figure
+            class:list={['gal-item', { 'gal-item--tall': item.ratio === '3 / 4' }]}
+            data-tags={item.tags.join('|')}
+          >
             <Placeholder
               ratio={item.ratio}
               label={`Reserved — ${item.caption.toLowerCase()}`}
@@ -63,6 +88,57 @@ const awaiting = items.filter((i) => !i.src).length;
       )
     }
   </section>
+
+  <script>
+    /**
+     * Gallery filter. Hides the items that do not carry the chosen tag, slides
+     * the pill to the chosen tab, and announces the count. The items are
+     * hidden with the `hidden` attribute, so a filtered-out photograph is out
+     * of the accessibility tree too, not just out of sight.
+     */
+    const wrap = document.querySelector<HTMLElement>('[data-gal-filter]');
+    const items = [...document.querySelectorAll<HTMLElement>('.gal-item[data-tags]')];
+    if (wrap && items.length) {
+      wrap.hidden = false;
+      const bar = wrap.querySelector<HTMLElement>('.gal-filter-bar')!;
+      const pill = wrap.querySelector<HTMLElement>('.gal-filter-pill')!;
+      const status = wrap.querySelector<HTMLElement>('[data-gal-status]')!;
+      const buttons = [...wrap.querySelectorAll<HTMLButtonElement>('.gal-filter-btn')];
+
+      const place = (btn: HTMLElement) => {
+        pill.style.width = `${btn.offsetWidth}px`;
+        pill.style.transform = `translateX(${btn.offsetLeft}px)`;
+      };
+
+      const choose = (btn: HTMLButtonElement) => {
+        const tag = btn.dataset.tag ?? '';
+        for (const b of buttons) b.setAttribute('aria-pressed', String(b === btn));
+        let shown = 0;
+        for (const it of items) {
+          const match = !tag || (it.dataset.tags ?? '').split('|').includes(tag);
+          it.hidden = !match;
+          if (match) {
+            shown++;
+            it.classList.remove('is-entering');
+            void it.offsetWidth; // restart the entrance
+            it.classList.add('is-entering');
+          }
+        }
+        place(btn);
+        status.textContent = `Showing ${shown} ${shown === 1 ? 'project' : 'projects'}${tag ? `: ${tag}` : ''}.`;
+      };
+
+      for (const b of buttons) b.addEventListener('click', () => choose(b));
+      requestAnimationFrame(() => {
+        bar.classList.add('is-ready');
+        place(buttons[0]);
+      });
+      addEventListener('resize', () => {
+        const on = buttons.find((b) => b.getAttribute('aria-pressed') === 'true');
+        if (on) place(on);
+      });
+    }
+  </script>
 
   <section id="named" class="hp-section hp-section--tight" aria-labelledby="pr-named-h">
     <h2 id="pr-named-h" class="hp-h2">Named projects</h2>

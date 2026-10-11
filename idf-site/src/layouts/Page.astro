@@ -19,9 +19,14 @@ interface Props {
   current?: string;
   /** Passed through to Base — see the note on its `noindex` prop. */
   noindex?: boolean;
+  /**
+   * Pages between Home and this one, for the breadcrumb in the page head.
+   * Most pages sit directly under Home and pass nothing.
+   */
+  crumbs?: { label: string; href: string }[];
 }
 
-const { title, description, heading, standfirst, current, noindex } = Astro.props;
+const { title, description, heading, standfirst, current, noindex, crumbs = [] } = Astro.props;
 
 const fonts =
   'https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;1,9..144,300;1,9..144,400&family=IBM+Plex+Mono:wght@500&family=Public+Sans:wght@400;500;600&display=swap';
@@ -32,6 +37,16 @@ const fonts =
   <SiteNav current={current} />
   <main id="main" tabindex="-1">
     <section class="hp-section hp-pagehead">
+      {/* Where this page sits, in the mono annotation style of the drafting
+          rules. A real breadcrumb: a labelled nav, an ordered list, and the
+          current page marked rather than linked. */}
+      <nav class="pg-crumbs" aria-label="Breadcrumb">
+        <ol>
+          <li><a href="/">Home</a></li>
+          {crumbs.map((c) => (<li><a href={c.href}>{c.label}</a></li>))}
+          <li aria-current="page">{heading}</li>
+        </ol>
+      </nav>
       <h1 class="hp-h2">{heading}</h1>
       {standfirst && <p class="hp-sub hp-italic">{standfirst}</p>}
     </section>
