@@ -97,10 +97,13 @@ const bands = [
         repainting the section: a transform on a child is composited, an
         animated background on the section is not. */}
     <div class="sh-static-media" data-static-media aria-hidden="true">
-      {/* The same film, played rather than scrubbed: a 540x960 portrait cut
-          of about 2 MB, made from hero-scrub.mp4 (see the README). It plays
-          once and rests on the finished house. Never loaded under reduced
-          motion or Save-Data, and the photograph stays if it cannot play. */}
+      {/* The film's last 4.5 seconds, played rather than scrubbed: the camera
+          steps out through the front doors and pulls back to the finished
+          house. A 540x960 portrait cut of about 1 MB, made from
+          hero-scrub.mp4 (see the README). Plays once and rests on its last
+          frame, the photograph's. Under five seconds, so it needs no pause
+          control (WCAG 2.2.2). Never loaded under reduced motion or
+          Save-Data, and the photograph stays if it cannot play. */}
       <video
         class="sh-static-video"
         data-static-video
@@ -111,15 +114,6 @@ const bands = [
         tabindex="-1"></video>
     </div>
     <div class="sh-scrim" aria-hidden="true"></div>
-    {/* How far the build has got: fills as the film plays. */}
-    <span class="sh-film-bar" data-film-bar aria-hidden="true"></span>
-    {/* Moving content that starts by itself must be stoppable (WCAG 2.2.2). */}
-    <button class="sh-film-toggle" type="button" data-film-toggle hidden
-            aria-label="Pause the film">
-      <svg class="i-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14M16 5v14" /></svg>
-      <svg class="i-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5l11 7-11 7z" /></svg>
-      <svg class="i-replay" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7M4 4v4.5h4.5" /></svg>
-    </button>
     <div class="sh-static-copy">
       <p class="sh-kicker">Class A Contractor . Since 1989 . Northern Virginia</p>
       <h1 class="sh-line">A home built the way you asked for it.</h1>
@@ -436,14 +430,12 @@ const bands = [
     MQLS.forEach((m) => m.addEventListener('change', applyHeroMode));
     applyHeroMode();
 
-    /* ---- the static hero plays the film ----------------------------------
-       Wherever the gates swap the scrub for the static hero, the film still
-       plays: once, muted, behind the copy, ending on the finished house that
-       the photograph shows. It waits on screen, pauses off it, and can be
-       paused. Under reduced motion or Save-Data it never loads. */
+    /* ---- the static hero plays the house reveal --------------------------
+       Wherever the gates swap the scrub for the static hero, the film's last
+       shot still plays: once, muted, behind the copy, ending on the frame the
+       photograph shows. It waits until the hero is on screen and pauses off
+       it. Under reduced motion or Save-Data it never loads. */
     const film = staticHero.querySelector('[data-static-video]');
-    const filmBar = staticHero.querySelector('[data-film-bar]');
-    const filmBtn = staticHero.querySelector('[data-film-toggle]');
     const FILM_URL = '/hero/hero-mobile.mp4';
     const FILM_POSTER = '/hero/hero-mobile-poster.jpg';
     const REDUCE = MQLS[MQLS.length - 1];
@@ -451,28 +443,14 @@ const bands = [
     const lean = () => !!(conn && (conn.saveData || /2g$/.test(conn.effectiveType || '')));
 
     let filmState = 'idle';      // idle | playing | paused | ended | failed
-    let heldByUser = false;      // the visitor paused it; do not resume for them
     let filmVisible = true;
-    let barRaf = null;
 
-    function setBtn(state) {
-      filmBtn.dataset.state = state;
-      filmBtn.setAttribute('aria-label',
-        state === 'playing' ? 'Pause the film'
-          : state === 'ended' ? 'Play the film again' : 'Play the film');
-    }
-    function paintBar() {
-      if (film.duration) filmBar.style.transform = `scaleX(${film.currentTime / film.duration})`;
-      barRaf = filmState === 'playing' ? requestAnimationFrame(paintBar) : null;
-    }
     function failFilm() {
       filmState = 'failed';
       film.removeAttribute('src');
       film.load();
       staticMedia.classList.remove('is-film', 'is-ended');
       staticMedia.style.backgroundImage = `url('${ENDING_URL}')`;
-      filmBtn.hidden = true;
-      filmBar.hidden = true;
     }
     function playFilm() {
       const p = film.play();
@@ -494,34 +472,21 @@ const bands = [
     film.addEventListener('playing', () => {
       filmState = 'playing';
       staticMedia.classList.add('is-film');
-      staticMedia.classList.remove('is-ended');
-      filmBtn.hidden = false;
-      setBtn('playing');
-      if (!barRaf) paintBar();
     });
     film.addEventListener('pause', () => {
-      if (filmState === 'playing' && !film.ended) { filmState = 'paused'; setBtn('paused'); }
+      if (filmState === 'playing' && !film.ended) filmState = 'paused';
     });
     film.addEventListener('ended', () => {
       filmState = 'ended';
       staticMedia.classList.add('is-ended');
-      filmBar.style.transform = 'scaleX(1)';
-      setBtn('ended');
     });
     film.addEventListener('error', () => { if (filmState !== 'failed') failFilm(); });
-
-    filmBtn.addEventListener('click', () => {
-      if (filmState === 'playing') { heldByUser = true; film.pause(); }
-      else if (filmState === 'paused') { heldByUser = false; playFilm(); }
-      else if (filmState === 'ended') { heldByUser = false; film.currentTime = 0; playFilm(); }
-    });
 
     const filmWanted = () => MQLS.some((m) => m.matches) && !REDUCE.matches && !lean();
     staticMedia.style.backgroundImage = `url('${filmWanted() ? FILM_POSTER : ENDING_URL}')`;
 
     function syncFilm() {
-      const wanted = filmWanted();
-      if (!wanted) {
+      if (!filmWanted()) {
         if (filmState === 'playing') film.pause();
         // Less motion asked for mid-film: rest on the finished house at once.
         if (REDUCE.matches && film.duration && filmState !== 'failed') {
@@ -530,7 +495,7 @@ const bands = [
         return;
       }
       if (filmState === 'idle') { if (filmVisible) startFilm(); return; }
-      const shouldRun = filmVisible && !document.hidden && !heldByUser;
+      const shouldRun = filmVisible && !document.hidden;
       if (filmState === 'playing' && !shouldRun) film.pause();
       else if (filmState === 'paused' && shouldRun) playFilm();
     }

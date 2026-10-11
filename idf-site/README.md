@@ -481,7 +481,7 @@ its place:
 
 | Piece | Where | Phone | Desktop |
 |---|---|---|---|
-| The hero film plays once behind the copy, with a pause button and a progress line, then rests on the finished house | Homepage hero | Yes | No, the film is scrubbed by scroll there |
+| The film's closing shot plays once behind the copy: out through the front doors, pulling back to the finished house | Homepage hero | Yes | No, the film is scrubbed by scroll there |
 | Slow Ken Burns zoom and a light sweep once the film has ended; copy rises in order | Homepage hero | Yes | No |
 | Credentials run as a ticker with faded edges | Homepage trust strip | Yes | No, the row fits on one line |
 | Service cards pin and stack; the card underneath sinks and dims | Homepage "What we build" | Yes | No, it is a four-column grid there |
@@ -491,19 +491,21 @@ its place:
 | A blueprint house draws itself, then its windows light up | Homepage estimate band | Yes | Yes |
 | A faint gold grid drifts behind the page heading | Every inner page head | Yes | Yes |
 
-The phone film is `public/hero/hero-mobile.mp4`: a 540×960 centre crop of the
-desktop film, about 2 MB, made with
+The phone film is `public/hero/hero-mobile.mp4`: the desktop film's last 4.5
+seconds, from the moment the camera steps out through the front doors, as a
+540×960 centre crop of about 1 MB. Under five seconds, it needs no pause
+control. Made with
 
 ```sh
-ffmpeg -i hero-scrub.mp4 -an \
+ffmpeg -i hero-scrub.mp4 -ss 19.55 -an \
   -vf "crop=548:972:(iw-548)/2:0,scale=540:960:flags=lanczos,format=yuv420p" \
-  -c:v libx264 -preset veryslow -crf 27 -movflags +faststart -g 48 hero-mobile.mp4
+  -c:v libx264 -preset veryslow -crf 23 -movflags +faststart -g 48 hero-mobile.mp4
 ffmpeg -i hero-mobile.mp4 -frames:v 1 -q:v 4 hero-mobile-poster.jpg
 ```
 
 It loads only where the static hero shows. It does not load under reduced
-motion, with Save-Data on, or on a 2G connection. It pauses when scrolled
-away and resumes on return, unless the visitor paused it. If the phone
+motion, with Save-Data on, or on a 2G connection. It waits until the hero is
+on screen and pauses when scrolled away. If the phone
 refuses to autoplay, as in Low Power Mode, the photograph of the finished
 house stays.
 

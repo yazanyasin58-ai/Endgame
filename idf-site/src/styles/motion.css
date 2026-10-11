@@ -67,9 +67,9 @@ body.hp .sh-static::before { z-index: 1; }
   body.hp .sh-static-copy > :nth-child(3) { animation-delay: 0.5s; }
   body.hp .sh-static-copy > :nth-child(4) { animation-delay: 0.65s; }
 }
-/* The film, where the static hero plays it. Ken Burns and the light sweep
-   hold off while it runs, since the footage has its own camera move, and
-   come back once it rests on the finished house. */
+/* The house reveal, where the static hero plays it. Ken Burns and the
+   light sweep hold off while it runs, since the footage has its own camera
+   move, and come back once it rests on the finished house. */
 .sh-static-video {
   position: absolute;
   inset: 0;
@@ -84,54 +84,6 @@ body.hp .sh-static-media.is-film:not(.is-ended),
 body.hp .sh-static-media.is-film:not(.is-ended)::after { animation: none; }
 .sh-static-media.is-film::after { z-index: 1; }
 
-.sh-film-bar {
-  position: absolute;
-  inset: auto 0 0 0;
-  z-index: 3;
-  height: 2px;
-  background: var(--gold-bright);
-  transform: scaleX(0);
-  transform-origin: left;
-  pointer-events: none;
-}
-.sh-film-bar[hidden] { display: none; }
-.sh-film-toggle {
-  position: absolute;
-  right: clamp(1rem, 4vw, 2rem);
-  bottom: clamp(1.25rem, 5vw, 2.5rem);
-  z-index: 3;
-  display: grid;
-  place-items: center;
-  width: 44px;
-  height: 44px;
-  padding: 0;
-  border: 1px solid rgb(246 241 231 / 0.45);
-  border-radius: 50%;
-  color: var(--cream);
-  background: rgb(14 12 9 / 0.35);
-  -webkit-backdrop-filter: blur(6px);
-          backdrop-filter: blur(6px);
-  cursor: pointer;
-  transition: background-color 0.25s ease, border-color 0.25s ease;
-}
-.sh-film-toggle[hidden] { display: none; }
-.sh-film-toggle:hover,
-.sh-film-toggle:focus-visible { background: rgb(14 12 9 / 0.6); border-color: var(--gold-bright); }
-.sh-film-toggle:focus-visible { outline: 2px solid var(--gold-bright); outline-offset: 3px; }
-.sh-film-toggle svg {
-  display: none;
-  width: 18px;
-  height: 18px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-.sh-film-toggle .i-play path { fill: currentColor; }
-.sh-film-toggle[data-state='playing'] .i-pause,
-.sh-film-toggle[data-state='paused'] .i-play,
-.sh-film-toggle[data-state='ended'] .i-replay { display: block; }
 
 @keyframes mo-kenburns {
   from { transform: scale(1.02) translate3d(0, 0, 0); }
