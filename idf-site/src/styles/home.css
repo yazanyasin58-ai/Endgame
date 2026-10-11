@@ -278,11 +278,28 @@
   display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem 1rem;
   max-width: 64rem; margin-inline: auto; text-align: center;
 }
-@media (min-width: 860px) { .hp-figures { grid-template-columns: repeat(4, 1fr); } }
+/* Five tiles now, not four. At repeat(4) the fifth dropped to a second row on
+   its own, hard against the left edge, which read as a layout bug rather than
+   a design. Three columns, then five, so the last row is never a single tile:
+   3+2 and 5.
+
+   Two columns is the exception, because 5 cannot divide evenly: the fifth is
+   alone there whatever the column count, so it spans the pair instead and
+   centres. The first attempt at this claimed in a comment that the column
+   centred it on its own. Measuring nine widths said otherwise, at 360, 390
+   and 600px. */
+@media (max-width: 759px) { .hp-figure:last-child { grid-column: 1 / -1; } }
+@media (min-width: 760px) { .hp-figures { grid-template-columns: repeat(3, 1fr); } }
+@media (min-width: 1040px) { .hp-figures { grid-template-columns: repeat(5, 1fr); gap: 2rem 1.5rem; } }
 .hp-figure-value {
   display: block; font-family: 'Instrument Serif', serif;
   font-size: clamp(2.4rem, 5vw, 3.5rem); line-height: 1; color: var(--ink);
 }
+/* "Class A" is the one tile whose value is words rather than a number, and
+   at five columns it wrapped to two lines while every digit beside it sat on
+   one. Shrinking the whole row to fit it would cost the numbers the size that
+   makes this band work, so only this tile gives ground. */
+.hp-figure-value--text { font-size: clamp(2rem, 3.2vw, 2.6rem); white-space: nowrap; }
 .hp-figure-label {
   display: block; margin-top: 0.6rem; font-size: 0.6875rem; font-weight: 600;
   letter-spacing: 0.18em; text-transform: uppercase; color: var(--charcoal);

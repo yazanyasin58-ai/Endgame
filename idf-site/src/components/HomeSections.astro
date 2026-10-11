@@ -14,6 +14,7 @@ import ReviewCarousel from './ReviewCarousel.astro';
 import EstimateForm from './EstimateForm.astro';
 import SocialLinks from './SocialLinks.astro';
 import FaqList from './FaqList.astro';
+import StatFigures from './StatFigures.astro';
 import {
   business,
   trustBar,
@@ -21,7 +22,6 @@ import {
   gallery,
   reviews,
   features,
-  figures,
   hours,
   hoursLabel,
   militaryDiscount,
@@ -66,26 +66,10 @@ const homeCards = ['project-kitchen-blue-island', 'project-framing-interior', 'p
     <ul>{trustBar.map((item) => <li>{item}</li>)}</ul>
   </section>
 
-  <!-- FIGURES. Every one verifiable -->
-  <section class="hp-section hp-figures-wrap" aria-labelledby="hp-figures-h">
-    <h2 id="hp-figures-h" class="hp-visually-hidden">By the numbers</h2>
-    <div class="hp-figures">
-      {
-        figures.map((f) => (
-          <div class="hp-figure">
-            <span
-              class="hp-figure-value"
-              data-live-figure={features.googleReviews && 'live' in f ? f.live : null}
-            >
-              {f.value}
-            </span>
-            <span class="hp-figure-label">{f.label}</span>
-            <span class="hp-figure-note">{f.note}</span>
-          </div>
-        ))
-      }
-    </div>
-  </section>
+  {/* FIGURES. Every one verifiable, and every one says where it came from.
+      Counts up on arrival; see StatFigures for why the number is in the
+      HTML before any script runs. */}
+  <StatFigures heading="By the numbers" headingId="hp-figures-h" />
 
   {/* WHAT WE BUILD.
 

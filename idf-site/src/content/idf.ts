@@ -527,20 +527,136 @@ export const countOn = [
  * The only figures that appear as statistics. Every one is verifiable —
  * no project counts or customer totals, which cannot be substantiated.
  */
+/**
+ * Years in business, derived rather than written down.
+ *
+ * It was the literal '37' in `business.yearsInBusiness`, which is the kind of
+ * number that is right the day it is typed and wrong every year after. This
+ * computes it, and the guard below fails the build if the two disagree, so
+ * the stale one cannot sit there quietly.
+ *
+ * Build time, not visit time: this is a static site, so the figure is fixed
+ * when Cloudflare builds and can lag by up to a year if nothing is pushed.
+ * That is the right trade. Computing it in the browser would mean the number
+ * is absent until JavaScript runs, and a headline statistic that pops in late
+ * is worse than one that is a few months conservative.
+ */
+const yearsTrading = new Date().getFullYear() - Number(business.established);
+
+if (String(yearsTrading) !== business.yearsInBusiness) {
+  throw new Error(
+    `business.yearsInBusiness says "${business.yearsInBusiness}" but ${business.established} ` +
+      `to ${new Date().getFullYear()} is ${yearsTrading}. A year has passed. Update ` +
+      `yearsInBusiness to "${yearsTrading}" and check any prose that spells the number out.`,
+  );
+}
+
+/**
+ * The statistics band, on the homepage and the About page.
+ *
+ * The client's master list, item 11, asks for a count-up animation and names
+ * five metrics: Projects Completed, Happy Customers, Years of Experience,
+ * Custom Homes/Renovations Completed, and Google Reviews. It also says, and
+ * this is the part that governs: "Final factual numbers will be supplied/
+ * approved by us before publishing."
+ *
+ * Two of the five can be stated honestly today and are here. The other three
+ * are in `pendingStats` below and are ABSENT FROM THE BUILD, not softened
+ * into something vague. A statistics band exists to be believed, so a number
+ * nobody can substantiate does more damage there than anywhere else on the
+ * site, and this company's own Google listing is one click away.
+ *
+ * `source` is required on every entry and the build enforces it. If a number
+ * cannot be traced to something checkable in one sentence, it does not go up.
+ */
 export const figures = [
-  { value: '1989', label: 'Established', note: '37 years owner-run' },
+  {
+    value: String(yearsTrading),
+    countTo: yearsTrading,
+    label: 'Years in business',
+    note: `Owner-run since ${business.established}`,
+    source: `Derived from business.established (${business.established}).`,
+  },
   /*
    * `live: 'googleRating'` marks this one for the reviews fetch to overwrite,
    * so it can never contradict the average the carousel prints from the same
    * response. The value here is the fallback when that fetch does not run or
-   * does not answer — 4.8 across 34 reviews. The count came from the owner on
-   * 6 Oct 2026, who reported the footer still showing the older 32. It was
-   * 4.7 before that, which had already drifted.
+   * does not answer.
    */
-  { value: googleSnapshot.rating, label: 'Google rating', note: 'From verified reviews', live: 'googleRating' },
-  { value: '24 hrs', label: 'Estimate turnaround', note: 'After the site visit' },
-  { value: 'Class A', label: 'Virginia license', note: '#2705162130' },
+  {
+    value: googleSnapshot.rating,
+    countTo: Number(googleSnapshot.rating),
+    decimals: 1,
+    label: 'Google rating',
+    note: 'From verified reviews',
+    live: 'googleRating',
+    source: `Google Places API, read ${googleSnapshot.readOn}. Overwritten live when /api/reviews answers.`,
+  },
+  {
+    value: googleSnapshot.total,
+    countTo: Number(googleSnapshot.total),
+    label: 'Google reviews',
+    note: 'Public, and climbing',
+    live: 'googleTotal',
+    source: `Reported by the owner on 6 Oct 2026. Overwritten live when /api/reviews answers.`,
+  },
+  {
+    value: '24',
+    countTo: 24,
+    suffix: ' hrs',
+    label: 'Estimate turnaround',
+    note: 'After the site visit',
+    source: 'processSteps step 04, and stated on five other pages.',
+  },
+  /* No countTo: it is not a quantity and animating it would be theatre. */
+  {
+    value: 'Class A',
+    label: 'Virginia license',
+    note: `#${business.licenseNumber}`,
+    source: 'The licence number, which anyone can look up.',
+  },
 ] as const;
+
+/**
+ * The metrics the client named that CANNOT be published yet.
+ *
+ * Nothing imports this. It exists so the gap is written down beside the band
+ * rather than living in a chat thread, exactly like the blocked menu entries
+ * further down this file.
+ *
+ * Two of these have been asked for before and refused, and the reasons have
+ * not changed: "100% customer satisfaction" is contradicted by a 4.8 average
+ * on the company's own listing, and "10,000+ customers" is a quantity nobody
+ * can substantiate. If Shawn has real figures out of his own records, they go
+ * straight in: add an entry to `figures` above with a `source` naming where
+ * the number came from, and delete the line here.
+ */
+export const pendingStats = [
+  { label: 'Projects completed', needs: 'A real count from the owner’s records, and what counts as a project.' },
+  { label: 'Happy customers', needs: 'A real count, and a definition that is not just every invoice ever raised.' },
+  {
+    label: 'Custom homes and renovations completed',
+    needs: 'A real count, split or combined, from the owner’s records.',
+  },
+] as const;
+
+/*
+ * Every published figure must say where it came from, and a count-up target
+ * must actually be a number. Both are build failures rather than review
+ * notes, because this is the one band on the site where an unsourced number
+ * is most likely to be believed.
+ */
+for (const f of figures) {
+  if (!('source' in f) || !f.source.trim()) {
+    throw new Error(
+      `figures: "${f.label}" has no source. Every published statistic must name ` +
+        `something checkable it came from, or it belongs in pendingStats instead.`,
+    );
+  }
+  if ('countTo' in f && !Number.isFinite(f.countTo)) {
+    throw new Error(`figures: "${f.label}" has a countTo that is not a finite number.`);
+  }
+}
 
 /**
  * Promotional offer. The owner has approved the headline offer; the terms

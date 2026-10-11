@@ -4,11 +4,11 @@
  * biography, hometown, origin story or family history.
  */
 import Page from '../layouts/Page.astro';
+import StatFigures from '../components/StatFigures.astro';
 import Placeholder from '../components/Placeholder.astro';
 import {
   business,
   wedge,
-  figures,
   countOn,
   googleSnapshot,
   features,
@@ -59,24 +59,7 @@ const portrait = optionalImage('img/owner-portrait');
     </div>
   </section>
 
-  <section class="hp-section hp-figures-wrap">
-    <div class="hp-figures">
-      {
-        figures.map((f) => (
-          <div class="hp-figure">
-            <span
-              class="hp-figure-value"
-              data-live-figure={features.googleReviews && 'live' in f ? f.live : null}
-            >
-              {f.value}
-            </span>
-            <span class="hp-figure-label">{f.label}</span>
-            <span class="hp-figure-note">{f.note}</span>
-          </div>
-        ))
-      }
-    </div>
-  </section>
+  <StatFigures heading="By the numbers" headingId="ab-figures-h" />
 
   <section id="count-on" class="hp-section" aria-labelledby="ab-count-h">
     <h2 id="ab-count-h" class="hp-h2">What you can count on</h2>

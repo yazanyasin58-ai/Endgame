@@ -1,0 +1,133 @@
+---
+/**
+ * The statistics band, counting up as it comes into view.
+ *
+ * Asked for on the client's master list, item 11. One component because the
+ * homepage and the About page both show this band, and two copies of the
+ * markup drifted apart the first time either was touched.
+ *
+ * THE NUMBER IS IN THE HTML ALREADY. The count-up starts from the final
+ * value rendered server side and only animates if a script runs, so a
+ * visitor with no JavaScript, a crawler, or anyone reading before hydration
+ * sees the real figure rather than a zero. A statistics band that renders
+ * "0" until a script finishes is a band that sometimes says zero.
+ */
+import { figures, features } from '../content/idf';
+
+interface Props {
+  /** Shown to screen readers above the band. */
+  heading?: string;
+  headingId?: string;
+}
+
+const { heading, headingId } = Astro.props;
+
+/** Everything the counter needs, resolved here rather than in the template. */
+const tiles = figures.map((f) => ({
+  ...f,
+  countTo: 'countTo' in f ? f.countTo : null,
+  decimals: 'decimals' in f ? f.decimals : 0,
+  suffix: 'suffix' in f ? f.suffix : '',
+  live: features.googleReviews && 'live' in f ? f.live : null,
+}));
+---
+
+<section class="hp-section hp-figures-wrap" aria-labelledby={headingId}>
+  {heading && <h2 id={headingId} class="hp-visually-hidden">{heading}</h2>}
+  <div class="hp-figures">
+    {
+      tiles.map((f) => (
+        <div class="hp-figure">
+          <span
+            class:list={['hp-figure-value', f.countTo === null && 'hp-figure-value--text']}
+            data-live-figure={f.live}
+            data-count-to={f.countTo === null ? null : String(f.countTo)}
+            data-count-decimals={f.countTo === null ? null : String(f.decimals)}
+            data-count-suffix={f.countTo === null || !f.suffix ? null : f.suffix}
+          >
+            {f.value}{f.suffix}
+          </span>
+          <span class="hp-figure-label">{f.label}</span>
+          <span class="hp-figure-note">{f.note}</span>
+        </div>
+      ))
+    }
+  </div>
+</section>
+
+<script>
+  /**
+   * Count each figure up once, the first time its band is on screen.
+   *
+   * Three things make this more than a loop over a number.
+   *
+   * It reads its target from `data-count-to` on EVERY frame rather than
+   * capturing it at the start. The Google rating and review count are
+   * overwritten by /api/reviews whenever that answers, and the answer can
+   * land mid-animation. Re-reading means a counter already in flight simply
+   * re-aims at the live number instead of racing it and landing on a figure
+   * that was true a second ago.
+   *
+   * It never runs twice on the same element, so a resize or a second
+   * observer callback cannot restart a finished number.
+   *
+   * Under reduced motion it does nothing at all. The final value is already
+   * in the markup, so doing nothing is the correct and complete behaviour,
+   * not a degraded one.
+   */
+  (() => {
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)');
+    const DURATION = 1400;
+
+    const format = (n: number, decimals: number, suffix: string) =>
+      n.toFixed(decimals) + suffix;
+
+    function run(el: HTMLElement) {
+      if (el.dataset.counted) return;
+      el.dataset.counted = 'running';
+
+      const decimals = Number(el.dataset.countDecimals || 0);
+      const suffix = el.dataset.countSuffix || '';
+      const start = performance.now();
+
+      const frame = (now: number) => {
+        // Re-read: the live Google figures can change the target mid-flight.
+        const target = Number(el.dataset.countTo);
+        if (!Number.isFinite(target)) {
+          el.dataset.counted = 'done';
+          return;
+        }
+        const t = Math.min((now - start) / DURATION, 1);
+        // easeOutCubic: fast first, settling rather than stopping dead.
+        const eased = 1 - Math.pow(1 - t, 3);
+        el.textContent = format(target * eased, decimals, suffix);
+        if (t < 1) {
+          requestAnimationFrame(frame);
+        } else {
+          el.textContent = format(target, decimals, suffix);
+          el.dataset.counted = 'done';
+        }
+      };
+
+      requestAnimationFrame(frame);
+    }
+
+    const targets = () =>
+      [...document.querySelectorAll<HTMLElement>('.hp-figure-value[data-count-to]')];
+
+    if (reduce.matches) return; // the real values are already rendered
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          run(entry.target as HTMLElement);
+          io.unobserve(entry.target);
+        }
+      },
+      { threshold: 0.4 },
+    );
+
+    for (const el of targets()) io.observe(el);
+  })();
+</script>
