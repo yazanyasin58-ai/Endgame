@@ -570,6 +570,36 @@ if (String(yearsTrading) !== business.yearsInBusiness) {
  * cannot be traced to something checkable in one sentence, it does not go up.
  */
 export const figures = [
+  /*
+   * PROVENANCE, because this is the one number here that nobody outside the
+   * company can check.
+   *
+   * Added on 11 Oct 2026 on the owner's instruction, who gave the figure as
+   * "1000+". Everything else in this band is verifiable by a stranger: a
+   * licence number they can look up, a founding year, a rating published by
+   * Google. This one rests entirely on the company's own records.
+   *
+   * That is allowed, and plenty of contractors publish it. What it needs is
+   * for the number to be real, because it sits a few inches from a Google
+   * rating that is real and borrows credibility from it. The "+" helps:
+   * it is a floor, not a count, so it stays true as the number grows and it
+   * does not claim precision nobody is keeping.
+   *
+   * If Shawn ever gives an exact figure out of his records, use it and say
+   * so here. If it turns out nobody counted, this should come down rather
+   * than be rounded to something comfortable. A related ask, "10,000+
+   * customers", was refused earlier for exactly that reason.
+   */
+  {
+    /* `value` is the number WITHOUT the suffix: the component renders
+       value + suffix, so carrying the plus here printed "1,000++". */
+    value: '1,000',
+    countTo: 1000,
+    suffix: '+',
+    label: 'Projects completed',
+    note: 'Across the DMV since 1989',
+    source: 'Supplied by the owner, 11 October 2026.',
+  },
   {
     value: String(yearsTrading),
     countTo: yearsTrading,
@@ -632,7 +662,9 @@ export const figures = [
  * the number came from, and delete the line here.
  */
 export const pendingStats = [
-  { label: 'Projects completed', needs: 'A real count from the owner’s records, and what counts as a project.' },
+  /* "Projects completed" moved out of this list and into `figures` on 11 Oct
+     2026, when the owner supplied "1000+". The provenance note sits with it
+     there. */
   { label: 'Happy customers', needs: 'A real count, and a definition that is not just every invoice ever raised.' },
   {
     label: 'Custom homes and renovations completed',

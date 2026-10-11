@@ -57,9 +57,21 @@ const tiles = figures.map((f) => ({
 
 <script>
   /**
-   * Count each figure up once, the first time its band is on screen.
+   * Roll each figure up from zero, once, when the band comes into view, one
+   * after another from left to right.
    *
-   * Three things make this more than a loop over a number.
+   * THE BAND IS WATCHED, NOT THE TILES. Watching each number separately
+   * looked right on a desktop row and fell apart everywhere else: on a phone
+   * the tiles stack, so they entered the viewport one screen-scroll apart and
+   * the sweep became six unrelated animations minutes apart. One observer on
+   * the container means the order is always DOM order, which is left to right
+   * and then down, whatever the column count.
+   *
+   * It locks when it finishes. The observer is disconnected and each element
+   * is marked, so scrolling away and back does nothing. A refresh starts it
+   * again, because nothing is persisted anywhere, which is exactly the asked
+   * for behaviour and also the only honest one: a visitor who reloads is
+   * looking at a new page.
    *
    * It reads its target from `data-count-to` on EVERY frame rather than
    * capturing it at the start. The Google rating and review count are
@@ -68,36 +80,50 @@ const tiles = figures.map((f) => ({
    * re-aims at the live number instead of racing it and landing on a figure
    * that was true a second ago.
    *
-   * It never runs twice on the same element, so a resize or a second
-   * observer callback cannot restart a finished number.
-   *
    * Under reduced motion it does nothing at all. The final value is already
    * in the markup, so doing nothing is the correct and complete behaviour,
    * not a degraded one.
    */
   (() => {
     const reduce = matchMedia('(prefers-reduced-motion: reduce)');
-    const DURATION = 1400;
+    /* Quick, as asked. The roll itself is short and the gap between tiles is
+       shorter, so the whole sweep across six reads as one gesture rather than
+       a queue: 900 + 5 x 110 is about 1.45s end to end. */
+    const DURATION = 900;
+    const STAGGER = 110;
 
+    /* Grouped thousands, so the new 1,000+ does not read as a stray digit
+       string mid-roll. toFixed for anything with decimals, because the rating
+       must stay at one place the whole way up rather than gaining a comma. */
     const format = (n: number, decimals: number, suffix: string) =>
-      n.toFixed(decimals) + suffix;
+      (decimals > 0 ? n.toFixed(decimals) : Math.round(n).toLocaleString('en-US')) + suffix;
 
-    function run(el: HTMLElement) {
+    function run(el: HTMLElement, delay: number) {
       if (el.dataset.counted) return;
       el.dataset.counted = 'running';
 
       const decimals = Number(el.dataset.countDecimals || 0);
       const suffix = el.dataset.countSuffix || '';
-      const start = performance.now();
+      let start = 0;
 
       const frame = (now: number) => {
+        if (!start) start = now;
+        const elapsed = now - start - delay;
+
+        // Sit at zero until this tile's turn, so the sweep is visible.
+        if (elapsed < 0) {
+          el.textContent = format(0, decimals, suffix);
+          requestAnimationFrame(frame);
+          return;
+        }
+
         // Re-read: the live Google figures can change the target mid-flight.
         const target = Number(el.dataset.countTo);
         if (!Number.isFinite(target)) {
           el.dataset.counted = 'done';
           return;
         }
-        const t = Math.min((now - start) / DURATION, 1);
+        const t = Math.min(elapsed / DURATION, 1);
         // easeOutCubic: fast first, settling rather than stopping dead.
         const eased = 1 - Math.pow(1 - t, 3);
         el.textContent = format(target * eased, decimals, suffix);
@@ -112,22 +138,24 @@ const tiles = figures.map((f) => ({
       requestAnimationFrame(frame);
     }
 
-    const targets = () =>
-      [...document.querySelectorAll<HTMLElement>('.hp-figure-value[data-count-to]')];
-
     if (reduce.matches) return; // the real values are already rendered
 
-    const io = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (!entry.isIntersecting) continue;
-          run(entry.target as HTMLElement);
-          io.unobserve(entry.target);
-        }
-      },
-      { threshold: 0.4 },
-    );
+    for (const band of document.querySelectorAll<HTMLElement>('.hp-figures')) {
+      const tiles = [...band.querySelectorAll<HTMLElement>('.hp-figure-value[data-count-to]')];
+      if (!tiles.length) continue;
 
-    for (const el of targets()) io.observe(el);
+      const io = new IntersectionObserver(
+        (entries) => {
+          if (!entries.some((e) => e.isIntersecting)) return;
+          io.disconnect(); // locked: it runs once per page load and no more
+          tiles.forEach((el, i) => run(el, i * STAGGER));
+        },
+        /* A fraction of the band, not a fraction of the viewport: on a phone
+           the stacked band is taller than the screen and a high threshold
+           would never be met, so it would never fire at all. */
+        { threshold: 0.25 },
+      );
+      io.observe(band);
+    }
   })();
 </script>

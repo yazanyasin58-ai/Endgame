@@ -278,19 +278,28 @@
   display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem 1rem;
   max-width: 64rem; margin-inline: auto; text-align: center;
 }
-/* Five tiles now, not four. At repeat(4) the fifth dropped to a second row on
-   its own, hard against the left edge, which read as a layout bug rather than
-   a design. Three columns, then five, so the last row is never a single tile:
-   3+2 and 5.
+/* SIX tiles, and the column counts are chosen so six divides evenly into
+   every one of them: 2, 3 and 6. No row is ever left holding a single tile.
 
-   Two columns is the exception, because 5 cannot divide evenly: the fifth is
-   alone there whatever the column count, so it spans the pair instead and
-   centres. The first attempt at this claimed in a comment that the column
-   centred it on its own. Measuring nine widths said otherwise, at 360, 390
-   and 600px. */
-@media (max-width: 759px) { .hp-figure:last-child { grid-column: 1 / -1; } }
+   This has been wrong twice and both fixes were the wrong shape. At four
+   columns the fifth tile stranded itself on a second row. The fix for that
+   spanned the last tile across both columns on phones, which was right for
+   five and became wrong the moment a sixth arrived: the FIFTH was then alone
+   at half width on row three while the spanning sixth looked fine, and the
+   check only inspected the last row so it said nothing. The lesson is in the
+   column counts, not in a special case for the last child, so the special
+   case is gone.
+
+   Six across needs more room than the band's default 64rem, and the values
+   step down a little there, or "24 hrs" runs past its column. */
 @media (min-width: 760px) { .hp-figures { grid-template-columns: repeat(3, 1fr); } }
-@media (min-width: 1040px) { .hp-figures { grid-template-columns: repeat(5, 1fr); gap: 2rem 1.5rem; } }
+@media (min-width: 1240px) {
+  .hp-figures {
+    grid-template-columns: repeat(6, 1fr);
+    max-width: 78rem; gap: 2rem 1.25rem;
+  }
+  .hp-figure-value { font-size: clamp(2rem, 2.9vw, 3rem); }
+}
 .hp-figure-value {
   display: block; font-family: 'Instrument Serif', serif;
   font-size: clamp(2.4rem, 5vw, 3.5rem); line-height: 1; color: var(--ink);

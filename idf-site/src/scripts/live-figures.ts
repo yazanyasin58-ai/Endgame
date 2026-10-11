@@ -26,16 +26,22 @@ export interface LiveFigureData {
  * well means a counter still in flight re-aims at the live figure, and a
  * counter that has already finished is simply corrected by the text write.
  */
-function setFigure(name: string, text: string): void {
+function setFigure(name: string, value: number, decimals: number): void {
+  /* The attribute stays a bare number because the counter runs it through
+     Number(); a grouped "1,041" there would parse as NaN and stop the roll
+     dead. Only the visible text is formatted. */
+  const raw = decimals > 0 ? value.toFixed(decimals) : String(Math.round(value));
+  const shown = decimals > 0 ? value.toFixed(decimals) : Math.round(value).toLocaleString('en-US');
+
   document.querySelectorAll<HTMLElement>(`[data-live-figure="${name}"]`).forEach((el) => {
-    if (el.dataset.countTo !== undefined) el.dataset.countTo = text;
-    el.textContent = text + (el.dataset.countSuffix || '');
+    if (el.dataset.countTo !== undefined) el.dataset.countTo = raw;
+    el.textContent = shown + (el.dataset.countSuffix || '');
   });
 }
 
 export function applyLiveFigures(data: LiveFigureData): void {
-  if (typeof data.rating === 'number') setFigure('googleRating', data.rating.toFixed(1));
-  if (typeof data.total === 'number') setFigure('googleTotal', String(data.total));
+  if (typeof data.rating === 'number') setFigure('googleRating', data.rating, 1);
+  if (typeof data.total === 'number') setFigure('googleTotal', data.total, 0);
 }
 
 /**
