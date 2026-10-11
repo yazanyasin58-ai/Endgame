@@ -18,6 +18,10 @@
  * 3. Settling staggered cards, so their hover response has no entrance
  *    delay. See the note above .pl-settled in polish.css.
  *
+ * 4. A ripple from the point of a tap or click, after the 21st.dev "Ripple
+ *    Button". Also delegated, so buttons added later ripple too. The span is
+ *    decoration only and removes itself when its animation ends.
+ *
  * Plus the hidden-tab pause, which until now only the homepage had.
  */
 
@@ -52,6 +56,23 @@ const REVEALED = [
 
 /** Grids whose children stagger in, from reveal.css. */
 const STAGGERED = ':is(.hp-explore, .re-grid, .hp-pillars) > *';
+
+/** Controls that ripple. Each is position:relative and clips (motion.css). */
+const RIPPLE = [
+  '.hp-btn',
+  '.ef-submit',
+  '.hp-section > .hp-textlink',
+  '.hp-textlink.hp-faq-more',
+  '.hp-xlink',
+  '.faq-q',
+  '.callbar a',
+  '.sg-sub-inline a',
+  '.svc-more-list a',
+  '.gal-filter-btn',
+  '.rc-arrow',
+  '.nf-list a',
+  ':is(.sv-group, .hp-pillar) .hp-pillar-link',
+].join(',');
 
 /** Per-word delay, capped so a long heading still finishes inside ~0.6s. */
 const WORD_STEP = 70;
@@ -126,11 +147,34 @@ function settle(): void {
   });
 }
 
+function ripple(reduce: MediaQueryList): void {
+  document.addEventListener(
+    'pointerdown',
+    (e) => {
+      if (reduce.matches || e.button !== 0) return;
+      const el = e.target instanceof Element ? e.target.closest<HTMLElement>(RIPPLE) : null;
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      const dot = document.createElement('span');
+      dot.className = 'pl-ripple';
+      dot.setAttribute('aria-hidden', 'true');
+      dot.style.left = `${e.clientX - r.left}px`;
+      dot.style.top = `${e.clientY - r.top}px`;
+      // Big enough to reach the far corner from wherever the tap landed.
+      dot.style.setProperty('--rs', `${Math.ceil(Math.max(r.width, r.height) * 2.2)}px`);
+      dot.addEventListener('animationend', () => dot.remove(), { once: true });
+      el.append(dot);
+    },
+    { passive: true },
+  );
+}
+
 export function initPolish(): void {
   spotlight();
   settle();
 
   const reduce = matchMedia('(prefers-reduced-motion: reduce)');
+  ripple(reduce);
   // Splitting is one-way: once a heading is words, it stays words. Turning
   // reduced motion on later is still honoured, because polish.css pins every
   // word to its finished state under that query.

@@ -93,6 +93,10 @@ const bands = [
   {/* The static hero. Not an apology: the ending frame with composed copy over
       it, for phones, portrait tablets and anyone who asked for less motion. */}
   <div class="sh-static" data-static>
+    {/* The photograph, on its own layer so it can drift on a phone without
+        repainting the section: a transform on a child is composited, an
+        animated background on the section is not. */}
+    <div class="sh-static-media" data-static-media aria-hidden="true"></div>
     <div class="sh-scrim" aria-hidden="true"></div>
     <div class="sh-static-copy">
       <p class="sh-kicker">Class A Contractor . Since 1989 . Northern Virginia</p>
@@ -123,9 +127,10 @@ const bands = [
     const POSTER_URL = '/hero/hero-poster.jpg';
     const ENDING_URL = '/hero/hero-ending.jpg';
 
-    staticHero.style.backgroundImage = `url('${ENDING_URL}')`;
-    staticHero.style.backgroundSize = 'cover';
-    staticHero.style.backgroundPosition = 'center';
+    const staticMedia = staticHero.querySelector('[data-static-media]') || staticHero;
+    staticMedia.style.backgroundImage = `url('${ENDING_URL}')`;
+    staticMedia.style.backgroundSize = 'cover';
+    staticMedia.style.backgroundPosition = 'center';
 
     /* ---- split the headlines once, at load -------------------------------
        A seeded generator, so the "random" offsets are identical every load. */

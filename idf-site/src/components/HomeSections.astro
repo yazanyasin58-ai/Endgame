@@ -98,8 +98,15 @@ const portrait = optionalImage('img/owner-portrait');
   <ScrubHero videoBytes={HERO_BYTES} />
 
   <!-- TRUST BAR -->
-  <section class="hp-trust tone-ink" aria-label="Credentials">
-    <ul>{trustBar.map((item) => <li>{item}</li>)}</ul>
+  {/* On a phone the four credentials wrap and strand the last one on a line
+      of its own, so there the strip runs as a ticker, after "Logo Marquee".
+      The second list is the loop's other half: hidden from assistive tech,
+      and not displayed at all on wider screens, where the row fits. */}
+  <section class="hp-trust tone-ink pl-ticker" aria-label="Credentials">
+    <div class="pl-ticker-track">
+      <ul>{trustBar.map((item) => <li>{item}</li>)}</ul>
+      <ul class="pl-ticker-dup" aria-hidden="true">{trustBar.map((item) => <li>{item}</li>)}</ul>
+    </div>
   </section>
 
   {/* FIGURES. Every one verifiable, and every one says where it came from.
@@ -260,6 +267,11 @@ const portrait = optionalImage('img/owner-portrait');
         ))
       }
     </div>
+    {/* Where you are in the set, after the progress indicators in the
+        21st.dev catalogue: the current photograph's dot stretches into a
+        pill. Decoration for sighted readers; the caption under the centre
+        card already says which project it is. */}
+    <div class="hp-cf-dots" data-cf-dots aria-hidden="true" hidden></div>
     <a class="hp-textlink" href="/projects/">See projects completed</a>
   </section>
 
@@ -316,6 +328,31 @@ const portrait = optionalImage('img/owner-portrait');
   <section class="hp-final tone-midnight" id="estimate" aria-labelledby="hp-final-h">
     <div class="hp-final-inner">
       <div class="hp-final-intro">
+        {/* A house drawn in gold hairline, as on a plan sheet, that draws
+            itself when the section arrives and then lights its windows.
+            After "Line Draw SVG". Decoration: hidden from assistive tech. */}
+        <svg class="bp" viewBox="0 0 360 230" aria-hidden="true" focusable="false">
+          <g class="bp-grid">
+            <path d="M0 40H360M0 80H360M0 120H360M0 160H360M0 200H360M40 0V230M80 0V230M120 0V230M160 0V230M200 0V230M240 0V230M280 0V230M320 0V230" />
+          </g>
+          <g class="bp-draw" fill="none">
+            <path class="bp-l" style="--d:0" pathLength="1" d="M20 196H340" />
+            <path class="bp-l" style="--d:1" pathLength="1" d="M70 196V108H290V196" />
+            <path class="bp-l" style="--d:2" pathLength="1" d="M56 112L180 44L304 112" />
+            <path class="bp-l" style="--d:3" pathLength="1" d="M236 74V50H256V85" />
+            <path class="bp-l" style="--d:4" pathLength="1" d="M162 196V150H198V196" />
+            <path class="bp-l" style="--d:5" pathLength="1" d="M92 126H132V158H92Z M112 126V158 M92 142H132" />
+            <path class="bp-l" style="--d:6" pathLength="1" d="M228 126H268V158H228Z M248 126V158 M228 142H268" />
+            <path class="bp-l" style="--d:7" pathLength="1" d="M164 70H196V96H164Z M180 70V96" />
+            <path class="bp-l bp-dim" style="--d:8" pathLength="1" d="M70 214H290 M70 209V219 M290 209V219" />
+            <path class="bp-l bp-dim" style="--d:9" pathLength="1" d="M318 196V44 M313 196H323 M313 44H323" />
+          </g>
+          <g class="bp-lights">
+            <rect x="93" y="127" width="38" height="30" />
+            <rect x="229" y="127" width="38" height="30" />
+            <rect x="165" y="71" width="30" height="24" />
+          </g>
+        </svg>
         <h2 id="hp-final-h" class="hp-final-heading">Price your project today.</h2>
         <p class="hp-final-sub hp-italic">
           A site visit first, then a written estimate within 24 hours.
@@ -509,5 +546,29 @@ const portrait = optionalImage('img/owner-portrait');
       if (e.key === 'ArrowRight') { e.preventDefault(); go(nearest() + 1); }
       if (e.key === 'ArrowLeft') { e.preventDefault(); go(nearest() - 1); }
     });
+
+    // Progress dots, one per photograph, the current one drawn as a pill.
+    const dots = document.querySelector<HTMLElement>('[data-cf-dots]');
+    if (dots) {
+      dots.hidden = false;
+      const marks = cards.map(() => {
+        const d = document.createElement('span');
+        d.className = 'hp-cf-dot';
+        dots.append(d);
+        return d;
+      });
+      let queued = false;
+      const paint = () => {
+        queued = false;
+        const on = nearest();
+        marks.forEach((m, i) => m.classList.toggle('is-on', i === on));
+      };
+      track.addEventListener('scroll', () => {
+        if (queued) return;
+        queued = true;
+        requestAnimationFrame(paint);
+      }, { passive: true });
+      paint();
+    }
   })();
 </script>

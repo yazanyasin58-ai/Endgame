@@ -473,6 +473,28 @@ The filter tabs are added by script and hidden until then, so without script
 the whole gallery shows. The estimate page moved from Instrument Serif and
 Source Sans to Fraunces and Public Sans, the pairing every other page uses.
 
+## Live motion
+
+`src/styles/motion.css` adds the motion that was missing on phones. It also
+uses the small ripple handler in `polish.ts`. Each piece goes where it earns
+its place:
+
+| Piece | Where | Phone | Desktop |
+|---|---|---|---|
+| Slow Ken Burns zoom, a light sweep and staggered copy on the static hero | Homepage hero | Yes | No, the scroll film plays there |
+| Credentials run as a ticker with faded edges | Homepage trust strip | Yes | No, the row fits on one line |
+| Service cards pin and stack; the card underneath sinks and dims | Homepage "What we build" | Yes | No, it is a four-column grid there |
+| Ripple from the point of a tap or click | Buttons, pill links, filters, FAQ rows, call bar | Yes, plus a press-in | Yes |
+| The call button rings, with a sonar ring, every few seconds | Sticky call bar | Yes | No, the bar is phone-only |
+| Progress dots under the projects coverflow | Homepage projects | Yes | Yes |
+| A blueprint house draws itself, then its windows light up | Homepage estimate band | Yes | Yes |
+| A faint gold grid drifts behind the page heading | Every inner page head | Yes | Yes |
+
+The stacking cards' sink-and-dim uses scroll-driven animation where the
+browser supports it; elsewhere the cards still stack. Under reduced motion
+everything shows its finished state: the ticker wraps, the blueprint is
+already drawn, and nothing loops.
+
 ## Accessibility — measured contrast
 
 Measured against WCAG 2.1 (4.5:1 for body text, 3:1 for large and interactive elements):
