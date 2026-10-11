@@ -1,0 +1,48 @@
+---
+/**
+ * The expandable question list, shared by /faq/ and the homepage band.
+ *
+ * Native <details>/<summary>, like the nav dropdown. It opens, closes, takes
+ * keyboard focus and is announced correctly with no JavaScript at all, and
+ * crucially the answers are in the DOM and findable with the browser's own
+ * find-in-page whether a script runs or not. A div-and-click-handler version
+ * of this is more code and a worse component.
+ *
+ * `name` groups a list into an accordion, so opening one closes the rest.
+ * Left unset, several can be open at once, which is the better behaviour on
+ * the full page where someone may be comparing two answers.
+ */
+import type { FaqItem } from '../content/faq';
+
+interface Props {
+  items: readonly FaqItem[];
+  /** Shared name makes it an accordion. Omit for independent toggles. */
+  name?: string;
+  class?: string;
+}
+
+const { items, name, class: className } = Astro.props;
+---
+
+<div class:list={['faq-list', className]}>
+  {
+    items.map((item) => (
+      <details class="faq-item" name={name}>
+        <summary class="faq-q">
+          <span class="faq-q-text">{item.q}</span>
+          <span class="faq-mark" aria-hidden="true">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"
+                 stroke-linecap="round">
+              <path d="M3 6l5 5 5-5" />
+            </svg>
+          </span>
+        </summary>
+        <div class="faq-a">
+          {item.a.map((para) => (
+            <p>{para}</p>
+          ))}
+        </div>
+      </details>
+    ))
+  }
+</div>

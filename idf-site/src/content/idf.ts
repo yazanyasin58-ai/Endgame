@@ -960,6 +960,10 @@ export const nav: NavGroup[] = [
     children: [
       { label: 'Contact us', href: '/contact/' },
       { label: 'Request a free estimate', href: '/estimate/' },
+      // Added with the FAQ page. It sits under Contact rather than taking a
+      // top-level slot because the nav already wraps below 1520px and the
+      // homepage band links to it directly.
+      { label: 'Frequently asked questions', href: '/faq/' },
     ],
   },
 ];

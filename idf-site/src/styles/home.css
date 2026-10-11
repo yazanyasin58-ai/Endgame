@@ -1126,6 +1126,48 @@
   .hp-xgo-mark { transition: none; }
 }
 
+/* ---------- faq ---------- */
+.faq-list { margin-top: 2rem; border-top: 1px solid var(--rule); }
+.faq-item { border-bottom: 1px solid var(--rule); }
+
+/* list-style on the summary itself kills the default triangle in Firefox and
+   current Chrome; ::-webkit-details-marker covers Safari. Without both, the
+   browser marker sits beside the chevron and there are two of them. */
+.faq-q {
+  list-style: none;
+  display: flex; align-items: center; justify-content: space-between; gap: 1.25rem;
+  min-height: 44px; padding: 1.05rem 0;
+  cursor: pointer; color: var(--ink);
+  font-size: clamp(1rem, 1.6vw, 1.0625rem); line-height: 1.4;
+}
+.faq-q::-webkit-details-marker { display: none; }
+.faq-q:hover { color: var(--gold-deep); }
+.faq-q:focus-visible { outline: 2px solid var(--gold-deep); outline-offset: 3px; }
+.faq-q-text { font-weight: 500; }
+
+.faq-mark {
+  flex: none; display: grid; place-items: center;
+  width: 1.75rem; height: 1.75rem; border-radius: 50%;
+  border: 1px solid var(--rule); color: var(--gold-deep);
+  transition: transform 0.22s ease, border-color 0.22s ease;
+}
+.faq-mark svg { width: 0.875rem; height: 0.875rem; }
+.faq-item[open] .faq-mark { transform: rotate(180deg); border-color: var(--gold); }
+@media (prefers-reduced-motion: reduce) { .faq-mark { transition: none; } }
+
+.faq-a { padding: 0 0 1.25rem; max-width: 68ch; }
+.faq-a p { margin: 0 0 0.75rem; color: var(--charcoal); font-size: 0.9375rem; line-height: 1.65; }
+.faq-a p:last-child { margin-bottom: 0; }
+
+/* Groups, on the full page only. */
+.faq-group + .faq-group { margin-top: 3rem; }
+.faq-group-title {
+  margin: 0;
+  font-size: 0.75rem; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--gold-deep);
+}
+.faq-tail { margin-top: 2.5rem; color: var(--charcoal); }
+
 /* ---------- military and veteran appreciation ---------- */
 /* An ink band, so it reads as a statement rather than another offer card. It
    sits directly above the showroom, which is also dark, so the two dark bands

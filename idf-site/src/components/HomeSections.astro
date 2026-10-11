@@ -13,6 +13,7 @@ import Placeholder from './Placeholder.astro';
 import ReviewCarousel from './ReviewCarousel.astro';
 import EstimateForm from './EstimateForm.astro';
 import SocialLinks from './SocialLinks.astro';
+import FaqList from './FaqList.astro';
 import {
   business,
   trustBar,
@@ -27,6 +28,7 @@ import {
   serviceArea,
 } from '../content/idf';
 import { serviceExplore } from '../content/services-detail';
+import { faqHome } from '../content/faq';
 import { optionalImage } from '../lib/images';
 
 const mapEmbed = `https://maps.google.com/maps?q=${encodeURIComponent(business.address)}&z=15&output=embed`;
@@ -211,6 +213,21 @@ const homeCards = ['project-kitchen-blue-island', 'project-framing-interior', 'p
       and /estimate/ has it beside the form, which is the page where those
       five steps actually answer a question the visitor is asking. The nav
       points at /about/#how-we-manage. Nothing linked to this copy. */}
+
+  {/* FAQ. A handful of the questions, not all of them.
+
+      This is NOT the duplication that got three sections cut from this page
+      earlier. Those were full second copies of content that nothing linked
+      to. This is six of eighteen questions, marked `home` in one shared
+      list, ending in a link to the page that holds the rest. The structured
+      data lives on /faq/ only. */}
+  <section class="hp-section rv" id="faq" aria-labelledby="hp-faq-h">
+    <DraftRule label="04 / Questions" />
+    <h2 id="hp-faq-h" class="hp-h2">Common questions</h2>
+    <p class="hp-sub hp-italic">The things people ask before they call.</p>
+    <FaqList items={faqHome} name="hp-faq" class="faq-list--home" />
+    <a class="hp-textlink" href="/faq/">Read all the questions</a>
+  </section>
 
   <!-- PRICE YOUR PROJECT -->
   <section class="hp-final" id="estimate" aria-labelledby="hp-final-h">
