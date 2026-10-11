@@ -46,8 +46,13 @@ import { business, investorBenefits, features, cta } from '../content/idf';
     {
       features.realEstate && (
         <p class="inv-note">
-          Investors also have access to our in-house real estate team for purchasing,
-          selling, renting and sourcing opportunities.
+          {/* Was "our in-house real estate team for purchasing, selling, renting
+              and sourcing", which placed an agent inside this company and listed
+              brokerage services it does not offer. Reworded to the referral the
+              rest of the site describes; see the note above `realEstate` in
+              content/idf.ts. */}
+          Buying or selling a property? We can introduce you to a licensed real estate
+          agent, and the work before or after it is ours.
         </p>
       )
     }
