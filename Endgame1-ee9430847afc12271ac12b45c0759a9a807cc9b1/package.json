@@ -1,0 +1,10 @@
+{
+  "name": "endgame",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Jarvis trading assistant",
+  "license": "ISC",
+  "dependencies": {
+    "@subhanhq/amicro": "^1.0.1"
+  }
+}
