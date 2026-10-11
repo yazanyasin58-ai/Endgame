@@ -361,6 +361,34 @@ That navy is also not part of the approved palette (ink / charcoal / gold / crea
 It is confined to the mark itself and does not appear anywhere else in the design; if
 the client wants strict palette consistency, that is a decision for them to make.
 
+## Motion and depth below the hero
+
+`src/styles/polish.css` and `src/scripts/polish.ts`, loaded on every page from
+the base layout. Each treatment is modelled on a component from the 21st.dev
+catalogue and rebuilt as CSS, with one delegated pointer listener, because the
+site ships static HTML and does not need React for hover states.
+
+| Where | Treatment | 21st.dev component it follows |
+|---|---|---|
+| Top of every page | Gold reading-progress hairline, scroll-driven, no script | Scroll progress |
+| Gold buttons and the form submit | Light band sweeps across, lift and glow on hover | Shimmer Button |
+| Section closing links | Pill with a dot that floods gold, sliding arrow | Interactive Hover Button |
+| Section headings | Words rise out of a blur; the gold rule draws in | Text Reveal |
+| What we build | Hairline cards, corner marks, pointer spotlight | Feature Grid Spotlight Cards |
+| Figures band | Gold bar under each figure grows with the count | Number Ticker |
+| Projects and gallery | Image zoom, lift, caption underline | Bento Grid hover items |
+| Reviews | Trailing-edge fade, lit cards | Testimonials with Marquee, Spotlight Card |
+| Selling a home, military band | Light travelling round the border | Animated Border |
+| FAQ | Open item lit, plus turns to minus, answer slides open | Animated Line Accordion |
+| Price your project | Dotted ground and a slow gold glow | Dotted Modern |
+| Footer | Oversized wordmark rising behind the columns | Modem Animated Footer |
+
+No content, colour token or layout changed. Text on light grounds stays
+`--gold-deep`; plain `--gold` is only ever a fill behind ink, a rule or a glow.
+Reduced motion turns every loop and entrance off, and no heading is split into
+words. Split headings carry their full text as `aria-label`, so section names
+are unchanged. Nothing is hidden unless the `.js` class is present.
+
 ## Accessibility — measured contrast
 
 Measured against WCAG 2.1 (4.5:1 for body text, 3:1 for large and interactive elements):

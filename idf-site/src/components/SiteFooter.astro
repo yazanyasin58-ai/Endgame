@@ -81,4 +81,9 @@ import Logo from './Logo.astro';
       </ul>
     </div>
   </div>
+
+  {/* Oversized wordmark behind the columns, after the 21st.dev "Modem
+      Animated Footer". Decoration only: hidden from assistive tech, and the
+      footer clips it so it can never widen the page. */}
+  <p class="pl-foot-mark rv" aria-hidden="true">{business.name}</p>
 </footer>
