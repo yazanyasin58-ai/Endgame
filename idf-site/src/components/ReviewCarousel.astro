@@ -206,7 +206,16 @@ const {
     scanCards();
 
     /* ---- Paging ---- */
+    /* Set by the marquee once it is looping. While it is, the track has no
+       ends to arrive at, so disabling the arrows there would be a lie. */
+    const loop = { on: false };
+
     const sync = () => {
+      if (loop.on) {
+        if (prev) prev.disabled = false;
+        if (next) next.disabled = false;
+        return;
+      }
       const max = track.scrollWidth - track.clientWidth;
       if (prev) prev.disabled = track.scrollLeft <= 2;
       if (next) next.disabled = track.scrollLeft >= max - 2;
@@ -253,6 +262,163 @@ const {
     };
 
     setupPaging();
+
+    /* ---- Continuous drift ---- */
+    /**
+     * The reviews move on their own, and the visitor can still swipe, drag,
+     * click or use the arrows at any moment. The client asked for both.
+     *
+     * It animates scrollLeft, not a transform. That is the whole design: a
+     * CSS transform marquee and a scroll container are two separate positions
+     * for the same strip, so a visitor who swipes one is fighting the other.
+     * Driving the scroller means auto-movement and a finger are the same
+     * action, and handing control over is just stopping.
+     *
+     * Seamlessness needs a second copy of the cards. The copies are
+     * aria-hidden and have every link and button swapped for plain spans, so
+     * a screen reader reads each review once and nothing focusable hides
+     * inside a hidden subtree. The visible original is always one scroll away.
+     *
+     * Snapping is turned off while this is on. Mandatory snap and a
+     * per-frame scrollLeft fight each other and the result stutters. A free
+     * scroller is still perfectly swipeable; losing snap is the price of
+     * continuous motion and it is the right way round.
+     */
+    const SPEED = 40;          // px per second, close to the reference site
+    const RESUME_AFTER = 2500; // ms of stillness before it picks back up
+
+    const motionOk = matchMedia('(prefers-reduced-motion: no-preference)');
+
+    const marquee = (() => {
+      let frame = 0;
+      let last = 0;
+      let period = 0;
+      let idle: ReturnType<typeof setTimeout> | undefined;
+      let held = false;        // visitor is touching, hovering or focused
+      let running = false;
+
+      const clearClones = () => {
+        track.querySelectorAll('[data-rc-clone]').forEach((n) => n.remove());
+      };
+
+      /* The position is kept as a float here and written to the element each
+         frame, rather than read back and incremented. At 40px/s a frame is
+         two thirds of a pixel, and an engine that reports scrollLeft rounded
+         would swallow every step and the strip would never move. `applied`
+         is how a frame tells the difference between its own last write and a
+         visitor having moved the track underneath it. */
+      let pos = 0;
+      let applied = 0;
+
+      const tick = (now: number) => {
+        if (!running) return;
+        const dt = last ? Math.min(now - last, 100) : 0;
+        last = now;
+        if (Math.abs(track.scrollLeft - applied) > 1) pos = track.scrollLeft;
+        if (!held && !document.hidden && period > 0 && dt) {
+          pos += (SPEED * dt) / 1000;
+          if (pos >= period) pos -= period;
+          track.scrollLeft = pos;
+          applied = track.scrollLeft;
+        }
+        frame = requestAnimationFrame(tick);
+      };
+
+      const stop = () => {
+        running = false;
+        if (frame) cancelAnimationFrame(frame);
+        frame = 0;
+        last = 0;
+        loop.on = false;
+        track.classList.remove('is-marquee');
+        clearClones();
+        sync();
+      };
+
+      const hold = () => {
+        held = true;
+        if (idle) clearTimeout(idle);
+      };
+      const release = () => {
+        if (idle) clearTimeout(idle);
+        idle = setTimeout(() => {
+          held = false;
+          last = 0;             // do not bank the paused time into one jump
+        }, RESUME_AFTER);
+      };
+
+      let bound = false;
+      const bind = () => {
+        if (bound) return;
+        bound = true;
+        // Hover and focus hold it open-endedly; the rest are moments, so they
+        // hold and then start the idle countdown.
+        track.addEventListener('pointerenter', hold);
+        track.addEventListener('pointerleave', release);
+        track.addEventListener('focusin', hold);
+        track.addEventListener('focusout', release);
+        for (const type of ['pointerdown', 'touchstart', 'wheel', 'keydown'] as const) {
+          track.addEventListener(type, () => { hold(); release(); }, { passive: true });
+        }
+        // The arrows live outside the track, so they need their own hold.
+        controls?.addEventListener('pointerdown', () => { hold(); release(); });
+        controls?.addEventListener('click', () => { hold(); release(); });
+        document.addEventListener('visibilitychange', () => { last = 0; });
+      };
+
+      const start = () => {
+        stop();
+        if (!motionOk.matches) return;
+
+        const cards = [...track.children] as HTMLElement[];
+        if (cards.length < 2) return;
+        // Nothing to drift through if the whole set is already on screen.
+        if (track.scrollWidth - track.clientWidth < 4) return;
+
+        for (const card of cards) {
+          const copy = card.cloneNode(true) as HTMLElement;
+          copy.setAttribute('data-rc-clone', '');
+          copy.setAttribute('aria-hidden', 'true');
+          /* No focusable node may sit inside an aria-hidden subtree, and a
+             cloned control would be dead anyway: cloneNode does not bring
+             listeners with it. Both problems go away by making them text. */
+          copy.querySelectorAll('a, button').forEach((el) => {
+            const span = document.createElement('span');
+            span.className = el.className;
+            span.textContent = el.textContent;
+            el.replaceWith(span);
+          });
+          track.appendChild(copy);
+        }
+
+        /* Measured from the layout rather than computed from widths and gaps,
+           so it stays right whatever the breakpoint does to either. */
+        const firstClone = track.querySelector<HTMLElement>('[data-rc-clone]');
+        if (!firstClone) return;
+        period = firstClone.offsetLeft - cards[0].offsetLeft;
+        if (period <= 0) { clearClones(); return; }
+
+        track.classList.add('is-marquee');
+        loop.on = true;
+        pos = track.scrollLeft;
+        applied = pos;
+        bind();
+        sync();
+        running = true;
+        frame = requestAnimationFrame(tick);
+      };
+
+      return { start, stop };
+    })();
+
+    marquee.start();
+    // A resize changes card widths, which changes the loop length.
+    let resized: ReturnType<typeof setTimeout> | undefined;
+    window.addEventListener('resize', () => {
+      if (resized) clearTimeout(resized);
+      resized = setTimeout(() => marquee.start(), 250);
+    });
+    motionOk.addEventListener('change', () => marquee.start());
 
     /* ---- Live Google reviews ---- */
     const template = wrap.querySelector<HTMLTemplateElement>('[data-rc-template]');
@@ -316,6 +482,9 @@ const {
         cards.appendChild(node);
       }
 
+      /* Stop first. The clones are about to be discarded with everything
+         else, and a running loop would keep driving a stale period. */
+      marquee.stop();
       track.replaceChildren(cards);
       track.scrollLeft = 0;
 
@@ -346,6 +515,9 @@ const {
 
       scanCards();
       setupPaging();
+      // Re-measured against the live cards, which are a different width and
+      // a different number from the curated set.
+      marquee.start();
     };
 
     fetch('/api/reviews', { headers: { accept: 'application/json' } })

@@ -979,6 +979,12 @@
   max-width: 100%;
   min-width: 0;
 }
+/* Snapping and a per-frame scrollLeft fight each other: mandatory snap drags
+   the strip back to the nearest card every time the drift nudges it, and the
+   result stutters. The drifting track is a free scroller, which is still
+   swipeable and draggable; snap comes back the moment the loop is torn down.
+   Written after the rule above because they share specificity. */
+.rc-track.is-marquee { scroll-snap-type: none; }
 .rc-track > * { flex: 0 0 85%; }
 @media (min-width: 700px) { .rc-track > * { flex-basis: 46%; } }
 @media (min-width: 1060px) { .rc-track > * { flex-basis: 31.5%; } }
@@ -1048,6 +1054,65 @@
 }
 .lyh-band p { margin: 0; color: var(--charcoal); max-width: 52ch; }
 .lyh-band .hp-btn { flex: none; white-space: nowrap; }
+
+/* ---------- what we build: explore grid ---------- */
+/* Replaces the three static pillar columns. .hp-pillars is NOT dead: the
+   custom homes page still uses it with its own content. */
+.hp-explore { display: grid; gap: 2.5rem; margin-top: 2.5rem; }
+@media (min-width: 640px) { .hp-explore { grid-template-columns: repeat(2, 1fr); gap: 2.5rem 2.5rem; } }
+@media (min-width: 1040px) { .hp-explore { grid-template-columns: repeat(4, 1fr); gap: 2.75rem 2rem; } }
+
+.hp-xgroup { border-top: 1px solid var(--rule); padding-top: 1.5rem; }
+.hp-xgroup-num {
+  display: block; font-size: 0.75rem; letter-spacing: 0.18em;
+  color: var(--gold-deep); margin-bottom: 0.4rem;
+}
+.hp-xgroup-title {
+  margin: 0 0 0.9rem;
+  font-family: 'Instrument Serif', serif; font-weight: 400; font-size: 1.6rem;
+  color: var(--ink);
+}
+.hp-xlist { list-style: none; margin: 0; padding: 0; }
+.hp-xlist li + li { border-top: 1px solid var(--rule); }
+
+/* The whole row is the target. min-height carries the 44px tap minimum on its
+   own, so the rule holds even for the shortest label. */
+.hp-xlink {
+  display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;
+  min-height: 44px; padding: 0.55rem 0;
+  text-decoration: none; color: var(--charcoal);
+  font-size: 0.9375rem; line-height: 1.35;
+  transition: color 0.18s ease;
+}
+.hp-xlink:hover, .hp-xlink:focus-visible { color: var(--ink); }
+.hp-xlink:focus-visible { outline: 2px solid var(--gold-deep); outline-offset: 3px; }
+
+/* "Explore" is the word the client asked for and it is read out, but printing
+   it on all twelve rows would set twelve times in gold beside the thing that
+   actually matters. It is clipped to zero width until the row is hovered or
+   focused, and the chevron carries the affordance the rest of the time. */
+.hp-xgo {
+  display: inline-flex; align-items: center; gap: 0.35rem; flex: none;
+  color: var(--gold-deep); font-size: 0.75rem; letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.hp-xgo-word {
+  max-width: 0; overflow: hidden; white-space: nowrap; opacity: 0;
+  transition: max-width 0.22s ease, opacity 0.22s ease;
+}
+.hp-xlink:hover .hp-xgo-word,
+.hp-xlink:focus-visible .hp-xgo-word { max-width: 5rem; opacity: 1; }
+.hp-xgo-mark { width: 1rem; height: 1rem; transition: transform 0.22s ease; }
+.hp-xlink:hover .hp-xgo-mark,
+.hp-xlink:focus-visible .hp-xgo-mark { transform: translateX(3px); }
+
+/* The reveal is motion for its own sake, so it goes away when motion does.
+   The word then shows permanently rather than never: hiding it outright would
+   take the label away from anyone who had turned animation off. */
+@media (prefers-reduced-motion: reduce) {
+  .hp-xgo-word { max-width: 5rem; opacity: 1; transition: none; }
+  .hp-xgo-mark { transition: none; }
+}
 
 /* ---------- military and veteran appreciation ---------- */
 /* An ink band, so it reads as a statement rather than another offer card. It

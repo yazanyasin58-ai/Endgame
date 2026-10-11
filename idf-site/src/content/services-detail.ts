@@ -299,3 +299,102 @@ export const serviceMenu = servicePages.map((s) => ({
   label: s.label,
   href: `/services/${s.slug}/`,
 }));
+
+/**
+ * The homepage "What we build" groups, and which service page sits in each.
+ *
+ * Asked for on the client's master list: every service gets an Explore control
+ * that goes straight to its own page. This is the grouping that makes that
+ * possible without inventing destinations.
+ *
+ * WHY A MAP HERE RATHER THAN A FIELD ON EACH ENTRY: twelve separate edits is
+ * twelve chances to miss one, and a missed one fails silently by vanishing
+ * from the homepage. Keeping the whole arrangement in one block means it can
+ * be read in one go, and the guard below turns a mistake into a failed build.
+ *
+ * The first three titles and numbers are the approved pillars, carried over
+ * unchanged. RESTORE is new: water damage and insurance repairs are real
+ * pages with no homepage route before this, and leaving them out would make
+ * "every service has an Explore" false for two of them. The homepage is the
+ * only place that changes; the brief's three-way framing is otherwise intact.
+ *
+ * `extra` is for destinations that are not under /services/. Custom homes has
+ * its own top-level page and predates the twelve.
+ */
+export type ServiceGroup = {
+  number: string;
+  title: string;
+  /** Service page slugs, in the order they should read. */
+  slugs: string[];
+  /** Destinations outside /services/. */
+  extra?: { label: string; href: string }[];
+};
+
+export const serviceGroups: ServiceGroup[] = [
+  {
+    number: '01',
+    title: 'BUILD NEW',
+    slugs: ['general-contracting', 'home-additions'],
+    extra: [{ label: 'Custom homes', href: '/custom-homes/' }],
+  },
+  {
+    number: '02',
+    title: 'RENOVATE',
+    slugs: ['home-remodeling', 'kitchen-remodeling', 'bathroom-remodeling', 'basement-remodeling'],
+  },
+  {
+    number: '03',
+    title: 'TRANSFORM',
+    slugs: ['flooring', 'roofing-siding', 'windows-doors', 'painting-drywall'],
+  },
+  {
+    number: '04',
+    title: 'RESTORE',
+    slugs: ['water-damage-mold', 'insurance-claim-repairs'],
+  },
+];
+
+/*
+ * Build-time guard, in the same spirit as the address check in
+ * LocalBusinessSchema: the homepage grid and the twelve pages are two lists
+ * that must stay the same list. A slug renamed in one place and not the other
+ * fails the build with a message instead of quietly dropping a service off the
+ * homepage or linking to a 404.
+ */
+{
+  const known = new Set(servicePages.map((s) => s.slug));
+  const placed = serviceGroups.flatMap((g) => g.slugs);
+
+  const unknown = placed.filter((s) => !known.has(s));
+  if (unknown.length) {
+    throw new Error(
+      `serviceGroups references service pages that do not exist: ${unknown.join(', ')}`,
+    );
+  }
+
+  const duplicated = placed.filter((s, i) => placed.indexOf(s) !== i);
+  if (duplicated.length) {
+    throw new Error(`serviceGroups lists the same service twice: ${duplicated.join(', ')}`);
+  }
+
+  const missing = [...known].filter((s) => !placed.includes(s));
+  if (missing.length) {
+    throw new Error(
+      `Every service page needs a homepage group, and these have none: ${missing.join(', ')}. ` +
+        `Add each to a group in serviceGroups, or the homepage silently stops linking to it.`,
+    );
+  }
+}
+
+/** The groups, resolved to the labels and hrefs the homepage renders. */
+export const serviceExplore = serviceGroups.map((g) => ({
+  number: g.number,
+  title: g.title,
+  items: [
+    ...(g.extra ?? []),
+    ...g.slugs.map((slug) => {
+      const page = servicePages.find((s) => s.slug === slug)!;
+      return { label: page.label, href: `/services/${slug}/` };
+    }),
+  ],
+}));

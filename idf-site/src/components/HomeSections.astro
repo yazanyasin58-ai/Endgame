@@ -16,7 +16,6 @@ import SocialLinks from './SocialLinks.astro';
 import {
   business,
   trustBar,
-  pillars,
   wedge,
   gallery,
   reviews,
@@ -27,6 +26,7 @@ import {
   militaryDiscount,
   serviceArea,
 } from '../content/idf';
+import { serviceExplore } from '../content/services-detail';
 import { optionalImage } from '../lib/images';
 
 const mapEmbed = `https://maps.google.com/maps?q=${encodeURIComponent(business.address)}&z=15&output=embed`;
@@ -85,27 +85,50 @@ const homeCards = ['project-kitchen-blue-island', 'project-framing-interior', 'p
     </div>
   </section>
 
-  <!-- WHAT WE BUILD -->
+  {/* WHAT WE BUILD.
+
+      Every service listed here is a link to its own page, which is what the
+      client's master list asked for. It used to be three columns of plain
+      text naming services that had pages nobody could reach from here.
+
+      The whole row is the link, not a separate "Explore" word beside the
+      name: a row that looks clickable and then has one small clickable part
+      is the version people miss. The chevron is decoration on a target that
+      is already the full width of the row. */}
   <section class="hp-section rv" id="what-we-build" aria-labelledby="hp-pillars-h">
     <DraftRule label="01 / Scope" />
     <h2 id="hp-pillars-h" class="hp-h2">What we build</h2>
-    <p class="hp-sub hp-italic">Three ways to start, one team throughout.</p>
-    <div class="hp-pillars">
+    <p class="hp-sub hp-italic">Every service, straight through to the page for it.</p>
+    <div class="hp-explore">
       {
-        pillars.map((p) => (
-          <article class="hp-pillar">
-            <span class="hp-pillar-num">{p.number}</span>
-            <h3 class="hp-pillar-title">{p.title.charAt(0) + p.title.slice(1).toLowerCase()}</h3>
-            <ul class="hp-pillar-list">
-              {p.services.map((s) => (
-                <li>{s}</li>
+        serviceExplore.map((g) => (
+          <article class="hp-xgroup">
+            <span class="hp-xgroup-num">{g.number}</span>
+            <h3 class="hp-xgroup-title">
+              {g.title.charAt(0) + g.title.slice(1).toLowerCase()}
+            </h3>
+            <ul class="hp-xlist">
+              {g.items.map((item) => (
+                <li>
+                  <a class="hp-xlink" href={item.href}>
+                    <span class="hp-xlabel">{item.label}</span>
+                    <span class="hp-xgo">
+                      <span class="hp-xgo-word">Explore</span>
+                      <svg class="hp-xgo-mark" viewBox="0 0 16 16" aria-hidden="true"
+                           fill="none" stroke="currentColor" stroke-width="1.7"
+                           stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 8h9M8.5 4l4 4-4 4" />
+                      </svg>
+                    </span>
+                  </a>
+                </li>
               ))}
             </ul>
-            <a class="hp-pillar-link" href="/estimate/">Start an estimate</a>
           </article>
         ))
       }
     </div>
+    <a class="hp-textlink" href="/services/">See all services</a>
   </section>
 
   <!-- WHY ONE TEAM -->
