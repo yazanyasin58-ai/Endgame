@@ -315,47 +315,16 @@ const homeCards = ['project-kitchen-blue-island', 'project-framing-interior', 'p
 
 <script>
   /**
-   * Entrances for the page below the hero.
+   * Pause every animation, and every pseudo-element animation, on a hidden
+   * tab. animation-play-state does not inherit, so this has to land on the
+   * elements themselves rather than on a container.
    *
-   * One observer drives both the section arrivals and the drafting rules
-   * drawing themselves. Elements are unobserved once they have arrived, so
-   * nothing keeps running after it is done.
-   *
-   * Reduced motion is honored live and in BOTH directions: flipping it on
-   * pins everything to its finished state, flipping it back off re-arms the
-   * observer rather than leaving the page pinned.
+   * The scroll entrances used to live here too. They are now in
+   * src/scripts/reveal.ts, run from the base layout, because every other
+   * page on the site was missing them purely because this file is the
+   * homepage's.
    */
-  (() => {
-    const reduce = matchMedia('(prefers-reduced-motion: reduce)');
-    const targets = () => [...document.querySelectorAll('.rv, [data-draft-rule]')];
-    let io = null;
-
-    function pinAll() {
-      if (io) { io.disconnect(); io = null; }
-      targets().forEach((el) => el.classList.add('in'));
-    }
-
-    function arm() {
-      if (io) return;
-      io = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) return;
-          entry.target.classList.add('in');
-          io.unobserve(entry.target);        // arrived: stop watching it
-        });
-      }, { rootMargin: '0px 0px -12% 0px', threshold: 0.08 });
-      targets().forEach((el) => { if (!el.classList.contains('in')) io.observe(el); });
-    }
-
-    function apply() { reduce.matches ? pinAll() : arm(); }
-    reduce.addEventListener('change', apply);
-    apply();
-
-    /* Pause every animation and pseudo-element animation on a hidden tab.
-       animation-play-state does not inherit, so it has to hit each element
-       directly rather than being set on a container. */
-    document.addEventListener('visibilitychange', () => {
-      document.body.classList.toggle('paused', document.hidden);
-    });
-  })();
+  document.addEventListener('visibilitychange', () => {
+    document.body.classList.toggle('paused', document.hidden);
+  });
 </script>

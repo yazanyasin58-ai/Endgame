@@ -1,4 +1,7 @@
 @import "tailwindcss";
+/* Scroll entrances, every page. Lives here rather than in home.css or
+   scrub.css because those are not loaded by every page and this must be. */
+@import "./reveal.css";
 
 /* Client palette — shared across all versions. Per-version tokens live in
    each version's own stylesheet scope; only these base colors are shared. */
