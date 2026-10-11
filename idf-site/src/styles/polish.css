@@ -441,7 +441,14 @@ body.hp .hp-project:hover figcaption { background-size: 100% 1px; }
    Only the trailing edge fades. Fading the leading edge would dim the first
    card, which on a phone is the only card on screen.
    ------------------------------------------------------------------ */
+/* Room inside the strip for the hover lift and its shadow. The strip is a
+   horizontal scroller, which clips on both axes, so a card that rose 3px had
+   its top edge and its shadow sliced off mid-animation. The padding gives
+   the lift somewhere to go and the negative margin gives the space back, so
+   nothing around the strip moves. */
 body.hp .rc-track {
+  padding: 1rem 1.25rem 2rem;
+  margin: -1rem -1.25rem -1.5rem;
   -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 4rem), transparent);
           mask-image: linear-gradient(90deg, #000 calc(100% - 4rem), transparent);
 }
@@ -451,9 +458,18 @@ body.hp .rc-card {
   background:
     linear-gradient(180deg, rgb(226 192 107 / 0.08), transparent 35%),
     var(--paper);
-  transition: border-color 0.3s ease;
+  /* The lift from home.css, restated here with its own easing. This rule
+     outranks home.css's, and leaving transform out of it made the card snap
+     up rather than rise. */
+  transition:
+    transform 0.45s var(--pl-ease),
+    box-shadow 0.45s var(--pl-ease),
+    border-color 0.3s ease;
 }
-body.hp .rc-card:hover { border-color: var(--gold); }
+body.hp .rc-card:hover {
+  border-color: var(--gold);
+  box-shadow: 0 18px 34px -18px rgb(20 17 13 / 0.35);
+}
 /* gold hairline across the top of each card */
 body.hp .rc-card::after {
   content: '';

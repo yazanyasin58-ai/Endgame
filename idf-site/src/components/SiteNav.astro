@@ -3,9 +3,13 @@
  * Site header: a slim floating bar and a full-screen menu.
  *
  * Rebuilt after "Sterling Gate: Kinetic Navigation" from the owner's saved
- * 21st.dev components: the bar stays quiet, and the menu is an immersive,
- * typography-led layer that drops over the page. Hovering an entry ripples
- * through its neighbours and opens that group's links in the side column.
+ * 21st.dev components: the bar stays quiet, and the menu is a typography-led
+ * layer that drops over the page. Hovering an entry ripples through its
+ * neighbours and opens that group's links in the side column.
+ *
+ * It drops HALFWAY, not full screen, by the owner's choice on 11 October: the
+ * page stays visible, dimmed, underneath, and a click on it closes the menu
+ * and leaves the visitor where they were.
  *
  * The bar itself floats into a rounded, blurred pill once the page scrolls,
  * which is the one behaviour borrowed from "Header 3", also saved.
@@ -164,6 +168,9 @@ const num = (i: number) => String(i + 1).padStart(2, '0');
           </a>
         </div>
       </div>
+      {/* The dimmed page below the panel. A click on it closes the menu; that
+          is script, so without script it is simply shade. */}
+      <div class="sg-scrim" data-sg-scrim aria-hidden="true"></div>
     </details>
   </div>
 </header>
@@ -254,6 +261,9 @@ const num = (i: number) => String(i + 1).padStart(2, '0');
         if (focusToggle) summary.focus();
       }, 520);
     };
+
+    // The dimmed page below the panel is the most natural "take me back".
+    menu.querySelector('[data-sg-scrim]')?.addEventListener('click', () => close());
 
     // The toggle closes with the animation rather than snapping shut.
     summary.addEventListener('click', (e) => {

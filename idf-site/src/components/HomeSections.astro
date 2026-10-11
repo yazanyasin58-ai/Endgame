@@ -8,7 +8,6 @@
  */
 import ScrubHero from './ScrubHero.astro';
 import DraftRule from './DraftRule.astro';
-import FrameToFinish from './FrameToFinish.astro';
 import Placeholder from './Placeholder.astro';
 import ReviewCarousel from './ReviewCarousel.astro';
 import EstimateForm from './EstimateForm.astro';
@@ -49,34 +48,45 @@ const mapEmbed = `https://maps.google.com/maps?q=${encodeURIComponent(business.a
  *  this prop was overriding it with the stale number. */
 const HERO_BYTES = 11739138;
 
-/* The coverflow carries more of the work than the old three-card strip, and
-   keeps the owner's ask: finished rooms alternate with work in progress, so
-   the strip shows the whole job rather than only the reveal. Every one is a
-   gallery entry, with its caption as written there. */
-const homeCards = [
-  'project-framing-interior',
-  'project-kitchen-blue-island',
-  'project-siding-crew',
-  'project-stairs-hardwood',
-  'project-porch-framing',
-  'project-bath-shower-marble',
-  'project-framing-joists',
-  'project-kitchen-pendants',
-]
-  .map((slot) => gallery.find((g) => g.slot === slot))
-  .filter((g): g is (typeof gallery)[number] => Boolean(g))
-  .map((g) => ({ ...g, src: optionalImage(`img/${g.slot}`) }));
+/* The coverflow, ordered by the owner on 11 October: the best-looking
+   finished rooms first, starting with the kitchens, and similar projects kept
+   together in runs of two or three so the strip reads as a set of jobs rather
+   than a shuffle. Work in progress still has its place, at the end, which
+   keeps the earlier ask that the site shows the whole job. Every one is a
+   gallery entry with its caption as written there. */
+const projectGroups = [
+  ['project-kitchen-blue-island-wide', 'project-kitchen-pendants', 'project-kitchen-blue-island'],
+  ['project-kitchen-cream-wide', 'project-kitchen-cream'],
+  ['project-kitchen-dark-granite', 'project-counter-quartz'],
+  ['project-bath-shower-marble', 'project-stairs-hardwood', 'project-floor-dark-hardwood'],
+  ['project-decks-townhomes', 'project-siding-crew'],
+  ['project-framing-interior', 'project-porch-framing'],
+];
+const homeCards = projectGroups.flatMap((group, gi) =>
+  group
+    .map((slot) => gallery.find((g) => g.slot === slot))
+    .filter((g): g is (typeof gallery)[number] => Boolean(g))
+    .map((g, i) => ({ ...g, src: optionalImage(`img/${g.slot}`), groupStart: gi > 0 && i === 0 })),
+);
 
 /* One photograph at the head of each service group. Decorative, so alt is
    empty: the card is a list of links and the photo is not what it says.
-   All four are the company's own gallery photographs, chosen to match the
-   group rather than to illustrate a specific job. */
+   All four are the company's own photographs, re-chosen on 11 October to
+   match what each group lists:
+     Build new  ... a finished new house with its deck (custom homes, additions)
+     Renovate ..... the blue-island kitchen (kitchens, baths, basements)
+     Transform .... refinished hardwood stairs (flooring, finishes)
+     Restore ...... damaged insulation coming out of a soffit (water damage)
+   `pos` is the crop, so the subject survives the card's wide frame. */
 const groupPhotos = [
-  'project-porch-build',
-  'project-kitchen-cream-wide',
-  'project-floor-dark-hardwood',
-  'project-framing-joists',
-].map((slot) => optionalImage(`img/${slot}`));
+  { slot: 'project-custom-home', pos: '50% 60%' },
+  { slot: 'project-kitchen-blue-island-wide', pos: '50% 62%' },
+  { slot: 'project-stairs-hardwood', pos: '50% 55%' },
+  { slot: 'project-soffit-insulation', pos: '50% 30%' },
+].map(({ slot, pos }) => {
+  const src = optionalImage(`img/${slot}`);
+  return src ? { src, pos } : undefined;
+});
 
 const portrait = optionalImage('img/owner-portrait');
 ---
@@ -117,7 +127,14 @@ const portrait = optionalImage('img/owner-portrait');
           <article class:list={['hp-xgroup', { 'hp-xgroup--photo': groupPhotos[i] }]}>
             <div class="hp-xgroup-head">
               {groupPhotos[i] && (
-                <img class="hp-xgroup-img" src={groupPhotos[i]} alt="" loading="lazy" decoding="async" />
+                <img
+                  class="hp-xgroup-img"
+                  src={groupPhotos[i].src}
+                  style={`object-position: ${groupPhotos[i].pos}`}
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                />
               )}
               <span class="hp-xgroup-num">{g.number}</span>
               <h3 class="hp-xgroup-title">
@@ -181,8 +198,9 @@ const portrait = optionalImage('img/owner-portrait');
     </div>
   </section>
 
-  {/* THE INTERACTIVE MOMENT. The visitor performs the page's one idea. */}
-  <FrameToFinish />
+  {/* "Hold to build" (FrameToFinish) sat here. The owner asked for it to be
+      removed from the homepage on 11 October. The component is kept in
+      src/components in case it is wanted elsewhere; nothing renders it. */}
 
   {/* "What you can count on" used to sit here. It was removed, not lost: the
       same countOn array renders under the same heading on /about/, and the
@@ -191,13 +209,22 @@ const portrait = optionalImage('img/owner-portrait');
       1.1 screens of desktop and 1.4 of mobile. */}
 
   <!-- SELECTED PROJECTS -->
+  {/* REVIEWS. Moved above the projects on 11 October, so the page goes
+      who we are, what clients say, then the work. */}
+  <ReviewCarousel
+    reviews={reviews}
+    headingId="hp-reviews-h"
+    standfirst="Swipe, or use the arrows, to read more."
+    live={features.googleReviews}
+  />
+
   {/* A coverflow, after the "Coverflow Carousel" in the owner's saved
       21st.dev components: the centre card square to the viewer, the cards
       either side swinging their outer edges forward. It is a native
       scroll-snap strip, so swipe, trackpad and keyboard all work with no
       script; the 3D is a scroll-driven animation, and engines without one
       get a flat strip. */}
-  <section class="hp-section hp-cf tone-ink rv" id="selected-projects" aria-labelledby="hp-projects-h">
+  <section class="hp-section hp-cf tone-dusk rv" id="selected-projects" aria-labelledby="hp-projects-h">
     <div class="hp-cf-head">
       <div>
         <DraftRule label="03 / The work" />
@@ -216,7 +243,7 @@ const portrait = optionalImage('img/owner-portrait');
     <div class="hp-cf-track" data-cf-track tabindex="0" role="group" aria-label="Selected projects, scrollable">
       {
         homeCards.map((card) => (
-          <figure class="hp-cf-card">
+          <figure class:list={['hp-cf-card', { 'hp-cf-card--group': card.groupStart }]}>
             <Placeholder
               ratio="4 / 5"
               label={`Reserved: ${card.caption.toLowerCase()}`}
@@ -235,14 +262,6 @@ const portrait = optionalImage('img/owner-portrait');
     </div>
     <a class="hp-textlink" href="/projects/">See projects completed</a>
   </section>
-
-  <!-- REVIEWS -->
-  <ReviewCarousel
-    reviews={reviews}
-    headingId="hp-reviews-h"
-    standfirst="Swipe, or use the arrows, to read more."
-    live={features.googleReviews}
-  />
 
   <!-- LIST YOUR HOME -->
   <section class="hp-section" aria-labelledby="hp-lyh-h">
@@ -440,7 +459,9 @@ const portrait = optionalImage('img/owner-portrait');
       track.scrollTo({ left: centreOf(target), behavior: reduce.matches ? 'auto' : 'smooth' });
     };
 
-    // Open on the second card, so one card is already swung in from the left.
+    // Open on the second card, so the strip starts inside the first kitchen:
+    // its best shot swung in on the left, another view of it square to the
+    // viewer, and the third coming in on the right.
     track.scrollLeft = centreOf(cards[1] ?? cards[0]);
 
     if (controls) {

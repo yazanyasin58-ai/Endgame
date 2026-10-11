@@ -47,22 +47,37 @@ body.hp .tone-ink {
   --rule: rgb(226 192 107 / 0.26);
   background: var(--ink);
 }
-body.hp :is(.tone-midnight, .tone-ink) .hp-h2 { color: var(--cream); }
-body.hp :is(.tone-midnight, .tone-ink) .hp-sub { color: var(--on-dark); }
-body.hp :is(.tone-midnight, .tone-ink) :is(.dr-line, .dr-tick) { stroke: var(--gold-bright); }
+/* Dusk: a blue-grey a few steps lighter than midnight, for the projects.
+   The near-black it replaced made the photographs look heavy; this cool
+   ground sets off the warm wood and white kitchens instead of swallowing
+   them. Measured at its lighter top: cream 8.56, body copy 6.35, gold-bright
+   5.50. Stone fails here (3.81), so labels use the body-copy colour. */
+body.hp .tone-dusk {
+  color: var(--cream);
+  --rule: rgb(246 241 231 / 0.22);
+  background:
+    radial-gradient(45% 55% at 50% 58%, rgb(255 255 255 / 0.09), transparent 70%),
+    radial-gradient(60% 40% at 50% 100%, rgb(226 192 107 / 0.12), transparent 70%),
+    linear-gradient(180deg, #34465d 0%, #2c3c52 55%, #26354a 100%);
+}
+body.hp .tone-dusk .dr-label { color: var(--on-dark); }
+
+body.hp :is(.tone-midnight, .tone-ink, .tone-dusk) .hp-h2 { color: var(--cream); }
+body.hp :is(.tone-midnight, .tone-ink, .tone-dusk) .hp-sub { color: var(--on-dark); }
+body.hp :is(.tone-midnight, .tone-ink, .tone-dusk) :is(.dr-line, .dr-tick) { stroke: var(--gold-bright); }
 body.hp :is(.tone-midnight, .tone-ink) .dr-label { color: var(--stone); }
-body.hp :is(.tone-midnight, .tone-ink) .rc-arrow { color: var(--cream); border-color: var(--rule); }
-body.hp :is(.tone-midnight, .tone-ink) .rc-arrow:hover:not(:disabled) {
+body.hp :is(.tone-midnight, .tone-ink, .tone-dusk) .rc-arrow { color: var(--cream); border-color: var(--rule); }
+body.hp :is(.tone-midnight, .tone-ink, .tone-dusk) .rc-arrow:hover:not(:disabled) {
   background: rgb(246 241 231 / 0.08);
   border-color: var(--gold-bright);
 }
 /* The pill links from polish.css, inverted for a dark ground. */
-body.hp .hp-section:is(.tone-midnight, .tone-ink) > .hp-textlink {
+body.hp .hp-section:is(.tone-midnight, .tone-ink, .tone-dusk) > .hp-textlink {
   background: transparent;
   color: var(--cream);
   border-color: rgb(246 241 231 / 0.3);
 }
-body.hp .hp-section:is(.tone-midnight, .tone-ink) > .hp-textlink:is(:hover, :focus-visible) {
+body.hp .hp-section:is(.tone-midnight, .tone-ink, .tone-dusk) > .hp-textlink:is(:hover, :focus-visible) {
   color: var(--ink);
   border-color: var(--gold);
 }
@@ -229,13 +244,8 @@ body.hp .tone-midnight .hp-wedge-copy p { color: var(--on-dark); }
   to { transform: scale(1); }
 }
 
-/* ---- selected projects: coverflow on ink ------------------------------- */
-body.hp .hp-cf {
-  padding-inline: 0;
-  background:
-    radial-gradient(60% 55% at 50% 100%, rgb(200 162 74 / 0.16), transparent 70%),
-    var(--ink);
-}
+/* ---- selected projects: coverflow on dusk ------------------------------ */
+body.hp .hp-cf { padding-inline: 0; }
 .hp-cf-head {
   display: flex;
   flex-wrap: wrap;
@@ -269,9 +279,12 @@ body.hp .hp-cf > .hp-textlink { margin-left: clamp(1.25rem, 4vw, 3.5rem); }
   margin: 0;
   scroll-snap-align: center;
 }
+/* A wider gap where one project ends and the next begins, so the runs of
+   two and three read as sets. */
+.hp-cf-card--group { margin-left: clamp(1.25rem, 4vw, 3.5rem); }
 body.hp .hp-cf-card .ph {
   border-radius: 6px;
-  box-shadow: 0 30px 60px -28px rgb(0 0 0 / 0.85);
+  box-shadow: 0 30px 60px -26px rgb(8 14 24 / 0.75);
   --ph-bg: #2a2620;
   --ph-lo: #15120e;
 }
