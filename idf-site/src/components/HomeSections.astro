@@ -49,10 +49,36 @@ const mapEmbed = `https://maps.google.com/maps?q=${encodeURIComponent(business.a
  *  this prop was overriding it with the stale number. */
 const HERO_BYTES = 11739138;
 
-const homeCards = ['project-kitchen-blue-island', 'project-framing-interior', 'project-siding-crew']
+/* The coverflow carries more of the work than the old three-card strip, and
+   keeps the owner's ask: finished rooms alternate with work in progress, so
+   the strip shows the whole job rather than only the reveal. Every one is a
+   gallery entry, with its caption as written there. */
+const homeCards = [
+  'project-framing-interior',
+  'project-kitchen-blue-island',
+  'project-siding-crew',
+  'project-stairs-hardwood',
+  'project-porch-framing',
+  'project-bath-shower-marble',
+  'project-framing-joists',
+  'project-kitchen-pendants',
+]
   .map((slot) => gallery.find((g) => g.slot === slot))
   .filter((g): g is (typeof gallery)[number] => Boolean(g))
   .map((g) => ({ ...g, src: optionalImage(`img/${g.slot}`) }));
+
+/* One photograph at the head of each service group. Decorative, so alt is
+   empty: the card is a list of links and the photo is not what it says.
+   All four are the company's own gallery photographs, chosen to match the
+   group rather than to illustrate a specific job. */
+const groupPhotos = [
+  'project-porch-build',
+  'project-kitchen-cream-wide',
+  'project-floor-dark-hardwood',
+  'project-framing-joists',
+].map((slot) => optionalImage(`img/${slot}`));
+
+const portrait = optionalImage('img/owner-portrait');
 ---
 
 <main id="main" tabindex="-1">
@@ -62,7 +88,7 @@ const homeCards = ['project-kitchen-blue-island', 'project-framing-interior', 'p
   <ScrubHero videoBytes={HERO_BYTES} />
 
   <!-- TRUST BAR -->
-  <section class="hp-trust" aria-label="Credentials">
+  <section class="hp-trust tone-ink" aria-label="Credentials">
     <ul>{trustBar.map((item) => <li>{item}</li>)}</ul>
   </section>
 
@@ -87,12 +113,17 @@ const homeCards = ['project-kitchen-blue-island', 'project-framing-interior', 'p
     <p class="hp-sub hp-italic">Every service, straight through to the page for it.</p>
     <div class="hp-explore">
       {
-        serviceExplore.map((g) => (
-          <article class="hp-xgroup">
-            <span class="hp-xgroup-num">{g.number}</span>
-            <h3 class="hp-xgroup-title">
-              {g.title.charAt(0) + g.title.slice(1).toLowerCase()}
-            </h3>
+        serviceExplore.map((g, i) => (
+          <article class:list={['hp-xgroup', { 'hp-xgroup--photo': groupPhotos[i] }]}>
+            <div class="hp-xgroup-head">
+              {groupPhotos[i] && (
+                <img class="hp-xgroup-img" src={groupPhotos[i]} alt="" loading="lazy" decoding="async" />
+              )}
+              <span class="hp-xgroup-num">{g.number}</span>
+              <h3 class="hp-xgroup-title">
+                {g.title.charAt(0) + g.title.slice(1).toLowerCase()}
+              </h3>
+            </div>
             <ul class="hp-xlist">
               {g.items.map((item) => (
                 <li>
@@ -118,13 +149,35 @@ const homeCards = ['project-kitchen-blue-island', 'project-framing-interior', 'p
   </section>
 
   <!-- WHY ONE TEAM -->
-  <section class="hp-section hp-wedge rv" id="why-one-team" aria-labelledby="hp-wedge-h">
-    <DraftRule label="02 / Who does it" />
-    <h2 id="hp-wedge-h" class="hp-h2">Why one team</h2>
-    <p class="hp-wedge-tagline hp-italic">&ldquo;{wedge.tagline}&rdquo;</p>
-    <div class="hp-wedge-copy">
-      <h3 class="hp-wedge-heading">{wedge.heading}</h3>
-      {wedge.body.map((para) => <p>{para}</p>)}
+  {/* Midnight, and split: the promise on the left, the person making it on
+      the right. The portrait is the same photograph and the same caption as
+      /about/, which names only who is in the frame. */}
+  <section class="hp-section hp-wedge tone-midnight rv" id="why-one-team" aria-labelledby="hp-wedge-h">
+    <div class="hp-wedge-grid">
+      <div class="hp-wedge-text">
+        <DraftRule label="02 / Who does it" />
+        <h2 id="hp-wedge-h" class="hp-h2">Why one team</h2>
+        <p class="hp-wedge-tagline hp-italic pl-shine">&ldquo;{wedge.tagline}&rdquo;</p>
+        <div class="hp-wedge-copy">
+          <h3 class="hp-wedge-heading">{wedge.heading}</h3>
+          {wedge.body.map((para) => <p>{para}</p>)}
+        </div>
+      </div>
+      {
+        portrait && (
+          <figure class="hp-wedge-portrait">
+            <div class="hp-wedge-frame">
+              <img
+                src={portrait}
+                alt="Shawn Waziri on site in a hard hat, reading plans, with a crane and new framing behind him"
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+            <figcaption>Shawn Waziri on site</figcaption>
+          </figure>
+        )
+      }
     </div>
   </section>
 
@@ -138,23 +191,44 @@ const homeCards = ['project-kitchen-blue-island', 'project-framing-interior', 'p
       1.1 screens of desktop and 1.4 of mobile. */}
 
   <!-- SELECTED PROJECTS -->
-  <section class="hp-section rv" id="selected-projects" aria-labelledby="hp-projects-h">
-    <DraftRule label="03 / The work" />
-    <h2 id="hp-projects-h" class="hp-h2">Selected projects</h2>
-    <p class="hp-sub hp-italic">Real work, from the framing through to the finish.</p>
-    <div class="hp-projects">
+  {/* A coverflow, after the "Coverflow Carousel" in the owner's saved
+      21st.dev components: the centre card square to the viewer, the cards
+      either side swinging their outer edges forward. It is a native
+      scroll-snap strip, so swipe, trackpad and keyboard all work with no
+      script; the 3D is a scroll-driven animation, and engines without one
+      get a flat strip. */}
+  <section class="hp-section hp-cf tone-ink rv" id="selected-projects" aria-labelledby="hp-projects-h">
+    <div class="hp-cf-head">
+      <div>
+        <DraftRule label="03 / The work" />
+        <h2 id="hp-projects-h" class="hp-h2">Selected projects</h2>
+        <p class="hp-sub hp-italic">Real work, from the framing through to the finish.</p>
+      </div>
+      <div class="hp-cf-controls" data-cf-controls hidden>
+        <button class="rc-arrow" type="button" data-cf-prev aria-label="Previous project">
+          <svg viewBox="0 0 10 16" aria-hidden="true"><path d="M8 1 2 8l6 7" fill="none" stroke="currentColor" stroke-width="1.6" /></svg>
+        </button>
+        <button class="rc-arrow" type="button" data-cf-next aria-label="Next project">
+          <svg viewBox="0 0 10 16" aria-hidden="true"><path d="m2 1 6 7-6 7" fill="none" stroke="currentColor" stroke-width="1.6" /></svg>
+        </button>
+      </div>
+    </div>
+    <div class="hp-cf-track" data-cf-track tabindex="0" role="group" aria-label="Selected projects, scrollable">
       {
         homeCards.map((card) => (
-          <figure class="hp-project">
+          <figure class="hp-cf-card">
             <Placeholder
-              ratio="4 / 3"
+              ratio="4 / 5"
               label={`Reserved: ${card.caption.toLowerCase()}`}
               src={card.src}
               alt={card.alt}
               real
-              class="hp-ph"
+              class="hp-ph hp-cf-ph"
             />
-            <figcaption>{card.caption}</figcaption>
+            <figcaption>
+              <span class="hp-cf-cap">{card.caption}</span>
+              <span class="hp-cf-tags">{card.tags.join(' · ')}</span>
+            </figcaption>
           </figure>
         ))
       }
@@ -172,7 +246,7 @@ const homeCards = ['project-kitchen-blue-island', 'project-framing-interior', 'p
 
   <!-- LIST YOUR HOME -->
   <section class="hp-section" aria-labelledby="hp-lyh-h">
-    <div class="lyh-band">
+    <div class="lyh-band tone-gold">
       <span class="lyh-icon" aria-hidden="true">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
              stroke-linecap="round" stroke-linejoin="round">
@@ -205,16 +279,22 @@ const homeCards = ['project-kitchen-blue-island', 'project-framing-interior', 'p
       to. This is six of eighteen questions, marked `home` in one shared
       list, ending in a link to the page that holds the rest. The structured
       data lives on /faq/ only. */}
-  <section class="hp-section rv" id="faq" aria-labelledby="hp-faq-h">
+  {/* Two columns on wide screens: the heading holds its place on the left
+      while the questions run down the right. */}
+  <section class="hp-section hp-faq rv" id="faq" aria-labelledby="hp-faq-h">
     <DraftRule label="04 / Questions" />
-    <h2 id="hp-faq-h" class="hp-h2">Common questions</h2>
-    <p class="hp-sub hp-italic">The things people ask before they call.</p>
-    <FaqList items={faqHome} name="hp-faq" class="faq-list--home" />
-    <a class="hp-textlink" href="/faq/">Read all the questions</a>
+    <div class="hp-faq-grid">
+      <div class="hp-faq-head">
+        <h2 id="hp-faq-h" class="hp-h2">Common questions</h2>
+        <p class="hp-sub hp-italic">The things people ask before they call.</p>
+        <a class="hp-textlink hp-faq-more" href="/faq/">Read all the questions</a>
+      </div>
+      <FaqList items={faqHome} name="hp-faq" class="faq-list--home" />
+    </div>
   </section>
 
   <!-- PRICE YOUR PROJECT -->
-  <section class="hp-final" id="estimate" aria-labelledby="hp-final-h">
+  <section class="hp-final tone-midnight" id="estimate" aria-labelledby="hp-final-h">
     <div class="hp-final-inner">
       <div class="hp-final-intro">
         <h2 id="hp-final-h" class="hp-final-heading">Price your project today.</h2>
@@ -327,4 +407,86 @@ const homeCards = ['project-kitchen-blue-island', 'project-framing-interior', 'p
   document.addEventListener('visibilitychange', () => {
     document.body.classList.toggle('paused', document.hidden);
   });
+
+  /**
+   * Coverflow controls. The strip already scrolls and snaps on its own; this
+   * adds the arrows, mouse drag, and an opening position in the middle of the
+   * set so there are cards swung forward on both sides from the start.
+   */
+  (() => {
+    const track = document.querySelector<HTMLElement>('[data-cf-track]');
+    const controls = document.querySelector<HTMLElement>('[data-cf-controls]');
+    if (!track) return;
+    const cards = [...track.querySelectorAll<HTMLElement>('.hp-cf-card')];
+    if (!cards.length) return;
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)');
+
+    const centreOf = (el: HTMLElement) =>
+      el.offsetLeft + el.offsetWidth / 2 - track.clientWidth / 2;
+
+    const nearest = () => {
+      const mid = track.scrollLeft + track.clientWidth / 2;
+      let best = 0;
+      let dist = Infinity;
+      cards.forEach((c, i) => {
+        const d = Math.abs(c.offsetLeft + c.offsetWidth / 2 - mid);
+        if (d < dist) { dist = d; best = i; }
+      });
+      return best;
+    };
+
+    const go = (i: number) => {
+      const target = cards[Math.max(0, Math.min(cards.length - 1, i))];
+      track.scrollTo({ left: centreOf(target), behavior: reduce.matches ? 'auto' : 'smooth' });
+    };
+
+    // Open on the second card, so one card is already swung in from the left.
+    track.scrollLeft = centreOf(cards[1] ?? cards[0]);
+
+    if (controls) {
+      controls.hidden = false;
+      controls.querySelector('[data-cf-prev]')?.addEventListener('click', () => go(nearest() - 1));
+      controls.querySelector('[data-cf-next]')?.addEventListener('click', () => go(nearest() + 1));
+    }
+
+    // A click on a side card brings it to the centre.
+    track.addEventListener('click', (e) => {
+      const card = (e.target as Element).closest<HTMLElement>('.hp-cf-card');
+      if (!card || dragged) return;
+      const i = cards.indexOf(card);
+      if (i !== nearest()) go(i);
+    });
+
+    // Mouse drag. Touch and trackpads scroll natively and are left alone.
+    let down = false;
+    let dragged = false;
+    let startX = 0;
+    let startLeft = 0;
+    track.addEventListener('pointerdown', (e) => {
+      if (e.pointerType !== 'mouse' || e.button !== 0) return;
+      down = true;
+      dragged = false;
+      startX = e.clientX;
+      startLeft = track.scrollLeft;
+      track.classList.add('is-dragging');
+    });
+    addEventListener('pointermove', (e) => {
+      if (!down) return;
+      const dx = e.clientX - startX;
+      if (Math.abs(dx) > 4) dragged = true;
+      track.scrollLeft = startLeft - dx;
+    });
+    addEventListener('pointerup', () => {
+      if (!down) return;
+      down = false;
+      track.classList.remove('is-dragging');
+      go(nearest());
+      setTimeout(() => { dragged = false; }, 0);
+    });
+
+    track.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') { e.preventDefault(); go(nearest() + 1); }
+      if (e.key === 'ArrowLeft') { e.preventDefault(); go(nearest() - 1); }
+    });
+  })();
 </script>

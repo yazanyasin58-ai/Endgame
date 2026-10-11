@@ -383,8 +383,52 @@ site ships static HTML and does not need React for hover states.
 | Price your project | Dotted ground and a slow gold glow | Dotted Modern |
 | Footer | Oversized wordmark rising behind the columns | Modem Animated Footer |
 
-No content, colour token or layout changed. Text on light grounds stays
-`--gold-deep`; plain `--gold` is only ever a fill behind ink, a rule or a glow.
+### Header and menu
+
+`SiteNav.astro` with `src/styles/nav.css`, rebuilt after "Sterling Gate:
+Kinetic Navigation", one of the owner's saved 21st.dev components. A slim bar
+floats into a blurred pill on scroll, after "Header 3", also saved. Menu opens
+a full-screen midnight layer: a large numbered index whose hovered entry
+ripples through its neighbours, and a side column showing that group's links,
+or the showroom details at rest. Phones get each group's links as chips under
+its name.
+
+It is still a `<details>`, so it opens and closes with no JavaScript. The
+script adds Escape, a focus trap, `inert` on the rest of the page, scroll
+lock, the closing animation and the side column.
+
+### Colour rhythm
+
+`src/styles/theme.css` alternates dark and light grounds below the hero so no
+two neighbours match. One colour is new: `--midnight`, the navy of the house in
+the supplied logo, lifted to read as a surface. Subpage heads, the figures
+band, Why one team, the estimate band and the footer use it. Selected projects
+and the military band are ink. Selling a home is the one gold band.
+
+Homepage layout changes that go with it:
+
+- Each service group opens on one of the company's own gallery photographs.
+- Why one team sits beside the owner's portrait from /about/, which opens from
+  an arch as it scrolls in. The tagline carries a travelling gold shine
+  ("Shining Text", saved).
+- Selected projects is a coverflow of eight gallery photographs, finished and
+  in progress alternating ("Coverflow Carousel", saved). Native scroll-snap;
+  the 3D is a scroll-driven animation, flat where unsupported.
+- Common questions is two columns, the heading holding its place.
+
+| Pairing | Ratio |
+|---|---|
+| Cream on midnight | 15.81 |
+| Body copy `#d8d1c4` on midnight-2 | 10.02 |
+| Stone on midnight-2 | 6.01 |
+| Gold-bright on midnight-2 | 8.68 |
+| Gold-bright on ink | 10.74 |
+| Ink on gold | 7.82 |
+| Ink on the darkest gold of the band | 6.31 |
+| Stone on footer midnight | 7.42 |
+
+No content changed. Text on light grounds stays `--gold-deep`; plain `--gold`
+is only ever a fill behind ink, a rule or a glow.
 Reduced motion turns every loop and entrance off, and no heading is split into
 words. Split headings carry their full text as `aria-label`, so section names
 are unchanged. Nothing is hidden unless the `.js` class is present.
