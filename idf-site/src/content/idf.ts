@@ -1011,12 +1011,16 @@ export const realEstateLicense = {
    * Confirm the number and status on the DPOR license lookup before launch;
    * publishing a wrong number is worse than publishing none.
    *
-   * "Salesperson", not "Realtor": REALTOR® is a trademark for members of the
-   * National Association of Realtors, and membership has not been confirmed.
+   * REALTOR®: the owner confirmed on 11 October that he is a member of the
+   * National Association of Realtors, which is what the mark requires. It is
+   * set in capitals with the registered mark, as NAR's own usage rules ask,
+   * and only as his membership, never as a word for agents in general. Check
+   * this line again if his membership ever lapses; the license line below is
+   * a separate thing and stays true either way.
    */
   agent: {
     name: 'Sameer Waziri',
-    title: 'Licensed real estate salesperson',
+    title: 'REALTOR®',
     licenseNumber: '0225273319',
   },
   /**
