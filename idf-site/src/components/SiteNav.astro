@@ -200,17 +200,70 @@ const num = (i: number) => String(i + 1).padStart(2, '0');
       for (const it of items) it.classList.toggle('is-active', it.dataset.sgItem === key);
     };
 
+    /* The group under the pointer stays open after the pointer leaves the
+       index, so its pages can be reached in the side column. Only another
+       item, or reopening the menu, changes it.
+
+       Getting there means crossing the items below or above on a diagonal.
+       While the pointer is heading for the side column, an item it passes
+       over does not take over at once: it waits a moment and only opens if
+       the pointer has stopped on it (the "menu aim" of most dropdowns). */
+    const aside = panel.querySelector<HTMLElement>('.sg-aside');
+    const AIM_DELAY = 250;
+    let prev: { x: number; y: number } | null = null;
+    let curr: { x: number; y: number } | null = null;
+    let moves = 0;
+    let hovered: string | null = null;
+    let aimTimer = 0;
+
+    panel.addEventListener('pointermove', (e) => {
+      if (e.pointerType !== 'mouse') return;
+      prev = curr;
+      curr = { x: e.clientX, y: e.clientY };
+      moves++;
+    });
+
+    // Is the pointer moving into the triangle between where it was and the
+    // side column's near edge?
+    const aimingAtAside = () => {
+      if (!aside || !prev || !curr) return false;
+      const r = aside.getBoundingClientRect();
+      if (r.width === 0 || curr.x >= r.left) return false;
+      const slope = (a: { x: number; y: number }, b: { x: number; y: number }) =>
+        (b.y - a.y) / (b.x - a.x || 0.001);
+      const top = { x: r.left, y: r.top };
+      const bottom = { x: r.left, y: r.bottom };
+      return curr.x > prev.x && slope(curr, top) < slope(prev, top) && slope(curr, bottom) > slope(prev, bottom);
+    };
+
     for (const it of items) {
       const key = it.dataset.sgItem ?? 'rest';
       it.addEventListener('pointerenter', (e) => {
-        if (e.pointerType === 'mouse') show(key);
+        if (e.pointerType !== 'mouse') return;
+        hovered = key;
+        clearTimeout(aimTimer);
+        if (!aimingAtAside()) { show(key); return; }
+        // Still heading for the column when the wait ends: wait again. A
+        // pointer that has stopped, or turned away, has chosen this item.
+        let seen = moves;
+        const settle = () => {
+          if (hovered !== key) return;
+          if (moves !== seen && aimingAtAside()) {
+            seen = moves;
+            aimTimer = window.setTimeout(settle, AIM_DELAY);
+          } else {
+            show(key);
+          }
+        };
+        aimTimer = window.setTimeout(settle, AIM_DELAY);
+      });
+      it.addEventListener('pointerleave', (e) => {
+        if (e.pointerType === 'mouse' && hovered === key) hovered = null;
       });
       it.addEventListener('focusin', () => show(key));
     }
-    // Leaving the index entirely puts the showroom card back.
-    panel.querySelector('.sg-index')?.addEventListener('pointerleave', (e) => {
-      if ((e as PointerEvent).pointerType === 'mouse') show('rest');
-    });
+    // Reaching the side column settles it: nothing pending may change it.
+    aside?.addEventListener('pointerenter', () => clearTimeout(aimTimer));
 
     /* ---- opening and closing ------------------------------------------ */
     let outside: Element[] = [];
