@@ -288,7 +288,24 @@ const num = (i: number) => String(i + 1).padStart(2, '0');
       }
     };
 
+    // The panel's content starts below the Close button. The button sits
+    // lower while the offer banner shows above the bar, and would otherwise
+    // land on the side column's first row.
+    const clearToggle = () => {
+      panel.style.setProperty('--sg-clear', `${Math.ceil(summary.getBoundingClientRect().bottom)}px`);
+    };
+    const reclear = () => { if (menu.open) clearToggle(); };
+    addEventListener('resize', reclear, { passive: true });
+    // Opening can still move the bar a little (the page settles once it is
+    // locked), so measure again once that has happened.
+    addEventListener('scroll', reclear, { passive: true });
+
     menu.addEventListener('toggle', () => {
+      if (menu.open) {
+        clearToggle();
+        requestAnimationFrame(() => requestAnimationFrame(reclear));
+        window.setTimeout(reclear, 300);
+      }
       lock(menu.open);
       summary.setAttribute('aria-label', menu.open ? 'Close menu' : 'Menu');
       if (menu.open) {

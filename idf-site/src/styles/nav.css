@@ -161,8 +161,10 @@ html.sg-open { overflow: hidden; scrollbar-gutter: stable; }
   grid-template-columns: minmax(0, 1fr);
   align-content: start;
   gap: 1.5rem;
+  /* The top clears the Close button, wherever it sits: lower when the offer
+     banner is showing above the bar. SiteNav measures it into --sg-clear. */
   padding:
-    clamp(4.25rem, 8vh, 5rem)
+    max(clamp(4.25rem, 8vh, 5rem), calc(var(--sg-clear, 0px) + 1.25rem))
     clamp(1.25rem, 5vw, 5rem)
     1.25rem;
   overflow-y: auto;

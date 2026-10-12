@@ -481,6 +481,12 @@ body.hp .hp-est-steps li span {
 body.hp .hp-est-steps li.is-featured { color: var(--cream); }
 body.hp .hp-est-steps li.is-featured span { color: var(--gold-bright); }
 body.hp .hp-est-intro .hp-call { color: var(--gold-bright); }
+/* List your home shares this card. Its points and service-area line kept
+   the ink and gray they had on paper, which vanish on midnight. */
+body.hp .hp-est-intro .lyh-points li { border-left-color: var(--gold-bright); }
+body.hp .hp-est-intro .lyh-points h2 { color: var(--cream); }
+body.hp .hp-est-intro .lyh-points p,
+body.hp .hp-est-intro .lyh-area { color: var(--on-dark); }
 
 /* ---- not found: link cards with an arrow --------------------------------- */
 body.hp .nf-list a {
