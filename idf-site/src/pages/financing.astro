@@ -16,6 +16,7 @@
  */
 import Page from '../layouts/Page.astro';
 import { business, cta } from '../content/idf';
+import { pageImages } from '../content/service-images';
 ---
 
 <Page
@@ -24,8 +25,10 @@ import { business, cta } from '../content/idf';
   heading="Financing"
   standfirst="Options are available for qualified renovation and construction clients."
   current="/financing/"
+  image={pageImages.financing}
 >
   <section id="options" class="hp-section hp-section--tight">
+    <div class="svc-intro fin-intro">
     <div class="inv-intro">
       <p>
         Not every project needs to be paid for up front. We work with a lending partner who
@@ -44,6 +47,19 @@ import { business, cta } from '../content/idf';
       <p class="inv-note">
         Interested? Ask about financing when you request your estimate, or call and ask.
       </p>
+    </div>
+    <figure class="svc-fig svc-fig--tall">
+      <img
+        src={pageImages.financingDetail.src}
+        srcset={pageImages.financingDetail.srcset}
+        sizes="(min-width: 900px) 24rem, 100vw"
+        alt={pageImages.financingDetail.alt}
+        width="1000"
+        height="1250"
+        loading="lazy"
+        decoding="async"
+      />
+    </figure>
     </div>
   </section>
 

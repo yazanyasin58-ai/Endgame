@@ -151,3 +151,60 @@ export const customHomeImages = {
     { ...pair('handover', 600, 1000), alt: 'A navy front door open onto a bright oak-floored hall with a staircase and a brass lantern' },
   ],
 } as const;
+
+/**
+ * Page heads and picture bands for the other menu pages, on the owner's
+ * request of 13 Oct to carry the same look across the site with a lighter
+ * hand. Same family, same rules. /projects/ deliberately has none: it is
+ * the page of the company's real work, and an illustration at its head
+ * would read as one of the jobs.
+ */
+const PG = '/img/pages';
+const svc = (name: string) => ({
+  src: `/img/services/${name}-2400.webp`,
+  srcset: `/img/services/${name}-1200.webp 1200w, /img/services/${name}-2400.webp 2400w`,
+});
+const pg = (name: string) => ({
+  src: `${PG}/${name}-2400.webp`,
+  srcset: `${PG}/${name}-1200.webp 1200w, ${PG}/${name}-2400.webp 2400w`,
+});
+
+export const pageImages = {
+  about: {
+    ...pg('about'),
+    alt: 'A carpenter’s oak workbench with a brass hand plane, chisels in a leather roll and curled shavings',
+  },
+  aboutBand: {
+    ...svc('home-additions-hero'),
+    alt: 'A colonial home with a matching two-storey addition and a sunroom, at golden hour',
+  },
+  services: {
+    ...svc('home-remodeling-hero'),
+    alt: 'An open-plan living and dining room with oak floors, cream walls and navy built-in shelving',
+  },
+  realEstate: {
+    ...pg('real-estate'),
+    alt: 'A bright, softly staged living room with oak floors, a navy sofa and tall curtained windows',
+  },
+  investors: {
+    ...pg('investors'),
+    alt: 'A renovated brick duplex with navy doors and shutters on a tree-lined street',
+  },
+  investorsBand: {
+    ...svc('painting-drywall-hero'),
+    alt: 'An empty, freshly painted living room with cream walls, white crown moulding and wainscoting',
+  },
+  financing: {
+    ...pg('financing'),
+    alt: 'A white architectural model of a house on a walnut table beside rolled drawings and a brass lamp',
+  },
+  financingDetail: {
+    src: '/img/custom-homes/permits-1000.webp',
+    srcset: '/img/custom-homes/permits-600.webp 600w, /img/custom-homes/permits-1000.webp 1000w',
+    alt: 'A stack of approved drawings with an embossed seal and a pen on a walnut desk',
+  },
+  contact: {
+    ...pg('contact'),
+    alt: 'A covered front porch at dusk with a navy door, brass lanterns and two rocking chairs',
+  },
+} as const;

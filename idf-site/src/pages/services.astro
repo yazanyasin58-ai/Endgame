@@ -1,4 +1,5 @@
 ---
+import { pageImages } from '../content/service-images';
 import Page from '../layouts/Page.astro';
 import Placeholder from '../components/Placeholder.astro';
 import { business, serviceGroups, insuranceRestoration, gallery, cta } from '../content/idf';
@@ -32,6 +33,7 @@ const groupPhoto = (id: string) => {
   heading="Services"
   standfirst="One licensed contractor for the whole job, including the paperwork."
   current="/services/"
+  image={pageImages.services}
 >
   <section class="hp-section hp-section--tight">
     <div class="sv-list">

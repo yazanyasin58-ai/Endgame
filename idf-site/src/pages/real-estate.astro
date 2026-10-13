@@ -25,6 +25,7 @@
  */
 import Page from '../layouts/Page.astro';
 import { business, propertyPaths, realEstate, realEstateLicense, serviceArea } from '../content/idf';
+import { pageImages } from '../content/service-images';
 
 const agent = realEstateLicense.agent;
 ---
@@ -35,6 +36,7 @@ const agent = realEstateLicense.agent;
   heading="Real estate"
   standfirst={realEstate.standfirst}
   current="/real-estate/"
+  image={pageImages.realEstate}
 >
   <section class="hp-section" aria-labelledby="re-paths-h">
     <h2 id="re-paths-h" class="hp-h2">Whatever you are doing with a property</h2>

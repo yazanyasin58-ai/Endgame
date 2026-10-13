@@ -16,6 +16,8 @@ import {
   cta,
 } from '../content/idf';
 import { optionalImage } from '../lib/images';
+import RevealBand from '../components/RevealBand.astro';
+import { pageImages } from '../content/service-images';
 
 const portrait = optionalImage('img/owner-portrait');
 ---
@@ -26,6 +28,7 @@ const portrait = optionalImage('img/owner-portrait');
   heading="About"
   standfirst="Owner-operated in Sterling, Virginia since 1989."
   current="/about/"
+  image={pageImages.about}
 >
   <section class="hp-section hp-section--tight">
     <div class="ab-grid">
@@ -58,6 +61,8 @@ const portrait = optionalImage('img/owner-portrait');
       </div>
     </div>
   </section>
+
+  <RevealBand {...pageImages.aboutBand} line="Owner-operated in Sterling, Virginia since 1989." />
 
   <StatFigures heading="By the numbers" headingId="ab-figures-h" />
 

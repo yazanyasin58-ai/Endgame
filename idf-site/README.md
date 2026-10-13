@@ -554,6 +554,20 @@ reuse two service images. The page has four parts:
 The company's real custom home photograph keeps its own section, "Our own
 work". The terms page covers the illustrations.
 
+## Picture heads on the other menu pages
+
+About, Services, Real estate, Investors, Financing and Contact take a photo
+page head, a lighter touch than Custom homes. About and Investors also get one
+picture band (`RevealBand.astro`), and Financing a framed picture beside its
+introduction. Five new illustrations are in `public/img/pages/`; the rest are
+reused from the service set. The alt text is in `pageImages` in
+`service-images.ts`.
+
+`/projects/` has no illustration on purpose. It is the page of the company's
+real work, and the terms page points there as the place where every picture is
+one of its own jobs. Heading contrast over every page head is at least 10:1
+against the brightest pixel behind it, at 1440px and 390px.
+
 ## Accessibility — measured contrast
 
 Measured against WCAG 2.1 (4.5:1 for body text, 3:1 for large and interactive elements):

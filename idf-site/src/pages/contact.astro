@@ -3,6 +3,7 @@ import Page from '../layouts/Page.astro';
 import EstimateForm from '../components/EstimateForm.astro';
 import SocialLinks from '../components/SocialLinks.astro';
 import { business, hours, hoursLabel, serviceArea } from '../content/idf';
+import { pageImages } from '../content/service-images';
 
 /**
  * Google Maps embed, built from business.address so the pin and the printed
@@ -19,6 +20,7 @@ const mapEmbed = `https://maps.google.com/maps?q=${encodeURIComponent(business.a
   heading="Contact"
   standfirst="Call, text, or come by the showroom."
   current="/contact/"
+  image={pageImages.contact}
 >
   <section class="hp-section hp-section--tight">
     <div class="ct-grid">
