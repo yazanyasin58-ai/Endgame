@@ -18,7 +18,9 @@
  * false in functions/_middleware.ts — a public site behind a password gate,
  * or an indexed site nobody can open, are both worse than either state alone.
  */
-export const preLaunch = true;
+// Launched on the owner's instruction of 13 Oct 2026. GATE_ENABLED in
+// functions/_middleware.ts was already false.
+export const preLaunch = false;
 
 /**
  * Absolute site URL, e.g. https://interiordesignflooring.com — set as
