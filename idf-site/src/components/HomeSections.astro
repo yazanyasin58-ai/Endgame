@@ -81,7 +81,10 @@ const homeCards = projectGroups.flatMap((group, gi) =>
 const groupPhotos = [
   { slot: 'project-custom-home', pos: '50% 60%' },
   { slot: 'project-kitchen-blue-island-wide', pos: '50% 62%' },
-  { slot: 'project-stairs-hardwood', pos: '50% 55%' },
+  // Transform: the AI windows-and-doors illustration from the service pages,
+  // on the owner's instruction of 13 Oct; the stair photograph read poorly.
+  // The terms page discloses it with the rest of that set.
+  { slot: 'services/windows-doors-hero-1200', pos: '55% 60%' },
   { slot: 'project-soffit-insulation', pos: '50% 30%' },
 ].map(({ slot, pos }) => {
   const src = optionalImage(`img/${slot}`);
