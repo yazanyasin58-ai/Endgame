@@ -628,3 +628,228 @@ body.hp .re-paths .re-path-link:is(:hover, :focus-visible) { text-decoration: un
 body.hp .re-paths .re-path-link:is(:hover, :focus-visible)::after { transform: translateX(3px); }
 /* A menu link lands on its card: mark it for a moment. */
 body.hp .re-paths > .re-item:target { box-shadow: 0 0 0 2px var(--gold); }
+
+/* ---- service pages: photographs ------------------------------------------ */
+/* On the client's request of 13 Oct the service pages carry pictures, so
+   they read as part of the site rather than as a document. Every image here
+   is an AI illustration and is marked as one; see service-images.ts. */
+
+/* The page head with a photograph behind it. The midnight is laid over the
+   image from the left, where the heading sits, so its contrast does not
+   depend on what the picture happens to show there. */
+body.hp main > .hp-pagehead.pg-photo {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: clamp(26rem, 62vh, 40rem);
+  background: var(--midnight-deep);
+}
+body.hp main > .hp-pagehead.pg-photo::before { display: none; }
+.pg-photo-media {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  margin: 0;
+  overflow: hidden;
+}
+.pg-photo-media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 65% 50%;
+}
+.pg-photo-media::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgb(10 18 30 / 0.95) 0%, rgb(10 18 30 / 0.88) 40%, rgb(10 18 30 / 0.55) 62%, rgb(10 18 30 / 0.12) 85%, rgb(10 18 30 / 0.05)),
+    linear-gradient(0deg, rgb(10 18 30 / 0.75), transparent 55%);
+}
+@media (max-width: 767px) {
+  body.hp main > .hp-pagehead.pg-photo { min-height: 32rem; }
+  .pg-photo-media::after {
+    background: linear-gradient(0deg, rgb(10 18 30 / 0.96) 22%, rgb(10 18 30 / 0.6) 58%, rgb(10 18 30 / 0.15));
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  /* The picture settles as the page opens, the slow push of a film title. */
+  .pg-photo-media img { animation: pg-settle 9s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+}
+@keyframes pg-settle {
+  from { transform: scale(1.08); }
+  to { transform: scale(1); }
+}
+
+/* "Illustration", small, on every AI image. */
+.pg-photo-note,
+.svc-fig-note {
+  position: absolute;
+  margin: 0;
+  padding: 0.3rem 0.55rem;
+  border-radius: 4px;
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 0.625rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--cream);
+  background: rgb(10 18 30 / 0.55);
+  -webkit-backdrop-filter: blur(4px);
+          backdrop-filter: blur(4px);
+}
+.pg-photo-note { right: clamp(1rem, 3vw, 2rem); top: 1rem; }
+.svc-fig-note { left: 0.75rem; bottom: 0.75rem; }
+
+/* The introduction beside a close detail of the work. */
+body.hp .svc-intro {
+  display: grid;
+  gap: 2.5rem;
+  max-width: 72rem;
+  margin-inline: auto;
+  align-items: center;
+}
+@media (min-width: 900px) {
+  body.hp .svc-intro { grid-template-columns: minmax(0, 1fr) minmax(18rem, 25rem); gap: clamp(3rem, 6vw, 5.5rem); }
+}
+body.hp .svc-intro .svc-prose p:first-child {
+  font-family: 'Fraunces', serif;
+  font-weight: 300;
+  font-size: clamp(1.3rem, 2.2vw, 1.6rem);
+  line-height: 1.45;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+.svc-fig {
+  position: relative;
+  margin: 0;
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--midnight);
+}
+.svc-fig img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+/* A thin gold frame set off behind the picture, the drafting-rule accent
+   the rest of the site uses. */
+body.hp .svc-fig--tall {
+  aspect-ratio: 4 / 5;
+  overflow: visible;
+  border-radius: 10px;
+}
+body.hp .svc-fig--tall img { border-radius: 10px; box-shadow: 0 30px 60px -34px rgb(14 24 40 / 0.6); }
+body.hp .svc-fig--tall::before {
+  content: '';
+  position: absolute;
+  inset: 1.1rem -1.1rem -1.1rem 1.1rem;
+  z-index: -1;
+  border: 1px solid rgb(200 162 74 / 0.55);
+  border-radius: 12px;
+}
+@media (max-width: 899px) {
+  body.hp .svc-fig--tall { aspect-ratio: 5 / 4; margin-right: 1.1rem; }
+}
+
+/* What the crew does, on midnight, beside a wider scene. */
+body.hp .svc-split {
+  display: grid;
+  max-width: 72rem;
+  margin-inline: auto;
+  overflow: hidden;
+  border-radius: 12px;
+  background:
+    radial-gradient(70% 60% at 100% 0%, rgb(200 162 74 / 0.18), transparent 65%),
+    linear-gradient(160deg, var(--midnight-2), var(--midnight));
+  box-shadow: 0 40px 80px -40px rgb(14 24 40 / 0.65);
+}
+@media (min-width: 900px) {
+  body.hp .svc-split { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); }
+}
+body.hp .svc-split .svc-fig--scene { border-radius: 0; aspect-ratio: 3 / 2; }
+@media (min-width: 900px) {
+  body.hp .svc-split .svc-fig--scene { aspect-ratio: auto; min-height: 24rem; }
+}
+body.hp .svc-split .svc-scope {
+  position: static;
+  align-self: center;
+  padding: clamp(1.75rem, 4vw, 3rem);
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+}
+
+/* The other services as picture cards. A rail to swipe on a phone. */
+body.hp .svc-cards {
+  margin: 2rem 0 2.25rem;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(13.5rem, 1fr));
+}
+@media (max-width: 639px) {
+  body.hp .svc-cards {
+    grid-auto-flow: column;
+    grid-template-columns: none;
+    grid-auto-columns: 72%;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding-bottom: 0.5rem;
+  }
+  body.hp .svc-cards > li { scroll-snap-align: start; }
+}
+body.hp .svc-card {
+  display: block;
+  height: 100%;
+  overflow: hidden;
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  background: var(--paper);
+  color: var(--ink);
+  text-decoration: none;
+  transition: transform 0.45s var(--pl-ease), box-shadow 0.45s var(--pl-ease), border-color 0.3s ease;
+}
+body.hp .svc-card-media { display: block; aspect-ratio: 3 / 2; overflow: hidden; background: var(--midnight); }
+body.hp .svc-card-media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.8s var(--pl-ease);
+}
+body.hp .svc-card-label {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem 0.95rem;
+  font-size: 0.9375rem;
+  font-weight: 500;
+}
+body.hp .svc-card-label::after { content: '\2192'; color: var(--gold-deep); transition: transform 0.35s var(--pl-ease); }
+body.hp .svc-card:is(:hover, :focus-visible) {
+  transform: translateY(-3px);
+  border-color: rgb(200 162 74 / 0.6);
+  box-shadow: 0 24px 40px -28px rgb(14 24 40 / 0.55);
+}
+body.hp .svc-card:is(:hover, :focus-visible) .svc-card-media img { transform: scale(1.05); }
+body.hp .svc-card:is(:hover, :focus-visible) .svc-card-label::after { transform: translateX(3px); }
+@media (prefers-reduced-motion: reduce) {
+  body.hp .svc-card,
+  body.hp .svc-card-media img { transition: none; }
+}
+/* The questions and the call to action share the 72rem edge of the sections
+   above them, now that those carry pictures. */
+body.hp .svc-faq,
+body.hp .svc-cta { max-width: 72rem; }
+body.hp .svc-faq .faq-list,
+body.hp .svc-faq .svc-scope-title { max-width: 62rem; }
+/* Eleven cards: rows of four leave three, not one, on the last row. */
+@media (min-width: 1100px) {
+  body.hp .svc-cards { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+@media (min-width: 640px) and (max-width: 1099px) {
+  body.hp .svc-cards { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}

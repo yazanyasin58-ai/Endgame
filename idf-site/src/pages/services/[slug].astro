@@ -12,6 +12,7 @@ import FaqList from '../../components/FaqList.astro';
 import { servicePages } from '../../content/services-detail';
 import { serviceFaq } from '../../content/service-faq';
 import { business, cta } from '../../content/idf';
+import { serviceImages, serviceImageSet } from '../../content/service-images';
 
 export function getStaticPaths() {
   return servicePages.map((service) => ({
@@ -23,6 +24,12 @@ export function getStaticPaths() {
 const { service } = Astro.props;
 
 const others = servicePages.filter((s) => s.slug !== service.slug);
+
+/* AI illustrations, one family across all twelve pages. Each is marked as an
+   illustration where it appears; see the note in service-images.ts. */
+const alt = serviceImages[service.slug];
+const img = serviceImageSet(service.slug);
+const NOTE = 'Illustration';
 
 /* Guaranteed present: service-faq.ts fails the build if any service page
    has no questions, so this is never an empty section. */
@@ -61,22 +68,57 @@ const faqSchema = {
   standfirst={service.standfirst}
   current="services"
   crumbs={[{ label: 'Services', href: '/services/' }]}
+  image={{ ...img.hero, alt: alt.hero, note: NOTE }}
 >
-  <section class="hp-section hp-section--tight">
-    <div class="svc-body">
+  {/* The introduction beside a close detail of the work. */}
+  <section class="hp-section svc-open">
+    <div class="svc-intro">
       <div class="svc-prose">
         {service.intro.map((p) => <p>{p}</p>)}
       </div>
+      <figure class="svc-fig svc-fig--tall">
+        <img
+          src={img.detail.src}
+          srcset={img.detail.srcset}
+          sizes="(min-width: 900px) 24rem, 100vw"
+          alt={alt.detail}
+          width="1000"
+          height="1250"
+          loading="lazy"
+          decoding="async"
+        />
+        <figcaption class="svc-fig-note">{NOTE}</figcaption>
+      </figure>
+    </div>
+  </section>
 
+  {/* What the crew does, on midnight, beside a wider scene. */}
+  <section class="hp-section hp-section--tight svc-band" aria-labelledby="svc-scope-h">
+    <div class="svc-split">
+      <figure class="svc-fig svc-fig--scene">
+        <img
+          src={img.scene.src}
+          srcset={img.scene.srcset}
+          sizes="(min-width: 900px) 50vw, 100vw"
+          alt={alt.scene}
+          width="1400"
+          height="933"
+          loading="lazy"
+          decoding="async"
+        />
+        <figcaption class="svc-fig-note">{NOTE}</figcaption>
+      </figure>
       <div class="svc-scope">
-        <h2 class="svc-scope-title">{service.scopeTitle}</h2>
+        <h2 class="svc-scope-title" id="svc-scope-h">{service.scopeTitle}</h2>
         <ul class="svc-list">
           {service.scope.map((item) => <li>{item}</li>)}
         </ul>
         {service.notes && <p class="svc-note">{service.notes}</p>}
       </div>
     </div>
+  </section>
 
+  <section class="hp-section hp-section--tight">
     {/* Questions before the call to action: answer the hesitation, then
         ask. The other way round, the FAQ reads as an afterthought under a
         button nobody pressed yet. */}
@@ -93,11 +135,26 @@ const faqSchema = {
 
   <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} is:inline />
 
-  <section class="hp-section hp-section--tight svc-more">
-    <h2 class="hp-h2">Other services</h2>
-    <ul class="svc-more-list">
+  {/* The other services as picture cards, so the next page is one look away. */}
+  <section class="hp-section hp-section--tight svc-more" aria-labelledby="svc-more-h">
+    <h2 class="hp-h2" id="svc-more-h">Other services</h2>
+    <ul class="svc-cards">
       {others.map((s) => (
-        <li><a href={`/services/${s.slug}/`}>{s.label}</a></li>
+        <li>
+          <a class="svc-card" href={`/services/${s.slug}/`}>
+            <span class="svc-card-media">
+              <img
+                src={serviceImageSet(s.slug).card}
+                alt=""
+                width="640"
+                height="427"
+                loading="lazy"
+                decoding="async"
+              />
+            </span>
+            <span class="svc-card-label">{s.label}</span>
+          </a>
+        </li>
       ))}
     </ul>
     <a class="hp-textlink" href="/services/">All services</a>

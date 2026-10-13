@@ -24,9 +24,16 @@ interface Props {
    * Most pages sit directly under Home and pass nothing.
    */
   crumbs?: { label: string; href: string }[];
+  /**
+   * A photograph behind the page head, with the midnight laid over it from
+   * the left so the heading keeps its contrast. Service pages pass one; the
+   * rest keep the plain midnight head. `note` is a small caption pinned to
+   * the corner, for marking an AI illustration as one.
+   */
+  image?: { src: string; srcset: string; alt: string; note?: string };
 }
 
-const { title, description, heading, standfirst, current, noindex, crumbs = [] } = Astro.props;
+const { title, description, heading, standfirst, current, noindex, crumbs = [], image } = Astro.props;
 
 const fonts =
   'https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;1,9..144,300;1,9..144,400&family=IBM+Plex+Mono:wght@500&family=Public+Sans:wght@400;500;600&display=swap';
@@ -36,7 +43,22 @@ const fonts =
   <PromoBar />
   <SiteNav current={current} />
   <main id="main" tabindex="-1">
-    <section class="hp-section hp-pagehead">
+    <section class:list={['hp-section', 'hp-pagehead', { 'pg-photo': image }]}>
+      {image && (
+        <figure class="pg-photo-media">
+          <img
+            src={image.src}
+            srcset={image.srcset}
+            sizes="100vw"
+            alt={image.alt}
+            width="2400"
+            height="1029"
+            fetchpriority="high"
+            decoding="async"
+          />
+          {image.note && <figcaption class="pg-photo-note">{image.note}</figcaption>}
+        </figure>
+      )}
       {/* Where this page sits, in the mono annotation style of the drafting
           rules. A real breadcrumb: a labelled nav, an ordered list, and the
           current page marked rather than linked. */}
