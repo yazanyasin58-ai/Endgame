@@ -69,23 +69,22 @@ const homeCards = projectGroups.flatMap((group, gi) =>
     .map((g, i) => ({ ...g, src: optionalImage(`img/${g.slot}`), groupStart: gi > 0 && i === 0 })),
 );
 
-/* One photograph at the head of each service group. Decorative, so alt is
-   empty: the card is a list of links and the photo is not what it says.
-   All four are the company's own photographs, re-chosen on 11 October to
-   match what each group lists:
-     Build new  ... a finished new house with its deck (custom homes, additions)
-     Renovate ..... the blue-island kitchen (kitchens, baths, basements)
-     Transform .... refinished hardwood stairs (flooring, finishes)
-     Restore ...... damaged insulation coming out of a soffit (water damage)
+/* One picture at the head of each service group. Decorative, so alt is
+   empty: the card is a list of links and the picture is not what it says.
+   On the owner's instruction of 13 Oct all four are the AI illustrations
+   from the service pages, so the row reads as one set; the terms page
+   discloses them with the rest of that set. The company's own photographs
+   these replaced are still in public/img and on /projects/.
+     Build new  ... a custom home going up at sunset, one wing still framed
+     Renovate ..... the navy and brass kitchen
+     Transform .... steel windows and French doors open to a terrace
+     Restore ...... a home being rebuilt after a storm
    `pos` is the crop, so the subject survives the card's wide frame. */
 const groupPhotos = [
-  { slot: 'project-custom-home', pos: '50% 60%' },
-  { slot: 'project-kitchen-blue-island-wide', pos: '50% 62%' },
-  // Transform: the AI windows-and-doors illustration from the service pages,
-  // on the owner's instruction of 13 Oct; the stair photograph read poorly.
-  // The terms page discloses it with the rest of that set.
+  { slot: 'services/general-contracting-hero-1200', pos: '68% 55%' },
+  { slot: 'services/kitchen-remodeling-hero-1200', pos: '62% 60%' },
   { slot: 'services/windows-doors-hero-1200', pos: '55% 60%' },
-  { slot: 'project-soffit-insulation', pos: '50% 30%' },
+  { slot: 'services/insurance-claim-repairs-hero-1200', pos: '62% 55%' },
 ].map(({ slot, pos }) => {
   const src = optionalImage(`img/${slot}`);
   return src ? { src, pos } : undefined;
