@@ -844,3 +844,276 @@ body.hp .svc-faq .svc-scope-title { max-width: 62rem; }
 @media (min-width: 640px) and (max-width: 1099px) {
   body.hp .svc-cards { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
+
+/* ---- custom homes -------------------------------------------------------- */
+/* Rebuilt on the owner's request of 13 Oct. Pictures are AI illustrations,
+   disclosed on /terms/; see service-images.ts. */
+
+/* Three ways to build, as tall picture cards. */
+body.hp .ch-offer-grid {
+  display: grid;
+  gap: 1rem;
+  margin-top: 2.25rem;
+}
+@media (min-width: 900px) {
+  body.hp .ch-offer-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.25rem; }
+}
+body.hp .ch-offer {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  aspect-ratio: 4 / 5;
+  border-radius: 12px;
+  color: var(--cream);
+  text-decoration: none;
+  background: var(--midnight);
+  isolation: isolate;
+}
+@media (max-width: 899px) {
+  body.hp .ch-offer { aspect-ratio: 5 / 4; }
+}
+body.hp .ch-offer-img {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 1s var(--pl-ease);
+}
+body.hp .ch-offer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(0deg, rgb(10 18 30 / 0.92) 8%, rgb(10 18 30 / 0.55) 42%, rgb(10 18 30 / 0.05) 72%);
+  transition: opacity 0.5s ease;
+}
+body.hp .ch-offer-body {
+  position: absolute;
+  inset: auto 0 0 0;
+  display: grid;
+  gap: 0.4rem;
+  padding: clamp(1.25rem, 2.5vw, 1.75rem);
+}
+body.hp .ch-offer-num {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 0.6875rem;
+  letter-spacing: 0.18em;
+  color: var(--gold-bright);
+}
+body.hp .ch-offer-title {
+  font-family: 'Fraunces', serif;
+  font-weight: 300;
+  font-size: clamp(1.5rem, 2.4vw, 1.9rem);
+  line-height: 1.15;
+}
+body.hp .ch-offer-detail { font-size: 0.9375rem; line-height: 1.55; color: var(--on-dark); }
+body.hp .ch-offer-go {
+  margin-top: 0.6rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--gold-bright);
+}
+body.hp .ch-offer-go::after { content: ' \2192'; display: inline-block; transition: transform 0.35s var(--pl-ease); }
+body.hp .ch-offer:is(:hover, :focus-visible) .ch-offer-img { transform: scale(1.05); }
+body.hp .ch-offer:is(:hover, :focus-visible) .ch-offer-go::after { transform: translateX(4px); }
+body.hp .ch-offer:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+
+/* After the 21st.dev "Scroll Reveal Image": the picture arrives as a framed
+   inset and opens to full width as it scrolls in. Where scroll-driven
+   animation is unsupported, or less motion is asked for, it is simply full
+   width. */
+/* clip, not hidden: hidden would make this a scroll container, and the
+   view() timeline below would follow it instead of the page. */
+body.hp .ch-reveal { padding-block: clamp(1rem, 4vw, 3rem); overflow: clip; }
+body.hp .ch-reveal-frame {
+  position: relative;
+  width: min(100% - 2rem, 96rem);
+  height: clamp(22rem, 72vh, 46rem);
+  margin-inline: auto;
+  overflow: hidden;
+  border-radius: 18px;
+  background: var(--midnight);
+}
+body.hp .ch-reveal-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 60%;
+}
+body.hp .ch-reveal-frame::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(0deg, rgb(10 18 30 / 0.75), transparent 45%);
+  pointer-events: none;
+}
+body.hp .ch-reveal-line {
+  position: absolute;
+  z-index: 1;
+  left: clamp(1.25rem, 5vw, 4rem);
+  right: clamp(1.25rem, 5vw, 4rem);
+  bottom: clamp(1.25rem, 4vw, 3rem);
+  margin: 0;
+  max-width: 34rem;
+  font-family: 'Fraunces', serif;
+  font-weight: 300;
+  font-style: italic;
+  font-size: clamp(1.4rem, 3vw, 2.3rem);
+  line-height: 1.25;
+  color: var(--cream);
+}
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    body.hp .ch-reveal-frame {
+      animation: ch-open linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 45%;
+    }
+    body.hp .ch-reveal-frame img {
+      animation: ch-zoom linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 45%;
+    }
+  }
+}
+@keyframes ch-open {
+  from { width: min(62%, 60rem); border-radius: 0; }
+  to { width: min(100% - 2rem, 96rem); border-radius: 18px; }
+}
+@keyframes ch-zoom {
+  from { transform: scale(1.35); }
+  to { transform: scale(1); }
+}
+
+/* After the 21st.dev "Scroll Reveal Content A": the stages beside a rail
+   that fills, and one picture kept in view that changes with the stage. */
+body.hp .ch-story { margin-top: 2.5rem; }
+body.hp .ch-steps {
+  position: relative;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 1.75rem;
+}
+body.hp .ch-step {
+  position: relative;
+  display: grid;
+  grid-template-columns: 3rem minmax(0, 1fr);
+  gap: 0 1.25rem;
+  align-items: start;
+}
+body.hp .ch-step-num {
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  border: 1px solid rgb(200 162 74 / 0.5);
+  border-radius: 50%;
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 0.75rem;
+  color: var(--gold-deep);
+  background: var(--paper);
+  position: relative;
+  z-index: 1;
+  transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease;
+}
+body.hp .ch-step-title {
+  margin: 0.55rem 0 0.35rem;
+  font-family: 'Fraunces', serif;
+  font-weight: 400;
+  font-size: clamp(1.3rem, 2vw, 1.6rem);
+  color: var(--ink);
+}
+body.hp .ch-step-detail { margin: 0; font-size: 1rem; line-height: 1.65; color: var(--charcoal); max-width: 36ch; }
+body.hp .ch-step-img {
+  grid-column: 2;
+  margin-top: 1rem;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: 10px;
+}
+body.hp .ch-media { display: none; }
+
+@media (min-width: 900px) {
+  body.hp .ch-story {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: clamp(3rem, 6vw, 6rem);
+    align-items: start;
+  }
+  /* Each stage gets room to be the one in the middle of the screen. */
+  body.hp .ch-steps { gap: 0; padding-block: 12vh 18vh; }
+  body.hp .ch-step { min-height: 46vh; align-content: center; }
+  body.hp .ch-step-img { display: none; }
+  /* The rail behind the numbers, and its gold fill. */
+  body.hp .ch-steps::before,
+  body.hp .ch-steps::after {
+    content: '';
+    position: absolute;
+    left: calc(1.5rem - 1px);
+    top: calc(12vh + 23vh);
+    bottom: calc(18vh + 23vh);
+    width: 2px;
+    background: var(--rule);
+  }
+  body.hp .ch-steps::after {
+    background: var(--gold);
+    transform-origin: top;
+    transform: scaleY(var(--ch-p, 0));
+    transition: transform 0.6s var(--pl-ease);
+  }
+  body.hp .ch-story.is-live .ch-step { opacity: 0.4; transition: opacity 0.5s ease; }
+  body.hp .ch-story.is-live .ch-step:is(.is-active, .is-past) { opacity: 1; }
+  body.hp .ch-story.is-live .ch-step.is-past { opacity: 0.6; }
+  body.hp .ch-step:is(.is-active, .is-past) .ch-step-num {
+    border-color: var(--gold);
+    background: var(--gold);
+    color: var(--ink);
+  }
+  body.hp .ch-media {
+    display: block;
+    position: sticky;
+    top: 14vh;
+    height: 72vh;
+    overflow: hidden;
+    border-radius: 14px;
+    background: var(--midnight);
+    box-shadow: 0 40px 80px -40px rgb(14 24 40 / 0.6);
+  }
+  body.hp .ch-media-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transform: scale(1.04);
+    transition: opacity 0.7s ease, transform 1.2s var(--pl-ease);
+  }
+  body.hp .ch-media-img.is-active { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  body.hp .ch-offer-img,
+  body.hp .ch-media-img,
+  body.hp .ch-steps::after,
+  body.hp .ch-story.is-live .ch-step { transition: none; }
+}
+
+/* Our own work: the real photograph, beside a line about it. */
+body.hp .ch-own-inner {
+  display: grid;
+  gap: 2rem;
+  align-items: center;
+  max-width: 72rem;
+  margin-inline: auto;
+}
+@media (min-width: 900px) {
+  body.hp .ch-own-inner { grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: 4rem; }
+}
+body.hp .ch-own-fig { margin: 0; overflow: hidden; border-radius: 12px; box-shadow: 0 30px 60px -34px rgb(14 24 40 / 0.55); }
+body.hp .ch-own-fig img { display: block; width: 100%; height: auto; }
+body.hp .ch-own-text .hp-lede { margin: 1rem 0 1.5rem; }

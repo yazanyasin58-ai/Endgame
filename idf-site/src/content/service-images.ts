@@ -103,3 +103,51 @@ export const serviceImageSet = (slug: string) => ({
   },
   card: `${BASE}/${slug}-card-640.webp`,
 });
+
+/**
+ * The custom homes page, on the owner's request of 13 Oct for more pictures
+ * and less open space. The same family and the same rules as above: AI
+ * illustrations, disclosed on /terms/, never captioned as the company's
+ * work. The one real photograph on that page stays in its own section.
+ *
+ * Files in public/img/custom-homes/, made by the same encode step; the
+ * design and construction stages reuse two images from the service set.
+ */
+const CH = '/img/custom-homes';
+const pair = (name: string, small: number, large: number) => ({
+  src: `${CH}/${name}-${large}.webp`,
+  srcset: `${CH}/${name}-${small}.webp ${small}w, ${CH}/${name}-${large}.webp ${large}w`,
+});
+
+export const customHomeImages = {
+  hero: {
+    ...pair('hero', 1200, 2400),
+    alt: 'A finished custom estate home at dusk, cream stone and white board with warm light in tall black windows',
+  },
+  reveal: {
+    ...pair('reveal', 1200, 2400),
+    alt: 'The back of a finished custom home at twilight, a stone terrace before a wall of lit glass doors',
+  },
+  /** One per entry in customHomeOffers, in order. */
+  offers: [
+    { ...pair('ground-up', 600, 1000), alt: 'A two-storey home in fresh timber framing on a new foundation, woods behind' },
+    { ...pair('your-lot', 600, 1000), alt: 'A wooded lot with a cleared building pad marked by survey stakes and flagging tape' },
+    { ...pair('townhomes', 600, 1000), alt: 'A row of new brick and cream townhomes with navy doors and brass lanterns' },
+  ],
+  /** One per entry in customHomeSteps, in order. */
+  steps: [
+    {
+      src: '/img/services/general-contracting-detail-1000.webp',
+      srcset: '/img/services/general-contracting-detail-600.webp 600w, /img/services/general-contracting-detail-1000.webp 1000w',
+      alt: 'Rolled blueprints, a brass tape measure, a pencil and a level on an oak work table',
+    },
+    { ...pair('permits', 600, 1000), alt: 'A stack of approved drawings with an embossed seal and a pen on a walnut desk' },
+    {
+      src: '/img/services/general-contracting-scene-1400.webp',
+      srcset: '/img/services/general-contracting-scene-800.webp 800w, /img/services/general-contracting-scene-1400.webp 1400w',
+      alt: 'A freshly framed interior, sunlight falling through the window openings onto the subfloor',
+    },
+    { ...pair('materials', 600, 1000), alt: 'Stone and quartz samples, oak planks, brass pulls and a navy cabinet door laid out on a showroom table' },
+    { ...pair('handover', 600, 1000), alt: 'A navy front door open onto a bright oak-floored hall with a staircase and a brass lantern' },
+  ],
+} as const;

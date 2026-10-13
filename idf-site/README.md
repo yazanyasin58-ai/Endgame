@@ -534,6 +534,26 @@ as the company's projects. The company's real work stays on `/projects/` and
 The heading over each photo head keeps at least 6:1 contrast against the
 brightest pixel behind it, at 1440px and at 390px.
 
+## Custom homes page
+
+Rebuilt on the owner's request with eight more illustrations from the same
+family, in `public/img/custom-homes/`. The design and construction stages
+reuse two service images. The page has four parts:
+
+- **Photo page head.**
+- **Three ways to build.** Tall picture cards.
+- **A wide picture that opens up as it scrolls in.** After the 21st.dev
+  "Scroll Reveal Image". It is a CSS scroll-driven animation, and full width
+  wherever that is unsupported or less motion is asked for. Its section uses
+  `overflow: clip`, not `hidden`: `hidden` would make the section the
+  animation's scroll container, and it would never move.
+- **The five stages.** After the 21st.dev "Scroll Reveal Content A". On a
+  wide screen a gold rail fills and one pinned picture changes with the stage
+  in the middle of the screen. On a phone each stage carries its own picture.
+
+The company's real custom home photograph keeps its own section, "Our own
+work". The terms page covers the illustrations.
+
 ## Accessibility — measured contrast
 
 Measured against WCAG 2.1 (4.5:1 for body text, 3:1 for large and interactive elements):
