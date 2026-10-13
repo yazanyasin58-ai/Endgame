@@ -1820,11 +1820,13 @@
    .hp .foot already sets colour: --stone, so this could inherit. It is stated
    explicitly anyway, so the value cannot drift if the footer's own colour is
    ever changed for unrelated reasons. */
+/* Fine print, on the owner's instruction of 13 Oct: small, but still in
+   --stone, so it stays legible. */
 .foot-ai {
-  flex: 1 1 26rem; margin: 0;
-  font-size: 0.75rem; line-height: 1.6; color: var(--stone);
+  flex: 1 1 22rem; margin: 0;
+  font-size: 0.625rem; line-height: 1.5; letter-spacing: 0.01em; color: var(--stone);
 }
-.hp .foot .foot-ai a { padding-block: 0; }
+.hp .foot .foot-ai a { padding-block: 0; font-size: inherit; }
 
 /* ---------- 404 ---------- */
 .nf-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.5rem; max-width: 34rem; }
