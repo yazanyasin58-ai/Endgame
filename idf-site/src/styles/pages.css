@@ -546,6 +546,15 @@ body.hp .legal h2::before {
   letter-spacing: 0.18em;
   color: var(--gold-deep);
 }
+/* Links in the legal text are underlined: in running prose, colour alone
+   does not mark a link (WCAG 1.4.1), and these were plain. */
+body.hp .legal p a {
+  text-decoration: underline;
+  text-decoration-color: var(--gold-deep);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+body.hp .legal p a:is(:hover, :focus-visible) { text-decoration-thickness: 2px; }
 
 /* ---- reduced motion ------------------------------------------------------ */
 @media (prefers-reduced-motion: reduce) {

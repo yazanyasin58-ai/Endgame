@@ -525,8 +525,9 @@ as picture cards that use the head images. The alt text and the rules are in
 They were generated with GPT Image 2.5 (high quality, 2K) from one shared
 style brief, so the set reads as one family with the site: golden-hour light;
 navy, brass, cream and white oak; editorial interiors photography; no people
-and no text. The footer says the pictures are AI generated; the images
-themselves carry no tag, on the owner's instruction. They are never captioned
+and no text. On the owner's instruction the images carry no tag, and the
+disclosure that they and the homepage film are AI generated sits on the terms
+page, under "What is on these pages". They are never captioned
 as the company's projects. The company's real work stays on `/projects/` and
 `/services/`.
 

@@ -6,11 +6,11 @@
  * THESE ARE AI-GENERATED ILLUSTRATIONS, NOT THE COMPANY'S WORK. They were made
  * with one shared style brief (golden-hour light; navy, brass, cream and white
  * oak; editorial interiors photography) so the set reads as one family with
- * the site. The footer note that discloses the AI film says these are AI
- * generated too; on the owner's instruction of 13 Oct the images themselves
- * carry no tag. Because a visitor could otherwise take them for finished
- * jobs, keep that footer line, and never caption one of these as a project,
- * a client's home or a before-and-after. The company's real work
+ * the site. On the owner's instruction of 13 Oct the images carry no tag and
+ * the disclosure lives on /terms/ ("What is on these pages"), beside the AI
+ * film's. Because a visitor could otherwise take them for finished jobs, keep
+ * that paragraph, and never caption one of these as a project, a client's
+ * home or a before-and-after. The company's real work
  * stays on /projects/ and on /services/, which use its own photographs.
  *
  * Files live in public/img/services/, three per service:

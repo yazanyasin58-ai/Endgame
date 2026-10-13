@@ -25,8 +25,8 @@ const { service } = Astro.props;
 
 const others = servicePages.filter((s) => s.slug !== service.slug);
 
-/* AI illustrations, one family across all twelve pages. The footer says they
-   are AI generated; see the note in service-images.ts. */
+/* AI illustrations, one family across all twelve pages. The terms page says
+   they are AI generated; see the note in service-images.ts. */
 const alt = serviceImages[service.slug];
 const img = serviceImageSet(service.slug);
 

@@ -1807,26 +1807,6 @@
 .foot-legal-links a { font-size: 0.8125rem; color: var(--stone); }
 .foot-legal-links a:hover { color: var(--cream); }
 
-/* The hero film is generated, and the footer says so. A visitor could
-   otherwise reasonably read it as one of this company's own jobs.
-
-   --stone, not --gray, and the distinction is the whole point of that token:
-   global.css defines --stone precisely because --gray fails AA on ink. This
-   rule used --gray on the charcoal footer and measured 2.86:1, which is the
-   exact failure the token exists to prevent. It is also the least acceptable
-   place on the site to have unreadable text, because a disclosure nobody can
-   read is not a disclosure. --stone measures 6.41:1 here.
-
-   .hp .foot already sets colour: --stone, so this could inherit. It is stated
-   explicitly anyway, so the value cannot drift if the footer's own colour is
-   ever changed for unrelated reasons. */
-/* Fine print, on the owner's instruction of 13 Oct: small, but still in
-   --stone, so it stays legible. */
-.foot-ai {
-  flex: 1 1 22rem; margin: 0;
-  font-size: 0.625rem; line-height: 1.5; letter-spacing: 0.01em; color: var(--stone);
-}
-.hp .foot .foot-ai a { padding-block: 0; font-size: inherit; }
 
 /* ---------- 404 ---------- */
 .nf-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.5rem; max-width: 34rem; }

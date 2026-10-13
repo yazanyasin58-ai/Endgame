@@ -737,7 +737,7 @@ for (const f of figures) {
  * page changes substantively — a policy with a stale date is worse than one
  * with no date, because it asserts something untrue about when it was checked.
  */
-export const legalUpdated = '5 September 2026';
+export const legalUpdated = '13 October 2026';
 
 /**
  * The first-project offer, as it appears in the promo bar and the pop-up.
