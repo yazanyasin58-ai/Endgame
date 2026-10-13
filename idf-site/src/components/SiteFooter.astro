@@ -1,5 +1,5 @@
 ---
-import { business, hours, hoursLabel, serviceArea, writeReviewUrl, googleSnapshot } from '../content/idf';
+import { business, hours, hoursLabel, serviceArea, writeReviewUrl, googleSnapshot, propertyPaths } from '../content/idf';
 import SocialLinks from './SocialLinks.astro';
 import Logo from './Logo.astro';
 ---
@@ -52,7 +52,11 @@ import Logo from './Logo.astro';
         <h3 class="foot-head foot-head--spaced">Start here</h3>
         <p>
           <a href="/estimate/">Request a free estimate</a><br />
-          <a href="/list-your-home/">List your home</a>
+          {propertyPaths.map((path) => (
+            <>
+              <a href={`/list-your-home/?for=${path.key}#listing-form`}>{path.title}</a><br />
+            </>
+          ))}
         </p>
       </div>
     </div>

@@ -8,7 +8,7 @@
  * spam handling and the R2 write are identical — a second copy of that would
  * be a second thing to keep in step.
  */
-import { business, cta, listing } from '../content/idf';
+import { business, cta, listing, propertyPaths } from '../content/idf';
 
 interface Props {
   idPrefix?: string;
@@ -24,6 +24,8 @@ const f = (name: string) => `${idPrefix}-${name}`;
 
 <form
   class="ef"
+  id="listing-form"
+  data-listing-form
   method="post"
   action="/api/estimate"
   enctype="multipart/form-data"
@@ -46,7 +48,7 @@ const f = (name: string) => `${idPrefix}-${name}`;
       <input class="ef-input" type="email" id={f('email')} name="email" autocomplete="email" required />
     </div>
     <div class="ef-field">
-      <label class="ef-label" for={f('address')}>Property address <span aria-hidden="true">*</span></label>
+      <label class="ef-label" for={f('address')}>Property address, or the area <span aria-hidden="true">*</span></label>
       <input
         class="ef-input"
         type="text"
@@ -61,7 +63,9 @@ const f = (name: string) => `${idPrefix}-${name}`;
       <label class="ef-label" for={f('type')}>What would you like to do? <span aria-hidden="true">*</span></label>
       <select class="ef-input ef-select" id={f('type')} name="type" required>
         <option value="" selected disabled>Select one</option>
-        {listing.intent.map((i) => <option value={i}>{i}</option>)}
+        {listing.intent.map((i) => (
+          <option value={i} data-path={propertyPaths.find((p) => p.intent === i)?.key}>{i}</option>
+        ))}
       </select>
     </div>
     <div class="ef-field">
@@ -89,7 +93,7 @@ const f = (name: string) => `${idPrefix}-${name}`;
         id={f('details')}
         name="details"
         rows="4"
-        placeholder="Condition, work you are considering before listing, tenancy, anything we should know."></textarea>
+        placeholder="Condition, work you are considering, tenancy, or what you are looking for. Anything we should know."></textarea>
     </div>
     <div class="ef-field ef-field--full">
       <label class="ef-label" for={f('photos')}>
@@ -146,4 +150,28 @@ const f = (name: string) => `${idPrefix}-${name}`;
 <script>
   import { initIntakeForms } from '../scripts/intake-form';
   initIntakeForms();
+
+  /* Arriving from a path link (?for=buy, from the footer, the menu or the
+     real estate page) picks that answer in "What would you like to do?".
+     A visitor can still change it; nothing else depends on it. */
+  const form = document.querySelector<HTMLFormElement>('[data-listing-form]');
+  const select = form?.querySelector<HTMLSelectElement>('select[name="type"]');
+  const pick = (key: string | null) => {
+    if (!select || !key) return false;
+    const opt = [...select.options].find((o) => o.dataset.path === key);
+    if (opt) select.value = opt.value;
+    return !!opt;
+  };
+  pick(new URLSearchParams(location.search).get('for'));
+
+  // The path links beside the form answer it in place rather than reloading.
+  document.addEventListener('click', (e) => {
+    const a = e.target instanceof Element ? e.target.closest<HTMLAnchorElement>('a[data-path-link]') : null;
+    if (!a || !select) return;
+    const key = new URL(a.href).searchParams.get('for');
+    if (!pick(key)) return;
+    e.preventDefault();
+    history.replaceState(null, '', `?for=${key}#listing-form`);
+    select.focus();
+  });
 </script>

@@ -487,6 +487,27 @@ body.hp .hp-est-intro .lyh-points li { border-left-color: var(--gold-bright); }
 body.hp .hp-est-intro .lyh-points h2 { color: var(--cream); }
 body.hp .hp-est-intro .lyh-points p,
 body.hp .hp-est-intro .lyh-area { color: var(--on-dark); }
+/* The five paths: each title answers the form beside it. */
+body.hp .lyh-paths { gap: 1rem; }
+body.hp .lyh-paths h2 a {
+  color: inherit;
+  text-decoration: none;
+  background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat;
+  transition: background-size 0.35s var(--pl-ease), color 0.2s ease;
+}
+body.hp .lyh-paths h2 a::after { content: ' \2192'; color: var(--gold-bright); }
+body.hp .lyh-paths h2 a:is(:hover, :focus-visible) {
+  color: var(--gold-bright);
+  background-size: 100% 1px;
+}
+body.hp .lyh-paths .lyh-kinds {
+  margin: 0 0 0.3rem;
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 0.6875rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gold-bright);
+}
 
 /* ---- not found: link cards with an arrow --------------------------------- */
 body.hp .nf-list a {
@@ -566,3 +587,44 @@ body.hp .legal h2::before {
   line-height: 1.5;
   color: var(--gray);
 }
+
+/* ---- real estate: the five paths ------------------------------------------ */
+/* Each card is one visitor's situation. The hand-off line is set apart so the
+   reader sees, in every card, who handles the deal or the management. */
+body.hp .re-paths > .re-item {
+  display: flex;
+  flex-direction: column;
+  scroll-margin-top: 7rem;
+}
+body.hp .re-paths .re-kinds {
+  margin: -0.35rem 0 0.6rem;
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 0.6875rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gold-deep);
+}
+body.hp .re-paths .re-handoff {
+  margin-top: 0.6rem;
+  padding-top: 0.6rem;
+  border-top: 1px solid var(--rule);
+  font-size: 0.875rem;
+  color: var(--gray);
+}
+body.hp .re-paths .re-path-link {
+  margin-top: auto;
+  padding-top: 1rem;
+  align-self: flex-start;
+  font-weight: 500;
+  color: var(--gold-deep);
+  text-decoration: none;
+}
+body.hp .re-paths .re-path-link::after {
+  content: ' \2192';
+  display: inline-block;
+  transition: transform 0.3s var(--pl-ease);
+}
+body.hp .re-paths .re-path-link:is(:hover, :focus-visible) { text-decoration: underline; text-underline-offset: 3px; }
+body.hp .re-paths .re-path-link:is(:hover, :focus-visible)::after { transform: translateX(3px); }
+/* A menu link lands on its card: mark it for a moment. */
+body.hp .re-paths > .re-item:target { box-shadow: 0 0 0 2px var(--gold); }

@@ -1,9 +1,10 @@
 ---
 /**
- * List your home.
+ * List your home, now the intake for anyone buying, selling or renting.
  *
  * Its own page rather than a section, so the homepage call-to-action has
- * somewhere to land and the realtor has a URL to hand out. Structured like
+ * somewhere to land and the realtor has a URL to hand out. The URL stays
+ * /list-your-home/ because it is already printed and handed out. Structured like
  * the estimate page on purpose: a customer who has seen one already knows
  * how this one works.
  */
@@ -15,15 +16,15 @@ import SiteNav from '../components/SiteNav.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import StickyCallBar from '../components/StickyCallBar.astro';
 import ListingForm from '../components/ListingForm.astro';
-import { business, listing, serviceArea, trustBar } from '../content/idf';
+import { business, listing, propertyPaths, serviceArea, trustBar } from '../content/idf';
 
 const fonts =
   'https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;1,9..144,300;1,9..144,400&family=IBM+Plex+Mono:wght@500&family=Public+Sans:wght@400;500;600&display=swap';
 ---
 
 <Base
-  title="List Your Home — Interior Design Flooring"
-  description="Selling a home in Northern Virginia? A straight answer on what work pays back before you list, from a Class A contractor of 37 years — and an introduction to a licensed agent if you need one."
+  title="Buying, Selling or Renting — Interior Design Flooring"
+  description="Buying, selling, renting out or managing a property in Northern Virginia? A straight answer on the work it needs and what it costs, from a Class A contractor of 37 years, and an introduction to a licensed agent for the rest."
   fontsHref={fonts}
   bodyClass="hp vb"
   withCallbar
@@ -37,12 +38,18 @@ const fonts =
         <h1 class="hp-est-h1">{listing.heading}</h1>
         <p class="hp-est-sub hp-italic">{listing.standfirst}</p>
 
-        <ul class="lyh-points">
+        {/* Each path picks its answer in the form beside it. */}
+        <ul class="lyh-points lyh-paths">
           {
-            listing.points.map((point) => (
+            propertyPaths.map((path) => (
               <li>
-                <h2>{point.title}</h2>
-                <p>{point.detail}</p>
+                <h2>
+                  <a href={`/list-your-home/?for=${path.key}#listing-form`} data-path-link>
+                    {path.title}
+                  </a>
+                </h2>
+                {'kinds' in path && <p class="lyh-kinds">{path.kinds}</p>}
+                <p>{path.detail} {path.handoff}</p>
               </li>
             ))
           }

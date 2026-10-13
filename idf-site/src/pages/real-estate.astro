@@ -14,29 +14,54 @@
  * itself. A referral is not brokerage, so no firm license is required and the
  * gate no longer applies.
  *
+ * On the client's request of 13 Oct it also covers buying, renting out,
+ * looking to rent and managing a rental, as `propertyPaths`: each one the
+ * work this company does plus a hand-off to a licensed professional, never
+ * the transaction itself. The rules are in the note above `propertyPaths`.
+ *
  * If the brokerage copy ever comes back, so must the gate. The three things
  * that must not return without the firm license number are listed above
  * `realEstate` in content/idf.ts.
  */
 import Page from '../layouts/Page.astro';
-import { business, realEstate, realEstateLicense, serviceArea } from '../content/idf';
+import { business, propertyPaths, realEstate, realEstateLicense, serviceArea } from '../content/idf';
 
 const agent = realEstateLicense.agent;
 ---
 
 <Page
-  title="Selling a home — Interior Design Flooring"
-  description="Renovation work that gets a home ready for the market, across Northern Virginia. A straight answer on what pays back before you list."
-  heading="Selling a home"
+  title="Real estate — Interior Design Flooring"
+  description="Buying, selling, renting out or managing a property in Northern Virginia? The work it needs and what that costs, from a Class A contractor, and an introduction to a licensed agent for the rest."
+  heading="Real estate"
   standfirst={realEstate.standfirst}
   current="/real-estate/"
 >
-  <section class="hp-section hp-section--tight re-prose">
+  <section class="hp-section" aria-labelledby="re-paths-h">
+    <h2 id="re-paths-h" class="hp-h2">Whatever you are doing with a property</h2>
+    <div class="re-grid re-paths">
+      {
+        propertyPaths.map((path) => (
+          <div class="re-item" id={path.key}>
+            <h3>{path.title}</h3>
+            {'kinds' in path && <p class="re-kinds">{path.kinds}</p>}
+            <p>{path.detail}</p>
+            <p class="re-handoff">{path.handoff}</p>
+            <a class="re-path-link" href={`/list-your-home/?for=${path.key}#listing-form`}>
+              Tell us about it<span class="hp-visually-hidden">: {path.title.toLowerCase()}</span>
+            </a>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="hp-section hp-section--tight re-prose" aria-labelledby="re-sell-h">
+    <h2 id="re-sell-h" class="hp-h2">Selling a home</h2>
     {realEstate.intro.map((para) => <p class="hp-lede">{para}</p>)}
   </section>
 
   <section class="hp-section" aria-labelledby="re-points-h">
-    <h2 id="re-points-h" class="hp-h2">How we help</h2>
+    <h2 id="re-points-h" class="hp-h2">How we help a sale</h2>
     <div class="re-grid">
       {
         realEstate.points.map((point) => (
@@ -66,8 +91,9 @@ const agent = realEstateLicense.agent;
     </p>
     <p class="re-note">
       Interior Design Flooring is a {business.license}. We are contractors, not a real
-      estate brokerage — the listing is handled by a licensed agent, and we are glad to
-      introduce you to one. {agent.name} is licensed with {realEstateLicense.firmName},
+      estate brokerage or a property manager. Buying, selling, leasing and managing
+      property are handled by licensed professionals, and we are glad to introduce you
+      to a licensed agent. {agent.name} is licensed with {realEstateLicense.firmName},
       a separate company from Interior Design Flooring. Serving {serviceArea.short}.
     </p>
   </section>

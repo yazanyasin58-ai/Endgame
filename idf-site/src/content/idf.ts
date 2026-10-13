@@ -288,7 +288,68 @@ export const formFields = {
 } as const;
 
 /**
- * "List your home" intake.
+ * Five things someone can be doing with a property, on the client's request
+ * of 13 Oct ("not just list your home: looking to buy (commercial, land,
+ * residential), rent, property management").
+ *
+ * Every path is named for the VISITOR'S situation, never as a service this
+ * company provides, and every path says the same two things: the work this
+ * company does, and that the transaction or the management is handled by a
+ * licensed professional it can introduce you to. That is the line the note
+ * above `realEstate` draws. Buying, selling, leasing and managing property
+ * for others is brokerage in Virginia and needs a firm licence this company
+ * does not hold, so none of it is offered here. Do not retitle a path as a
+ * service ("Property management services", "We help you buy") without that
+ * licence; see `features.brokerageServices` and `features.propertyManagement`.
+ *
+ * Commercial appears only as a kind of property someone is buying. Commercial
+ * contracting is paused (see the note above `trustBar`), so no path offers
+ * work on commercial property.
+ */
+export const propertyPaths = [
+  {
+    key: 'sell',
+    title: 'Selling a home',
+    intent: 'Selling a home',
+    detail:
+      'We walk it with you, tell you which work pays back before it goes on the market, and finish it before the photographs.',
+    handoff: 'The listing is handled by a licensed agent, and we can introduce you to one.',
+  },
+  {
+    key: 'buy',
+    title: 'Buying a property',
+    kinds: 'Residential, land or commercial',
+    intent: 'Buying a property',
+    detail:
+      'Before you commit, we walk a home with you and price the work it needs, or tell you what building a home on the land would take.',
+    handoff: 'The purchase is handled by a licensed agent, and we can introduce you to one.',
+  },
+  {
+    key: 'rent-out',
+    title: 'Renting out a property',
+    intent: 'Renting out a property',
+    detail: 'Repairs, upgrades and make-ready work between tenants, so it is ready to let.',
+    handoff: 'Finding tenants and the lease are handled by a licensed agent or property manager.',
+  },
+  {
+    key: 'rent',
+    title: 'Looking to rent',
+    intent: 'Looking for a place to rent',
+    detail: 'We do not lease homes ourselves.',
+    handoff: 'We can introduce you to a licensed agent in the area who does.',
+  },
+  {
+    key: 'manage',
+    title: 'Managing a rental',
+    intent: 'Managing a rental property',
+    detail:
+      'Repairs, upkeep and renovation for owners and the people who manage their homes, from one licensed contractor.',
+    handoff: 'Tenants, rent and leases stay with a licensed property manager.',
+  },
+] as const;
+
+/**
+ * The intake on /list-your-home/.
  *
  * A separate form from the estimate request because it asks a different
  * question and reaches a different desk. It posts to the same endpoint with
@@ -300,21 +361,17 @@ export const formFields = {
  * with it is enough to start a conversation.
  */
 export const listing = {
-  heading: 'Thinking of selling? Start here.',
+  heading: 'Buying, selling or renting? Start here.',
   standfirst:
-    'Tell us about the property and we will come and look at it. You get a straight answer on what is worth doing before it goes on the market, and an introduction to a licensed agent if you need one.',
-  intent: [
-    'Selling my home',
-    'Renting out my property',
-    'Buying and want to renovate',
-    'Not sure yet',
-  ],
+    'Tell us about the property and what you have in mind. You get a straight answer on the work it needs and what that costs, and an introduction to a licensed agent for the rest.',
+  intent: [...propertyPaths.map((p) => p.intent), 'Not sure yet'],
   propertyType: [
     'Single-family home',
     'Townhouse',
     'Condominium',
     'Multi-family',
     'Land',
+    'Commercial',
     'Other',
   ],
   timeline: [
@@ -323,29 +380,6 @@ export const listing = {
     'Within 3-6 months',
     '6 months or more',
     'Just exploring',
-  ],
-  /*
-   * These used to say the realtor and the contractor "work for the same
-   * company". They do not — the agent's license hangs under Samson Companies
-   * LLC — so that was a false statement about the business, on a page that was
-   * live and in the main navigation. See the note above `realEstate`.
-   */
-  points: [
-    {
-      title: 'We know what work pays back',
-      detail:
-        'Thirty-seven years of renovation work behind the advice, so what we recommend is what actually needs doing rather than a wish list.',
-    },
-    {
-      title: 'Built around your listing date',
-      detail:
-        'The work is scheduled to finish before the photographs are taken, not after.',
-    },
-    {
-      title: 'An agent, if you need one',
-      detail:
-        'We can introduce you to a licensed agent in the area. The listing is handled by them; the work is handled by us.',
-    },
   ],
 } as const;
 
@@ -389,7 +423,7 @@ export const listing = {
  * `realEstateLicense` below keeps the firm name and number for that day.
  */
 export const realEstate = {
-  standfirst: 'Selling a home? Talk to us before it goes on the market.',
+  standfirst: 'Buying, selling or renting a property? Talk to us about the work first.',
   intro: [
     'Most homes sell for more after the right work is done first, and lose money on the wrong work. We have spent thirty-seven years learning which is which in Northern Virginia.',
     'Tell us about the property and we will tell you honestly what is worth doing, what is not, and what it will cost. If you still need an agent, we can put you in touch with one.',
@@ -1111,8 +1145,12 @@ export const nav: NavGroup[] = [
     label: 'Real estate',
     href: '/real-estate/',
     children: [
-      { label: 'Renovate before you sell', href: '/real-estate/' },
-      { label: 'Selling a home', href: '/list-your-home/' },
+      { label: 'Selling a home', href: '/real-estate/#sell' },
+      { label: 'Buying a property', href: '/real-estate/#buy' },
+      { label: 'Renting out a property', href: '/real-estate/#rent-out' },
+      { label: 'Looking to rent', href: '/real-estate/#rent' },
+      { label: 'Managing a rental', href: '/real-estate/#manage' },
+      { label: 'Tell us about a property', href: '/list-your-home/' },
     ],
   },
   {
