@@ -25,11 +25,10 @@ const { service } = Astro.props;
 
 const others = servicePages.filter((s) => s.slug !== service.slug);
 
-/* AI illustrations, one family across all twelve pages. Each is marked as an
-   illustration where it appears; see the note in service-images.ts. */
+/* AI illustrations, one family across all twelve pages. The footer says they
+   are AI generated; see the note in service-images.ts. */
 const alt = serviceImages[service.slug];
 const img = serviceImageSet(service.slug);
-const NOTE = 'Illustration';
 
 /* Guaranteed present: service-faq.ts fails the build if any service page
    has no questions, so this is never an empty section. */
@@ -68,7 +67,7 @@ const faqSchema = {
   standfirst={service.standfirst}
   current="services"
   crumbs={[{ label: 'Services', href: '/services/' }]}
-  image={{ ...img.hero, alt: alt.hero, note: NOTE }}
+  image={{ ...img.hero, alt: alt.hero }}
 >
   {/* The introduction beside a close detail of the work. */}
   <section class="hp-section svc-open">
@@ -87,7 +86,6 @@ const faqSchema = {
           loading="lazy"
           decoding="async"
         />
-        <figcaption class="svc-fig-note">{NOTE}</figcaption>
       </figure>
     </div>
   </section>
@@ -106,7 +104,6 @@ const faqSchema = {
           loading="lazy"
           decoding="async"
         />
-        <figcaption class="svc-fig-note">{NOTE}</figcaption>
       </figure>
       <div class="svc-scope">
         <h2 class="svc-scope-title" id="svc-scope-h">{service.scopeTitle}</h2>

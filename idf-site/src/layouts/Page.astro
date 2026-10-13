@@ -27,10 +27,9 @@ interface Props {
   /**
    * A photograph behind the page head, with the midnight laid over it from
    * the left so the heading keeps its contrast. Service pages pass one; the
-   * rest keep the plain midnight head. `note` is a small caption pinned to
-   * the corner, for marking an AI illustration as one.
+   * rest keep the plain midnight head.
    */
-  image?: { src: string; srcset: string; alt: string; note?: string };
+  image?: { src: string; srcset: string; alt: string };
 }
 
 const { title, description, heading, standfirst, current, noindex, crumbs = [], image } = Astro.props;
@@ -56,7 +55,6 @@ const fonts =
             fetchpriority="high"
             decoding="async"
           />
-          {image.note && <figcaption class="pg-photo-note">{image.note}</figcaption>}
         </figure>
       )}
       {/* Where this page sits, in the mono annotation style of the drafting

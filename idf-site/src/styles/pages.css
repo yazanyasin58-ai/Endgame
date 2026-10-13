@@ -632,7 +632,7 @@ body.hp .re-paths > .re-item:target { box-shadow: 0 0 0 2px var(--gold); }
 /* ---- service pages: photographs ------------------------------------------ */
 /* On the client's request of 13 Oct the service pages carry pictures, so
    they read as part of the site rather than as a document. Every image here
-   is an AI illustration and is marked as one; see service-images.ts. */
+   is an AI illustration; see service-images.ts. */
 
 /* The page head with a photograph behind it. The midnight is laid over the
    image from the left, where the heading sits, so its contrast does not
@@ -682,24 +682,6 @@ body.hp main > .hp-pagehead.pg-photo::before { display: none; }
   to { transform: scale(1); }
 }
 
-/* "Illustration", small, on every AI image. */
-.pg-photo-note,
-.svc-fig-note {
-  position: absolute;
-  margin: 0;
-  padding: 0.3rem 0.55rem;
-  border-radius: 4px;
-  font-family: 'IBM Plex Mono', ui-monospace, monospace;
-  font-size: 0.625rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--cream);
-  background: rgb(10 18 30 / 0.55);
-  -webkit-backdrop-filter: blur(4px);
-          backdrop-filter: blur(4px);
-}
-.pg-photo-note { right: clamp(1rem, 3vw, 2rem); top: 1rem; }
-.svc-fig-note { left: 0.75rem; bottom: 0.75rem; }
 
 /* The introduction beside a close detail of the work. */
 body.hp .svc-intro {
