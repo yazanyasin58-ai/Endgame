@@ -296,7 +296,7 @@ export const formFields = {
  * company provides, and every path says the same two things: the work this
  * company does, and that the transaction or the management is handled by a
  * licensed professional it can introduce you to. That is the line the note
- * above `realEstate` draws. Buying, selling, leasing and managing property
+ * above `realEstate` draws. Buying, selling, leasing, and managing property
  * for others is brokerage in Virginia and needs a firm license this company
  * does not hold, so none of it is offered here. Do not retitle a path as a
  * service ("Property management services", "We help you buy") without that
@@ -318,7 +318,7 @@ export const propertyPaths = [
   {
     key: 'buy',
     title: 'Buying a property',
-    kinds: 'Residential, land or commercial',
+    kinds: 'Residential, land, or commercial',
     intent: 'Buying a property',
     detail:
       'Before you commit, we walk a home with you and price the work it needs, or tell you what building a home on the land would take.',
@@ -328,7 +328,7 @@ export const propertyPaths = [
     key: 'rent-out',
     title: 'Renting out a property',
     intent: 'Renting out a property',
-    detail: 'Repairs, upgrades and make-ready work between tenants, so it is ready to let.',
+    detail: 'Repairs, upgrades, and make-ready work between tenants, so it is ready to let.',
     handoff: 'Finding tenants and the lease are handled by a licensed agent or property manager.',
   },
   {
@@ -343,8 +343,8 @@ export const propertyPaths = [
     title: 'Managing a rental',
     intent: 'Managing a rental property',
     detail:
-      'Repairs, upkeep and renovation for owners and the people who manage their homes, from one licensed contractor.',
-    handoff: 'Tenants, rent and leases stay with a licensed property manager.',
+      'Repairs, upkeep, and renovation for owners and the people who manage their homes, from one licensed contractor.',
+    handoff: 'Tenants, rent, and leases stay with a licensed property manager.',
   },
 ] as const;
 
@@ -438,7 +438,7 @@ export const realEstate = {
     {
       title: 'The work itself',
       detail:
-        'Kitchens, bathrooms, flooring, paint, siding and roofing, with the schedule built around your listing date.',
+        'Kitchens, bathrooms, flooring, paint, siding, and roofing, with the schedule built around your listing date.',
     },
     {
       title: 'An introduction, if you want one',
@@ -556,7 +556,7 @@ export const countOn = [
   {
     title: 'Thirty-seven years in the same trade',
     detail:
-      'Kitchens, bathrooms, floors, additions, whole-home renovations and custom builds across Northern Virginia since 1989, long enough to know what the work costs and what it should not.',
+      'Kitchens, bathrooms, floors, additions, whole-home renovations, and custom builds across Northern Virginia since 1989, long enough to know what the work costs and what it should not.',
   },
 ] as const;
 
@@ -1229,7 +1229,7 @@ export const serviceGroups = [
   {
     id: 'interior-exterior',
     title: 'Interior & exterior',
-    items: ['Flooring', 'Interior finishes', 'Siding, gutters, fascia and trim', 'Exterior remodeling'],
+    items: ['Flooring', 'Interior finishes', 'Siding, gutters, fascia, and trim', 'Exterior remodeling'],
   },
   // The Commercial group (renovations, tenant fit-outs, retail and office)
   // is removed pending the classification renewal. Restore it here.
@@ -1273,7 +1273,7 @@ export const gallery = [
     slot: 'project-kitchen-blue-island',
     caption: 'Kitchen remodel',
     detail: 'Blue base cabinetry, waterfall quartz, integrated cooktop.',
-    alt: 'A remodeled kitchen with deep blue base cabinets, a thick white quartz island with gray veining, stainless appliances and hardwood floors.',
+    alt: 'A remodeled kitchen with deep blue base cabinets, a thick white quartz island with gray veining, stainless appliances, and hardwood floors.',
     ratio: '3 / 4',
     tags: ['Remodeling'],
   },
@@ -1297,7 +1297,7 @@ export const gallery = [
     slot: 'project-kitchen-cream',
     caption: 'Kitchen remodel, cream cabinetry',
     detail: 'Raised-panel cabinets, granite counters, full appliance run.',
-    alt: 'A kitchen with cream raised-panel cabinets, speckled granite counters, wall ovens and a center island.',
+    alt: 'A kitchen with cream raised-panel cabinets, speckled granite counters, wall ovens, and a center island.',
     ratio: '4 / 3',
     tags: ['Remodeling'],
   },
@@ -1312,7 +1312,7 @@ export const gallery = [
   {
     slot: 'project-stairs-hardwood',
     caption: 'Hardwood stairs and landing',
-    detail: 'Treads, risers and a curved landing, finished and sealed.',
+    detail: 'Treads, risers, and a curved landing, finished and sealed.',
     alt: 'Glossy hardwood stair treads curving up to a landing, with white risers and a painted balustrade.',
     ratio: '3 / 4',
     tags: ['Flooring'],
@@ -1328,7 +1328,7 @@ export const gallery = [
   {
     slot: 'project-porch-framing',
     caption: 'Covered porch, framing stage',
-    detail: 'Posts, beams and roof structure set.',
+    detail: 'Posts, beams, and roof structure set.',
     alt: 'A new covered porch under construction, its timber posts and gable roof framing complete against a blue sky.',
     ratio: '4 / 3',
     tags: ['In progress'],
@@ -1369,7 +1369,7 @@ export const gallery = [
     slot: 'project-kitchen-dark-granite',
     caption: 'Kitchen, dark granite',
     detail: 'Dark granite counters, tiled backsplash, stainless appliances.',
-    alt: 'A kitchen with dark speckled granite counters, a gray tiled backsplash and stainless steel appliances.',
+    alt: 'A kitchen with dark speckled granite counters, a gray tiled backsplash, and stainless steel appliances.',
     ratio: '4 / 3',
     tags: ['Remodeling'],
   },
@@ -1450,7 +1450,7 @@ export const gallery = [
  */
 export const insuranceRestoration = {
   title: 'Insurance restoration',
-  standfirst: 'Repairs after water, mold, fire, storm and other property damage.',
+  standfirst: 'Repairs after water, mold, fire, storm, and other property damage.',
   intro: [
     'When a loss damages your property, we handle the repair side of it: documenting what was affected, writing a detailed repair estimate for your insurance file, doing the remediation, and rebuilding the areas that were damaged.',
     'One licensed contractor from the documentation through to the final finish, so the scope that gets written is the scope that gets built.',
@@ -1495,11 +1495,11 @@ export const insuranceRestoration = {
 
 /** Custom home process, in the owner's sequence. */
 export const customHomeSteps = [
-  { number: '01', title: 'Design & planning', detail: 'Layout, scope and budget agreed before anything is ordered.' },
+  { number: '01', title: 'Design & planning', detail: 'Layout, scope, and budget agreed before anything is ordered.' },
   { number: '02', title: 'Permits', detail: 'We file the applications and carry the approvals.' },
-  { number: '03', title: 'Ground up construction', detail: 'Foundation through framing, systems and envelope.' },
+  { number: '03', title: 'Ground up construction', detail: 'Foundation through framing, systems, and envelope.' },
   { number: '04', title: 'Material selections', detail: 'Chosen with you, at the showroom or on site.' },
-  { number: '05', title: 'Completion & walkthrough', detail: 'Finished, inspected and handed over.' },
+  { number: '05', title: 'Completion & walkthrough', detail: 'Finished, inspected, and handed over.' },
 ] as const;
 
 export const customHomeOffers = [

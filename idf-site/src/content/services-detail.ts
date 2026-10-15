@@ -39,7 +39,7 @@ export const servicePages: ServicePage[] = [
     label: 'General contracting',
     title: 'General contracting',
     standfirst:
-      'One Class A contractor carrying the permits, the trades and the schedule from first drawing to final inspection.',
+      'One Class A contractor carrying the permits, the trades, and the schedule from first drawing to final inspection.',
     intro: [
       'Most of what goes wrong on a renovation is not the carpentry. It is the gap between two trades nobody owns — the electrician who came before the framing was ready, the inspection nobody booked, the change that never reached the person holding the drawings.',
       'Acting as your general contractor means those gaps are ours. We hold the license, pull the permits, schedule the trades in the order the work actually needs, and stand in front of the inspector. You have one number to call and one person answerable for the result.',
@@ -69,8 +69,8 @@ export const servicePages: ServicePage[] = [
     scopeTitle: 'Typical scope',
     scope: [
       'Layout changes, including removing and rebuilding walls',
-      'Kitchens, bathrooms and living space in one program',
-      'Flooring, trim, doors and interior finishes throughout',
+      'Kitchens, bathrooms, and living space in one program',
+      'Flooring, trim, doors, and interior finishes throughout',
       'Electrical, plumbing and HVAC brought up to current code where the work exposes it',
       'Insulation and drywall',
       'Paint and final finishes',
@@ -83,17 +83,17 @@ export const servicePages: ServicePage[] = [
     label: 'Kitchen remodeling',
     title: 'Kitchen remodeling',
     standfirst:
-      'From a cabinet-and-worktop replacement to moving the room and the services that feed it.',
+      'From a cabinet-and-countertop replacement to moving the room and the services that feed it.',
     intro: [
       'Kitchens are the most disruptive room in a house to lose, so the two questions worth settling first are how long it will be out and what is actually driving the cost — the finishes, or moving the plumbing and gas.',
       'We price those separately in the estimate so you can see which decisions are expensive and which are simply preference.',
     ],
     scopeTitle: 'Typical scope',
     scope: [
-      'Cabinetry, worktops, splashbacks and hardware',
+      'Cabinetry, countertops, backsplashes, and hardware',
       'Appliance fit and the services behind them',
       'Relocating sinks, gas and appliance runs where the layout changes',
-      'Electrical, including added circuits, lighting and outlets to code',
+      'Electrical, including added circuits, lighting, and outlets to code',
       'Flooring and trim',
       'Removing a wall to open the kitchen to living space',
     ],
@@ -112,10 +112,10 @@ export const servicePages: ServicePage[] = [
     scope: [
       'Full strip-out back to studs where the condition warrants it',
       'Waterproofing and substrate for showers and wet areas',
-      'Tile, including floors, walls and shower enclosures',
-      'Vanities, fittings and fixtures',
+      'Tile, including floors, walls, and shower enclosures',
+      'Vanities, fittings, and fixtures',
       'Plumbing relocation and supply and waste replacement',
-      'Extraction, lighting and code-compliant electrical',
+      'Extraction, lighting, and code-compliant electrical',
       'Accessible layouts — level thresholds, grab-bar blocking, wider doorways',
     ],
   },
@@ -133,7 +133,7 @@ export const servicePages: ServicePage[] = [
     scope: [
       'Moisture control and drainage before anything is framed',
       'Egress windows and wells where the plan adds a bedroom',
-      'Framing, insulation and drywall',
+      'Framing, insulation, and drywall',
       'Bathrooms and wet bars, including below-grade waste',
       'Electrical, lighting and HVAC extension into the space',
       'Flooring suited to below-grade conditions',
@@ -156,11 +156,11 @@ export const servicePages: ServicePage[] = [
     scope: [
       'Single and multi-room additions',
       'Second-story additions and dormers',
-      'Garage, porch and sunroom conversions',
+      'Garage, porch, and sunroom conversions',
       'In-law and accessory suites where zoning permits',
-      'Foundations, framing and roof tie-in',
+      'Foundations, framing, and roof tie-in',
       'Extending electrical, plumbing and HVAC to serve the new area',
-      'Matching siding, roofing, trim and interior finishes to the existing house',
+      'Matching siding, roofing, trim, and interior finishes to the existing house',
     ],
     notes:
       'Additions are zoning-dependent. Setbacks, lot coverage and, where one applies, an HOA review can change what is buildable — we establish that before design work begins.',
@@ -182,8 +182,8 @@ export const servicePages: ServicePage[] = [
       'Luxury vinyl plank and tile',
       'Tile and stone, including heated floor systems',
       'Carpet',
-      'Subfloor repair, levelling and moisture preparation',
-      'Stairs, treads, nosings and transitions',
+      'Subfloor repair, leveling, and moisture preparation',
+      'Stairs, treads, nosings, and transitions',
     ],
   },
   {
@@ -200,7 +200,7 @@ export const servicePages: ServicePage[] = [
     scope: [
       'Roof replacement and repair',
       'Flashing, valleys, and roof-to-wall detailing',
-      'Gutters, downspouts, fascia and soffit',
+      'Gutters, downspouts, fascia, and soffit',
       'Siding replacement and repair',
       'Trim and exterior carpentry',
       'Storm damage repair',
@@ -221,10 +221,10 @@ export const servicePages: ServicePage[] = [
     scope: [
       'Window replacement, like-for-like or resized',
       'New openings, including the header work they need',
-      'Entry, patio and sliding doors',
+      'Entry, patio, and sliding doors',
       'Interior doors and hardware',
       'Egress windows for basement bedrooms',
-      'Flashing, sealing and insulating the opening',
+      'Flashing, sealing, and insulating the opening',
       'Interior and exterior trim to match',
     ],
   },
@@ -240,8 +240,8 @@ export const servicePages: ServicePage[] = [
     ],
     scopeTitle: 'Typical scope',
     scope: [
-      'Drywall hanging, taping and finishing',
-      'Repairing damage, cracks and nail pops',
+      'Drywall hanging, taping, and finishing',
+      'Repairing damage, cracks, and nail pops',
       'Texture matching, and removing textured ceilings',
       'Interior painting, including trim and doors',
       'Exterior painting and preparation',
@@ -283,10 +283,10 @@ export const servicePages: ServicePage[] = [
     ],
     scopeTitle: 'What we do',
     scope: [
-      'Documenting the damage — photographs, measurements and written scope',
+      'Documenting the damage — photographs, measurements, and written scope',
       'A written repair estimate, itemized, suitable for your claim file',
       'Answering the insurer’s questions about our own estimate and our own scope',
-      'Remediation, structural repair and full reconstruction',
+      'Remediation, structural repair, and full reconstruction',
       'Bringing affected work up to current code',
     ],
     notes:

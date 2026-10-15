@@ -33,7 +33,7 @@ export const serviceFaq: Record<string, QA[]> = {
     {
       q: 'Who pulls the permits and deals with the inspector?',
       a: [
-        'We do. We hold the license, file the permits, book the inspections and stand in front of the inspector ourselves.',
+        'We do. We hold the license, file the permits, book the inspections, and stand in front of the inspector ourselves.',
       ],
     },
     {
@@ -61,7 +61,7 @@ export const serviceFaq: Record<string, QA[]> = {
     {
       q: 'Do we have to do the whole house at once?',
       a: [
-        'No. Kitchens, bathrooms and living space can run as one program or be taken room by room, whichever suits how you want to live in the house while it happens.',
+        'No. Kitchens, bathrooms, and living space can run as one program or be taken room by room, whichever suits how you want to live in the house while it happens.',
       ],
     },
     {
@@ -76,7 +76,7 @@ export const serviceFaq: Record<string, QA[]> = {
     {
       q: 'Can the kitchen move to a different part of the house?',
       a: [
-        'Yes, and the services move with it. Sinks, gas and appliance runs are relocated where the layout changes, rather than the layout being bent around where the pipes happen to be.',
+        'Yes, and the services move with it. Sinks, gas, and appliance runs are relocated where the layout changes, rather than the layout being bent around where the pipes happen to be.',
       ],
     },
     {
@@ -88,7 +88,7 @@ export const serviceFaq: Record<string, QA[]> = {
     {
       q: 'Will the electrical be brought up to standard?',
       a: [
-        'Yes. Added circuits, lighting and outlets are installed to code as part of the work, which a modern kitchen full of appliances generally needs whether or not it was planned for.',
+        'Yes. Added circuits, lighting, and outlets are installed to code as part of the work, which a modern kitchen full of appliances generally needs whether or not it was planned for.',
       ],
     },
   ],
@@ -108,7 +108,7 @@ export const serviceFaq: Record<string, QA[]> = {
       ],
     },
     {
-      q: 'Can the toilet, bath or shower be moved?',
+      q: 'Can the toilet, bath, or shower be moved?',
       a: [
         'Yes. Plumbing relocation, along with supply and waste replacement, is normal scope rather than an extra.',
       ],
@@ -148,13 +148,13 @@ export const serviceFaq: Record<string, QA[]> = {
     {
       q: 'Will it look like an addition was bolted on?',
       a: [
-        'That is the thing to get right. Siding, roofing, trim and interior finishes are matched to the existing house, and the foundation, framing and roof tie-in are detailed so the join is not the first thing you see.',
+        'That is the thing to get right. Siding, roofing, trim, and interior finishes are matched to the existing house, and the foundation, framing, and roof tie-in are detailed so the join is not the first thing you see.',
       ],
     },
     {
       q: 'Can you go up rather than out?',
       a: [
-        'Yes. Second-story additions and dormers, and conversions of a garage, porch or sunroom, are all within scope, as are in-law and accessory suites where the zoning permits one.',
+        'Yes. Second-story additions and dormers, and conversions of a garage, porch, or sunroom, are all within scope, as are in-law and accessory suites where the zoning permits one.',
       ],
     },
   ],
@@ -169,13 +169,13 @@ export const serviceFaq: Record<string, QA[]> = {
     {
       q: 'What happens if the subfloor underneath is bad?',
       a: [
-        'It gets dealt with before anything goes down. Subfloor repair, levelling and moisture preparation are part of the job, because a new floor laid over a bad one fails in the same places the old one did.',
+        'It gets dealt with before anything goes down. Subfloor repair, leveling, and moisture preparation are part of the job, because a new floor laid over a bad one fails in the same places the old one did.',
       ],
     },
     {
       q: 'What types of flooring do you install?',
       a: [
-        'Solid and engineered hardwood, luxury vinyl plank and tile, tile and stone including heated systems, and carpet, along with the stairs, treads, nosings and transitions that tie them together.',
+        'Solid and engineered hardwood, luxury vinyl plank and tile, tile and stone including heated systems, and carpet, along with the stairs, treads, nosings, and transitions that tie them together.',
       ],
     },
   ],
@@ -184,13 +184,13 @@ export const serviceFaq: Record<string, QA[]> = {
     {
       q: 'Do you repair roofs, or only replace them?',
       a: [
-        'Both. Plenty of roofs need a repair rather than a replacement, and the detailing around flashing, valleys and roof-to-wall junctions is where most of them are actually leaking.',
+        'Both. Plenty of roofs need a repair rather than a replacement, and the detailing around flashing, valleys, and roof-to-wall junctions is where most of them are actually leaking.',
       ],
     },
     {
-      q: 'Do you handle gutters, fascia and soffit as well?',
+      q: 'Do you handle gutters, fascia, and soffit as well?',
       a: [
-        'Yes, along with siding, exterior trim and carpentry, and ventilation in the roof space. It is one envelope and it works as one.',
+        'Yes, along with siding, exterior trim, and carpentry, and ventilation in the roof space. It is one envelope and it works as one.',
       ],
     },
     {
@@ -211,7 +211,7 @@ export const serviceFaq: Record<string, QA[]> = {
     {
       q: 'What keeps water out around a new window?',
       a: [
-        'Flashing, sealing and insulating the opening, which is the part of a window job that decides whether the wall around it stays dry.',
+        'Flashing, sealing, and insulating the opening, which is the part of a window job that decides whether the wall around it stays dry.',
         'A window fitted into an opening that was not flashed properly will leak regardless of how good the window is.',
       ],
     },
@@ -233,7 +233,7 @@ export const serviceFaq: Record<string, QA[]> = {
     {
       q: 'Why so much preparation before painting?',
       a: [
-        'Because paint does not hide anything for long. Cracks, nail pops and damaged drywall are repaired and the surface is caulked and prepared first, which is most of the labor and all of the difference a year later.',
+        'Because paint does not hide anything for long. Cracks, nail pops, and damaged drywall are repaired and the surface is caulked and prepared first, which is most of the labor and all of the difference a year later.',
       ],
     },
     {
@@ -271,7 +271,7 @@ export const serviceFaq: Record<string, QA[]> = {
     {
       q: 'What exactly do you provide for my claim file?',
       a: [
-        'Photographs, measurements and a written scope of the damage, and an itemized repair estimate suitable for the file.',
+        'Photographs, measurements, and a written scope of the damage, and an itemized repair estimate suitable for the file.',
         'We will also answer the insurer’s questions about our own estimate and our own scope.',
       ],
     },

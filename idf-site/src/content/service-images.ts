@@ -26,27 +26,27 @@ export type ServiceImages = { hero: string; detail: string; scene: string };
 export const serviceImages: Record<string, ServiceImages> = {
   'general-contracting': {
     hero: 'A large stone-faced custom home at sunset, one wing still in timber framing, lumber stacked on the site',
-    detail: 'Rolled blueprints, a brass tape measure, a pencil and a level on an oak work table',
+    detail: 'Rolled blueprints, a brass tape measure, a pencil, and a level on an oak work table',
     scene: 'A freshly framed interior, sunlight falling through the window openings onto the subfloor',
   },
   'home-remodeling': {
-    hero: 'An open-plan living and dining room with oak floors, cream walls and navy built-in shelving',
+    hero: 'An open-plan living and dining room with oak floors, cream walls, and navy built-in shelving',
     detail: 'Navy built-in bookshelves with brass picture lights above closed cabinets',
-    scene: 'An entry hall with a curved staircase, oak treads and a brass lantern',
+    scene: 'An entry hall with a curved staircase, oak treads, and a brass lantern',
   },
   'kitchen-remodeling': {
-    hero: 'A kitchen with navy cabinets, brass hardware, a quartzite waterfall island and linen pendants in evening light',
+    hero: 'A kitchen with navy cabinets, brass hardware, a quartzite waterfall island, and linen pendants in evening light',
     detail: 'The edge of a quartzite waterfall island against navy cabinets with brass pulls and a brass faucet',
-    scene: 'A butler’s pantry with navy cabinets, cream tile and open oak shelves',
+    scene: 'A butler’s pantry with navy cabinets, cream tile, and open oak shelves',
   },
   'bathroom-remodeling': {
-    hero: 'A marble bathroom with a freestanding tub, a walnut double vanity with brass fixtures and a glass shower',
+    hero: 'A marble bathroom with a freestanding tub, a walnut double vanity with brass fixtures, and a glass shower',
     detail: 'A brushed brass wall faucet over a honed marble basin',
-    scene: 'A walk-in marble shower with a brass rain head, a niche and frameless glass',
+    scene: 'A walk-in marble shower with a brass rain head, a niche, and frameless glass',
   },
   'basement-remodeling': {
-    hero: 'A finished basement lounge with a navy sofa, oak floor, stone wall and a wet bar',
-    detail: 'A basement wet bar with navy cabinets, brass shelves and glassware',
+    hero: 'A finished basement lounge with a navy sofa, oak floor, stone wall, and a wet bar',
+    detail: 'A basement wet bar with navy cabinets, brass shelves, and glassware',
     scene: 'A basement wine room behind a glass door with oak racks',
   },
   'home-additions': {
@@ -60,28 +60,28 @@ export const serviceImages: Record<string, ServiceImages> = {
     scene: 'A staircase with walnut treads and white risers',
   },
   'roofing-siding': {
-    hero: 'A home with a dark standing-seam metal roof, white board-and-batten siding and copper gutters at dusk',
+    hero: 'A home with a dark standing-seam metal roof, white board-and-batten siding, and copper gutters at dusk',
     detail: 'Standing-seam metal roof panels above a copper gutter and downspout',
     scene: 'The corner of new lap siding and trim, freshly painted',
   },
   'windows-doors': {
     hero: 'A living room with floor-to-ceiling black steel windows and French doors open to a terrace at sunset',
-    detail: 'A navy front door with brass hardware, glass sidelights and a stone step',
+    detail: 'A navy front door with brass hardware, glass sidelights, and a stone step',
     scene: 'A black window frame and oak sill with a garden beyond',
   },
   'painting-drywall': {
-    hero: 'An empty, freshly painted living room with cream walls, white crown moulding and wainscoting',
+    hero: 'An empty, freshly painted living room with cream walls, white crown molding, and wainscoting',
     detail: 'A crisp paint line where a navy wall meets white trim, a brush on a paint can',
     scene: 'A smooth new drywall ceiling and walls with recessed lights in an empty room',
   },
   'water-damage-mold': {
-    hero: 'A room mid-restoration with the lower walls opened to the studs, air movers and a dehumidifier running',
+    hero: 'A room mid-restoration with the lower walls opened to the studs, air movers, and a dehumidifier running',
     detail: 'A moisture meter on the subfloor beside an opened wall with dry new studs',
-    scene: 'A restored room with fresh drywall, cream paint and a new oak floor',
+    scene: 'A restored room with fresh drywall, cream paint, and a new oak floor',
   },
   'insurance-claim-repairs': {
     hero: 'A home being rebuilt after a storm, the new roof and siding nearly complete',
-    detail: 'A clipboard, a tape measure and a camera on an oak table',
+    detail: 'A clipboard, a tape measure, and a camera on an oak table',
     scene: 'A rebuilt kitchen with navy and cream cabinets and an oak floor',
   },
 };
@@ -139,7 +139,7 @@ export const customHomeImages = {
     {
       src: '/img/services/general-contracting-detail-1000.webp',
       srcset: '/img/services/general-contracting-detail-600.webp 600w, /img/services/general-contracting-detail-1000.webp 1000w',
-      alt: 'Rolled blueprints, a brass tape measure, a pencil and a level on an oak work table',
+      alt: 'Rolled blueprints, a brass tape measure, a pencil, and a level on an oak work table',
     },
     { ...pair('permits', 600, 1000), alt: 'A stack of approved drawings with an embossed seal and a pen on a walnut desk' },
     {
@@ -172,7 +172,7 @@ const pg = (name: string) => ({
 export const pageImages = {
   about: {
     ...pg('about'),
-    alt: 'A carpenter’s oak workbench with a brass hand plane, chisels in a leather roll and curled shavings',
+    alt: 'A carpenter’s oak workbench with a brass hand plane, chisels in a leather roll, and curled shavings',
   },
   aboutBand: {
     ...svc('home-additions-hero'),
@@ -180,11 +180,11 @@ export const pageImages = {
   },
   services: {
     ...svc('home-remodeling-hero'),
-    alt: 'An open-plan living and dining room with oak floors, cream walls and navy built-in shelving',
+    alt: 'An open-plan living and dining room with oak floors, cream walls, and navy built-in shelving',
   },
   realEstate: {
     ...pg('real-estate'),
-    alt: 'A bright, softly staged living room with oak floors, a navy sofa and tall curtained windows',
+    alt: 'A bright, softly staged living room with oak floors, a navy sofa, and tall curtained windows',
   },
   investors: {
     ...pg('investors'),
@@ -192,7 +192,7 @@ export const pageImages = {
   },
   investorsBand: {
     ...svc('painting-drywall-hero'),
-    alt: 'An empty, freshly painted living room with cream walls, white crown moulding and wainscoting',
+    alt: 'An empty, freshly painted living room with cream walls, white crown molding, and wainscoting',
   },
   financing: {
     ...pg('financing'),
@@ -205,6 +205,6 @@ export const pageImages = {
   },
   contact: {
     ...pg('contact'),
-    alt: 'A covered front porch at dusk with a navy door, brass lanterns and two rocking chairs',
+    alt: 'A covered front porch at dusk with a navy door, brass lanterns, and two rocking chairs',
   },
 } as const;
