@@ -23,7 +23,7 @@
  *   - Nothing about negotiating or settling insurance claims. That is public
  *     adjusting, licensed separately in Virginia, and it is also a verbatim
  *     client instruction. There is a build-time guard for it below.
- *   - Nothing that reads as brokerage. The firm licence question is still
+ *   - Nothing that reads as brokerage. The firm license question is still
  *     open, so the real estate answers offer renovation work and an
  *     introduction to a licensed agent, exactly as /real-estate/ does.
  *
@@ -58,7 +58,7 @@ export const faqGroups: FaqGroup[] = [
         q: 'Do you charge for an estimate?',
         home: true,
         a: [
-          'No. Tell us the type of project and the address, we walk the site ourselves, and your written estimate follows within 24 hours of that visit.',
+          'No. Tell us the type of project and the address. We walk the site ourselves, and your written estimate follows within 24 hours of that visit.',
         ],
       },
       {
@@ -71,7 +71,7 @@ export const faqGroups: FaqGroup[] = [
       {
         q: 'Is the written estimate the final price?',
         a: [
-          'The written estimate is what we stand behind. If something changes the scope once the work is under way, it is handled as a written change order agreed before that work happens, not added to an invoice afterwards.',
+          'The written estimate is what we stand behind. If something changes the scope once the work is underway, it is handled as a written change order agreed before that work happens, not added to an invoice afterward.',
           'Nothing on this website sets a price. The signed estimate is the only document that does.',
         ],
       },
@@ -94,34 +94,34 @@ export const faqGroups: FaqGroup[] = [
         q: 'Can a project be financed?',
         a: [
           'We work with a lending partner who handles renovation and construction financing, and we can introduce you when you request your estimate.',
-          'Approval, rates and terms are set by the lender, not by us. There is no application on this website and we do not see your financial information.',
+          'Approval, rates, and terms are set by the lender, not by us. There is no application on this website and we do not see your financial information.',
         ],
       },
     ],
   },
   {
-    id: 'licence',
-    title: 'Licence and who does the work',
+    id: 'license',
+    title: 'License and who does the work',
     items: [
       {
         q: 'Are you licensed?',
         home: true,
         a: [
-          `Yes. ${business.name} is a Virginia Class A general contractor, licence number ${business.licenseNumber}. That number is public and you are welcome to look it up before you call us.`,
+          `Yes. ${business.name} is a Virginia Class A general contractor, license number ${business.licenseNumber}. That number is public and you are welcome to look it up before you call us.`,
         ],
       },
       {
         q: 'Who will I actually be dealing with?',
         home: true,
         a: [
-          `Shawn and Nancy Waziri, who have run this company since ${business.established}. The person who walks your site, writes your estimate and stands behind the work is the owner, not a project manager you meet once.`,
+          `Shawn and Nancy Waziri, who have run this company since ${business.established}. The person who walks your site, writes your estimate, and stands behind the work is the owner, not a project manager you meet once.`,
         ],
       },
       {
         q: 'Do you use subcontractors?',
         a: [
-          'We hold the licence, pull the permits, schedule the trades in the order the work actually needs, supervise the site while it is live, and stand in front of the inspector.',
-          'Work that requires a separate licence, such as surveying or a structural engineering stamp, is placed with a licensed professional and coordinated by us. You still have one number to call.',
+          'We hold the license, pull the permits, schedule the trades in the order the work actually needs, supervise the site while it is live, and stand in front of the inspector.',
+          'Work that requires a separate license, such as surveying or a structural engineering stamp, is placed with a licensed professional and coordinated by us. You still have one number to call.',
         ],
       },
     ],
@@ -139,7 +139,16 @@ export const faqGroups: FaqGroup[] = [
         q: 'Can I visit the showroom?',
         a: [
           `Yes, and contracts are signed and selections are made there. We are at ${business.address}.`,
-          hours.map((h) => `${h.days}, ${hoursLabel(h)}`).join('. ') + '.',
+          /* Mid-sentence, so the label is lowercased: "Sunday, by appointment."
+             reads as a sentence, "Sunday, By appointment." does not. Clock
+             times start with a digit and are unaffected, which is why this is
+             a blanket transform rather than a special case for the note. */
+          hours
+            .map((h) => {
+              const label = hoursLabel(h);
+              return `${h.days}, ${label.charAt(0).toLowerCase()}${label.slice(1)}`;
+            })
+            .join('. ') + '.',
         ],
       },
     ],
@@ -149,9 +158,9 @@ export const faqGroups: FaqGroup[] = [
     title: 'The work itself',
     items: [
       {
-        q: 'What kinds of project do you take on?',
+        q: 'What kinds of projects do you take on?',
         a: [
-          'Custom homes and ground-up construction, additions, full home renovations, kitchens, bathrooms and basements, flooring, roofing and siding, windows and doors, painting and drywall, and water damage restoration.',
+          'Custom homes and ground-up construction, additions, full home renovations, kitchens, bathrooms, and basements, flooring, roofing and siding, windows and doors, painting and drywall, and water damage restoration.',
           'Every one of those has its own page on this site with what the work covers and where it stops.',
         ],
       },
@@ -178,7 +187,7 @@ export const faqGroups: FaqGroup[] = [
         q: 'Do you handle repairs after water or storm damage?',
         home: true,
         a: [
-          'Yes. We document the damage with photographs, measurements and a written scope, produce an itemised repair estimate suitable for your claim file, answer your insurer’s questions about our own estimate and our own scope, and carry out the remediation, structural repair and full reconstruction.',
+          'Yes. We document the damage with photographs, measurements, and a written scope, produce an itemized repair estimate suitable for your claim file, answer your insurer’s questions about our own estimate and our own scope, and carry out the remediation, structural repair, and full reconstruction.',
           'What we will not do is stand between you and your insurer. Negotiating or settling a claim on a policyholder’s behalf is public adjusting, which is licensed separately in Virginia and is a different profession from ours.',
         ],
       },

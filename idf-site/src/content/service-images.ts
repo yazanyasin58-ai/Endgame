@@ -50,7 +50,7 @@ export const serviceImages: Record<string, ServiceImages> = {
     scene: 'A basement wine room behind a glass door with oak racks',
   },
   'home-additions': {
-    hero: 'A colonial home with a matching two-storey addition and a sunroom, at golden hour',
+    hero: 'A colonial home with a matching two-story addition and a sunroom, at golden hour',
     detail: 'A sunroom addition with a beamed vaulted ceiling and walls of windows',
     scene: 'New siding and trim meeting the original house, matched and freshly painted',
   },
@@ -130,7 +130,7 @@ export const customHomeImages = {
   },
   /** One per entry in customHomeOffers, in order. */
   offers: [
-    { ...pair('ground-up', 600, 1000), alt: 'A two-storey home in fresh timber framing on a new foundation, woods behind' },
+    { ...pair('ground-up', 600, 1000), alt: 'A two-story home in fresh timber framing on a new foundation, woods behind' },
     { ...pair('your-lot', 600, 1000), alt: 'A wooded lot with a cleared building pad marked by survey stakes and flagging tape' },
     { ...pair('townhomes', 600, 1000), alt: 'A row of new brick and cream townhomes with navy doors and brass lanterns' },
   ],
@@ -176,7 +176,7 @@ export const pageImages = {
   },
   aboutBand: {
     ...svc('home-additions-hero'),
-    alt: 'A colonial home with a matching two-storey addition and a sunroom, at golden hour',
+    alt: 'A colonial home with a matching two-story addition and a sunroom, at golden hour',
   },
   services: {
     ...svc('home-remodeling-hero'),

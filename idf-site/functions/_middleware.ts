@@ -23,7 +23,7 @@
  * The last line is the one that matters. A gate whose failure mode is "open"
  * is not a gate. AT LAUNCH: set GATE_ENABLED to false in a commit, so the
  * change to a public site is a reviewable line of code rather than a
- * dashboard toggle nobody can see afterwards.
+ * dashboard toggle nobody can see afterward.
  *
  * What this is NOT: it is a shared password, so it proves someone knows the
  * password, not who they are. If you need per-person access with a real

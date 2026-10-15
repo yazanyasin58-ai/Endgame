@@ -129,7 +129,7 @@ const schema = {
   name: business.name,
   description:
     `Virginia Class A general contractor in Sterling, owner-operated since ` +
-    `${business.established}. Custom homes, additions and remodeling across ${business.region}.`,
+    `${business.established}. Custom homes, additions, and remodeling across ${business.region}.`,
   ...(origin ? { '@id': `${origin}/#business`, url: `${origin}/` } : {}),
   ...(origin
     ? { logo: `${origin}/img/logo.webp`, image: [`${origin}/img/project-kitchen-blue-island.webp`] }
@@ -147,7 +147,7 @@ const schema = {
   },
   openingHoursSpecification,
   areaServed: serviceArea.regions.map((r) => ({ '@type': 'AdministrativeArea', name: r })),
-  /* The licence number is the single most checkable fact the business has,
+  /* The license number is the single most checkable fact the business has,
      and it is already printed in the footer of every page. */
   identifier: {
     '@type': 'PropertyValue',

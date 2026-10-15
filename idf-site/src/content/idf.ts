@@ -95,7 +95,7 @@ export const wedge = {
   heading: 'You talk to the owner. Start to finish.',
   body: [
     'No layers. No hand-offs. When you hire Interior Design Flooring, you work directly with Shawn and Nancy Waziri, the same two people who have run this company since 1989.',
-    'The person who walks your site, writes your estimate, and stands behind the work is the owner. Not a project manager you met once.',
+    'The person who walks your site, writes your estimate, and stands behind the work is the owner, not a project manager you meet once.',
   ],
 } as const;
 
@@ -297,10 +297,10 @@ export const formFields = {
  * company does, and that the transaction or the management is handled by a
  * licensed professional it can introduce you to. That is the line the note
  * above `realEstate` draws. Buying, selling, leasing and managing property
- * for others is brokerage in Virginia and needs a firm licence this company
+ * for others is brokerage in Virginia and needs a firm license this company
  * does not hold, so none of it is offered here. Do not retitle a path as a
  * service ("Property management services", "We help you buy") without that
- * licence; see `features.brokerageServices` and `features.propertyManagement`.
+ * license; see `features.brokerageServices` and `features.propertyManagement`.
  *
  * Commercial appears only as a kind of property someone is buying. Commercial
  * contracting is paused (see the note above `trustBar`), so no path offers
@@ -361,7 +361,7 @@ export const propertyPaths = [
  * with it is enough to start a conversation.
  */
 export const listing = {
-  heading: 'Buying, selling or renting? Start here.',
+  heading: 'Buying, selling, or renting? Start here.',
   standfirst:
     'Tell us about the property and what you have in mind. You get a straight answer on the work it needs and what that costs, and an introduction to a licensed agent for the rest.',
   intent: [...propertyPaths.map((p) => p.intent), 'Not sure yet'],
@@ -423,7 +423,7 @@ export const listing = {
  * `realEstateLicense` below keeps the firm name and number for that day.
  */
 export const realEstate = {
-  standfirst: 'Buying, selling or renting a property? Talk to us about the work first.',
+  standfirst: 'Buying, selling, or renting a property? Talk to us about the work first.',
   intro: [
     'Most homes sell for more after the right work is done first, and lose money on the wrong work. We have spent thirty-seven years learning which is which in Northern Virginia.',
     'Tell us about the property and we will tell you honestly what is worth doing, what is not, and what it will cost. If you still need an agent, we can put you in touch with one.',
@@ -476,7 +476,7 @@ export const cta = {
 export const hours = [
   { days: 'Monday – Friday', open: '10:00 AM', close: '7:30 PM' },
   { days: 'Saturday', open: '10:00 AM', close: '6:00 PM' },
-  { days: 'Sunday', note: 'By Appointment' },
+  { days: 'Sunday', note: 'By appointment' },
 ] as const;
 
 export type HoursEntry = (typeof hours)[number];
@@ -534,7 +534,7 @@ export const countOn = [
   {
     title: 'The owner, on your job',
     detail:
-      'Shawn and Nancy Waziri have run this company since 1989. The person who walks your site, writes your estimate and answers the phone is an owner, not a project manager you meet once.',
+      'Shawn and Nancy Waziri have run this company since 1989. The person who walks your site, writes your estimate, and answers the phone is an owner, not a project manager you meet once.',
   },
   {
     title: 'Licensed and insured, and you can check',
@@ -613,7 +613,7 @@ export const figures = [
    *
    * Added on 11 Oct 2026 on the owner's instruction, who gave the figure as
    * "1000+". Everything else in this band is verifiable by a stranger: a
-   * licence number they can look up, a founding year, a rating published by
+   * license number they can look up, a founding year, a rating published by
    * Google. This one rests entirely on the company's own records.
    *
    * That is allowed, and plenty of contractors publish it. What it needs is
@@ -680,7 +680,7 @@ export const figures = [
     value: 'Class A',
     label: 'Virginia license',
     note: `#${business.licenseNumber}`,
-    source: 'The licence number, which anyone can look up.',
+    source: 'The license number, which anyone can look up.',
   },
 ] as const;
 
@@ -761,10 +761,10 @@ export const legalUpdated = '13 October 2026';
  */
 export const promo = {
   headline: 'Up to 25% off your first project',
-  detail: 'New customers. Ask us for details when you request your estimate.',
+  detail: 'For new customers, ask us for details when you request your estimate.',
   fine:
     'Discounts are subject to project review and may vary based on project size, ' +
-    'scope and type of work, materials, and other applicable factors. ' +
+    'scope, type of work, materials, and other applicable factors. ' +
     'Restrictions may apply.',
   cta: 'Request a Free Estimate',
   // Phone label. The bar sits above the fold and the full label crowds the
@@ -812,7 +812,7 @@ export const blocked = {} as const;
  * licenses do not exist, this should come back to Virginia only.
  */
 export const serviceArea = {
-  short: 'Washington DC, Maryland & Virginia',
+  short: 'Washington, DC, Maryland & Virginia',
   regions: ['Washington, DC', 'Maryland', 'Virginia'],
   detail: 'Serving the greater DMV area from our Sterling showroom.',
 } as const;
@@ -889,18 +889,18 @@ export const features = {
    * Property management — the client's menu group 8.
    *
    * BLOCKED. Managing rental property for someone else for compensation is
-   * real estate activity in Virginia and requires a licence; a Class A
-   * contractor licence does not cover it. The group as briefed — "Property
+   * real estate activity in Virginia and requires a license; a Class A
+   * contractor license does not cover it. The group as briefed — "Property
    * Management Services", "Property Turnovers", "Emergency / Priority
    * Repairs" — advertises exactly that service under this company's name.
    *
    * Two parts of the group are NOT blocked and can be published without any
    * of this: repairs and maintenance, and renovations, are contracting work
    * we already advertise. "Become a Vendor Partner" is a trade-recruitment
-   * page and needs no licence either. Those are the pieces to build first if
-   * the licence question stays open.
+   * page and needs no license either. Those are the pieces to build first if
+   * the license question stays open.
    *
-   * To open: the real estate firm licence number, same as `brokerageServices`.
+   * To open: the real estate firm license number, same as `brokerageServices`.
    */
   propertyManagement: false,
 
@@ -910,14 +910,14 @@ export const features = {
    *
    * BLOCKED, and this is the third time the same wall has been hit. Virginia
    * requires the entity advertising brokerage services to hold a real estate
-   * FIRM licence and to name it in the advertising. Interior Design Flooring
+   * FIRM license and to name it in the advertising. Interior Design Flooring
    * does not hold one; the agents' licences hang at a different company.
    *
    * The note above `realEstate` lists the three things that must not come
-   * back without that licence number. The client's brief asks for all three.
+   * back without that license number. The client's brief asks for all three.
    * The current /real-estate/ page stays as it is — renovation work that
    * prepares a house for sale, plus a referral to a licensed agent, which is
-   * not brokerage and needs no firm licence.
+   * not brokerage and needs no firm license.
    */
   brokerageServices: false,
 
@@ -925,18 +925,18 @@ export const features = {
    * "Meet Our In-House Realtors" — names, photos, contact details and bios.
    *
    * BLOCKED for two separate reasons, either of which is enough. First, it is
-   * brokerage advertising and carries the firm-licence problem above. Second,
+   * brokerage advertising and carries the firm-license problem above. Second,
    * nothing about these people has been supplied: no verified names, no
-   * licence numbers, no photographs, no bios in their own words. Writing a
+   * license numbers, no photographs, no bios in their own words. Writing a
    * biography for a real, named person who did not write it is not something
    * this site does.
    */
   realtorProfiles: false,
 
   /**
-   * Referral programme, under About.
+   * Referral program, under About.
    *
-   * BLOCKED pending terms. A referral programme that pays for construction
+   * BLOCKED pending terms. A referral program that pays for construction
    * referrals is ordinary and fine. One that pays for real estate or
    * settlement-service referrals engages federal RESPA rules, and the earlier
    * version of this site had to have exactly that removed — a renovation
@@ -1095,10 +1095,10 @@ export type NavGroup = NavChild & { children?: NavChild[] };
  * oversight, and the reasons are on the gates in `features`:
  *
  *   - PROPERTY MANAGEMENT (group 8) is gated off entirely. Managing rental
- *     property for others for compensation needs a real estate licence.
+ *     property for others for compensation needs a real estate license.
  *   - REAL ESTATE (group 6) keeps the renovation-and-referral page it has.
- *     The eleven brokerage entries the brief asks for need a firm licence.
- *   - ABOUT's referral programme is gated pending its terms.
+ *     The eleven brokerage entries the brief asks for need a firm license.
+ *   - ABOUT's referral program is gated pending its terms.
  *
  * Entries whose target does not exist yet are NOT listed here even behind a
  * gate, because a gate that gets flipped should not produce a 404. What the
@@ -1194,7 +1194,7 @@ export const nav: NavGroup[] = [
  * reason. Nothing imports this — it exists so the gap is written down beside
  * the menu rather than living in a chat thread.
  *
- * Blocked on a licence (see `features.brokerageServices` and
+ * Blocked on a license (see `features.brokerageServices` and
  * `features.propertyManagement`):
  *   Buy a home · Sell your home · Rent your home · Find a rental ·
  *   Investment properties · Land · Commercial real estate ·
@@ -1213,8 +1213,8 @@ export const nav: NavGroup[] = [
  *
  * Buildable now, not yet built, and needing no permission:
  *   Repairs & maintenance, and Renovations, under Property Management —
- *     ordinary contracting work, safe to publish without the licence
- *   Become a vendor partner — trade recruitment, no licence needed
+ *     ordinary contracting work, safe to publish without the license
+ *   Become a vendor partner — trade recruitment, no license needed
  *   Request financing information — a form, once the lender is named
  */
 export const menuNotBuilt = true;
@@ -1273,7 +1273,7 @@ export const gallery = [
     slot: 'project-kitchen-blue-island',
     caption: 'Kitchen remodel',
     detail: 'Blue base cabinetry, waterfall quartz, integrated cooktop.',
-    alt: 'A remodelled kitchen with deep blue base cabinets, a thick white quartz island with grey veining, stainless appliances and hardwood floors.',
+    alt: 'A remodeled kitchen with deep blue base cabinets, a thick white quartz island with gray veining, stainless appliances and hardwood floors.',
     ratio: '3 / 4',
     tags: ['Remodeling'],
   },
@@ -1353,7 +1353,7 @@ export const gallery = [
     slot: 'project-counter-quartz',
     caption: 'Quartz counters and backsplash',
     detail: 'Veined quartz surface run through to the backsplash.',
-    alt: 'A white quartz countertop with grey veining, continuing up the wall as a matching backsplash.',
+    alt: 'A white quartz countertop with gray veining, continuing up the wall as a matching backsplash.',
     ratio: '4 / 3',
     tags: ['Remodeling'],
   },
@@ -1369,7 +1369,7 @@ export const gallery = [
     slot: 'project-kitchen-dark-granite',
     caption: 'Kitchen, dark granite',
     detail: 'Dark granite counters, tiled backsplash, stainless appliances.',
-    alt: 'A kitchen with dark speckled granite counters, a grey tiled backsplash and stainless steel appliances.',
+    alt: 'A kitchen with dark speckled granite counters, a gray tiled backsplash and stainless steel appliances.',
     ratio: '4 / 3',
     tags: ['Remodeling'],
   },
@@ -1400,7 +1400,7 @@ export const gallery = [
   {
     slot: 'project-kitchen-cream-ovens',
     caption: 'Kitchen fit-out in progress',
-    detail: 'Cabinetry and appliances set, finishes under way.',
+    detail: 'Cabinetry and appliances set, finishes underway.',
     alt: 'A cream-cabinet kitchen with stainless double ovens installed, protective sheeting still on the floor.',
     ratio: '4 / 3',
     tags: ['Remodeling','In progress'],
@@ -1464,7 +1464,7 @@ export const insuranceRestoration = {
     {
       title: 'Detailed repair estimates',
       detail:
-        'A line-item estimate of the repair scope, itemised so it can go into your insurance file.',
+        'A line-item estimate of the repair scope, itemized so it can go into your insurance file.',
     },
     {
       title: 'Communication about our estimate',

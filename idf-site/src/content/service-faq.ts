@@ -33,7 +33,7 @@ export const serviceFaq: Record<string, QA[]> = {
     {
       q: 'Who pulls the permits and deals with the inspector?',
       a: [
-        'We do. We hold the licence, file the permits, book the inspections and stand in front of the inspector ourselves.',
+        'We do. We hold the license, file the permits, book the inspections and stand in front of the inspector ourselves.',
       ],
     },
     {
@@ -45,7 +45,7 @@ export const serviceFaq: Record<string, QA[]> = {
     {
       q: 'Is there anything you do not carry yourself?',
       a: [
-        'Work that needs a separate licence from ours. Surveying, and any structural engineering stamp, go to a licensed professional. We place that work and coordinate it, so it is still one number to call.',
+        'Work that needs a separate license from ours. Surveying, and any structural engineering stamp, go to a licensed professional. We place that work and coordinate it, so it is still one number to call.',
       ],
     },
   ],
@@ -61,7 +61,7 @@ export const serviceFaq: Record<string, QA[]> = {
     {
       q: 'Do we have to do the whole house at once?',
       a: [
-        'No. Kitchens, bathrooms and living space can run as one programme or be taken room by room, whichever suits how you want to live in the house while it happens.',
+        'No. Kitchens, bathrooms and living space can run as one program or be taken room by room, whichever suits how you want to live in the house while it happens.',
       ],
     },
     {
@@ -154,7 +154,7 @@ export const serviceFaq: Record<string, QA[]> = {
     {
       q: 'Can you go up rather than out?',
       a: [
-        'Yes. Second-storey additions and dormers, and conversions of a garage, porch or sunroom, are all within scope, as are in-law and accessory suites where the zoning permits one.',
+        'Yes. Second-story additions and dormers, and conversions of a garage, porch or sunroom, are all within scope, as are in-law and accessory suites where the zoning permits one.',
       ],
     },
   ],
@@ -233,7 +233,7 @@ export const serviceFaq: Record<string, QA[]> = {
     {
       q: 'Why so much preparation before painting?',
       a: [
-        'Because paint does not hide anything for long. Cracks, nail pops and damaged drywall are repaired and the surface is caulked and prepared first, which is most of the labour and all of the difference a year later.',
+        'Because paint does not hide anything for long. Cracks, nail pops and damaged drywall are repaired and the surface is caulked and prepared first, which is most of the labor and all of the difference a year later.',
       ],
     },
     {
@@ -271,14 +271,14 @@ export const serviceFaq: Record<string, QA[]> = {
     {
       q: 'What exactly do you provide for my claim file?',
       a: [
-        'Photographs, measurements and a written scope of the damage, and an itemised repair estimate suitable for the file.',
+        'Photographs, measurements and a written scope of the damage, and an itemized repair estimate suitable for the file.',
         'We will also answer the insurer’s questions about our own estimate and our own scope.',
       ],
     },
     {
       q: 'Will you deal with my insurance company on my behalf?',
       a: [
-        'No, and anyone telling you otherwise should be asked what licence they hold.',
+        'No, and anyone telling you otherwise should be asked what license they hold.',
         'Negotiating or settling a claim for a policyholder is public adjusting. It is licensed separately in Virginia and it is not what we are licensed for. We are the contractor: we document the damage, price the repair, and do the work.',
       ],
     },

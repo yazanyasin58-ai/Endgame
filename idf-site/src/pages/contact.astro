@@ -38,7 +38,14 @@ const mapEmbed = `https://maps.google.com/maps?q=${encodeURIComponent(business.a
 
         <h2 class="ab-h3">Hours</h2>
         <ul class="ct-hours">
-          {hours.map((h) => (<li><span>{h.days}</span><span>{hoursLabel(h)}</span></li>))}
+          {
+            hours.map((h) => (
+              <li>
+                <span>{h.days}</span>
+                <span>{hoursLabel(h)}</span>
+              </li>
+            ))
+          }
         </ul>
 
         <h2 class="ab-h3">Phone &amp; email</h2>

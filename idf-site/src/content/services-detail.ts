@@ -42,7 +42,7 @@ export const servicePages: ServicePage[] = [
       'One Class A contractor carrying the permits, the trades and the schedule from first drawing to final inspection.',
     intro: [
       'Most of what goes wrong on a renovation is not the carpentry. It is the gap between two trades nobody owns — the electrician who came before the framing was ready, the inspection nobody booked, the change that never reached the person holding the drawings.',
-      'Acting as your general contractor means those gaps are ours. We hold the licence, pull the permits, schedule the trades in the order the work actually needs, and stand in front of the inspector. You have one number to call and one person answerable for the result.',
+      'Acting as your general contractor means those gaps are ours. We hold the license, pull the permits, schedule the trades in the order the work actually needs, and stand in front of the inspector. You have one number to call and one person answerable for the result.',
     ],
     scopeTitle: 'What we carry',
     scope: [
@@ -54,7 +54,7 @@ export const servicePages: ServicePage[] = [
       'Final walkthrough and punch list until you sign it off',
     ],
     notes:
-      'We are a Virginia Class A contractor. Work requiring a separate licence — surveying, and any structural engineering stamp — is placed with a licensed professional and coordinated by us.',
+      'We are a Virginia Class A contractor. Work requiring a separate license — surveying, and any structural engineering stamp — is placed with a licensed professional and coordinated by us.',
   },
   {
     slug: 'home-remodeling',
@@ -69,7 +69,7 @@ export const servicePages: ServicePage[] = [
     scopeTitle: 'Typical scope',
     scope: [
       'Layout changes, including removing and rebuilding walls',
-      'Kitchens, bathrooms and living space in one programme',
+      'Kitchens, bathrooms and living space in one program',
       'Flooring, trim, doors and interior finishes throughout',
       'Electrical, plumbing and HVAC brought up to current code where the work exposes it',
       'Insulation and drywall',
@@ -155,7 +155,7 @@ export const servicePages: ServicePage[] = [
     scopeTitle: 'Typical scope',
     scope: [
       'Single and multi-room additions',
-      'Second-storey additions and dormers',
+      'Second-story additions and dormers',
       'Garage, porch and sunroom conversions',
       'In-law and accessory suites where zoning permits',
       'Foundations, framing and roof tie-in',
@@ -236,7 +236,7 @@ export const servicePages: ServicePage[] = [
       'Surface preparation, because paint does not hide anything for long.',
     intro: [
       'Drywall and paint are the finish everyone sees and the first thing that gives away a rushed job. Nail pops, a seam that telegraphs, a line that wanders at the ceiling.',
-      'The preparation is most of the labour and almost all of the result.',
+      'The preparation is most of the labor and almost all of the result.',
     ],
     scopeTitle: 'Typical scope',
     scope: [
@@ -284,7 +284,7 @@ export const servicePages: ServicePage[] = [
     scopeTitle: 'What we do',
     scope: [
       'Documenting the damage — photographs, measurements and written scope',
-      'A written repair estimate, itemised, suitable for your claim file',
+      'A written repair estimate, itemized, suitable for your claim file',
       'Answering the insurer’s questions about our own estimate and our own scope',
       'Remediation, structural repair and full reconstruction',
       'Bringing affected work up to current code',

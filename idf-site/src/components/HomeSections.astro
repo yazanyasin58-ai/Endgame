@@ -129,7 +129,7 @@ const portrait = optionalImage('img/owner-portrait');
   <section class="hp-section rv" id="what-we-build" aria-labelledby="hp-pillars-h">
     <DraftRule label="01 / Scope" />
     <h2 id="hp-pillars-h" class="hp-h2">What we build</h2>
-    <p class="hp-sub hp-italic">Every service, straight through to the page for it.</p>
+    <p class="hp-sub hp-italic">Explore every service we offer, with full scope details on each page.</p>
     <div class="hp-explore">
       {
         serviceExplore.map((g, i) => (
@@ -289,7 +289,7 @@ const portrait = optionalImage('img/owner-portrait');
         </svg>
       </span>
       <div>
-        <h2 id="hp-lyh-h">Buying, selling or renting?</h2>
+        <h2 id="hp-lyh-h">Buying, selling, or renting?</h2>
         <p>
           Talk to us about the work first. Thirty-seven years of renovation behind a
           straight answer on what a property needs, and an introduction to a licensed
@@ -424,7 +424,14 @@ const portrait = optionalImage('img/owner-portrait');
         </address>
 
         <ul class="hp-showroom-hours">
-          {hours.map((h) => (<li><span>{h.days}</span><span>{hoursLabel(h)}</span></li>))}
+          {
+            hours.map((h) => (
+              <li>
+                <span>{h.days}</span>
+                <span>{hoursLabel(h)}</span>
+              </li>
+            ))
+          }
         </ul>
 
         <p class="hp-showroom-area">

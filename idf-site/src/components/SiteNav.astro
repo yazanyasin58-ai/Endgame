@@ -133,7 +133,14 @@ const num = (i: number) => String(i + 1).padStart(2, '0');
               45431 Ruritan Circle, Suite 160<br />Sterling, VA 20164
             </address>
             <ul class="sg-hours">
-              {hours.map((h) => (<li><span>{h.days}</span><span>{hoursLabel(h)}</span></li>))}
+              {
+                hours.map((h) => (
+                  <li>
+                    <span>{h.days}</span>
+                    <span>{hoursLabel(h)}</span>
+                  </li>
+                ))
+              }
             </ul>
             <p class="sg-contact">
               <a href={business.phonePrimaryHref}>{business.phonePrimary}</a>

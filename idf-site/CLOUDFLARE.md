@@ -106,7 +106,7 @@ with the gate on returns **503**, closed, naming what to set. A gate whose
 failure mode is "open" is not a gate.
 
 **At launch:** set `GATE_ENABLED = false` in a commit. Going public should be a
-reviewable line of code, not a dashboard toggle nobody can find afterwards.
+reviewable line of code, not a dashboard toggle nobody can find afterward.
 
 ### What it is not
 
@@ -300,7 +300,7 @@ free tier is 3,000 emails a month.
 
 3. In **Pages → Settings → Variables and Secrets → Add**, add these two.
    The key must be **type: Secret**, not Plaintext — a plaintext value is
-   readable by anyone with dashboard access afterwards.
+   readable by anyone with dashboard access afterward.
 
    | Name | Type | Value |
    |---|---|---|

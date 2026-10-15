@@ -422,7 +422,7 @@ Homepage layout changes that go with it:
 - Selected projects is a coverflow of fourteen gallery photographs
   ("Coverflow Carousel", saved), kitchens first, similar jobs kept together in
   runs of two or three with a wider gap between runs, work in progress last.
-  It sits on dusk, a lighter blue-grey that sets off the warm photographs.
+  It sits on dusk, a lighter blue-gray that sets off the warm photographs.
   Native scroll-snap; the 3D is a scroll-driven animation, flat where
   unsupported.
 - Reviews come before the projects. "Hold to build" is no longer on the

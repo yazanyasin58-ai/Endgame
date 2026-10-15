@@ -5,7 +5,7 @@ import Placeholder from '../components/Placeholder.astro';
 import { business, serviceGroups, insuranceRestoration, gallery, cta } from '../content/idf';
 import { optionalImage } from '../lib/images';
 
-// Exterior work under way — the closest of the photographs to what a storm or
+// Exterior work underway — the closest of the photographs to what a storm or
 // water loss actually looks like being repaired. Optional on purpose: a
 // renamed slot should leave a reserved slot behind, not fail the build.
 const irPhoto = gallery.find((g) => g.slot === 'project-siding-crew');
@@ -72,7 +72,7 @@ const groupPhoto = (id: string) => {
       <figure class="ir-figure">
         <Placeholder
           ratio="4 / 3"
-          label="Reserved — exterior repair under way"
+          label="Reserved — exterior repair underway"
           src={irSrc}
           alt={irPhoto?.alt ?? ''}
           real
