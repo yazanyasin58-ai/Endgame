@@ -1,0 +1,121 @@
+/* ============================================================
+   Scroll entrances, site-wide.
+
+   Item 10 of the client's master list: sections should arrive as the visitor
+   scrolls rather than simply being there. This used to exist on the homepage
+   only, in scrub.css, which the other twenty-seven pages do not load.
+
+   THE SELECTORS LIVE HERE, NOT IN THE SCRIPT, and that is the whole design.
+   If JavaScript added a hiding class on load, every section would paint,
+   vanish, and fade back in. Declaring the hidden state in CSS means it
+   applies on the first paint and the script's only job is to add `.in`.
+
+   NOTHING IS HIDDEN UNLESS JAVASCRIPT IS RUNNING. Every rule below is
+   scoped to `.js`, a class an inline script in <head> sets before the page
+   paints. On the homepage alone, content behind a script was a contained
+   risk. Across twenty-eight pages it is a way to serve a blank site to
+   anyone whose script fails, and crawlers read the markup rather than the
+   paint. Without that class the page is simply the finished state.
+   ============================================================ */
+
+:root {
+  /* One curve and one duration for every entrance, so the site moves like
+     one thing. The curve decelerates hard, which reads as arriving rather
+     than sliding to a stop. */
+  --rv-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --rv-time: 700ms;
+}
+
+/* The explicit opt-in, for anything that is not a section. */
+.js .rv { opacity: 0; transform: translateY(18px); }
+
+/* Sections, everywhere, without touching a single page.
+
+   .hp-pagehead is excluded deliberately: it is the <h1> at the top of every
+   subpage, it is above the fold on arrival, and fading in the first thing a
+   visitor came to read buys atmosphere at the cost of the page feeling
+   slower than it is. */
+.js main .hp-section:not(.hp-pagehead),
+.js main .hp-showroom,
+.js main .hp-mil,
+.js main .hp-final { opacity: 0; transform: translateY(18px); }
+
+.js .rv.in,
+.js main .hp-section.in,
+.js main .hp-showroom.in,
+.js main .hp-mil.in,
+.js main .hp-final.in {
+  opacity: 1;
+  transform: none;
+  transition: opacity var(--rv-time) var(--rv-ease), transform var(--rv-time) var(--rv-ease);
+}
+
+/* ---- staggered children ------------------------------------------------
+   Card grids arrive one after another rather than as a block. The delays
+   are CSS rather than script for the same reason the hiding is: a script
+   writing inline delays after load would have to undo a flash first.
+
+   Only grids are listed. A stagger on a paragraph list reads as the page
+   struggling to load, which is the opposite of the intent. */
+.js .hp-projects > *,
+.js .hp-explore > *,
+.js .hp-pillars > *,
+.js .re-grid > *,
+.js .svc-more-list > * {
+  opacity: 0;
+  transform: translateY(14px);
+}
+
+.js .in .hp-projects > *,
+.js .in .hp-explore > *,
+.js .in .hp-pillars > *,
+.js .in .re-grid > *,
+.js .in .svc-more-list > *,
+.js .hp-projects.in > *,
+.js .hp-explore.in > *,
+.js .hp-pillars.in > *,
+.js .re-grid.in > *,
+.js .svc-more-list.in > * {
+  opacity: 1;
+  transform: none;
+  transition: opacity 600ms var(--rv-ease), transform 600ms var(--rv-ease);
+}
+
+/* Eight is past the point anyone is still watching the sequence, and the
+   longest of these grids is twelve. Beyond eight they share the last delay
+   rather than trailing further and further behind. */
+.js .in :is(.hp-projects, .hp-explore, .hp-pillars, .re-grid, .svc-more-list) > *:nth-child(1) { transition-delay: 0ms; }
+.js .in :is(.hp-projects, .hp-explore, .hp-pillars, .re-grid, .svc-more-list) > *:nth-child(2) { transition-delay: 70ms; }
+.js .in :is(.hp-projects, .hp-explore, .hp-pillars, .re-grid, .svc-more-list) > *:nth-child(3) { transition-delay: 140ms; }
+.js .in :is(.hp-projects, .hp-explore, .hp-pillars, .re-grid, .svc-more-list) > *:nth-child(4) { transition-delay: 210ms; }
+.js .in :is(.hp-projects, .hp-explore, .hp-pillars, .re-grid, .svc-more-list) > *:nth-child(5) { transition-delay: 280ms; }
+.js .in :is(.hp-projects, .hp-explore, .hp-pillars, .re-grid, .svc-more-list) > *:nth-child(6) { transition-delay: 350ms; }
+.js .in :is(.hp-projects, .hp-explore, .hp-pillars, .re-grid, .svc-more-list) > *:nth-child(7) { transition-delay: 420ms; }
+.js .in :is(.hp-projects, .hp-explore, .hp-pillars, .re-grid, .svc-more-list) > *:nth-child(n + 8) { transition-delay: 490ms; }
+
+/* ---- reduced motion ----------------------------------------------------
+   Everything above is decoration. Turned off, the page is the finished
+   state immediately, with no transition to interrupt and nothing deferred.
+   Written last so it wins on source order at equal specificity. */
+@media (prefers-reduced-motion: reduce) {
+  .js .rv,
+  .js .rv.in,
+  .js main .hp-section,
+  .js main .hp-section.in,
+  .js main .hp-showroom,
+  .js main .hp-showroom.in,
+  .js main .hp-mil,
+  .js main .hp-mil.in,
+  .js main .hp-final,
+  .js main .hp-final.in,
+  .js .hp-projects > *,
+  .js .hp-explore > *,
+  .js .hp-pillars > *,
+  .js .re-grid > *,
+  .js .svc-more-list > * {
+    opacity: 1;
+    transform: none;
+    transition: none;
+    transition-delay: 0ms;
+  }
+}

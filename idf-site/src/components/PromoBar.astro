@@ -1,0 +1,57 @@
+---
+/**
+ * Promotional bar for the first-project offer.
+ *
+ * Deliberately a dismissible bar rather than an entry overlay: Google demotes
+ * intrusive interstitials on mobile, which is most of this client's traffic.
+ *
+ * It carries `promo.fine` because it carries `promo.headline`. The headline is
+ * an "up to" figure as of 6 October, and the qualifying terms travel with it
+ * everywhere it appears. A bar is a tight space and the terms are the longest
+ * thing in it, so they sit on their own line and drop to a smaller size rather
+ * than being cut.
+ */
+import { promo } from '../content/idf';
+---
+
+<div class="promo" id="promo" hidden>
+  <p class="promo-text">
+    <strong>{promo.headline}</strong>
+    <span>{promo.detail}</span>
+    <span class="promo-fine">{promo.fine}</span>
+  </p>
+  <a class="promo-cta" href="/estimate/">
+    <span class="promo-cta-full">{promo.cta}</span>
+    <span class="promo-cta-short">{promo.ctaShort}</span>
+  </a>
+  <button class="promo-close" type="button" aria-label="Dismiss offer">&times;</button>
+</div>
+
+<script>
+  // Tiny inline script. Shows the bar unless it was dismissed THIS SESSION.
+  //
+  // It used to be localStorage, which made one dismissal permanent and was
+  // half of what the owner reported on 6 October: a repeat visitor stopped
+  // being shown the offer at all. sessionStorage keeps the dismissal honest
+  // within a visit and brings the bar back on the next one.
+  //
+  // Both calls are guarded. Storage access throws outright in some privacy
+  // modes, and an uncaught throw here would leave the bar hidden, which is the
+  // one outcome the whole file exists to avoid.
+  const bar = document.getElementById('promo');
+  if (bar) {
+    const KEY = 'idf-promo-dismissed';
+    let dismissed = false;
+    try {
+      localStorage.removeItem(KEY);              // retire the permanent one
+      dismissed = sessionStorage.getItem(KEY) === '1';
+    } catch { /* storage unavailable: show the bar */ }
+
+    if (!dismissed) bar.hidden = false;
+
+    bar.querySelector('.promo-close')?.addEventListener('click', () => {
+      bar.hidden = true;
+      try { sessionStorage.setItem(KEY, '1'); } catch { /* ignore */ }
+    });
+  }
+</script>

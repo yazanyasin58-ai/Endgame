@@ -1,0 +1,1119 @@
+/* ============================================================
+   Every page but the homepage: the same language, applied lightly.
+
+   The homepage got photographs, dark grounds, a coverflow and an animated
+   menu. The other pages share the header, page head, buttons, FAQ and
+   footer already; this file brings their bodies in line without piling on.
+   One or two moves per page, each borrowed from something the homepage or
+   the owner's saved 21st.dev components already do:
+
+     every page ..... breadcrumb in the page head, midnight closing band,
+                      ink credentials strip
+     about, custom .. process steps as a timeline that draws as you read
+                      ("How It Works Timeline" / "Process Timeline")
+     about .......... the portrait opens from an arch, as on the homepage
+     services ....... a photograph per group, the homepage's pairing
+     insurance ...... numbered cards; the limits notice on midnight
+     service pages .. scope card on midnight; other services as chips
+     projects ....... filter tabs with a sliding pill (animated tab bars)
+     questions ...... topic index, two columns, current topic marked
+     investors ...... numbered cards with the spotlight
+     contact ........ details on a midnight card beside the form
+     estimate ....... intro on a midnight card, offer on gold
+     not found ...... link cards with an arrow
+
+   Anchored on body.hp, like the rest of the layer. Every text pairing on a
+   dark ground is one already measured in the README.
+   ============================================================ */
+
+/* ---- page head: breadcrumb ------------------------------------------------ */
+.pg-crumbs ol {
+  list-style: none;
+  margin: 0 0 1.1rem;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.2rem 0.6rem;
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 0.6875rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--on-dark);
+}
+.pg-crumbs li + li::before {
+  /* The second declaration gives the slash empty alt text, so screen readers
+     do not read it out; engines that do not know the syntax keep the first. */
+  content: '/';
+  content: '/' / '';
+  margin-right: 0.6rem;
+  color: var(--gold-bright);
+}
+.pg-crumbs a {
+  display: inline-block;
+  padding-block: 0.35rem;
+  color: var(--gold-bright);
+  text-decoration: none;
+}
+.pg-crumbs a:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+/* ---- closing band and credentials strip, everywhere ----------------------- */
+body.hp .hp-final {
+  color: var(--cream);
+  background:
+    radial-gradient(50% 70% at 100% 100%, rgb(60 100 160 / 0.25), transparent 70%),
+    linear-gradient(160deg, var(--midnight-2), var(--midnight) 60%, var(--midnight-deep));
+}
+body.hp .hp-trust {
+  margin-top: 0;
+  border: 0;
+  background: var(--ink);
+}
+body.hp .hp-trust ul { color: var(--stone); }
+body.hp .hp-trust li:not(:last-child)::after { color: var(--gold-bright); }
+
+/* ---- process steps: a timeline ------------------------------------------- */
+/* A rail runs through the step numbers, which become nodes on it. A gold
+   line fills the rail as the list scrolls past, so the reader watches the
+   process advance. Without scroll-driven animation the gold rail is simply
+   drawn. */
+body.hp .hp-steps { position: relative; }
+body.hp .hp-step {
+  position: relative;
+  grid-template-columns: 2.4rem 1fr;
+  gap: 1.4rem;
+  border-top: 0;
+  padding-block: 1rem;
+}
+body.hp .hp-steps::before,
+body.hp .hp-steps::after {
+  content: '';
+  position: absolute;
+  left: calc(1.2rem - 0.5px);
+  top: 2.2rem;
+  bottom: 2.2rem;
+  width: 1px;
+  pointer-events: none;
+}
+body.hp .hp-steps::before { background: var(--rule); }
+body.hp .hp-steps::after {
+  background: linear-gradient(180deg, var(--gold-bright), var(--gold-deep));
+  transform-origin: 50% 0;
+}
+body.hp .hp-step-num {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  border: 1px solid var(--gold);
+  border-radius: 50%;
+  background: var(--paper);
+  font-family: 'Fraunces', serif;
+  font-size: 1rem;
+  color: var(--gold-deep);
+  transition: background-color 0.3s ease, color 0.3s ease, transform 0.4s var(--pl-ease);
+}
+body.hp .hp-step:hover .hp-step-num { background: var(--gold); color: var(--ink); transform: scale(1.08); }
+body.hp .hp-step--featured .hp-step-num { background: var(--gold); color: var(--ink); }
+body.hp .hp-step-title { font-size: 1.0625rem; }
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    body.hp .hp-steps::after {
+      animation: pg-rail linear both;
+      animation-timeline: view();
+      animation-range: entry 30% cover 65%;
+    }
+  }
+}
+@keyframes pg-rail {
+  from { transform: scaleY(0); }
+  to { transform: scaleY(1); }
+}
+
+/* ---- about: the portrait framed as on the homepage ----------------------- */
+/* Framed only. The homepage's arch reveal is scroll-driven, and here the
+   portrait is above the fold, so it would load half-arched and sit that way
+   until the visitor scrolled. */
+body.hp .ab-portrait .ph {
+  border-radius: 6px;
+  box-shadow: 0 0 0 1px var(--rule), 0 40px 70px -40px rgb(14 24 40 / 0.55);
+}
+
+/* ---- services: a photograph per group ------------------------------------ */
+body.hp .sv-group {
+  padding-inline: 1rem;
+  margin-inline: -1rem;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+}
+body.hp .sv-group:hover { background-color: rgb(226 192 107 / 0.07); }
+.sv-photo {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: 6px;
+  box-shadow: 0 18px 36px -24px rgb(14 24 40 / 0.55);
+  transition: filter 0.5s ease, transform 0.6s var(--pl-ease);
+}
+body.hp .sv-group:hover .sv-photo { filter: saturate(1.12); transform: scale(1.03); }
+@media (min-width: 820px) {
+  body.hp .sv-group--photo {
+    grid-template-columns: 11rem 17rem 1fr auto;
+    align-items: center;
+  }
+  .sv-photo { aspect-ratio: 4 / 3; }
+}
+/* Custom homes uses the same row with the same call to action. */
+body.hp .hp-pillar {
+  padding-inline: 1rem;
+  margin-inline: -1rem;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+}
+body.hp .hp-pillar:hover { background-color: rgb(226 192 107 / 0.07); }
+body.hp :is(.sv-group, .hp-pillar) .hp-pillar-link {
+  justify-self: start;
+  margin-top: 0;
+  padding: 0.55rem 1rem;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+body.hp :is(.sv-group, .hp-pillar) .hp-pillar-link:hover,
+body.hp :is(.sv-group, .hp-pillar) .hp-pillar-link:focus-visible {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: var(--ink);
+}
+
+/* ---- insurance restoration: numbered cards, limits on midnight ----------- */
+body.hp .ir-items { gap: 1rem; }
+body.hp .ir-item {
+  padding: 1.4rem 1.35rem 1.5rem;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  background:
+    radial-gradient(120% 60% at 50% 0%, rgb(226 192 107 / 0.10), transparent 70%),
+    var(--paper);
+  transition: border-color 0.3s ease, box-shadow 0.4s var(--pl-ease), transform 0.4s var(--pl-ease);
+}
+body.hp .ir-item:hover {
+  border-color: var(--gold);
+  transform: translateY(-3px);
+  box-shadow: 0 18px 40px -26px rgb(20 17 13 / 0.35);
+}
+body.hp :is(.ir-num, .inv-num) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2rem;
+  height: 1.5rem;
+  margin-bottom: 0.9rem;
+  padding: 0 0.5rem;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 0.6875rem;
+  letter-spacing: 0.1em;
+  color: var(--gold-deep);
+}
+body.hp .ir-limit {
+  padding: 1.6rem 1.85rem;
+  border-left: 0;
+  border-radius: 8px;
+  color: var(--cream);
+  background:
+    radial-gradient(60% 120% at 100% 0%, rgb(200 162 74 / 0.18), transparent 65%),
+    linear-gradient(160deg, var(--midnight-2), var(--midnight));
+  box-shadow: inset 3px 0 0 var(--gold);
+}
+body.hp .ir-limit-title { color: var(--gold-bright); }
+body.hp .ir-limit p { color: var(--on-dark); }
+
+/* ---- service pages: scope on midnight, other services as chips ----------- */
+body.hp .svc-scope {
+  border: 0;
+  border-radius: 10px;
+  padding: 1.9rem;
+  color: var(--cream);
+  background:
+    radial-gradient(70% 60% at 100% 0%, rgb(200 162 74 / 0.2), transparent 65%),
+    linear-gradient(160deg, var(--midnight-2), var(--midnight));
+  box-shadow: 0 30px 60px -34px rgb(14 24 40 / 0.6);
+}
+@media (min-width: 900px) {
+  body.hp .svc-scope { position: sticky; top: 7rem; }
+}
+body.hp .svc-scope .svc-scope-title { color: var(--gold-bright); }
+body.hp .svc-scope .svc-list li { color: var(--on-dark); }
+body.hp .svc-scope .svc-list li::before { background: var(--gold-bright); width: 7px; }
+body.hp .svc-scope .svc-note { color: var(--stone); border-top-color: rgb(226 192 107 / 0.22); }
+
+body.hp .svc-more-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+body.hp .svc-more-list a {
+  display: inline-block;
+  padding: 0.6rem 1.05rem;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  background: var(--paper);
+  text-decoration: none;
+  transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease, transform 0.35s var(--pl-ease);
+}
+body.hp .svc-more-list a:hover,
+body.hp .svc-more-list a:focus-visible {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: var(--ink);
+  transform: translateY(-2px);
+}
+
+/* ---- projects: filter tabs ----------------------------------------------- */
+.gal-filter { margin-bottom: 2.5rem; }
+.gal-filter[hidden] { display: none; }
+.gal-filter-bar {
+  position: relative;
+  display: inline-flex;
+  max-width: 100%;
+  gap: 0.2rem;
+  padding: 0.35rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+  border-radius: 999px;
+  background: linear-gradient(160deg, var(--midnight-2), var(--midnight));
+  box-shadow: 0 16px 34px -22px rgb(14 24 40 / 0.6);
+}
+.gal-filter-bar::-webkit-scrollbar { display: none; }
+.gal-filter-pill {
+  position: absolute;
+  top: 0.35rem;
+  bottom: 0.35rem;
+  left: 0;
+  width: 0;
+  border-radius: 999px;
+  background: linear-gradient(115deg, var(--gold-bright), var(--gold));
+}
+.gal-filter-bar.is-ready .gal-filter-pill {
+  transition: transform 0.5s var(--pl-ease), width 0.5s var(--pl-ease);
+}
+.gal-filter-btn {
+  position: relative;
+  z-index: 1;
+  min-height: 44px;
+  padding: 0.6rem 1.15rem;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--cream);
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+.gal-filter-btn:hover { color: var(--gold-bright); }
+.gal-filter-btn[aria-pressed='true'] { color: var(--ink); }
+.gal-filter-btn:focus-visible { outline: 2px solid var(--gold-bright); outline-offset: 2px; }
+.gal-filter-n {
+  margin-left: 0.3rem;
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 0.6875rem;
+  opacity: 0.75;
+}
+.gal-item[hidden] { display: none; }
+.gal-item.is-entering { animation: pg-gal-in 0.55s var(--pl-ease) both; }
+@keyframes pg-gal-in {
+  from { opacity: 0; transform: translateY(14px) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}
+body.hp .gal-tag { background: var(--paper); }
+
+/* ---- questions page: topic index ----------------------------------------- */
+.faqp-index-label {
+  margin: 0 0 0.75rem;
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 0.625rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gold-deep);
+}
+.faqp-index ol {
+  list-style: none;
+  margin: 0 0 2.5rem;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.faqp-index a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.9rem;
+  min-height: 44px;
+  padding: 0.5rem 0.95rem;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  color: var(--charcoal);
+  font-size: 0.875rem;
+  text-decoration: none;
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+.faqp-index a:hover { border-color: var(--gold); color: var(--ink); }
+.faqp-index a[aria-current='true'] {
+  background: var(--midnight);
+  border-color: var(--midnight);
+  color: var(--cream);
+}
+.faqp-n {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 0.6875rem;
+  opacity: 0.7;
+}
+@media (min-width: 960px) {
+  .faqp-grid {
+    display: grid;
+    grid-template-columns: 16rem minmax(0, 1fr);
+    gap: clamp(2.5rem, 5vw, 5rem);
+    align-items: start;
+  }
+  .faqp-index { position: sticky; top: 7rem; }
+  .faqp-index ol { display: grid; gap: 0.3rem; margin: 0; }
+  .faqp-index a { border-radius: 8px; border-color: transparent; }
+}
+body.hp .faqp-groups .faq-group-title {
+  font-family: 'Fraunces', serif;
+  font-weight: 300;
+  font-size: clamp(1.4rem, 2.2vw, 1.75rem);
+  letter-spacing: -0.01em;
+  text-transform: none;
+  color: var(--ink);
+}
+.faqp-groups .faq-group:first-child { margin-top: 0; }
+
+/* ---- investors: numbered cards ------------------------------------------- */
+body.hp .inv-card {
+  padding: 1.4rem 1.35rem 1.5rem;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  background:
+    radial-gradient(120% 60% at 50% 0%, rgb(226 192 107 / 0.10), transparent 70%),
+    var(--paper);
+  transition: border-color 0.3s ease, box-shadow 0.4s var(--pl-ease), transform 0.4s var(--pl-ease);
+}
+body.hp .inv-card:hover {
+  border-color: var(--gold);
+  transform: translateY(-3px);
+  box-shadow: 0 18px 40px -26px rgb(20 17 13 / 0.35);
+}
+
+/* ---- contact: details on midnight beside the form ------------------------ */
+body.hp .ct-details {
+  align-self: start;
+  padding: clamp(1.5rem, 3vw, 2.25rem);
+  border-radius: 10px;
+  color: var(--cream);
+  background:
+    radial-gradient(70% 50% at 100% 0%, rgb(200 162 74 / 0.18), transparent 65%),
+    linear-gradient(160deg, var(--midnight-2), var(--midnight));
+  box-shadow: 0 30px 60px -34px rgb(14 24 40 / 0.6);
+}
+body.hp .ct-details .ab-h3 { color: var(--gold-bright); }
+body.hp .ct-details p,
+body.hp .ct-details address,
+body.hp .ct-details .ct-regions { color: var(--on-dark); }
+body.hp .ct-details a,
+body.hp .ct-details .hp-pillar-link { color: var(--gold-bright); }
+body.hp .ct-details a:hover { color: var(--cream); }
+body.hp .ct-details .ct-hours li { color: var(--on-dark); border-color: rgb(226 192 107 / 0.18); }
+body.hp .ct-details .social a { color: var(--cream); }
+body.hp .ct-map {
+  overflow: hidden;
+  border-radius: 8px;
+  box-shadow: 0 0 0 1px rgb(226 192 107 / 0.3);
+}
+
+/* ---- estimate: intro on midnight, offer on gold -------------------------- */
+body.hp .hp-est-intro {
+  align-self: start;
+  padding: clamp(1.75rem, 3vw, 2.5rem);
+  border-radius: 12px;
+  color: var(--cream);
+  background:
+    radial-gradient(70% 50% at 100% 0%, rgb(200 162 74 / 0.2), transparent 65%),
+    radial-gradient(50% 50% at 0% 100%, rgb(60 100 160 / 0.25), transparent 70%),
+    linear-gradient(160deg, var(--midnight-2), var(--midnight));
+  box-shadow: 0 30px 60px -34px rgb(14 24 40 / 0.6);
+}
+@media (min-width: 1024px) {
+  body.hp .hp-est-intro { position: sticky; top: 6.5rem; }
+}
+body.hp .hp-est-h1 {
+  font-family: 'Fraunces', serif;
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  color: var(--cream);
+}
+body.hp .hp-est-sub { color: var(--on-dark); }
+body.hp .hp-est-promo {
+  border: 0;
+  color: var(--ink);
+  background: linear-gradient(115deg, var(--gold-bright), var(--gold) 70%);
+  box-shadow: 0 16px 30px -20px rgb(133 103 25 / 0.8);
+}
+body.hp .hp-est-promo span { color: var(--ink); }
+body.hp .hp-est-steps { color: var(--on-dark); }
+body.hp .hp-est-steps li { border-top-color: rgb(226 192 107 / 0.2); }
+body.hp .hp-est-steps li span {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 0.75rem;
+  color: var(--gold-bright);
+}
+body.hp .hp-est-steps li.is-featured { color: var(--cream); }
+body.hp .hp-est-steps li.is-featured span { color: var(--gold-bright); }
+body.hp .hp-est-intro .hp-call { color: var(--gold-bright); }
+/* List your home shares this card. Its points and service-area line kept
+   the ink and gray they had on paper, which vanish on midnight. */
+body.hp .hp-est-intro .lyh-points li { border-left-color: var(--gold-bright); }
+body.hp .hp-est-intro .lyh-points h2 { color: var(--cream); }
+body.hp .hp-est-intro .lyh-points p,
+body.hp .hp-est-intro .lyh-area { color: var(--on-dark); }
+/* The five paths: each title answers the form beside it. */
+body.hp .lyh-paths { gap: 1rem; }
+body.hp .lyh-paths h2 a {
+  color: inherit;
+  text-decoration: none;
+  background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat;
+  transition: background-size 0.35s var(--pl-ease), color 0.2s ease;
+}
+body.hp .lyh-paths h2 a::after { content: ' \2192'; color: var(--gold-bright); }
+body.hp .lyh-paths h2 a:is(:hover, :focus-visible) {
+  color: var(--gold-bright);
+  background-size: 100% 1px;
+}
+body.hp .lyh-paths .lyh-kinds {
+  margin: 0 0 0.3rem;
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 0.6875rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gold-bright);
+}
+
+/* ---- not found: link cards with an arrow --------------------------------- */
+body.hp .nf-list a {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  column-gap: 1rem;
+  padding: 1rem 1.2rem;
+  border-radius: 8px;
+  transition: border-color 0.3s ease, box-shadow 0.4s var(--pl-ease), transform 0.4s var(--pl-ease);
+}
+body.hp .nf-list a::after {
+  content: '';
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  align-self: center;
+  width: 1rem;
+  height: 1rem;
+  background: var(--gold-deep);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 8h9M8.5 4l4 4-4 4'/%3E%3C/svg%3E") center / contain no-repeat;
+          mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 8h9M8.5 4l4 4-4 4'/%3E%3C/svg%3E") center / contain no-repeat;
+  transition: transform 0.35s var(--pl-ease);
+}
+body.hp .nf-list a:hover { transform: translateX(4px); box-shadow: 0 14px 30px -22px rgb(20 17 13 / 0.4); }
+body.hp .nf-list a:hover::after { transform: translateX(3px); }
+
+/* ---- legal pages: numbered sections -------------------------------------- */
+body.hp .legal { counter-reset: pg-legal; }
+body.hp .legal h2::before {
+  counter-increment: pg-legal;
+  content: counter(pg-legal, decimal-leading-zero);
+  display: block;
+  margin-bottom: 0.35rem;
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  color: var(--gold-deep);
+}
+/* Links in the legal text are underlined: in running prose, colour alone
+   does not mark a link (WCAG 1.4.1), and these were plain. */
+body.hp .legal p a {
+  text-decoration: underline;
+  text-decoration-color: var(--gold-deep);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+body.hp .legal p a:is(:hover, :focus-visible) { text-decoration-thickness: 2px; }
+
+/* ---- reduced motion ------------------------------------------------------ */
+@media (prefers-reduced-motion: reduce) {
+  body.hp .hp-step-num,
+  .sv-photo,
+  body.hp .ir-item,
+  body.hp .inv-card,
+  body.hp .svc-more-list a,
+  body.hp .nf-list a,
+  body.hp .nf-list a::after,
+  .gal-filter-bar.is-ready .gal-filter-pill { transition: none; }
+  body.hp .hp-step:hover .hp-step-num,
+  body.hp .sv-group:hover .sv-photo,
+  body.hp .ir-item:hover,
+  body.hp .inv-card:hover,
+  body.hp .svc-more-list a:hover,
+  body.hp .nf-list a:hover,
+  body.hp .nf-list a:hover::after { transform: none; }
+  .gal-item.is-entering { animation: none; }
+}
+
+/* ---- real estate: the agent's credential, in small text ------------------ */
+.re-item .re-credential {
+  display: grid;
+  gap: 0.2rem;
+  margin: 1.1rem 0 0;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--rule);
+}
+.re-credential-name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+.re-credential-line {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 0.6875rem;
+  letter-spacing: 0.06em;
+  line-height: 1.5;
+  color: var(--gray);
+}
+
+/* ---- real estate: the five paths ------------------------------------------ */
+/* Each card is one visitor's situation. The hand-off line is set apart so the
+   reader sees, in every card, who handles the deal or the management. */
+body.hp .re-paths > .re-item {
+  display: flex;
+  flex-direction: column;
+  scroll-margin-top: 7rem;
+}
+body.hp .re-paths .re-kinds {
+  margin: -0.35rem 0 0.6rem;
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 0.6875rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gold-deep);
+}
+body.hp .re-paths .re-handoff {
+  margin-top: 0.6rem;
+  padding-top: 0.6rem;
+  border-top: 1px solid var(--rule);
+  font-size: 0.875rem;
+  color: var(--gray);
+}
+body.hp .re-paths .re-path-link {
+  margin-top: auto;
+  padding-top: 1rem;
+  align-self: flex-start;
+  font-weight: 500;
+  color: var(--gold-deep);
+  text-decoration: none;
+}
+body.hp .re-paths .re-path-link::after {
+  content: ' \2192';
+  display: inline-block;
+  transition: transform 0.3s var(--pl-ease);
+}
+body.hp .re-paths .re-path-link:is(:hover, :focus-visible) { text-decoration: underline; text-underline-offset: 3px; }
+body.hp .re-paths .re-path-link:is(:hover, :focus-visible)::after { transform: translateX(3px); }
+/* A menu link lands on its card: mark it for a moment. */
+body.hp .re-paths > .re-item:target { box-shadow: 0 0 0 2px var(--gold); }
+
+/* ---- service pages: photographs ------------------------------------------ */
+/* On the client's request of 13 Oct the service pages carry pictures, so
+   they read as part of the site rather than as a document. Every image here
+   is an AI illustration; see service-images.ts. */
+
+/* The page head with a photograph behind it. The midnight is laid over the
+   image from the left, where the heading sits, so its contrast does not
+   depend on what the picture happens to show there. */
+body.hp main > .hp-pagehead.pg-photo {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: clamp(26rem, 62vh, 40rem);
+  background: var(--midnight-deep);
+}
+body.hp main > .hp-pagehead.pg-photo::before { display: none; }
+.pg-photo-media {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  margin: 0;
+  overflow: hidden;
+}
+.pg-photo-media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 65% 50%;
+}
+.pg-photo-media::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgb(10 18 30 / 0.95) 0%, rgb(10 18 30 / 0.88) 40%, rgb(10 18 30 / 0.55) 62%, rgb(10 18 30 / 0.12) 85%, rgb(10 18 30 / 0.05)),
+    linear-gradient(0deg, rgb(10 18 30 / 0.75), transparent 55%);
+}
+@media (max-width: 767px) {
+  body.hp main > .hp-pagehead.pg-photo { min-height: 32rem; }
+  .pg-photo-media::after {
+    background: linear-gradient(0deg, rgb(10 18 30 / 0.96) 22%, rgb(10 18 30 / 0.6) 58%, rgb(10 18 30 / 0.15));
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  /* The picture settles as the page opens, the slow push of a film title. */
+  .pg-photo-media img { animation: pg-settle 9s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+}
+@keyframes pg-settle {
+  from { transform: scale(1.08); }
+  to { transform: scale(1); }
+}
+
+
+/* The introduction beside a close detail of the work. */
+body.hp .svc-intro {
+  display: grid;
+  gap: 2.5rem;
+  max-width: 72rem;
+  margin-inline: auto;
+  align-items: center;
+}
+@media (min-width: 900px) {
+  body.hp .svc-intro { grid-template-columns: minmax(0, 1fr) minmax(18rem, 25rem); gap: clamp(3rem, 6vw, 5.5rem); }
+}
+body.hp .svc-intro .svc-prose p:first-child {
+  font-family: 'Fraunces', serif;
+  font-weight: 300;
+  font-size: clamp(1.3rem, 2.2vw, 1.6rem);
+  line-height: 1.45;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+.svc-fig {
+  position: relative;
+  margin: 0;
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--midnight);
+}
+.svc-fig img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+/* A thin gold frame set off behind the picture, the drafting-rule accent
+   the rest of the site uses. */
+body.hp .svc-fig--tall {
+  aspect-ratio: 4 / 5;
+  overflow: visible;
+  border-radius: 10px;
+}
+body.hp .svc-fig--tall img { border-radius: 10px; box-shadow: 0 30px 60px -34px rgb(14 24 40 / 0.6); }
+body.hp .svc-fig--tall::before {
+  content: '';
+  position: absolute;
+  inset: 1.1rem -1.1rem -1.1rem 1.1rem;
+  z-index: -1;
+  border: 1px solid rgb(200 162 74 / 0.55);
+  border-radius: 12px;
+}
+@media (max-width: 899px) {
+  body.hp .svc-fig--tall { aspect-ratio: 5 / 4; margin-right: 1.1rem; }
+}
+
+/* What the crew does, on midnight, beside a wider scene. */
+body.hp .svc-split {
+  display: grid;
+  max-width: 72rem;
+  margin-inline: auto;
+  overflow: hidden;
+  border-radius: 12px;
+  background:
+    radial-gradient(70% 60% at 100% 0%, rgb(200 162 74 / 0.18), transparent 65%),
+    linear-gradient(160deg, var(--midnight-2), var(--midnight));
+  box-shadow: 0 40px 80px -40px rgb(14 24 40 / 0.65);
+}
+@media (min-width: 900px) {
+  body.hp .svc-split { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); }
+}
+body.hp .svc-split .svc-fig--scene { border-radius: 0; aspect-ratio: 3 / 2; }
+@media (min-width: 900px) {
+  body.hp .svc-split .svc-fig--scene { aspect-ratio: auto; min-height: 24rem; }
+}
+body.hp .svc-split .svc-scope {
+  position: static;
+  align-self: center;
+  padding: clamp(1.75rem, 4vw, 3rem);
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+}
+
+/* The other services as picture cards. A rail to swipe on a phone. */
+body.hp .svc-cards {
+  margin: 2rem 0 2.25rem;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(13.5rem, 1fr));
+}
+@media (max-width: 639px) {
+  body.hp .svc-cards {
+    grid-auto-flow: column;
+    grid-template-columns: none;
+    grid-auto-columns: 72%;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding-bottom: 0.5rem;
+  }
+  body.hp .svc-cards > li { scroll-snap-align: start; }
+}
+body.hp .svc-card {
+  display: block;
+  height: 100%;
+  overflow: hidden;
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  background: var(--paper);
+  color: var(--ink);
+  text-decoration: none;
+  transition: transform 0.45s var(--pl-ease), box-shadow 0.45s var(--pl-ease), border-color 0.3s ease;
+}
+body.hp .svc-card-media { display: block; aspect-ratio: 3 / 2; overflow: hidden; background: var(--midnight); }
+body.hp .svc-card-media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.8s var(--pl-ease);
+}
+body.hp .svc-card-label {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem 0.95rem;
+  font-size: 0.9375rem;
+  font-weight: 500;
+}
+body.hp .svc-card-label::after { content: '\2192'; color: var(--gold-deep); transition: transform 0.35s var(--pl-ease); }
+body.hp .svc-card:is(:hover, :focus-visible) {
+  transform: translateY(-3px);
+  border-color: rgb(200 162 74 / 0.6);
+  box-shadow: 0 24px 40px -28px rgb(14 24 40 / 0.55);
+}
+body.hp .svc-card:is(:hover, :focus-visible) .svc-card-media img { transform: scale(1.05); }
+body.hp .svc-card:is(:hover, :focus-visible) .svc-card-label::after { transform: translateX(3px); }
+@media (prefers-reduced-motion: reduce) {
+  body.hp .svc-card,
+  body.hp .svc-card-media img { transition: none; }
+}
+/* The questions and the call to action share the 72rem edge of the sections
+   above them, now that those carry pictures. */
+body.hp .svc-faq,
+body.hp .svc-cta { max-width: 72rem; }
+body.hp .svc-faq .faq-list,
+body.hp .svc-faq .svc-scope-title { max-width: 62rem; }
+/* Eleven cards: rows of four leave three, not one, on the last row. */
+@media (min-width: 1100px) {
+  body.hp .svc-cards { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+@media (min-width: 640px) and (max-width: 1099px) {
+  body.hp .svc-cards { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+/* ---- custom homes -------------------------------------------------------- */
+/* Rebuilt on the owner's request of 13 Oct. Pictures are AI illustrations,
+   disclosed on /terms/; see service-images.ts. */
+
+/* Three ways to build, as tall picture cards. */
+body.hp .ch-offer-grid {
+  display: grid;
+  gap: 1rem;
+  margin-top: 2.25rem;
+}
+@media (min-width: 900px) {
+  body.hp .ch-offer-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.25rem; }
+}
+body.hp .ch-offer {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  aspect-ratio: 4 / 5;
+  border-radius: 12px;
+  color: var(--cream);
+  text-decoration: none;
+  background: var(--midnight);
+  isolation: isolate;
+}
+@media (max-width: 899px) {
+  body.hp .ch-offer { aspect-ratio: 5 / 4; }
+}
+body.hp .ch-offer-img {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 1s var(--pl-ease);
+}
+body.hp .ch-offer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(0deg, rgb(10 18 30 / 0.92) 8%, rgb(10 18 30 / 0.55) 42%, rgb(10 18 30 / 0.05) 72%);
+  transition: opacity 0.5s ease;
+}
+body.hp .ch-offer-body {
+  position: absolute;
+  inset: auto 0 0 0;
+  display: grid;
+  gap: 0.4rem;
+  padding: clamp(1.25rem, 2.5vw, 1.75rem);
+}
+body.hp .ch-offer-num {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 0.6875rem;
+  letter-spacing: 0.18em;
+  color: var(--gold-bright);
+}
+body.hp .ch-offer-title {
+  font-family: 'Fraunces', serif;
+  font-weight: 300;
+  font-size: clamp(1.5rem, 2.4vw, 1.9rem);
+  line-height: 1.15;
+}
+body.hp .ch-offer-detail { font-size: 0.9375rem; line-height: 1.55; color: var(--on-dark); }
+body.hp .ch-offer-go {
+  margin-top: 0.6rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--gold-bright);
+}
+body.hp .ch-offer-go::after { content: ' \2192'; display: inline-block; transition: transform 0.35s var(--pl-ease); }
+body.hp .ch-offer:is(:hover, :focus-visible) .ch-offer-img { transform: scale(1.05); }
+body.hp .ch-offer:is(:hover, :focus-visible) .ch-offer-go::after { transform: translateX(4px); }
+body.hp .ch-offer:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+
+/* After the 21st.dev "Scroll Reveal Image": the picture arrives as a framed
+   inset and opens to full width as it scrolls in. Where scroll-driven
+   animation is unsupported, or less motion is asked for, it is simply full
+   width. */
+/* clip, not hidden: hidden would make this a scroll container, and the
+   view() timeline below would follow it instead of the page. */
+body.hp .ch-reveal { padding-block: clamp(1rem, 4vw, 3rem); overflow: clip; }
+body.hp .ch-reveal-frame {
+  position: relative;
+  width: min(100% - 2rem, 96rem);
+  height: clamp(22rem, 72vh, 46rem);
+  margin-inline: auto;
+  overflow: hidden;
+  border-radius: 18px;
+  background: var(--midnight);
+}
+body.hp .ch-reveal-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 60%;
+}
+body.hp .ch-reveal-frame::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(0deg, rgb(10 18 30 / 0.75), transparent 45%);
+  pointer-events: none;
+}
+body.hp .ch-reveal-line {
+  position: absolute;
+  z-index: 1;
+  left: clamp(1.25rem, 5vw, 4rem);
+  right: clamp(1.25rem, 5vw, 4rem);
+  bottom: clamp(1.25rem, 4vw, 3rem);
+  margin: 0;
+  max-width: 34rem;
+  font-family: 'Fraunces', serif;
+  font-weight: 300;
+  font-style: italic;
+  font-size: clamp(1.4rem, 3vw, 2.3rem);
+  line-height: 1.25;
+  color: var(--cream);
+}
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    body.hp .ch-reveal-frame {
+      animation: ch-open linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 45%;
+    }
+    body.hp .ch-reveal-frame img {
+      animation: ch-zoom linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 45%;
+    }
+  }
+}
+@keyframes ch-open {
+  from { width: min(62%, 60rem); border-radius: 0; }
+  to { width: min(100% - 2rem, 96rem); border-radius: 18px; }
+}
+@keyframes ch-zoom {
+  from { transform: scale(1.35); }
+  to { transform: scale(1); }
+}
+
+/* After the 21st.dev "Scroll Reveal Content A": the stages beside a rail
+   that fills, and one picture kept in view that changes with the stage. */
+body.hp .ch-story { margin-top: 2.5rem; }
+body.hp .ch-steps {
+  position: relative;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 1.75rem;
+}
+body.hp .ch-step {
+  position: relative;
+  display: grid;
+  grid-template-columns: 3rem minmax(0, 1fr);
+  gap: 0 1.25rem;
+  align-items: start;
+}
+body.hp .ch-step-num {
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  border: 1px solid rgb(200 162 74 / 0.5);
+  border-radius: 50%;
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 0.75rem;
+  color: var(--gold-deep);
+  background: var(--paper);
+  position: relative;
+  z-index: 1;
+  transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease;
+}
+body.hp .ch-step-title {
+  margin: 0.55rem 0 0.35rem;
+  font-family: 'Fraunces', serif;
+  font-weight: 400;
+  font-size: clamp(1.3rem, 2vw, 1.6rem);
+  color: var(--ink);
+}
+body.hp .ch-step-detail { margin: 0; font-size: 1rem; line-height: 1.65; color: var(--charcoal); max-width: 36ch; }
+body.hp .ch-step-img {
+  grid-column: 2;
+  margin-top: 1rem;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: 10px;
+}
+body.hp .ch-media { display: none; }
+
+@media (min-width: 900px) {
+  body.hp .ch-story {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: clamp(3rem, 6vw, 6rem);
+    align-items: start;
+  }
+  /* Each stage gets room to be the one in the middle of the screen. */
+  body.hp .ch-steps { gap: 0; padding-block: 12vh 18vh; }
+  body.hp .ch-step { min-height: 46vh; align-content: center; }
+  body.hp .ch-step-img { display: none; }
+  /* The rail behind the numbers, and its gold fill. */
+  body.hp .ch-steps::before,
+  body.hp .ch-steps::after {
+    content: '';
+    position: absolute;
+    left: calc(1.5rem - 1px);
+    top: calc(12vh + 23vh);
+    bottom: calc(18vh + 23vh);
+    width: 2px;
+    background: var(--rule);
+  }
+  body.hp .ch-steps::after {
+    background: var(--gold);
+    transform-origin: top;
+    transform: scaleY(var(--ch-p, 0));
+    transition: transform 0.6s var(--pl-ease);
+  }
+  body.hp .ch-story.is-live .ch-step { opacity: 0.4; transition: opacity 0.5s ease; }
+  body.hp .ch-story.is-live .ch-step:is(.is-active, .is-past) { opacity: 1; }
+  body.hp .ch-story.is-live .ch-step.is-past { opacity: 0.6; }
+  body.hp .ch-step:is(.is-active, .is-past) .ch-step-num {
+    border-color: var(--gold);
+    background: var(--gold);
+    color: var(--ink);
+  }
+  body.hp .ch-media {
+    display: block;
+    position: sticky;
+    top: 14vh;
+    height: 72vh;
+    overflow: hidden;
+    border-radius: 14px;
+    background: var(--midnight);
+    box-shadow: 0 40px 80px -40px rgb(14 24 40 / 0.6);
+  }
+  body.hp .ch-media-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transform: scale(1.04);
+    transition: opacity 0.7s ease, transform 1.2s var(--pl-ease);
+  }
+  body.hp .ch-media-img.is-active { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  body.hp .ch-offer-img,
+  body.hp .ch-media-img,
+  body.hp .ch-steps::after,
+  body.hp .ch-story.is-live .ch-step { transition: none; }
+}
+
+/* Our own work: the real photograph, beside a line about it. */
+body.hp .ch-own-inner {
+  display: grid;
+  gap: 2rem;
+  align-items: center;
+  max-width: 72rem;
+  margin-inline: auto;
+}
+@media (min-width: 900px) {
+  body.hp .ch-own-inner { grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: 4rem; }
+}
+body.hp .ch-own-fig { margin: 0; overflow: hidden; border-radius: 12px; box-shadow: 0 30px 60px -34px rgb(14 24 40 / 0.55); }
+body.hp .ch-own-fig img { display: block; width: 100%; height: auto; }
+body.hp .ch-own-text .hp-lede { margin: 1rem 0 1.5rem; }

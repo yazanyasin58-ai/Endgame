@@ -1,0 +1,469 @@
+---
+/**
+ * Site header: a slim floating bar and a full-screen menu.
+ *
+ * Rebuilt after "Sterling Gate: Kinetic Navigation" from the owner's saved
+ * 21st.dev components: the bar stays quiet, and the menu is a typography-led
+ * layer that drops over the page. Hovering an entry ripples through its
+ * neighbours and opens that group's links in the side column.
+ *
+ * It drops HALFWAY, not full screen, by the owner's choice on 11 October: the
+ * page stays visible, dimmed, underneath, and a click on it closes the menu
+ * and leaves the visitor where they were.
+ *
+ * The bar itself floats into a rounded, blurred pill once the page scrolls,
+ * which is the one behaviour borrowed from "Header 3", also saved.
+ *
+ * STILL A <details>. The menu opens, closes and takes keyboard focus with no
+ * JavaScript at all, as the old header did. The script adds what a full-screen
+ * layer needs on top: Escape, a focus trap, the rest of the page made inert,
+ * scroll lock, the closing animation, and the side column on wide screens.
+ * Without it, every group simply shows its links beneath its name.
+ *
+ * Gated entries are omitted entirely rather than rendered disabled: a nav item
+ * pointing at content we are not cleared to publish is itself a liability.
+ */
+import Logo from './Logo.astro';
+import { business, nav, features, hours, hoursLabel } from '../content/idf';
+
+interface Props {
+  current?: string;
+}
+
+const { current } = Astro.props;
+
+/**
+ * A gated entry appears only when its gate is exactly `true`. The real estate
+ * gate also has a 'preview' state, which is truthy but must NOT put the link
+ * in the nav: preview means the owner can read the page at its URL, not that
+ * the site advertises it.
+ */
+const open = (entry: { gated?: string }) =>
+  !('gated' in entry) || features[entry.gated as keyof typeof features] === true;
+
+interface NavLink {
+  label: string;
+  href: string;
+}
+interface NavEntry extends NavLink {
+  children?: NavLink[];
+}
+
+/* Filter both levels, then drop the children from any group whose children
+   have all been gated away — a group with nothing under it is a plain link. */
+const items: NavEntry[] = nav.filter(open).map((entry) => {
+  const children = 'children' in entry ? entry.children.filter(open) : [];
+  return children.length > 0
+    ? { label: entry.label, href: entry.href, children: children.map((c) => ({ label: c.label, href: c.href })) }
+    : { label: entry.label, href: entry.href };
+});
+
+const isCurrent = (entry: NavEntry) =>
+  current === entry.href || (entry.children ?? []).some((c) => c.href === current);
+
+const num = (i: number) => String(i + 1).padStart(2, '0');
+---
+
+<header class="hp-nav sg-bar" data-sg-bar>
+  <Logo class="hp-logo" />
+
+  <div class="hp-nav-actions">
+    <a class="hp-nav-phone" href={business.phonePrimaryHref}>{business.phonePrimary}</a>
+    <a class="hp-btn hp-btn--sm" href="/estimate/">Free Estimate</a>
+
+    <details class="sg" data-sg>
+      <summary class="sg-toggle" aria-label="Menu">
+        <span class="sg-toggle-words" aria-hidden="true">
+          <span class="sg-toggle-word">Menu</span>
+          <span class="sg-toggle-word">Close</span>
+        </span>
+        <span class="sg-burger" aria-hidden="true"><i></i><i></i></span>
+      </summary>
+
+      <div class="sg-panel" data-sg-panel>
+        <div class="sg-grain" aria-hidden="true"></div>
+
+        <nav class="sg-main" aria-label="Main">
+          <p class="sg-eyebrow">Index</p>
+          <ol class="sg-index">
+            {
+              items.map((item, i) => (
+                <li
+                  class:list={['sg-item', { 'is-current': isCurrent(item), 'has-sub': item.children }]}
+                  data-sg-item={i}
+                  style={`--sg-i: ${i}`}
+                >
+                  <a
+                    class="sg-link"
+                    href={item.href}
+                    aria-current={current === item.href ? 'page' : undefined}
+                  >
+                    <span class="sg-num" aria-hidden="true">{num(i)}</span>
+                    <span class="sg-label">{item.label}</span>
+                    {item.children && (
+                      <span class="sg-count" aria-hidden="true">{item.children.length}</span>
+                    )}
+                  </a>
+                  {item.children && (
+                    <ul class="sg-sub-inline" aria-label={`${item.label} pages`}>
+                      {item.children.map((c) => (
+                        <li>
+                          <a href={c.href} aria-current={current === c.href ? 'page' : undefined}>
+                            {c.label}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </li>
+              ))
+            }
+          </ol>
+        </nav>
+
+        {/* The side column. On wide screens with the script running, it shows
+            the group under the pointer or the keyboard; at rest it shows how
+            to reach the showroom. Its group lists repeat the inline ones, and
+            exactly one of the two is ever displayed, so nothing is announced
+            twice. */}
+        <aside class="sg-aside" aria-label="Menu details">
+          <div class="sg-card sg-card--rest is-active" data-sg-sub="rest">
+            <p class="sg-eyebrow">The showroom</p>
+            <address class="sg-addr">
+              45431 Ruritan Circle, Suite 160<br />Sterling, VA 20164
+            </address>
+            <ul class="sg-hours">
+              {
+                hours.map((h) => (
+                  <li>
+                    <span>{h.days}</span>
+                    <span>{hoursLabel(h)}</span>
+                  </li>
+                ))
+              }
+            </ul>
+            <p class="sg-contact">
+              <a href={business.phonePrimaryHref}>{business.phonePrimary}</a>
+              <a href={`mailto:${business.email}`}>{business.email}</a>
+            </p>
+          </div>
+          {
+            items.map((item, i) =>
+              item.children ? (
+                <div class="sg-card" data-sg-sub={i}>
+                  <p class="sg-eyebrow">{num(i)} / {item.label}</p>
+                  <ul class:list={['sg-sub', { 'sg-sub--cols': item.children.length > 7 }]}>
+                    {item.children.map((c) => (
+                      <li>
+                        <a href={c.href} aria-current={current === c.href ? 'page' : undefined}>
+                          {c.label}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null,
+            )
+          }
+        </aside>
+
+        <div class="sg-foot">
+          <a class="hp-btn sg-foot-cta" href="/estimate/">Request a Free Estimate</a>
+          <a class="sg-foot-link" href="/list-your-home/">Tell us about your property</a>
+          <a class="sg-foot-link sg-foot-phone" href={business.phonePrimaryHref}>
+            Call {business.phonePrimary}
+          </a>
+        </div>
+      </div>
+      {/* The dimmed page below the panel. A click on it closes the menu; that
+          is script, so without script it is simply shade. */}
+      <div class="sg-scrim" data-sg-scrim aria-hidden="true"></div>
+    </details>
+  </div>
+</header>
+
+<script>
+  /**
+   * Behaviour for the full-screen menu and the bar. Everything here sits on
+   * top of a <details> that already works without it.
+   */
+  const bar = document.querySelector<HTMLElement>('[data-sg-bar]');
+  const menu = document.querySelector<HTMLDetailsElement>('[data-sg]');
+  const panel = document.querySelector<HTMLElement>('[data-sg-panel]');
+  const summary = menu?.querySelector('summary');
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)');
+  const wide = matchMedia('(min-width: 1024px)');
+
+  if (bar && menu && panel && summary) {
+    document.documentElement.classList.add('sg-ready');
+
+    /* ---- the side column ---------------------------------------------- */
+    const cards = [...panel.querySelectorAll<HTMLElement>('[data-sg-sub]')];
+    const items = [...panel.querySelectorAll<HTMLElement>('[data-sg-item]')];
+
+    const show = (key: string) => {
+      const target = cards.find((c) => c.dataset.sgSub === key) ?? cards[0];
+      for (const c of cards) c.classList.toggle('is-active', c === target);
+      for (const it of items) it.classList.toggle('is-active', it.dataset.sgItem === key);
+    };
+
+    /* The group under the pointer stays open after the pointer leaves the
+       index, so its pages can be reached in the side column. Only another
+       item, or reopening the menu, changes it.
+
+       Getting there means crossing the items below or above on a diagonal.
+       While the pointer is heading for the side column, an item it passes
+       over does not take over at once: it waits a moment and only opens if
+       the pointer has stopped on it (the "menu aim" of most dropdowns). */
+    const aside = panel.querySelector<HTMLElement>('.sg-aside');
+    const AIM_DELAY = 250;
+    let prev: { x: number; y: number } | null = null;
+    let curr: { x: number; y: number } | null = null;
+    let moves = 0;
+    let hovered: string | null = null;
+    let aimTimer = 0;
+
+    panel.addEventListener('pointermove', (e) => {
+      if (e.pointerType !== 'mouse') return;
+      prev = curr;
+      curr = { x: e.clientX, y: e.clientY };
+      moves++;
+    });
+
+    // Is the pointer moving into the triangle between where it was and the
+    // side column's near edge?
+    const aimingAtAside = () => {
+      if (!aside || !prev || !curr) return false;
+      const r = aside.getBoundingClientRect();
+      if (r.width === 0 || curr.x >= r.left) return false;
+      const slope = (a: { x: number; y: number }, b: { x: number; y: number }) =>
+        (b.y - a.y) / (b.x - a.x || 0.001);
+      const top = { x: r.left, y: r.top };
+      const bottom = { x: r.left, y: r.bottom };
+      return curr.x > prev.x && slope(curr, top) < slope(prev, top) && slope(curr, bottom) > slope(prev, bottom);
+    };
+
+    for (const it of items) {
+      const key = it.dataset.sgItem ?? 'rest';
+      it.addEventListener('pointerenter', (e) => {
+        if (e.pointerType !== 'mouse') return;
+        hovered = key;
+        clearTimeout(aimTimer);
+        if (!aimingAtAside()) { show(key); return; }
+        // Still heading for the column when the wait ends: wait again. A
+        // pointer that has stopped, or turned away, has chosen this item.
+        let seen = moves;
+        const settle = () => {
+          if (hovered !== key) return;
+          if (moves !== seen && aimingAtAside()) {
+            seen = moves;
+            aimTimer = window.setTimeout(settle, AIM_DELAY);
+          } else {
+            show(key);
+          }
+        };
+        aimTimer = window.setTimeout(settle, AIM_DELAY);
+      });
+      it.addEventListener('pointerleave', (e) => {
+        if (e.pointerType === 'mouse' && hovered === key) hovered = null;
+      });
+      it.addEventListener('focusin', () => show(key));
+    }
+    // Reaching the side column settles it: nothing pending may change it.
+    aside?.addEventListener('pointerenter', () => clearTimeout(aimTimer));
+
+    /* ---- opening and closing ------------------------------------------ */
+    let outside: Element[] = [];
+
+    const lock = (on: boolean) => {
+      document.documentElement.classList.toggle('sg-open', on);
+      bar.classList.toggle('is-open', on);
+      if (on) {
+        // Everything but the header goes inert: no focus, no clicks, and
+        // assistive tech treats the menu as the whole page while it is open.
+        outside = [...document.body.children].filter(
+          (el) => el !== bar && !el.contains(bar) && el.tagName !== 'SCRIPT',
+        );
+        for (const el of outside) el.setAttribute('inert', '');
+        for (const el of bar.querySelectorAll(':scope > :not(.hp-nav-actions), .hp-nav-actions > :not(.sg)')) {
+          el.setAttribute('inert', '');
+          outside.push(el);
+        }
+      } else {
+        for (const el of outside) el.removeAttribute('inert');
+        outside = [];
+      }
+    };
+
+    // The panel's content starts below the Close button. The button sits
+    // lower while the offer banner shows above the bar, and would otherwise
+    // land on the side column's first row.
+    const clearToggle = () => {
+      panel.style.setProperty('--sg-clear', `${Math.ceil(summary.getBoundingClientRect().bottom)}px`);
+    };
+    const reclear = () => { if (menu.open) clearToggle(); };
+    addEventListener('resize', reclear, { passive: true });
+    // Opening can still move the bar a little (the page settles once it is
+    // locked), so measure again once that has happened.
+    addEventListener('scroll', reclear, { passive: true });
+
+    menu.addEventListener('toggle', () => {
+      if (menu.open) {
+        clearToggle();
+        requestAnimationFrame(() => requestAnimationFrame(reclear));
+        window.setTimeout(reclear, 300);
+      }
+      lock(menu.open);
+      summary.setAttribute('aria-label', menu.open ? 'Close menu' : 'Menu');
+      if (menu.open) {
+        show('rest');
+        panel.querySelector<HTMLElement>('.sg-link')?.focus({ preventScroll: true });
+      }
+    });
+
+    let closing = false;
+    const close = (focusToggle = true) => {
+      if (!menu.open || closing) return;
+      if (reduce.matches) {
+        menu.open = false;
+        if (focusToggle) summary.focus();
+        return;
+      }
+      closing = true;
+      menu.classList.add('is-closing');
+      window.setTimeout(() => {
+        menu.classList.remove('is-closing');
+        menu.open = false;
+        closing = false;
+        if (focusToggle) summary.focus();
+      }, 520);
+    };
+
+    // The dimmed page below the panel is the most natural "take me back".
+    menu.querySelector('[data-sg-scrim]')?.addEventListener('click', () => close());
+
+    // The toggle closes with the animation rather than snapping shut.
+    summary.addEventListener('click', (e) => {
+      if (menu.open) {
+        e.preventDefault();
+        close();
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (!menu.open) return;
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        close();
+        return;
+      }
+      if (e.key !== 'Tab') return;
+      // Keep focus inside the toggle and the panel.
+      const focusable = [summary, ...panel.querySelectorAll<HTMLElement>('a[href]')].filter(
+        (el) => el.offsetParent !== null || el === summary,
+      );
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    });
+
+    // A link to somewhere on this same page would otherwise scroll the page
+    // behind a menu that stays open.
+    panel.addEventListener('click', (e) => {
+      const a = (e.target as Element).closest<HTMLAnchorElement>('a[href]');
+      if (!a) return;
+      const url = new URL(a.href, location.href);
+      if (url.pathname === location.pathname && url.hash) {
+        menu.open = false;
+      }
+    });
+
+    wide.addEventListener('change', () => show('rest'));
+  }
+
+  /* ---- the bar: float once the page moves ------------------------------- */
+  if (bar) {
+    let queued = false;
+    const update = () => {
+      queued = false;
+      bar.classList.toggle('is-scrolled', scrollY > 24);
+    };
+    addEventListener(
+      'scroll',
+      () => {
+        if (queued) return;
+        queued = true;
+        requestAnimationFrame(update);
+      },
+      { passive: true },
+    );
+    update();
+  }
+
+  /**
+   * The sticky header's other piece of behaviour: get out of the film's way.
+   *
+   * Unchanged from the previous header. While the scrubbed film owns the
+   * viewport the bar tucks up out of sight, and it comes back when the film
+   * is done. The condition is evaluated directly from the hero's rect on
+   * every coalesced scroll frame, because an observer misses jumps (End, an
+   * in-page anchor) and once left a hole where the header should be:
+   *
+   *   r.top <= 0              the hero's top is above the viewport, which is
+   *                           also exactly "the header is stuck"
+   *   r.bottom > innerHeight  the sticky stage is still sticking
+   *
+   * Reduced motion keeps the bar visible throughout.
+   */
+  const header = document.querySelector('.hp-nav');
+  const hero = document.querySelector('.sh');
+  const motionOk = window.matchMedia('(prefers-reduced-motion: no-preference)');
+  const sticky = window.matchMedia('(min-width: 768px)');
+
+  if (header && hero) {
+    let queued = false;
+
+    const update = () => {
+      queued = false;
+      const r = hero.getBoundingClientRect();
+      // Never tuck an open menu out of reach.
+      const open = document.documentElement.classList.contains('sg-open');
+      header.classList.toggle('is-tucked', !open && r.top <= 0 && r.bottom > window.innerHeight);
+    };
+
+    const onScroll = () => {
+      if (queued) return;
+      queued = true;
+      requestAnimationFrame(update);
+    };
+
+    let armed = false;
+    const arm = () => {
+      if (armed) return;
+      armed = true;
+      addEventListener('scroll', onScroll, { passive: true });
+      addEventListener('resize', onScroll, { passive: true });
+      update();
+    };
+
+    const disarm = () => {
+      if (!armed) return;
+      armed = false;
+      removeEventListener('scroll', onScroll);
+      removeEventListener('resize', onScroll);
+      header.classList.remove('is-tucked');
+    };
+
+    const apply = () => (sticky.matches && motionOk.matches ? arm() : disarm());
+
+    motionOk.addEventListener('change', apply);
+    sticky.addEventListener('change', apply);
+    apply();
+  }
+</script>

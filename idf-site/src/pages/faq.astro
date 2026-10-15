@@ -1,0 +1,114 @@
+---
+/**
+ * Frequently asked questions.
+ *
+ * The canonical home for every question. The homepage carries a handful of
+ * them and links here; both render from the same `faqGroups`, so the two can
+ * never disagree.
+ *
+ * THIS PAGE CARRIES THE FAQPage STRUCTURED DATA AND THE HOMEPAGE DOES NOT.
+ * Google's guidance is that FAQPage markup belongs on a page whose main
+ * content is the FAQ, and the same markup on two URLs describes two
+ * different FAQs to a parser. Same reasoning as LocalBusinessSchema being
+ * homepage-only.
+ *
+ * The markup is emitted whatever `preLaunch` says, because it costs nothing
+ * while the site is noindex and is correct the moment that flips. The site
+ * being unindexed is a separate switch and not this file's business.
+ */
+import Page from '../layouts/Page.astro';
+import FaqList from '../components/FaqList.astro';
+import { business } from '../content/idf';
+import { faqGroups, faqItems } from '../content/faq';
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqItems.map((item) => ({
+    '@type': 'Question',
+    name: item.q,
+    acceptedAnswer: {
+      '@type': 'Answer',
+      /* One string, paragraphs joined. schema.org wants the answer text, and
+         a crawler reading a stray array here gets nothing useful. */
+      text: item.a.join(' '),
+    },
+  })),
+};
+---
+
+<Page
+  title={`Frequently asked questions — ${business.name}`}
+  description="Straight answers on estimates, licensing, service areas, timelines, insurance restoration work, and getting a home ready to sell. Virginia Class A general contractor in Sterling."
+  heading="Frequently asked questions"
+  standfirst="The things people ask us most, answered plainly. If yours is not here, call us and ask."
+  current="/faq/"
+>
+  <section class="hp-section hp-section--tight" aria-labelledby="faq-h">
+    <h2 id="faq-h" class="hp-visually-hidden">Questions and answers</h2>
+
+    {/* Two columns on wide screens, like the homepage band: an index of the
+        topics holds its place on the left and marks the one being read. */}
+    <div class="faqp-grid">
+      <nav class="faqp-index" aria-label="Question topics">
+        <p class="faqp-index-label">Topics</p>
+        <ol>
+          {faqGroups.map((group) => (
+            <li>
+              <a href={`#${group.id}`} data-faqp-link={group.id}>
+                <span>{group.title}</span>
+                <span class="faqp-n" aria-hidden="true">{group.items.length}</span>
+              </a>
+            </li>
+          ))}
+        </ol>
+      </nav>
+      <div class="faqp-groups">
+        {
+          faqGroups.map((group) => (
+            <div class="faq-group" id={group.id}>
+              <h3 class="faq-group-title">{group.title}</h3>
+              <FaqList items={group.items} />
+            </div>
+          ))
+        }
+      </div>
+    </div>
+
+    <p class="faq-tail">
+      Still unsure about something? Call{' '}
+      <a href={business.phonePrimaryHref}>{business.phonePrimary}</a> and ask us directly,
+      or <a href="/estimate/">request an estimate</a> and we will walk the site.
+    </p>
+  </section>
+
+  <script type="application/ld+json" set:html={JSON.stringify(schema)} is:inline />
+
+  <script>
+    /* Mark the topic being read in the index. The group whose top has most
+       recently passed a line a third of the way down the screen is current. */
+    const links = [...document.querySelectorAll<HTMLAnchorElement>('[data-faqp-link]')];
+    const groups = links
+      .map((a) => document.getElementById(a.dataset.faqpLink ?? ''))
+      .filter((g): g is HTMLElement => Boolean(g));
+    if (links.length && groups.length) {
+      let queued = false;
+      const update = () => {
+        queued = false;
+        const line = innerHeight / 3;
+        let current = groups[0];
+        for (const g of groups) if (g.getBoundingClientRect().top <= line) current = g;
+        for (const a of links) {
+          if (a.dataset.faqpLink === current.id) a.setAttribute('aria-current', 'true');
+          else a.removeAttribute('aria-current');
+        }
+      };
+      addEventListener('scroll', () => {
+        if (queued) return;
+        queued = true;
+        requestAnimationFrame(update);
+      }, { passive: true });
+      update();
+    }
+  </script>
+</Page>
