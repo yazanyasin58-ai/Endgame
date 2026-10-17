@@ -1,0 +1,791 @@
+/* ============================================================
+   Polish layer: motion and depth below the hero.
+
+   The page under the scrubbed film was all hairlines on cream: correct,
+   quiet, and flat. This layer adds depth and response without touching a
+   word of content, a colour token, or the layout the owner signed off.
+
+   Each block below names the 21st.dev component it is modelled on. None of
+   them is React here. Every one is rebuilt as CSS plus, where a pointer is
+   involved, one delegated listener in src/scripts/polish.ts, because the
+   site ships static HTML and adding a framework for hover states would cost
+   more than all of this put together.
+
+   THE RULES THIS FILE KEEPS, the same ones reveal.css keeps:
+   - Nothing is hidden unless the `.js` class is on <html>.
+   - Reduced motion gets the finished state, with no transition at all.
+   - Every pairing that carries text is one already measured in the README.
+     Gold is only ever a fill behind ink, a rule, or a glow, never text on
+     paper. Text on paper stays --gold-deep.
+
+   SPECIFICITY, NOT ORDER. This file is imported by the base layout, so it
+   lands in the bundle BEFORE home.css on most pages. Every selector is
+   therefore anchored on `body.hp`, which outranks the plain class selectors
+   in home.css at any position in the cascade.
+   ============================================================ */
+
+:root {
+  --pl-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  /* The glow the spotlight and the buttons share, so everything that lights
+     up lights up the same colour. */
+  --pl-glow: rgb(200 162 74 / 0.35);
+  --pl-glow-soft: rgb(200 162 74 / 0.14);
+  --pl-sheen: linear-gradient(110deg,
+    transparent 0%, transparent 38%,
+    rgb(246 225 168 / 0.85) 50%,
+    transparent 62%, transparent 100%);
+}
+
+/* Registered so the animated border can tween an angle. Browsers without
+   @property simply show a static gradient border, which is the fallback. */
+@property --pl-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+/* ------------------------------------------------------------------
+   1. Scroll progress
+   21st.dev: "Scroll Progress" pattern.
+
+   A hairline of gold across the top of the viewport that fills as the page
+   is read. Driven entirely by a scroll timeline: no script, no listener.
+   Engines without scroll-driven animations never see it at all, because the
+   bar only exists inside the @supports block.
+   ------------------------------------------------------------------ */
+@supports (animation-timeline: scroll()) {
+  body.hp::before {
+    content: '';
+    position: fixed;
+    inset: 0 0 auto 0;
+    height: 2px;
+    z-index: 200;
+    pointer-events: none;
+    background: linear-gradient(90deg, var(--gold-deep), var(--gold), var(--gold-bright));
+    transform-origin: 0 50%;
+    transform: scaleX(0);
+    animation: pl-progress linear both;
+    animation-timeline: scroll(root block);
+  }
+}
+@keyframes pl-progress { to { transform: scaleX(1); } }
+
+/* ------------------------------------------------------------------
+   2. Primary buttons: shimmer
+   21st.dev: "Shimmer Button" (emerald-ui), the 110deg highlight band that
+   travels across the face of the button.
+
+   The band is a lighter gold, so ink on it measures higher than ink on the
+   base gold. Idle, it crosses once every few seconds; hovered, the button
+   lifts on a gold glow and the band runs continuously.
+   ------------------------------------------------------------------ */
+body.hp .hp-btn,
+body.hp .ef-submit {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background-color: var(--gold);
+  background-image: var(--pl-sheen);
+  background-size: 250% 100%;
+  background-position: 130% 0;
+  background-repeat: no-repeat;
+  box-shadow: 0 1px 0 rgb(255 255 255 / 0.35) inset, 0 1px 2px rgb(20 17 13 / 0.12);
+  transition:
+    transform 0.25s var(--pl-ease),
+    box-shadow 0.25s var(--pl-ease),
+    background-color 0.25s ease;
+  animation: pl-shimmer 5.5s var(--pl-ease) infinite;
+}
+body.hp .hp-btn:hover,
+body.hp .hp-btn:focus-visible,
+body.hp .ef-submit:hover,
+body.hp .ef-submit:focus-visible {
+  background-color: var(--gold-bright);
+  /* home.css sets `background:` on .ef-submit:hover, and the shorthand
+     resets the image. Restated so the sheen survives the hover. */
+  background-image: var(--pl-sheen);
+  background-size: 250% 100%;
+  background-repeat: no-repeat;
+  transform: translateY(-2px);
+  box-shadow:
+    0 1px 0 rgb(255 255 255 / 0.4) inset,
+    0 10px 28px -8px var(--pl-glow),
+    0 0 0 4px var(--pl-glow-soft);
+  animation-duration: 1.6s;
+}
+body.hp .hp-btn:active,
+body.hp .ef-submit:active { transform: translateY(0); }
+@keyframes pl-shimmer {
+  0%, 62% { background-position: 130% 0; }
+  100% { background-position: -30% 0; }
+}
+
+/* ------------------------------------------------------------------
+   3. Text links become pill buttons with a sliding arrow
+   21st.dev: "Interactive Hover Button" (magicui). A dot sits before the
+   label; on hover it floods the pill with gold and the arrow slides in.
+
+   Applies to the "See all services" style links that close each section.
+   They were plain underlined text and were the easiest thing on the page to
+   miss.
+   ------------------------------------------------------------------ */
+body.hp :is(.hp-section > .hp-textlink, .hp-textlink.hp-faq-more) {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: flex;
+  width: fit-content;
+  align-items: center;
+  gap: 0.65rem;
+  min-height: 44px;
+  padding: 0.7rem 1.35rem 0.7rem 1.1rem;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  color: var(--ink);
+  font-weight: 500;
+  text-decoration: none;
+  background: var(--paper);
+  transition: color 0.3s ease, border-color 0.3s ease, padding 0.35s var(--pl-ease);
+}
+/* Centred variants (the A layout) keep their centring. */
+body.hp:not(.vb) :is(.hp-section > .hp-textlink, .hp-textlink.hp-faq-more) { margin-inline: auto; }
+
+/* the dot that becomes the fill */
+body.hp :is(.hp-section > .hp-textlink, .hp-textlink.hp-faq-more)::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  left: 1.1rem;
+  top: 50%;
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 999px;
+  background: var(--gold);
+  transform: translate(0, -50%) scale(1);
+  transition: transform 0.45s var(--pl-ease);
+}
+body.hp :is(.hp-section > .hp-textlink, .hp-textlink.hp-faq-more):hover::before,
+body.hp :is(.hp-section > .hp-textlink, .hp-textlink.hp-faq-more):focus-visible::before {
+  transform: translate(0, -50%) scale(80);
+}
+/* label pushed clear of the dot */
+body.hp :is(.hp-section > .hp-textlink, .hp-textlink.hp-faq-more) { padding-left: 2rem; }
+/* the arrow, drawn in CSS so no markup changes on any page */
+body.hp :is(.hp-section > .hp-textlink, .hp-textlink.hp-faq-more)::after {
+  content: '';
+  width: 0.95rem;
+  height: 0.95rem;
+  flex: none;
+  background: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 8h9M8.5 4l4 4-4 4'/%3E%3C/svg%3E") center / contain no-repeat;
+          mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 8h9M8.5 4l4 4-4 4'/%3E%3C/svg%3E") center / contain no-repeat;
+  transition: transform 0.35s var(--pl-ease);
+}
+body.hp :is(.hp-section > .hp-textlink, .hp-textlink.hp-faq-more):hover,
+body.hp :is(.hp-section > .hp-textlink, .hp-textlink.hp-faq-more):focus-visible {
+  border-color: var(--gold);
+  color: var(--ink);
+}
+body.hp :is(.hp-section > .hp-textlink, .hp-textlink.hp-faq-more):hover::after,
+body.hp :is(.hp-section > .hp-textlink, .hp-textlink.hp-faq-more):focus-visible::after { transform: translateX(4px); }
+
+/* ------------------------------------------------------------------
+   4. Section headings: word-by-word rise, and a rule that draws itself
+   21st.dev: "Text Reveal" (kuratlielia). Each word rises out of its own
+   clip while it sharpens from a soft blur, staggered, total under a second.
+
+   The split is done by polish.ts and ONLY when motion is allowed. The
+   heading keeps its full text as aria-label and the words are aria-hidden,
+   so the accessible name of every aria-labelledby section is unchanged.
+
+   The words wait on the `.in` that reveal.ts already adds to the section,
+   so there is one trigger for the whole entrance, not two racing.
+   ------------------------------------------------------------------ */
+.pl-clip {
+  display: inline-block;
+  overflow: hidden;
+  /* room for descenders and the Fraunces italic overhang */
+  padding: 0.04em 0.06em 0.12em;
+  margin: -0.04em -0.06em -0.12em;
+  vertical-align: bottom;
+}
+.pl-word { display: inline-block; }
+
+.js .pl-split .pl-word {
+  transform: translateY(105%);
+  filter: blur(8px);
+  opacity: 0;
+}
+.js .in .pl-split .pl-word,
+.js .pl-split.in .pl-word {
+  transform: none;
+  filter: blur(0);
+  opacity: 1;
+  transition:
+    transform 0.8s var(--pl-ease),
+    filter 0.8s var(--pl-ease),
+    opacity 0.5s ease;
+  transition-delay: var(--pl-d, 0ms);
+}
+
+/* The heading rule draws from the left once the section arrives. The
+   existing border stays as the faint track the gold runs along. */
+body.hp.vb .hp-h2 { position: relative; }
+body.hp.vb .hp-h2::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  width: min(14rem, 40%);
+  height: 1px;
+  background: linear-gradient(90deg, var(--gold), transparent);
+  transform-origin: 0 50%;
+}
+.js body.hp.vb main .hp-section:not(.in):not(.hp-pagehead) .hp-h2::after { transform: scaleX(0); }
+.js body.hp.vb main .hp-section.in .hp-h2::after {
+  transform: scaleX(1);
+  transition: transform 1.1s var(--pl-ease) 0.25s;
+}
+
+/* ------------------------------------------------------------------
+   5. Pointer spotlight, shared by every card below
+   21st.dev: "Spotlight Card" / "Card Spotlight". A soft radial light that
+   follows the pointer, with a lit edge ring.
+
+   polish.ts writes --pl-x and --pl-y onto whichever [data-spot] element is
+   under the pointer. Touch never sets them, and without them the light sits
+   off-card at -100%, so phones see a clean card and nothing stuck on.
+   ------------------------------------------------------------------ */
+body.hp [data-spot] {
+  position: relative;
+  isolation: isolate;
+  --pl-x: -100%;
+  --pl-y: -100%;
+}
+body.hp [data-spot]::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(
+    420px circle at var(--pl-x) var(--pl-y),
+    rgb(226 192 107 / 0.18),
+    transparent 60%);
+  transition: opacity 0.4s ease;
+}
+body.hp [data-spot]:hover::before { opacity: 1; }
+
+/* ------------------------------------------------------------------
+   6. What we build: spotlight cards with corner marks
+   21st.dev: "Feature Grid Spotlight Cards" (hirael feature-08). Hairline
+   cards, crosshair marks at the corners, a warm glow at the top, and the
+   pointer spotlight.
+   ------------------------------------------------------------------ */
+body.hp .hp-xgroup {
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  padding: 1.5rem 1.35rem 0.75rem;
+  background:
+    radial-gradient(120% 60% at 50% 0%, rgb(226 192 107 / 0.10), transparent 70%),
+    var(--paper);
+  transition: border-color 0.3s ease, box-shadow 0.4s var(--pl-ease), transform 0.4s var(--pl-ease);
+}
+body.hp .hp-xgroup:hover {
+  border-color: var(--gold);
+  box-shadow: 0 18px 40px -24px rgb(20 17 13 / 0.35);
+  transform: translateY(-3px);
+}
+/* crosshair marks, two per card: drawn with gradients on ::after so the
+   spotlight keeps ::before to itself */
+body.hp .hp-xgroup::after {
+  content: '';
+  position: absolute;
+  inset: -5px;
+  pointer-events: none;
+  background:
+    linear-gradient(var(--gold-deep), var(--gold-deep)) 4px 0 / 1px 9px no-repeat,
+    linear-gradient(var(--gold-deep), var(--gold-deep)) 0 4px / 9px 1px no-repeat,
+    linear-gradient(var(--gold-deep), var(--gold-deep)) calc(100% - 4px) 100% / 1px 9px no-repeat,
+    linear-gradient(var(--gold-deep), var(--gold-deep)) 100% calc(100% - 4px) / 9px 1px no-repeat;
+  opacity: 0.55;
+  transition: opacity 0.3s ease;
+}
+body.hp .hp-xgroup:hover::after { opacity: 1; }
+body.hp .hp-xgroup-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2rem;
+  height: 1.5rem;
+  padding: 0 0.5rem;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  margin-bottom: 0.9rem;
+  font-size: 0.6875rem;
+}
+/* rows: a gold wash sweeps in from the left under the hovered row */
+body.hp .hp-xlink {
+  position: relative;
+  padding-inline: 0.5rem;
+  margin-inline: -0.5rem;
+  border-radius: 3px;
+  background: linear-gradient(90deg, rgb(226 192 107 / 0.16), transparent) no-repeat 0 0 / 0% 100%;
+  transition: color 0.18s ease, background-size 0.4s var(--pl-ease);
+}
+body.hp .hp-xlink:hover,
+body.hp .hp-xlink:focus-visible { background-size: 100% 100%; }
+
+/* reveal.css gives staggered grid children a transition with a delay of up
+   to half a second, at a specificity this file cannot beat without fighting
+   it. Left alone, that delay would apply to every hover as well, and a card
+   that lifts half a second after the pointer arrives feels broken.
+
+   polish.ts adds .pl-settled to a child once its entrance has finished, and
+   from then on the hover transition is this one, with no delay. */
+.js body.hp :is(.hp-explore, .re-grid, .hp-pillars) > .pl-settled {
+  transition: border-color 0.3s ease, box-shadow 0.4s var(--pl-ease), transform 0.4s var(--pl-ease), opacity 0.6s ease, background-color 0.3s ease;
+  transition-delay: 0ms;
+}
+
+/* ------------------------------------------------------------------
+   7. Figures band: tiles with a live underline and spotlight
+   21st.dev: "Number Ticker" family. The count-up already exists; this gives
+   each figure a gold bar that grows as its number rolls, and lets the band
+   respond to the pointer.
+   ------------------------------------------------------------------ */
+body.hp .hp-figures-wrap {
+  background:
+    radial-gradient(60% 120% at 0% 0%, rgb(226 192 107 / 0.14), transparent 60%),
+    radial-gradient(50% 100% at 100% 100%, rgb(226 192 107 / 0.10), transparent 60%),
+    var(--cream);
+}
+body.hp .hp-figure {
+  position: relative;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+body.hp .hp-figure:hover { background-color: rgb(251 248 242 / 0.6); }
+body.hp .hp-figure-label { position: relative; padding-top: 0.75rem; }
+body.hp .hp-figure-label::before {
+  content: '';
+  position: absolute;
+  top: 0.15rem;
+  left: 0;
+  width: 2rem;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--gold-deep), var(--gold-bright));
+  transform-origin: 0 50%;
+}
+body.hp:not(.vb) .hp-figure-label::before { left: calc(50% - 1rem); }
+.js body.hp .hp-figures-wrap:not(.in) .hp-figure-label::before { transform: scaleX(0); }
+.js body.hp .hp-figures-wrap.in .hp-figure-label::before {
+  transform: scaleX(1);
+  transition: transform 1.5s var(--pl-ease);
+}
+.js body.hp .hp-figures-wrap.in .hp-figure:nth-child(2) .hp-figure-label::before { transition-delay: 150ms; }
+.js body.hp .hp-figures-wrap.in .hp-figure:nth-child(3) .hp-figure-label::before { transition-delay: 300ms; }
+.js body.hp .hp-figures-wrap.in .hp-figure:nth-child(4) .hp-figure-label::before { transition-delay: 450ms; }
+.js body.hp .hp-figures-wrap.in .hp-figure:nth-child(5) .hp-figure-label::before { transition-delay: 600ms; }
+.js body.hp .hp-figures-wrap.in .hp-figure:nth-child(6) .hp-figure-label::before { transition-delay: 750ms; }
+body.hp .hp-figure:hover .hp-figure-label::before { width: 3.25rem; transition: width 0.35s var(--pl-ease); }
+
+/* ------------------------------------------------------------------
+   8. Project cards: image zoom, veil, and a corner arrow
+   21st.dev: "Bento Grid" (kokonutd) hover items with lift and shadow.
+   ------------------------------------------------------------------ */
+body.hp .hp-project,
+body.hp .gal > * { position: relative; }
+body.hp .hp-project .ph,
+body.hp .gal .ph {
+  border-radius: 4px;
+  transition: box-shadow 0.45s var(--pl-ease), transform 0.45s var(--pl-ease);
+}
+body.hp .hp-project .ph-img,
+body.hp .gal .ph-img { transition: transform 1.1s var(--pl-ease), filter 0.6s ease; }
+body.hp .hp-project:hover .ph,
+body.hp .gal > *:hover .ph {
+  transform: translateY(-4px);
+  box-shadow: 0 24px 48px -28px rgb(20 17 13 / 0.55);
+}
+body.hp .hp-project:hover .ph-img,
+body.hp .gal > *:hover .ph-img { transform: scale(1.05); filter: saturate(1.08); }
+/* a gold veil rising from the bottom edge */
+body.hp .hp-project .ph::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(0deg, rgb(20 17 13 / 0.45), transparent 45%);
+  opacity: 0;
+  transition: opacity 0.45s ease;
+}
+body.hp .hp-project:hover .ph::before { opacity: 1; }
+body.hp .hp-project figcaption {
+  display: inline-block;
+  background: linear-gradient(var(--gold), var(--gold)) no-repeat 0 100% / 0 1px;
+  padding-bottom: 2px;
+  transition: background-size 0.45s var(--pl-ease);
+}
+body.hp .hp-project:hover figcaption { background-size: 100% 1px; }
+
+/* ------------------------------------------------------------------
+   9. Reviews: edge-faded marquee and lit cards
+   21st.dev: "Testimonials with Marquee" (serafimcloud), gradient fade at
+   the edge of the strip; "Spotlight Card" on each quote.
+
+   Only the trailing edge fades. Fading the leading edge would dim the first
+   card, which on a phone is the only card on screen.
+   ------------------------------------------------------------------ */
+/* Room inside the strip for the hover lift and its shadow. The strip is a
+   horizontal scroller, which clips on both axes, so a card that rose 3px had
+   its top edge and its shadow sliced off mid-animation. The padding gives
+   the lift somewhere to go and the negative margin gives the space back, so
+   nothing around the strip moves. */
+body.hp .rc-track {
+  padding: 1rem 1.25rem 2rem;
+  margin: -1rem -1.25rem -1.5rem;
+  -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 4rem), transparent);
+          mask-image: linear-gradient(90deg, #000 calc(100% - 4rem), transparent);
+}
+body.hp .rc-card {
+  border-radius: 6px;
+  overflow: hidden;
+  background:
+    linear-gradient(180deg, rgb(226 192 107 / 0.08), transparent 35%),
+    var(--paper);
+  /* The lift from home.css, restated here with its own easing. This rule
+     outranks home.css's, and leaving transform out of it made the card snap
+     up rather than rise. */
+  transition:
+    transform 0.45s var(--pl-ease),
+    box-shadow 0.45s var(--pl-ease),
+    border-color 0.3s ease;
+}
+body.hp .rc-card:hover {
+  border-color: var(--gold);
+  box-shadow: 0 18px 34px -18px rgb(20 17 13 / 0.35);
+}
+/* gold hairline across the top of each card */
+body.hp .rc-card::after {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  opacity: 0.6;
+  transition: opacity 0.3s ease;
+}
+body.hp .rc-card:hover::after { opacity: 1; }
+body.hp .rc-arrow {
+  transition: background-color 0.25s ease, border-color 0.25s ease, transform 0.25s var(--pl-ease), box-shadow 0.25s ease;
+}
+body.hp .rc-arrow:hover:not(:disabled) {
+  transform: scale(1.06);
+  box-shadow: 0 0 0 4px var(--pl-glow-soft);
+}
+
+/* ------------------------------------------------------------------
+   10. Feature bands: a light travelling round the border
+   21st.dev: "Animated Border" (kevingirelli). A conic gradient masked to a
+   1px ring, its angle turning slowly.
+
+   Used on the two bands that ask for something, "Selling a home?" and the
+   military appreciation band, so the eye goes to them and nowhere else.
+   ------------------------------------------------------------------ */
+body.hp .lyh-band,
+body.hp .hp-mil-inner {
+  position: relative;
+  isolation: isolate;
+}
+body.hp .lyh-band::before,
+body.hp .hp-mil-inner::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  z-index: -1;
+  padding: 1px;
+  border-radius: inherit;
+  pointer-events: none;
+  background: conic-gradient(from var(--pl-angle),
+    transparent 0deg, transparent 250deg,
+    var(--gold) 300deg, var(--gold-bright) 330deg, transparent 360deg);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+          mask-composite: exclude;
+  animation: pl-orbit 6s linear infinite;
+}
+body.hp .lyh-band {
+  border-radius: 6px;
+  background:
+    radial-gradient(70% 140% at 0% 50%, rgb(226 192 107 / 0.16), transparent 60%),
+    var(--cream);
+}
+body.hp .lyh-icon {
+  box-shadow: 0 0 0 6px rgb(200 162 74 / 0.10), 0 0 0 12px rgb(200 162 74 / 0.05);
+  animation: pl-breathe 3.6s ease-in-out infinite;
+}
+@keyframes pl-orbit { to { --pl-angle: 360deg; } }
+@keyframes pl-breathe {
+  0%, 100% { box-shadow: 0 0 0 6px rgb(200 162 74 / 0.10), 0 0 0 12px rgb(200 162 74 / 0.05); }
+  50% { box-shadow: 0 0 0 8px rgb(200 162 74 / 0.16), 0 0 0 16px rgb(200 162 74 / 0.06); }
+}
+
+/* the military band: give the ring something to run round */
+body.hp .hp-mil-inner {
+  padding: clamp(1.25rem, 3vw, 2rem) clamp(1.25rem, 3vw, 2.25rem);
+  border-radius: 8px;
+  border: 1px solid rgb(226 192 107 / 0.18);
+  background: radial-gradient(60% 140% at 0% 50%, rgb(200 162 74 / 0.12), transparent 60%);
+}
+body.hp .hp-mil-emblem { filter: drop-shadow(0 0 14px rgb(226 192 107 / 0.35)); }
+
+/* ------------------------------------------------------------------
+   11. FAQ: the open question gets a lit panel and a plus that turns
+   21st.dev: "Animated Line Accordion" (shadcnspace accordion-09). The
+   active item gets a rounded highlighted background; the icon animates.
+
+   Still the native <details>. Where the engine supports ::details-content
+   and interpolate-size, the answer also slides open; elsewhere it opens
+   instantly, exactly as before.
+   ------------------------------------------------------------------ */
+/* The panel is a pseudo-element bleeding past the column, not padding on
+   the item, so opening a question moves no text and no rule. */
+body.hp .faq-item { position: relative; isolation: isolate; }
+body.hp .faq-item::before {
+  content: '';
+  position: absolute;
+  inset: 0 -0.9rem;
+  z-index: -1;
+  border-radius: 6px;
+  pointer-events: none;
+  background: linear-gradient(90deg, rgb(226 192 107 / 0.18), rgb(226 192 107 / 0.04));
+  box-shadow: inset 2px 0 0 var(--gold);
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+body.hp .faq-item[open]::before { opacity: 1; }
+body.hp .faq-q { transition: color 0.2s ease; }
+body.hp .faq-mark {
+  position: relative;
+  background: var(--paper);
+  transition: transform 0.35s var(--pl-ease), border-color 0.25s ease, background-color 0.25s ease;
+}
+/* the chevron in the markup is swapped for a drawn plus */
+body.hp .faq-mark svg { display: none; }
+body.hp .faq-mark::before,
+body.hp .faq-mark::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 0.7rem;
+  height: 1.5px;
+  border-radius: 2px;
+  background: currentColor;
+  translate: -50% -50%;
+  transition: transform 0.35s var(--pl-ease), opacity 0.25s ease;
+}
+body.hp .faq-mark::after { transform: rotate(90deg); }
+body.hp .faq-item[open] .faq-mark {
+  transform: rotate(180deg);
+  background: var(--gold);
+  border-color: var(--gold);
+  color: var(--ink);
+}
+body.hp .faq-item[open] .faq-mark::after { transform: rotate(0deg); opacity: 0; }
+body.hp .faq-q:hover .faq-mark { border-color: var(--gold); }
+
+@supports (interpolate-size: allow-keywords) {
+  body.hp .faq-list { interpolate-size: allow-keywords; }
+  body.hp .faq-item::details-content {
+    height: 0;
+    overflow: clip;
+    opacity: 0;
+    transition: height 0.45s var(--pl-ease), opacity 0.35s ease, content-visibility 0.45s allow-discrete;
+  }
+  body.hp .faq-item[open]::details-content { height: auto; opacity: 1; }
+}
+
+/* ------------------------------------------------------------------
+   12. Price your project: dotted ground and a warm glow
+   21st.dev: "Dotted Modern" (satoriui), the dotted radial grid behind a
+   headline. Inputs get a gold focus ring in place of a border swap.
+   ------------------------------------------------------------------ */
+body.hp .hp-final {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+body.hp .hp-final::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image: radial-gradient(rgb(226 192 107 / 0.22) 1px, transparent 1.4px);
+  background-size: 22px 22px;
+  -webkit-mask-image: radial-gradient(70% 80% at 20% 30%, #000, transparent 75%);
+          mask-image: radial-gradient(70% 80% at 20% 30%, #000, transparent 75%);
+}
+body.hp .hp-final::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  width: 38rem;
+  height: 38rem;
+  left: -10rem;
+  top: -14rem;
+  border-radius: 50%;
+  pointer-events: none;
+  background: radial-gradient(circle, rgb(200 162 74 / 0.22), transparent 65%);
+  animation: pl-drift 14s ease-in-out infinite alternate;
+}
+@keyframes pl-drift { to { transform: translate(6rem, 4rem); } }
+body.hp .ef-input {
+  transition: border-color 0.2s ease, box-shadow 0.25s ease, background-color 0.25s ease;
+}
+body.hp .ef-input:hover { border-color: rgb(226 192 107 / 0.55); }
+body.hp .ef-input:focus {
+  box-shadow: 0 0 0 4px rgb(226 192 107 / 0.18);
+}
+body.hp .hp-final .ef-input:focus { background: rgb(251 248 242 / 0.09); }
+
+/* ------------------------------------------------------------------
+   13. Showroom: framed map
+   ------------------------------------------------------------------ */
+body.hp .hp-showroom-map {
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 0 0 1px var(--rule), 0 30px 60px -36px rgb(20 17 13 / 0.45);
+}
+body.hp .hp-showroom-hours li { transition: background-color 0.2s ease; }
+body.hp .hp-showroom-hours li:hover { background-color: rgb(226 192 107 / 0.10); }
+
+/* ------------------------------------------------------------------
+   14. Footer: an oversized wordmark rising behind the columns
+   21st.dev: "Modem Animated Footer" (decodewithdeepak). Large background
+   text, animated links.
+
+   The wordmark is decoration: aria-hidden in SiteFooter, revealed by the
+   site's own .rv entrance, and clipped by the footer so it can never set
+   the page's width.
+   ------------------------------------------------------------------ */
+body.hp .foot {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border-top: 0;
+}
+body.hp .foot::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+.pl-foot-mark {
+  position: absolute;
+  z-index: -1;
+  left: 50%;
+  bottom: -0.18em;
+  translate: -50% 0;
+  margin: 0;
+  pointer-events: none;
+  user-select: none;
+  white-space: nowrap;
+  font-family: 'Fraunces', 'Instrument Serif', serif;
+  font-weight: 300;
+  /* Sized so the full name fits the viewport rather than being cropped. */
+  font-size: clamp(2rem, 7.4vw, 9.5rem);
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: transparent;
+  background: linear-gradient(180deg, rgb(226 192 107 / 0.16), rgb(226 192 107 / 0.02) 80%);
+  -webkit-background-clip: text;
+          background-clip: text;
+}
+/* clearance so the last row of links never sits on the mark */
+body.hp .foot-inner { padding-bottom: clamp(2.5rem, 6vw, 7.5rem); }
+
+/* links: underline grows from the left instead of a colour swap */
+body.hp .foot-col a,
+body.hp .foot-legal-links a {
+  text-decoration: none;
+  background: linear-gradient(currentColor, currentColor) no-repeat 0 calc(100% - 0.2rem) / 100% 1px;
+  transition: background-size 0.35s var(--pl-ease), color 0.2s ease;
+}
+body.hp .foot-col a:hover,
+body.hp .foot-legal-links a:hover { background-size: 0% 1px; background-position: 100% calc(100% - 0.2rem); }
+body.hp .foot .foot-review {
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s var(--pl-ease);
+}
+body.hp .foot .foot-review:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 0 4px rgb(200 162 74 / 0.12);
+}
+
+/* ------------------------------------------------------------------
+   15. Subpage cards share the same response
+   ------------------------------------------------------------------ */
+body.hp .re-item,
+body.hp .inv-card,
+body.hp .ab-count-item,
+body.hp .sv-group {
+  transition: border-color 0.3s ease, box-shadow 0.4s var(--pl-ease), transform 0.4s var(--pl-ease);
+}
+body.hp .re-item:hover,
+body.hp .ab-count-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 18px 40px -26px rgb(20 17 13 / 0.35);
+}
+
+/* ------------------------------------------------------------------
+   Hidden tab: nothing animates. scrub.css has this for the homepage only;
+   these loops exist on every page, so the rule does too. polish.ts sets
+   the class.
+   ------------------------------------------------------------------ */
+body.paused *,
+body.paused *::before,
+body.paused *::after { animation-play-state: paused !important; }
+
+/* ------------------------------------------------------------------
+   Reduced motion: every loop stops, every entrance is already finished,
+   every hover is a colour change and nothing moves. Last in the file so it
+   wins at equal specificity.
+   ------------------------------------------------------------------ */
+@media (prefers-reduced-motion: reduce) {
+  body.hp::before { display: none; }
+  body.hp .hp-btn,
+  body.hp .ef-submit,
+  body.hp .lyh-band::before,
+  body.hp .hp-mil-inner::before,
+  body.hp .lyh-icon,
+  body.hp .hp-final::after { animation: none; }
+  body.hp .hp-btn:hover,
+  body.hp .ef-submit:hover,
+  body.hp .hp-xgroup:hover,
+  body.hp .hp-project:hover .ph,
+  body.hp .gal > *:hover .ph,
+  body.hp .re-item:hover,
+  body.hp .ab-count-item:hover,
+  body.hp .foot .foot-review:hover,
+  body.hp .rc-arrow:hover:not(:disabled) { transform: none; }
+  body.hp .hp-project:hover .ph-img,
+  body.hp .gal > *:hover .ph-img { transform: none; }
+  .js .pl-split .pl-word,
+  .js body.hp.vb main .hp-section .hp-h2::after,
+  .js body.hp .hp-figures-wrap .hp-figure-label::before {
+    transform: none !important;
+    filter: none !important;
+    opacity: 1 !important;
+    transition: none !important;
+  }
+  body.hp .faq-item::details-content { transition: none; }
+  body.hp :is(.hp-section > .hp-textlink, .hp-textlink.hp-faq-more)::before { transition: none; }
+}

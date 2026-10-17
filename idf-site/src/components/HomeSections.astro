@@ -1,0 +1,584 @@
+---
+/**
+ * The homepage, as one shared body.
+ *
+ * All three variants render this identical markup and differ only in their
+ * stylesheet and type pairing. Keeping one DOM means the content cannot
+ * drift between variants and a copy change lands in all three at once.
+ */
+import ScrubHero from './ScrubHero.astro';
+import DraftRule from './DraftRule.astro';
+import Placeholder from './Placeholder.astro';
+import ReviewCarousel from './ReviewCarousel.astro';
+import EstimateForm from './EstimateForm.astro';
+import SocialLinks from './SocialLinks.astro';
+import FaqList from './FaqList.astro';
+import StatFigures from './StatFigures.astro';
+import {
+  business,
+  trustBar,
+  wedge,
+  gallery,
+  reviews,
+  features,
+  hours,
+  hoursLabel,
+  militaryDiscount,
+  serviceArea,
+} from '../content/idf';
+import { serviceExplore } from '../content/services-detail';
+import { faqHome } from '../content/faq';
+import { optionalImage } from '../lib/images';
+
+const mapEmbed = `https://maps.google.com/maps?q=${encodeURIComponent(business.address)}&z=15&output=embed`;
+
+/**
+ * Three cards for the homepage strip, chosen to show the whole job rather than
+ * three versions of the same thing: a finished kitchen, framing going in, and
+ * a crew on ladders outside. The owner asked for work actually in progress to
+ * appear alongside the finished rooms.
+ */
+/** Bytes of public/hero/hero-scrub.mp4, the fallback when Content-Length is
+ *  missing so the loading ring still reports honest progress. Update it when
+ *  the film is re-encoded.
+ *
+ *  This said 13807329 and the film has been 11739138 bytes since it was
+ *  recut, so on any host that does not send Content-Length the ring stalled
+ *  at 85% and never closed. ScrubHero's own default was already correct;
+ *  this prop was overriding it with the stale number. */
+const HERO_BYTES = 11739138;
+
+/* The coverflow, ordered by the owner on 11 October: the best-looking
+   finished rooms first, starting with the kitchens, and similar projects kept
+   together in runs of two or three so the strip reads as a set of jobs rather
+   than a shuffle. Work in progress still has its place, at the end, which
+   keeps the earlier ask that the site shows the whole job. Every one is a
+   gallery entry with its caption as written there. */
+const projectGroups = [
+  ['project-kitchen-blue-island-wide', 'project-kitchen-pendants', 'project-kitchen-blue-island'],
+  ['project-kitchen-cream-wide', 'project-kitchen-cream'],
+  ['project-kitchen-dark-granite', 'project-counter-quartz'],
+  ['project-bath-shower-marble', 'project-stairs-hardwood', 'project-floor-dark-hardwood'],
+  ['project-decks-townhomes', 'project-siding-crew'],
+  ['project-framing-interior', 'project-porch-framing'],
+];
+const homeCards = projectGroups.flatMap((group, gi) =>
+  group
+    .map((slot) => gallery.find((g) => g.slot === slot))
+    .filter((g): g is (typeof gallery)[number] => Boolean(g))
+    .map((g, i) => ({ ...g, src: optionalImage(`img/${g.slot}`), groupStart: gi > 0 && i === 0 })),
+);
+
+/* One picture at the head of each service group. Decorative, so alt is
+   empty: the card is a list of links and the picture is not what it says.
+   On the owner's instruction of 13 Oct all four are the AI illustrations
+   from the service pages, so the row reads as one set; the terms page
+   discloses them with the rest of that set. The company's own photographs
+   these replaced are still in public/img and on /projects/.
+     Build new  ... a custom home going up at sunset, one wing still framed
+     Renovate ..... the navy and brass kitchen
+     Transform .... steel windows and French doors open to a terrace
+     Restore ...... a home being rebuilt after a storm
+   `pos` is the crop, so the subject survives the card's wide frame. */
+const groupPhotos = [
+  { slot: 'services/general-contracting-hero-1200', pos: '68% 55%' },
+  { slot: 'services/kitchen-remodeling-hero-1200', pos: '62% 60%' },
+  { slot: 'services/windows-doors-hero-1200', pos: '55% 60%' },
+  { slot: 'services/insurance-claim-repairs-hero-1200', pos: '62% 55%' },
+].map(({ slot, pos }) => {
+  const src = optionalImage(`img/${slot}`);
+  return src ? { src, pos } : undefined;
+});
+
+const portrait = optionalImage('img/owner-portrait');
+---
+
+<main id="main" tabindex="-1">
+  {/* HERO. The scroll-scrubbed film: a house from open framing to a finished
+      floor, played by the scroll. Phones and reduced motion get the composed
+      still hero inside the same component. */}
+  <ScrubHero videoBytes={HERO_BYTES} />
+
+  <!-- TRUST BAR -->
+  {/* On a phone the four credentials wrap and strand the last one on a line
+      of its own, so there the strip runs as a ticker, after "Logo Marquee".
+      The second list is the loop's other half: hidden from assistive tech,
+      and not displayed at all on wider screens, where the row fits. */}
+  <section class="hp-trust tone-ink pl-ticker" aria-label="Credentials">
+    <div class="pl-ticker-track">
+      <ul>{trustBar.map((item) => <li>{item}</li>)}</ul>
+      <ul class="pl-ticker-dup" aria-hidden="true">{trustBar.map((item) => <li>{item}</li>)}</ul>
+    </div>
+  </section>
+
+  {/* FIGURES. Every one verifiable, and every one says where it came from.
+      Counts up on arrival; see StatFigures for why the number is in the
+      HTML before any script runs. */}
+  <StatFigures heading="By the numbers" headingId="hp-figures-h" />
+
+  {/* WHAT WE BUILD.
+
+      Every service listed here is a link to its own page, which is what the
+      client's master list asked for. It used to be three columns of plain
+      text naming services that had pages nobody could reach from here.
+
+      The whole row is the link, not a separate "Explore" word beside the
+      name: a row that looks clickable and then has one small clickable part
+      is the version people miss. The chevron is decoration on a target that
+      is already the full width of the row. */}
+  <section class="hp-section rv" id="what-we-build" aria-labelledby="hp-pillars-h">
+    <DraftRule label="01 / Scope" />
+    <h2 id="hp-pillars-h" class="hp-h2">What we build</h2>
+    <p class="hp-sub hp-italic">Explore every service we offer, with full scope details on each page.</p>
+    <div class="hp-explore">
+      {
+        serviceExplore.map((g, i) => (
+          <article class:list={['hp-xgroup', { 'hp-xgroup--photo': groupPhotos[i] }]}>
+            <div class="hp-xgroup-head">
+              {groupPhotos[i] && (
+                <img
+                  class="hp-xgroup-img"
+                  src={groupPhotos[i].src}
+                  style={`object-position: ${groupPhotos[i].pos}`}
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                />
+              )}
+              <span class="hp-xgroup-num">{g.number}</span>
+              <h3 class="hp-xgroup-title">
+                {g.title.charAt(0) + g.title.slice(1).toLowerCase()}
+              </h3>
+            </div>
+            <ul class="hp-xlist">
+              {g.items.map((item) => (
+                <li>
+                  <a class="hp-xlink" href={item.href}>
+                    <span class="hp-xlabel">{item.label}</span>
+                    <span class="hp-xgo">
+                      <span class="hp-xgo-word">Explore</span>
+                      <svg class="hp-xgo-mark" viewBox="0 0 16 16" aria-hidden="true"
+                           fill="none" stroke="currentColor" stroke-width="1.7"
+                           stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 8h9M8.5 4l4 4-4 4" />
+                      </svg>
+                    </span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </article>
+        ))
+      }
+    </div>
+    <a class="hp-textlink" href="/services/">See all services</a>
+  </section>
+
+  <!-- WHY ONE TEAM -->
+  {/* Midnight, and split: the promise on the left, the person making it on
+      the right. The portrait is the same photograph and the same caption as
+      /about/, which names only who is in the frame. */}
+  <section class="hp-section hp-wedge tone-midnight rv" id="why-one-team" aria-labelledby="hp-wedge-h">
+    <div class="hp-wedge-grid">
+      <div class="hp-wedge-text">
+        <DraftRule label="02 / Who does it" />
+        <h2 id="hp-wedge-h" class="hp-h2">Why one team</h2>
+        <p class="hp-wedge-tagline hp-italic pl-shine">&ldquo;{wedge.tagline}&rdquo;</p>
+        <div class="hp-wedge-copy">
+          <h3 class="hp-wedge-heading">{wedge.heading}</h3>
+          {wedge.body.map((para) => <p>{para}</p>)}
+        </div>
+      </div>
+      {
+        portrait && (
+          <figure class="hp-wedge-portrait">
+            <div class="hp-wedge-frame">
+              <img
+                src={portrait}
+                alt="Shawn Waziri on site in a hard hat, reading plans, with a crane and new framing behind him"
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+            <figcaption>Shawn Waziri on site</figcaption>
+          </figure>
+        )
+      }
+    </div>
+  </section>
+
+  {/* "Hold to build" (FrameToFinish) sat here. The owner asked for it to be
+      removed from the homepage on 11 October. The component is kept in
+      src/components in case it is wanted elsewhere; nothing renders it. */}
+
+  {/* "What you can count on" used to sit here. It was removed, not lost: the
+      same countOn array renders under the same heading on /about/, and the
+      main nav already points at /about/#count-on rather than at this page.
+      The homepage was carrying a second copy that nothing linked to, for
+      1.1 screens of desktop and 1.4 of mobile. */}
+
+  <!-- SELECTED PROJECTS -->
+  {/* REVIEWS. Moved above the projects on 11 October, so the page goes
+      who we are, what clients say, then the work. */}
+  <ReviewCarousel
+    reviews={reviews}
+    headingId="hp-reviews-h"
+    standfirst="Swipe, or use the arrows, to read more."
+    live={features.googleReviews}
+  />
+
+  {/* A coverflow, after the "Coverflow Carousel" in the owner's saved
+      21st.dev components: the centre card square to the viewer, the cards
+      either side swinging their outer edges forward. It is a native
+      scroll-snap strip, so swipe, trackpad and keyboard all work with no
+      script; the 3D is a scroll-driven animation, and engines without one
+      get a flat strip. */}
+  <section class="hp-section hp-cf tone-dusk rv" id="selected-projects" aria-labelledby="hp-projects-h">
+    <div class="hp-cf-head">
+      <div>
+        <DraftRule label="03 / The work" />
+        <h2 id="hp-projects-h" class="hp-h2">Selected projects</h2>
+        <p class="hp-sub hp-italic">Real work, from the framing through to the finish.</p>
+      </div>
+      <div class="hp-cf-controls" data-cf-controls hidden>
+        <button class="rc-arrow" type="button" data-cf-prev aria-label="Previous project">
+          <svg viewBox="0 0 10 16" aria-hidden="true"><path d="M8 1 2 8l6 7" fill="none" stroke="currentColor" stroke-width="1.6" /></svg>
+        </button>
+        <button class="rc-arrow" type="button" data-cf-next aria-label="Next project">
+          <svg viewBox="0 0 10 16" aria-hidden="true"><path d="m2 1 6 7-6 7" fill="none" stroke="currentColor" stroke-width="1.6" /></svg>
+        </button>
+      </div>
+    </div>
+    <div class="hp-cf-track" data-cf-track tabindex="0" role="group" aria-label="Selected projects, scrollable">
+      {
+        homeCards.map((card) => (
+          <figure class:list={['hp-cf-card', { 'hp-cf-card--group': card.groupStart }]}>
+            <Placeholder
+              ratio="4 / 5"
+              label={`Reserved: ${card.caption.toLowerCase()}`}
+              src={card.src}
+              alt={card.alt}
+              real
+              class="hp-ph hp-cf-ph"
+            />
+            <figcaption>
+              <span class="hp-cf-cap">{card.caption}</span>
+              <span class="hp-cf-tags">{card.tags.join(' · ')}</span>
+            </figcaption>
+          </figure>
+        ))
+      }
+    </div>
+    {/* Where you are in the set, after the progress indicators in the
+        21st.dev catalogue: the current photograph's dot stretches into a
+        pill. Decoration for sighted readers; the caption under the centre
+        card already says which project it is. */}
+    <div class="hp-cf-dots" data-cf-dots aria-hidden="true" hidden></div>
+    <a class="hp-textlink" href="/projects/">See projects completed</a>
+  </section>
+
+  <!-- LIST YOUR HOME -->
+  <section class="hp-section" aria-labelledby="hp-lyh-h">
+    <div class="lyh-band tone-gold">
+      <span class="lyh-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+             stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 10.5 12 3l9 7.5" />
+          <path d="M5.5 9.5V20a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1V9.5" />
+          <path d="M9.5 21v-6h5v6" />
+        </svg>
+      </span>
+      <div>
+        <h2 id="hp-lyh-h">Buying, selling, or renting?</h2>
+        <p>
+          Talk to us about the work first. Thirty-seven years of renovation behind a
+          straight answer on what a property needs, and an introduction to a licensed
+          agent for the rest.
+        </p>
+      </div>
+      <a class="hp-btn" href="/list-your-home/">Tell us about it</a>
+    </div>
+  </section>
+
+  {/* "How it works" used to sit here, and it was the THIRD rendering of the
+      same processSteps array: /about/ has it as "How we manage a project"
+      and /estimate/ has it beside the form, which is the page where those
+      five steps actually answer a question the visitor is asking. The nav
+      points at /about/#how-we-manage. Nothing linked to this copy. */}
+
+  {/* FAQ. A handful of the questions, not all of them.
+
+      This is NOT the duplication that got three sections cut from this page
+      earlier. Those were full second copies of content that nothing linked
+      to. This is six of eighteen questions, marked `home` in one shared
+      list, ending in a link to the page that holds the rest. The structured
+      data lives on /faq/ only. */}
+  {/* Two columns on wide screens: the heading holds its place on the left
+      while the questions run down the right. */}
+  <section class="hp-section hp-faq rv" id="faq" aria-labelledby="hp-faq-h">
+    <DraftRule label="04 / Questions" />
+    <div class="hp-faq-grid">
+      <div class="hp-faq-head">
+        <h2 id="hp-faq-h" class="hp-h2">Common questions</h2>
+        <p class="hp-sub hp-italic">The things people ask before they call.</p>
+        <a class="hp-textlink hp-faq-more" href="/faq/">Read all the questions</a>
+      </div>
+      <FaqList items={faqHome} name="hp-faq" class="faq-list--home" />
+    </div>
+  </section>
+
+  <!-- PRICE YOUR PROJECT -->
+  <section class="hp-final tone-midnight" id="estimate" aria-labelledby="hp-final-h">
+    <div class="hp-final-inner">
+      <div class="hp-final-intro">
+        {/* A house drawn in gold hairline, as on a plan sheet, that draws
+            itself when the section arrives and then lights its windows.
+            After "Line Draw SVG". Decoration: hidden from assistive tech. */}
+        <svg class="bp" viewBox="0 0 360 230" aria-hidden="true" focusable="false">
+          <g class="bp-grid">
+            <path d="M0 40H360M0 80H360M0 120H360M0 160H360M0 200H360M40 0V230M80 0V230M120 0V230M160 0V230M200 0V230M240 0V230M280 0V230M320 0V230" />
+          </g>
+          <g class="bp-draw" fill="none">
+            <path class="bp-l" style="--d:0" pathLength="1" d="M20 196H340" />
+            <path class="bp-l" style="--d:1" pathLength="1" d="M70 196V108H290V196" />
+            <path class="bp-l" style="--d:2" pathLength="1" d="M56 112L180 44L304 112" />
+            <path class="bp-l" style="--d:3" pathLength="1" d="M236 74V50H256V85" />
+            <path class="bp-l" style="--d:4" pathLength="1" d="M162 196V150H198V196" />
+            <path class="bp-l" style="--d:5" pathLength="1" d="M92 126H132V158H92Z M112 126V158 M92 142H132" />
+            <path class="bp-l" style="--d:6" pathLength="1" d="M228 126H268V158H228Z M248 126V158 M228 142H268" />
+            <path class="bp-l" style="--d:7" pathLength="1" d="M164 70H196V96H164Z M180 70V96" />
+            <path class="bp-l bp-dim" style="--d:8" pathLength="1" d="M70 214H290 M70 209V219 M290 209V219" />
+            <path class="bp-l bp-dim" style="--d:9" pathLength="1" d="M318 196V44 M313 196H323 M313 44H323" />
+          </g>
+          <g class="bp-lights">
+            <rect x="93" y="127" width="38" height="30" />
+            <rect x="229" y="127" width="38" height="30" />
+            <rect x="165" y="71" width="30" height="24" />
+          </g>
+        </svg>
+        <h2 id="hp-final-h" class="hp-final-heading">Price your project today.</h2>
+        <p class="hp-final-sub hp-italic">
+          A site visit first, then a written estimate within 24 hours.
+        </p>
+        <a class="hp-call hp-call--light" href={business.phonePrimaryHref}>
+          Prefer to talk? {business.phonePrimary}
+        </a>
+        <SocialLinks class="hp-final-social" />
+      </div>
+      <EstimateForm idPrefix="hp" />
+    </div>
+  </section>
+
+  {/* MILITARY AND VETERAN APPRECIATION. Asked for on 6 October.
+
+      The emblem is drawn here rather than imported: a shield, a five-point
+      star and a ribbon, all original geometry. It carries NO service branch
+      insignia and no Department of Defense or VA seal. Those are protected
+      marks, and using one would also imply an official affiliation this
+      company does not have. If anyone is ever tempted to swap in a "more
+      official looking" graphic, that is the reason not to.
+
+      No percentage appears, by instruction, which is also why this band has no
+      fine print while the first-project offer does. A discount with no number
+      makes no quantitative claim to qualify. */}
+  <section class="hp-mil" aria-labelledby="hp-mil-h">
+    <div class="hp-mil-inner">
+      <span class="hp-mil-emblem" aria-hidden="true">
+        <svg viewBox="0 0 48 56" fill="none" stroke="currentColor"
+             stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M24 2 4 9v18c0 12.5 8.4 22.3 20 27 11.6-4.7 20-14.5 20-27V9L24 2Z" />
+          <path d="m24 17 2.9 5.9 6.5.9-4.7 4.6 1.1 6.5-5.8-3-5.8 3 1.1-6.5-4.7-4.6 6.5-.9L24 17Z"
+                fill="currentColor" stroke="none" />
+          <path d="M16 41h16" opacity="0.55" />
+        </svg>
+      </span>
+      <div class="hp-mil-text">
+        <h2 id="hp-mil-h" class="hp-mil-h">{militaryDiscount.heading}</h2>
+        <p class="hp-mil-sub">{militaryDiscount.subheading}</p>
+        <p class="hp-mil-detail">{militaryDiscount.detail}</p>
+      </div>
+      <a class="hp-btn hp-mil-cta" href="/estimate/">Request a Free Estimate</a>
+    </div>
+  </section>
+
+  {/* SHOWROOM. /contact/ carries all of this in more detail and the footer
+      prints the address, the hours and the service area on every page, so on
+      duplication grounds alone this band is redundant and it was cut once on
+      exactly that reasoning. It is here because the CLIENT ASKED FOR THE MAP
+      ON THE HOMEPAGE SPECIFICALLY. That is not a duplication question, so do
+      not cut it for length again without asking them first. */}
+  <section class="hp-showroom" aria-labelledby="hp-showroom-h">
+    <div class="hp-showroom-inner">
+      <div class="hp-showroom-text">
+        <h2 id="hp-showroom-h" class="hp-h2">Visit the showroom</h2>
+        {/* Said "Open seven days" until 6 October. Sunday became
+            by-appointment that day, so the line stopped being true and the
+            hours list directly beneath it said so. */}
+        <p class="hp-sub">
+          Contracts are signed here, and selections are made here. Open six days,
+          and Sundays by appointment.
+        </p>
+
+        <address class="hp-showroom-addr">
+          45431 Ruritan Circle, Suite 160<br />Sterling, VA 20164
+        </address>
+
+        <ul class="hp-showroom-hours">
+          {
+            hours.map((h) => (
+              <li>
+                <span>{h.days}</span>
+                <span>{hoursLabel(h)}</span>
+              </li>
+            ))
+          }
+        </ul>
+
+        <p class="hp-showroom-area">
+          <strong>{serviceArea.short}</strong><br />{serviceArea.detail}
+        </p>
+
+        <a
+          class="hp-textlink"
+          href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(business.address)}`}
+          target="_blank"
+          rel="noopener noreferrer">Get directions</a
+        >
+      </div>
+
+      <div class="hp-showroom-map">
+        <iframe
+          title="Map showing Interior Design Flooring at 45431 Ruritan Circle, Suite 160, Sterling, VA 20164"
+          src={mapEmbed}
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          allowfullscreen></iframe>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+  /**
+   * Pause every animation, and every pseudo-element animation, on a hidden
+   * tab. animation-play-state does not inherit, so this has to land on the
+   * elements themselves rather than on a container.
+   *
+   * The scroll entrances used to live here too. They are now in
+   * src/scripts/reveal.ts, run from the base layout, because every other
+   * page on the site was missing them purely because this file is the
+   * homepage's.
+   */
+  document.addEventListener('visibilitychange', () => {
+    document.body.classList.toggle('paused', document.hidden);
+  });
+
+  /**
+   * Coverflow controls. The strip already scrolls and snaps on its own; this
+   * adds the arrows, mouse drag, and an opening position in the middle of the
+   * set so there are cards swung forward on both sides from the start.
+   */
+  (() => {
+    const track = document.querySelector<HTMLElement>('[data-cf-track]');
+    const controls = document.querySelector<HTMLElement>('[data-cf-controls]');
+    if (!track) return;
+    const cards = [...track.querySelectorAll<HTMLElement>('.hp-cf-card')];
+    if (!cards.length) return;
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)');
+
+    const centreOf = (el: HTMLElement) =>
+      el.offsetLeft + el.offsetWidth / 2 - track.clientWidth / 2;
+
+    const nearest = () => {
+      const mid = track.scrollLeft + track.clientWidth / 2;
+      let best = 0;
+      let dist = Infinity;
+      cards.forEach((c, i) => {
+        const d = Math.abs(c.offsetLeft + c.offsetWidth / 2 - mid);
+        if (d < dist) { dist = d; best = i; }
+      });
+      return best;
+    };
+
+    const go = (i: number) => {
+      const target = cards[Math.max(0, Math.min(cards.length - 1, i))];
+      track.scrollTo({ left: centreOf(target), behavior: reduce.matches ? 'auto' : 'smooth' });
+    };
+
+    // Open on the second card, so the strip starts inside the first kitchen:
+    // its best shot swung in on the left, another view of it square to the
+    // viewer, and the third coming in on the right.
+    track.scrollLeft = centreOf(cards[1] ?? cards[0]);
+
+    if (controls) {
+      controls.hidden = false;
+      controls.querySelector('[data-cf-prev]')?.addEventListener('click', () => go(nearest() - 1));
+      controls.querySelector('[data-cf-next]')?.addEventListener('click', () => go(nearest() + 1));
+    }
+
+    // A click on a side card brings it to the centre.
+    track.addEventListener('click', (e) => {
+      const card = (e.target as Element).closest<HTMLElement>('.hp-cf-card');
+      if (!card || dragged) return;
+      const i = cards.indexOf(card);
+      if (i !== nearest()) go(i);
+    });
+
+    // Mouse drag. Touch and trackpads scroll natively and are left alone.
+    let down = false;
+    let dragged = false;
+    let startX = 0;
+    let startLeft = 0;
+    track.addEventListener('pointerdown', (e) => {
+      if (e.pointerType !== 'mouse' || e.button !== 0) return;
+      down = true;
+      dragged = false;
+      startX = e.clientX;
+      startLeft = track.scrollLeft;
+      track.classList.add('is-dragging');
+    });
+    addEventListener('pointermove', (e) => {
+      if (!down) return;
+      const dx = e.clientX - startX;
+      if (Math.abs(dx) > 4) dragged = true;
+      track.scrollLeft = startLeft - dx;
+    });
+    addEventListener('pointerup', () => {
+      if (!down) return;
+      down = false;
+      track.classList.remove('is-dragging');
+      go(nearest());
+      setTimeout(() => { dragged = false; }, 0);
+    });
+
+    track.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') { e.preventDefault(); go(nearest() + 1); }
+      if (e.key === 'ArrowLeft') { e.preventDefault(); go(nearest() - 1); }
+    });
+
+    // Progress dots, one per photograph, the current one drawn as a pill.
+    const dots = document.querySelector<HTMLElement>('[data-cf-dots]');
+    if (dots) {
+      dots.hidden = false;
+      const marks = cards.map(() => {
+        const d = document.createElement('span');
+        d.className = 'hp-cf-dot';
+        dots.append(d);
+        return d;
+      });
+      let queued = false;
+      const paint = () => {
+        queued = false;
+        const on = nearest();
+        marks.forEach((m, i) => m.classList.toggle('is-on', i === on));
+      };
+      track.addEventListener('scroll', () => {
+        if (queued) return;
+        queued = true;
+        requestAnimationFrame(paint);
+      }, { passive: true });
+      paint();
+    }
+  })();
+</script>

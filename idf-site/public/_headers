@@ -1,0 +1,40 @@
+# Response headers for Cloudflare Pages.
+#
+# Cloudflare reads this file from the root of the build output; Astro copies
+# everything in public/ there, which is why it lives here rather than beside
+# the functions.
+#
+# The policy below is derived from what this site actually loads, checked
+# against the source rather than against one build, because two of the things
+# it has to allow are not in every build:
+#
+#   challenges.cloudflare.com  Turnstile. EstimateForm only emits the widget
+#                              and its script when PUBLIC_TURNSTILE_SITE_KEY
+#                              is set, which it is not in a local build. A
+#                              policy written from the built HTML would omit
+#                              this and silently break the form's spam
+#                              protection the day the key is added.
+#   blob:                      ScrubHero fetches the film and hands the video
+#                              element a Blob URL, so blob: is needed in
+#                              media-src. Without it the hero shows its poster
+#                              and nothing else, on every desktop visit.
+#
+# 'unsafe-inline' in script-src is a real weakening and is not there by
+# laziness. Astro emits inline module and classic scripts on every page, and
+# removing it needs either per-page hashes, which a static header file cannot
+# track as pages change, or nonces, which need the HTML rewritten per request.
+# What the directive still buys, even with inline allowed, is that script from
+# any other origin is refused, which is the shape almost every injection takes.
+# If this is ever tightened, do it with a nonce in functions/_middleware.ts and
+# verify every page still runs before shipping it.
+#
+# frame-ancestors 'none' is the one that matters for a contractor: it stops the
+# site being framed inside someone else's page and passed off as theirs, or
+# used to trick a visitor into submitting the estimate form somewhere else.
+
+/*
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' blob:; frame-src https://maps.google.com https://www.google.com https://challenges.cloudflare.com; connect-src 'self'; form-action 'self'; base-uri 'self'; frame-ancestors 'none'; object-src 'none'; upgrade-insecure-requests
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(), microphone=(), camera=(), payment=(), usb=()
+  Cross-Origin-Opener-Policy: same-origin

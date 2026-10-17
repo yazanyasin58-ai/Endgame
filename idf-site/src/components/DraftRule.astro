@@ -1,0 +1,31 @@
+---
+/**
+ * The signature element: a drafting rule.
+ *
+ * A thin line that draws itself as the section arrives, ending in a small
+ * mono annotation the way a dimension line is marked on a construction
+ * drawing. It appears once per major section and nowhere else, so it reads as
+ * a system rather than decoration.
+ *
+ * The test for a signature is whether removing it would change the page. Take
+ * these out and the site loses the one thing that says "drawings" instead of
+ * "another contractor template".
+ *
+ * Reduced motion gets the line already drawn, not an animation skipped.
+ */
+interface Props {
+  /** The annotation at the end of the line. Kept short: it is a tick label. */
+  label: string;
+}
+const { label } = Astro.props;
+---
+
+<div class="dr" data-draft-rule>
+  <svg class="dr-svg" viewBox="0 0 400 8" preserveAspectRatio="none" aria-hidden="true">
+    {/* the rule itself, drawn left to right */}
+    <line class="dr-line" x1="0" y1="4" x2="400" y2="4" />
+    {/* the end tick, as on a dimension line */}
+    <line class="dr-tick" x1="399" y1="0" x2="399" y2="8" />
+  </svg>
+  <span class="dr-label">{label}</span>
+</div>

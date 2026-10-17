@@ -1,0 +1,68 @@
+---
+/**
+ * Reserved image slot (§6 image protocol).
+ *
+ * Holds the exact space a real photograph will occupy, at the correct aspect
+ * ratio, always visibly marked. Three states, in order of fidelity:
+ *
+ *   src   — a comp photograph is present and is rendered
+ *   scene — a flat vector comp stands in (architectural massing, not a photo)
+ *   plain — a tonal field holds the space
+ *
+ * Nothing here is real client photography. Every state carries a visible
+ * marker so no slot can ship by accident. When the owner's project photos
+ * arrive they replace `src` and the marker comes off — the layout does not
+ * move in any of these states.
+ */
+import CompScene from './CompScene.astro';
+
+interface Props {
+  ratio: string; // CSS aspect-ratio value, e.g. "16 / 9"
+  label: string;
+  scene?: 'exterior-dusk' | 'exterior-day' | 'exterior-night' | 'interior';
+  src?: string;
+  /**
+   * Optional art-directed source for narrow screens. A 16:9 hero crops to
+   * roughly a square on a phone, so the frame that works wide is often not
+   * the frame that works tall. Only one file is ever downloaded — the browser
+   * picks from the <source> before fetching.
+   */
+  srcMobile?: string;
+  mobileMaxWidth?: string;
+  alt?: string;
+  class?: string;
+  /**
+   * The file in this slot is the owner's own project photography, not a comp.
+   * Drops the corner marker — the marker exists to stop a stand-in shipping by
+   * accident, and real client work is not a stand-in.
+   */
+  real?: boolean;
+}
+
+const {
+  ratio, label, scene, src, srcMobile, mobileMaxWidth = '767px',
+  alt = '', class: className = '', real = false,
+} = Astro.props;
+const marked = !(real && src);
+const sceneId = `s${Math.random().toString(36).slice(2, 9)}`;
+---
+
+<div
+  class:list={['ph', className, { 'ph--scene': scene || src, 'ph--photo': src && !real }]}
+  style={`aspect-ratio: ${ratio};`}
+  role={src ? undefined : 'img'}
+  aria-label={src ? undefined : `Reserved image slot: ${label}`}
+>
+  {
+    src && srcMobile ? (
+      <picture>
+        <source media={`(max-width: ${mobileMaxWidth})`} srcset={srcMobile} />
+        <img class="ph-img" src={src} alt={alt} decoding="async" />
+      </picture>
+    ) : src ? (
+      <img class="ph-img" src={src} alt={alt} loading="lazy" decoding="async" />
+    ) : null
+  }
+  {!src && scene ? <CompScene kind={scene} id={sceneId} /> : null}
+  {marked ? <span class="ph-label" aria-hidden="true">{label}</span> : null}
+</div>

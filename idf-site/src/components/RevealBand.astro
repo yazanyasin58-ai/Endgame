@@ -1,0 +1,39 @@
+---
+/**
+ * A wide picture that opens from an inset to full width as it scrolls in,
+ * with one line over it. After the 21st.dev "Scroll Reveal Image"; the styles
+ * are the .ch-reveal rules in pages.css, first written for the custom homes
+ * page. Full width wherever scroll-driven animation is unsupported or less
+ * motion is asked for.
+ *
+ * The line must be copy the site already stands behind; it is not a place
+ * for a new claim.
+ */
+interface Props {
+  src: string;
+  srcset: string;
+  alt: string;
+  line?: string;
+  /** object-position for the crop. */
+  pos?: string;
+  label?: string;
+}
+const { src, srcset, alt, line, pos = '50% 60%', label = alt } = Astro.props;
+---
+
+<section class="ch-reveal" aria-label={label}>
+  <div class="ch-reveal-frame">
+    <img
+      src={src}
+      srcset={srcset}
+      sizes="100vw"
+      alt={alt}
+      width="2400"
+      height="1029"
+      loading="lazy"
+      decoding="async"
+      style={`object-position: ${pos}`}
+    />
+    {line && <p class="ch-reveal-line">{line}</p>}
+  </div>
+</section>

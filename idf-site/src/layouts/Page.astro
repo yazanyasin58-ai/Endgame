@@ -1,0 +1,75 @@
+---
+/**
+ * Shell for every page other than the homepage: same header, footer,
+ * promo bar and sticky call bar, with a titled page head.
+ */
+import Base from './Base.astro';
+import '../styles/home.css';
+import '../styles/variant-b.css';
+import SiteNav from '../components/SiteNav.astro';
+import PromoBar from '../components/PromoBar.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import StickyCallBar from '../components/StickyCallBar.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  heading: string;
+  standfirst?: string;
+  current?: string;
+  /** Passed through to Base — see the note on its `noindex` prop. */
+  noindex?: boolean;
+  /**
+   * Pages between Home and this one, for the breadcrumb in the page head.
+   * Most pages sit directly under Home and pass nothing.
+   */
+  crumbs?: { label: string; href: string }[];
+  /**
+   * A photograph behind the page head, with the midnight laid over it from
+   * the left so the heading keeps its contrast. Service pages pass one; the
+   * rest keep the plain midnight head.
+   */
+  image?: { src: string; srcset: string; alt: string };
+}
+
+const { title, description, heading, standfirst, current, noindex, crumbs = [], image } = Astro.props;
+
+---
+
+<Base title={title} description={description} bodyClass="hp vb" withCallbar noindex={noindex}>
+  <PromoBar />
+  <SiteNav current={current} />
+  <main id="main" tabindex="-1">
+    <section class:list={['hp-section', 'hp-pagehead', { 'pg-photo': image }]}>
+      {image && (
+        <figure class="pg-photo-media">
+          <img
+            src={image.src}
+            srcset={image.srcset}
+            sizes="100vw"
+            alt={image.alt}
+            width="2400"
+            height="1029"
+            fetchpriority="high"
+            decoding="async"
+          />
+        </figure>
+      )}
+      {/* Where this page sits, in the mono annotation style of the drafting
+          rules. A real breadcrumb: a labelled nav, an ordered list, and the
+          current page marked rather than linked. */}
+      <nav class="pg-crumbs" aria-label="Breadcrumb">
+        <ol>
+          <li><a href="/">Home</a></li>
+          {crumbs.map((c) => (<li><a href={c.href}>{c.label}</a></li>))}
+          <li aria-current="page">{heading}</li>
+        </ol>
+      </nav>
+      <h1 class="hp-h2">{heading}</h1>
+      {standfirst && <p class="hp-sub hp-italic">{standfirst}</p>}
+    </section>
+    <slot />
+  </main>
+  <SiteFooter />
+  <StickyCallBar />
+</Base>

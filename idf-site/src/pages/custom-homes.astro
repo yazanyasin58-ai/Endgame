@@ -1,0 +1,206 @@
+---
+import Page from '../layouts/Page.astro';
+import { business, customHomeSteps, customHomeOffers, cta } from '../content/idf';
+import { customHomeImages as img } from '../content/service-images';
+import { optionalImage } from '../lib/images';
+
+/**
+ * Custom homes, rebuilt on the owner's request of 13 Oct: "very bland and
+ * too much open space ... include images as well".
+ *
+ * Every picture on this page except the one in "Our own work" is an AI
+ * illustration from the same family as the service pages; the terms page
+ * discloses them. The real photograph keeps its own section and its own
+ * honest alt text, and that section still drops out if the file is absent.
+ *
+ * Two 21st.dev components, rebuilt here without React:
+ *   - "Scroll Reveal Image" (unlumen): the wide picture that opens from a
+ *     framed inset to full width as it scrolls in. CSS scroll-driven
+ *     animation; anywhere that is unsupported, it is simply full width.
+ *   - "Scroll Reveal Content A" (abui): numbered stages beside a progress
+ *     line, with the picture beside them changing to match. The original
+ *     pins a 300vh section; this one lets the steps scroll normally and pins
+ *     only the picture, so nothing traps the scroll wheel.
+ */
+const ownPhoto = optionalImage('img/project-custom-home');
+---
+
+<Page
+  title="Custom Homes — Interior Design Flooring"
+  description="Custom homes built from the ground up in Northern Virginia. Build on your lot, design and planning, permits, material selections. Class A contractor since 1989."
+  heading="Custom homes"
+  standfirst="Built from the ground up, on your lot or ours to find."
+  current="/custom-homes/"
+  image={img.hero}
+>
+  {/* Three ways to build, as picture cards. */}
+  <section id="what-we-build" class="hp-section ch-offers" aria-labelledby="ch-offers-h">
+    <h2 id="ch-offers-h" class="hp-h2">Three ways to build</h2>
+    <div class="ch-offer-grid">
+      {
+        customHomeOffers.map((o, i) => (
+          <a class="ch-offer" href="/estimate/">
+            <img
+              class="ch-offer-img"
+              src={img.offers[i].src}
+              srcset={img.offers[i].srcset}
+              sizes="(min-width: 900px) 30vw, 100vw"
+              alt={img.offers[i].alt}
+              width="1000"
+              height="1250"
+              loading="lazy"
+              decoding="async"
+            />
+            <span class="ch-offer-body">
+              <span class="ch-offer-num">{String(i + 1).padStart(2, '0')}</span>
+              <span class="ch-offer-title">{o.title}</span>
+              <span class="ch-offer-detail">{o.detail}</span>
+              <span class="ch-offer-go">Start an estimate</span>
+            </span>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+
+  {/* "Scroll Reveal Image": the picture opens out as it arrives. */}
+  <section class="ch-reveal" aria-label="A finished custom home">
+    <div class="ch-reveal-frame">
+      <img
+        src={img.reveal.src}
+        srcset={img.reveal.srcset}
+        sizes="100vw"
+        alt={img.reveal.alt}
+        width="2400"
+        height="1029"
+        loading="lazy"
+        decoding="async"
+      />
+      <p class="ch-reveal-line">Five stages, and the same two people across all of them.</p>
+    </div>
+  </section>
+
+  {/* "Scroll Reveal Content A": the stages, with the picture keeping pace. */}
+  <section class="hp-section ch-process" aria-labelledby="process">
+    <h2 id="process" class="hp-h2">The construction process</h2>
+    <p class="hp-sub hp-italic">From the first drawing to the walkthrough.</p>
+    <div class="ch-story" data-ch-story>
+      <ol class="ch-steps">
+        {
+          customHomeSteps.map((s, i) => (
+            <li class:list={['ch-step', { 'is-active': i === 0 }]} data-ch-step={i}>
+              <span class="ch-step-num">{s.number}</span>
+              <div class="ch-step-text">
+                <h3 class="ch-step-title">{s.title}</h3>
+                <p class="ch-step-detail">{s.detail}</p>
+              </div>
+              {/* On a phone each stage carries its own picture. */}
+              <img
+                class="ch-step-img"
+                src={img.steps[i].src}
+                srcset={img.steps[i].srcset}
+                sizes="100vw"
+                alt=""
+                width="1000"
+                height="1250"
+                loading="lazy"
+                decoding="async"
+              />
+            </li>
+          ))
+        }
+      </ol>
+      {/* On a wide screen one picture stays in view and changes with the stage. */}
+      <div class="ch-media" aria-hidden="true">
+        {
+          img.steps.map((p, i) => (
+            <img
+              class:list={['ch-media-img', { 'is-active': i === 0 }]}
+              data-ch-media={i}
+              src={p.src}
+              srcset={p.srcset}
+              sizes="40vw"
+              alt=""
+              width="1000"
+              height="1250"
+              loading="lazy"
+              decoding="async"
+            />
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  {
+    ownPhoto && (
+      <section class="hp-section hp-section--tight ch-own" aria-labelledby="completed">
+        <div class="ch-own-inner">
+          <div class="ch-own-text">
+            <h2 id="completed" class="hp-h2">Our own work</h2>
+            <p class="hp-lede">
+              A custom home we built. More of our finished work is on
+              the projects page.
+            </p>
+            <a class="hp-textlink" href="/projects/">See completed projects</a>
+          </div>
+          <figure class="ch-own-fig">
+            <img
+              src={ownPhoto}
+              alt="A completed custom home built by Interior Design Flooring"
+              width="1024"
+              height="768"
+              loading="lazy"
+              decoding="async"
+            />
+          </figure>
+        </div>
+      </section>
+    )
+  }
+
+  <section class="hp-final">
+    <div class="hp-final-inner hp-final-inner--single">
+      <div>
+        <h2 class="hp-final-heading">Have a lot, or looking for one?</h2>
+        <p class="hp-final-sub hp-italic">Site visit first, written estimate within 24 hours.</p>
+        <div class="hp-hero-actions">
+          <a class="hp-btn" href="/estimate/">{cta.primary}</a>
+          <a class="hp-call hp-call--light" href={business.phonePrimaryHref}>
+            or call {business.phonePrimary}
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</Page>
+
+<script>
+  /* The stage nearest the middle of the screen is the active one: its text
+     lights, the rail fills to it, and the picture beside it changes. One
+     observer, no scroll listener doing layout work. */
+  const story = document.querySelector<HTMLElement>('[data-ch-story]');
+  if (story && 'IntersectionObserver' in window) {
+    const steps = [...story.querySelectorAll<HTMLElement>('[data-ch-step]')];
+    const media = [...story.querySelectorAll<HTMLElement>('[data-ch-media]')];
+    const set = (n: number) => {
+      steps.forEach((s, i) => {
+        s.classList.toggle('is-active', i === n);
+        s.classList.toggle('is-past', i < n);
+      });
+      media.forEach((m, i) => m.classList.toggle('is-active', i === n));
+      story.style.setProperty('--ch-p', String(steps.length > 1 ? n / (steps.length - 1) : 1));
+    };
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) set(Number((e.target as HTMLElement).dataset.chStep));
+        }
+      },
+      // A thin band across the middle of the screen.
+      { rootMargin: '-45% 0px -45% 0px' },
+    );
+    steps.forEach((s) => io.observe(s));
+    story.classList.add('is-live');
+  }
+</script>
