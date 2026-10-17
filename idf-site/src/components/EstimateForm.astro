@@ -126,9 +126,22 @@ const f = (name: string) => `${idPrefix}-${name}`;
     )
   }
 
+  {/* The status sits ABOVE the button, not below it.
+
+      Below, it rendered off the bottom of the viewport on a form this long:
+      a customer who submitted with a bad field saw the page do nothing at
+      all. The only feedback was a focus ring further up the form. */}
+  <p class="ef-status" data-ef-status role="status" aria-live="polite" hidden></p>
+
   <button class="ef-submit" type="submit">{cta.primary}</button>
 
-  <p class="ef-status" data-ef-status role="status" aria-live="polite" hidden></p>
+  {/* Said at the moment of commitment, where it is worth something. The
+      lead pop-up has carried the privacy line since launch and the real
+      form carried none, which is backwards. */}
+  <p class="ef-reassure">
+    No obligation. We use your details to reply about your project, nothing else. We call to book
+    the site visit, then send the written estimate within 24 hours.
+  </p>
   <noscript>
     <p class="ef-note">
       This form needs JavaScript to send your photos. Without it, call

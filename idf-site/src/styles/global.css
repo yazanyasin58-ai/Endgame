@@ -297,6 +297,33 @@ body {
   text-transform: uppercase;
 }
 
+/* ---------- per-field errors and the reassurance line ----------
+   Set at 0.875rem, not at the 10-12px of the label layer around them. An
+   error message is the one piece of text on a form the customer MUST be
+   able to read, and this site's buyers skew older.
+
+   The colour is a variable because this form ships on THREE grounds: dark
+   charcoal on the homepage, paper on /estimate/ and paper on /contact/. The
+   defaults below are the paper values, because two of the three are paper
+   and a wrong default then fails on one surface instead of two. .hp-final
+   overrides them for the dark ground. Both measured against the real
+   painted background, not inferred from the selector. */
+.ef-err {
+  margin: 0.1rem 0 0;
+  padding-left: 0.6rem;
+  border-left: 2px solid #a84420;
+  font-size: 0.875rem;
+  line-height: 1.45;
+  color: var(--ef-err, #99301a);
+}
+.ef-reassure {
+  margin: 0.85rem 0 0;
+  max-width: 46ch;
+  font-size: 0.875rem;
+  line-height: 1.55;
+  color: var(--ef-reassure, #6b6660);
+}
+
 /* ---------- skip link ----------
    Without this, reaching the page content by keyboard means tabbing past the
    promo bar, its close button, the logo, the phone number, the estimate

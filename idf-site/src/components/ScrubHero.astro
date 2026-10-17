@@ -64,9 +64,27 @@ const bands = [
     {bands.map((band, i) => (
       <div class={`sh-band ${band.entrance}`} data-band data-a={band.a} data-b={band.b}>
         {band.k && <p class="sh-kicker">{band.k}</p>}
-        <p class="sh-line" data-split={i === 2 ? 'part' : i === 1 ? 'char' : 'word'}>
-          {band.line}
-        </p>
+        {/* Band 0 carries the page's headline, so here it is the <h1>.
+
+            The mobile hero further down holds an <h1> with the same words.
+            Two in the markup, but never two in the accessibility tree: each
+            hero is display:none at the other's breakpoint, and display:none
+            removes an element from that tree entirely.
+
+            Before this the desktop page had NO h1 at all. The only one lived
+            in .sh-static, which is display:none above the mobile breakpoint,
+            so at 1440px the document's first heading was the h2 "By the
+            numbers" and the actual headline was a <p>. Measured, not guessed.
+
+            The split animation selects on [data-split], not on the tag, so
+            the element type is free. */}
+        {i === 0 ? (
+          <h1 class="sh-line" data-split="word">{band.line}</h1>
+        ) : (
+          <p class="sh-line" data-split={i === 2 ? 'part' : i === 1 ? 'char' : 'word'}>
+            {band.line}
+          </p>
+        )}
       </div>
     ))}
 

@@ -498,6 +498,20 @@
 .hp .ef-status[data-kind='ok'] { border-left-color: var(--gold); color: var(--cream); }
 .hp .ef-status[data-kind='error'] { border-left-color: #E08A6B; color: var(--cream); }
 
+/* Per-field error and the reassurance line on the DARK ground only.
+   Scoped to .hp-final, not .hp: the same form renders on three grounds and
+   only the homepage one is dark (see the note above .hp-est .ef-hint). I
+   scoped these to .hp first and measured 1.67:1 on /estimate/ — the very
+   mistake that note was written about. Like .ef-status, the error carries a
+   left rule as well as a colour so it still reads as an error without
+   colour vision. */
+.hp-final .ef-err {
+  --ef-err: #F2B59C;
+  margin-top: 0.1rem; padding-left: 0.6rem;
+  border-left: 2px solid #E08A6B;
+}
+.hp-final .ef-reassure { --ef-reassure: var(--stone); }
+
 .hp .cf-turnstile { margin-top: 1.5rem; }
 
 /* ---------- showroom band (homepage, above the footer) ---------- */
@@ -953,6 +967,10 @@
 .ct-form .ef-status { border-left-color: var(--gray); color: var(--gray); }
 .ct-form .ef-status[data-kind='ok'] { border-left-color: var(--gold-deep); color: var(--ink); }
 .ct-form .ef-status[data-kind='error'] { border-left-color: #A84420; color: var(--ink); }
+
+/* /contact/ and /estimate/ are both paper and both take the defaults in
+   global.css, so they need nothing here. The rule left behind for them was
+   duplicating the default and hiding which ground was actually in play. */
 
 /* ---------- reviews carousel ---------- */
 .rc-head {
