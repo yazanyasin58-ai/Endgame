@@ -90,7 +90,7 @@ body.hp .sg-toggle {
   transition: background-color 0.35s ease, color 0.35s ease, border-color 0.35s ease;
 }
 body.hp .sg-toggle:hover { border-color: var(--gold); }
-body.hp .sg-toggle:focus-visible { outline: 2px solid var(--gold-bright); outline-offset: 3px; }
+body.hp .sg-toggle:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 3px; }
 .sg-toggle-words {
   display: grid;
   height: 1.2em;
@@ -278,7 +278,7 @@ html.sg-open { overflow: hidden; scrollbar-gutter: stable; }
     transform 0.65s var(--pl-ease),
     color 0.3s ease;
 }
-.sg-link:focus-visible { outline: 2px solid var(--gold-bright); outline-offset: 6px; border-radius: 4px; }
+.sg-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 6px; border-radius: 4px; }
 .sg-num {
   align-self: flex-start;
   padding-top: 0.75em;
@@ -315,7 +315,10 @@ html.sg-open { overflow: hidden; scrollbar-gutter: stable; }
 /* The ripple. The entry under the pointer comes forward in gold italic; its
    immediate neighbours come half way; everything else falls back. */
 @media (hover: hover) and (pointer: fine) {
-  .sg-index:hover .sg-link { opacity: 0.3; }
+  /* 0.3 and 0.35 put these 37px links at 2.9:1 and below against the panel's
+     --midnight-2, under the 3:1 that large text needs. 0.40 is 3.36:1 and the
+     ripple still reads in three steps: 0.40, 0.62, full. */
+  .sg-index:hover .sg-link { opacity: 0.4; }
   .sg-index .sg-item:hover > .sg-link {
     opacity: 1;
     color: var(--gold-bright);
@@ -331,7 +334,7 @@ html.sg-open { overflow: hidden; scrollbar-gutter: stable; }
 /* Keyboard focus gets the same emphasis, on wide screens where the side
    column is following it. */
 @media (min-width: 1024px) {
-  .sg-ready .sg-index:has(.sg-item.is-active:focus-within) .sg-link { opacity: 0.35; }
+  .sg-ready .sg-index:has(.sg-item.is-active:focus-within) .sg-link { opacity: 0.4; }
   .sg-ready .sg-index .sg-item.is-active:focus-within > .sg-link {
     opacity: 1;
     color: var(--gold-bright);

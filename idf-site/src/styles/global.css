@@ -19,6 +19,16 @@
      paper (5.01) and cream (4.72). --gold itself is unchanged and still used
      for buttons, rules and anything on a dark ground. */
   --gold-deep: #856719;
+  /* The focus ring is drawn 3px OUTSIDE the element, so what it has to
+     contrast with is the surface behind it, never the element's own fill.
+     Three surfaces exist here and no single gold clears the 3:1 that WCAG
+     1.4.11 asks of a focus indicator on all of them: --gold-deep is 5.01:1 on
+     paper but 2.86:1 on the menu panel's --midnight-2, and --gold-bright is
+     the mirror image at 8.68:1 on that panel and 1.65:1 on paper. On the gold
+     bands no gold works at all. So this token is redefined per ground below
+     and inherits down to every focusable inside, which is why the overrides
+     name containers and not controls. */
+  --focus-ring: var(--gold-deep);
 }
 
 html {
@@ -102,8 +112,48 @@ body {
 }
 
 :focus-visible {
-  outline: 2px solid var(--gold-bright);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 3px;
+}
+
+/* Dark grounds. Paper is the default because most surfaces are paper, so
+   these are the exceptions: every container that paints ink, charcoal or a
+   midnight, measured at 6.73:1 to 10.74:1 for --gold-bright. */
+.promo,
+.callbar,
+.hp-final,
+.foot,
+.sg-panel,
+.hp-mil,
+.sh-static-media,
+.gal-filter-bar,
+.svc-fig,
+body.hp .tone-ink,
+body.hp .tone-midnight,
+body.hp .tone-dusk,
+body.hp .hp-trust,
+body.hp .ch-media,
+body.hp .ch-offer,
+body.hp .ch-reveal-frame,
+body.hp .svc-card-media,
+body.hp .hp-pagehead,
+body.hp .hp-est-intro {
+  --focus-ring: var(--gold-bright);
+}
+
+/* Gold grounds. Gold on gold is 1:1 and even --gold-deep only reaches 2.21:1,
+   so the ring goes to ink here, which is 7.82:1. */
+body.hp .lyh-band.tone-gold,
+body.hp .hp-est-promo {
+  --focus-ring: var(--ink);
+}
+
+/* Some controls travel between grounds rather than living inside one, and
+   carry a modifier that says which ground they are on. Reading it off the
+   element beats guessing at its container: --gold-deep measured 2.63:1 behind
+   .hp-call--light, which sits on the dark hero and the dark estimate band. */
+.hp-call--light {
+  --focus-ring: var(--gold-bright);
 }
 
 /* ---------- image placeholder protocol (§6) ---------- */
@@ -323,6 +373,15 @@ body {
   line-height: 1.55;
   color: var(--ef-reassure, #6b6660);
 }
+/* Placeholders carry real instruction here ("City or ZIP at minimum"), so they
+   are text under 1.4.3, not decoration. Left to the browser they render around
+   #8a8886, which is 3.53:1 on a white field. --gray is 5.68:1. The explicit
+   opacity is for Firefox, which dims placeholders by default and would undo
+   the gain. Paper is the default; the dark form overrides it in home.css. */
+.ef-input::placeholder {
+  color: var(--ef-ph, var(--gray));
+  opacity: 1;
+}
 
 /* ---------- skip link ----------
    Without this, reaching the page content by keyboard means tabbing past the
@@ -349,7 +408,7 @@ body {
 }
 .skip-link:focus-visible {
   top: 0;
-  outline: 2px solid var(--gold-bright);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }
 @media (prefers-reduced-motion: reduce) { .skip-link { transition: none; } }

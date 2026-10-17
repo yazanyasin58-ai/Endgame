@@ -322,7 +322,7 @@ body.hp .svc-more-list a:focus-visible {
 }
 .gal-filter-btn:hover { color: var(--gold-bright); }
 .gal-filter-btn[aria-pressed='true'] { color: var(--ink); }
-.gal-filter-btn:focus-visible { outline: 2px solid var(--gold-bright); outline-offset: 2px; }
+.gal-filter-btn:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
 .gal-filter-n {
   margin-left: 0.3rem;
   font-family: 'IBM Plex Mono', ui-monospace, monospace;
@@ -918,7 +918,7 @@ body.hp .ch-offer-go {
 body.hp .ch-offer-go::after { content: ' \2192'; display: inline-block; transition: transform 0.35s var(--pl-ease); }
 body.hp .ch-offer:is(:hover, :focus-visible) .ch-offer-img { transform: scale(1.05); }
 body.hp .ch-offer:is(:hover, :focus-visible) .ch-offer-go::after { transform: translateX(4px); }
-body.hp .ch-offer:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+body.hp .ch-offer:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 3px; }
 
 /* After the 21st.dev "Scroll Reveal Image": the picture arrives as a framed
    inset and opens to full width as it scrolls in. Where scroll-driven
@@ -1066,9 +1066,15 @@ body.hp .ch-media { display: none; }
     transform: scaleY(var(--ch-p, 0));
     transition: transform 0.6s var(--pl-ease);
   }
-  body.hp .ch-story.is-live .ch-step { opacity: 0.4; transition: opacity 0.5s ease; }
+  /* These steps are 16px body paragraphs, not labels, so the dimming has to
+     stay above the 4.5:1 of WCAG 1.4.3. --charcoal on paper is 15.31:1 at full
+     strength, which left plenty of headroom but was being spent: 0.4 measured
+     2.43:1 and 0.6 measured 4.27:1 from painted pixels. 0.72 is 6.28:1 and
+     0.82 is 8.72:1, so all three states are readable and still clearly
+     ordered against the active step. */
+  body.hp .ch-story.is-live .ch-step { opacity: 0.72; transition: opacity 0.5s ease; }
   body.hp .ch-story.is-live .ch-step:is(.is-active, .is-past) { opacity: 1; }
-  body.hp .ch-story.is-live .ch-step.is-past { opacity: 0.6; }
+  body.hp .ch-story.is-live .ch-step.is-past { opacity: 0.82; }
   body.hp .ch-step:is(.is-active, .is-past) .ch-step-num {
     border-color: var(--gold);
     background: var(--gold);
@@ -1101,6 +1107,12 @@ body.hp .ch-media { display: none; }
   body.hp .ch-media-img,
   body.hp .ch-steps::after,
   body.hp .ch-story.is-live .ch-step { transition: none; }
+  /* Removing the transition alone left the dimming in place, so a
+     reduced-motion visitor got the same faint text, snapping instead of
+     fading. Scroll position is not a reason to make copy harder to read, so
+     here every step stays at full strength. */
+  body.hp .ch-story.is-live .ch-step,
+  body.hp .ch-story.is-live .ch-step.is-past { opacity: 1; }
 }
 
 /* Our own work: the real photograph, beside a line about it. */
