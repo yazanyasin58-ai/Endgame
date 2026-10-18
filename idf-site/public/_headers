@@ -31,9 +31,20 @@
 # frame-ancestors 'none' is the one that matters for a contractor: it stops the
 # site being framed inside someone else's page and passed off as theirs, or
 # used to trick a visitor into submitting the estimate form somewhere else.
+#
+# The two cloudflareinsights hosts are Web Analytics, which is enabled on the
+# Pages project and injected at the edge, so the beacon tag is in the served
+# HTML whether or not it appears anywhere in this repo. It needs BOTH hosts and
+# they are not the same name: the script is fetched from static.cloudflareinsights.com
+# and it POSTs its measurements to cloudflareinsights.com/cdn-cgi/rum. Until
+# 18 October both were missing, so the browser refused the script on every page
+# view, analytics recorded nothing for weeks, and the refusal was the only thing
+# holding the Lighthouse best-practices score below 100. If analytics is ever
+# switched off at the Cloudflare end, take these back out rather than leaving a
+# permitted origin nothing uses.
 
 /*
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' blob:; frame-src https://maps.google.com https://www.google.com https://challenges.cloudflare.com; connect-src 'self'; form-action 'self'; base-uri 'self'; frame-ancestors 'none'; object-src 'none'; upgrade-insecure-requests
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' blob:; frame-src https://maps.google.com https://www.google.com https://challenges.cloudflare.com; connect-src 'self' https://cloudflareinsights.com; form-action 'self'; base-uri 'self'; frame-ancestors 'none'; object-src 'none'; upgrade-insecure-requests
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: geolocation=(), microphone=(), camera=(), payment=(), usb=()

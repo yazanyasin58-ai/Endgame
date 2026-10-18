@@ -48,17 +48,34 @@ interface PagesContext {
 }
 
 /**
- * Where an estimate lands when NOTIFY_TO is not set. Two addresses on purpose:
- * a lead arriving twice costs nothing, a lead arriving nowhere costs a job.
+ * Where an estimate lands when NOTIFY_TO is not set.
  *
- * Deliberately the destination inboxes, not info@ on the company domain, even
+ * Deliberately the destination inbox, not info@ on the company domain, even
  * though info@ is what the site publishes. info@ is a Cloudflare Email Routing
- * forwarder, so mail to it takes an extra hop before reaching this same Gmail —
+ * forwarder, so mail to it takes an extra hop before reaching this same Gmail,
  * and a forward is exactly the shape of delivery that gets dropped for failing
  * SPF/DMARC at the far end. One less hop, one less way to lose a lead.
+ *
+ * ONE ADDRESS, NOT TWO, SINCE 18 OCTOBER. This used to list
+ * interiordesignconstructiondmv@gmail.com first, on the reasoning that a lead
+ * arriving twice costs nothing while a lead arriving nowhere costs a job. That
+ * address is dead: Google answers it with
+ *
+ *     550-5.2.1 The email account that you tried to reach is inactive.
+ *
+ * which is a permanent failure, so the send bounced and Resend added the
+ * address to its suppression list. Keeping a known-dead recipient in the
+ * default is worse than useless: every notification hard-bounces, and repeated
+ * hard bounces damage the sending reputation of a domain that was only
+ * verified that same day, which puts the deliverability of the surviving
+ * address at risk too.
+ *
+ * Do not add it back on the assumption it was a blip. It returns only if the
+ * owner reactivates the Google account AND the Resend suppression entry is
+ * removed; reactivating alone will not resume delivery, because the
+ * suppression is held at Resend rather than at Google.
  */
-const DEFAULT_NOTIFY_TO =
-  'interiordesignconstructiondmv@gmail.com,interiordesignflooring@gmail.com';
+const DEFAULT_NOTIFY_TO = 'interiordesignflooring@gmail.com';
 
 const MAX_FILES = 8;
 const MAX_FILE_BYTES = 10 * 1024 * 1024; // 10 MB — a phone photograph, comfortably

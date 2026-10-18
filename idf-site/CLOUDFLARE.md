@@ -185,12 +185,21 @@ Two separate things have to be true, and they are easy to confuse:
 **On the site:** `info@interiordesignconstructiondmv.com`, forwarded by
 Cloudflare Email Routing to `interiordesignconstructiondmv@gmail.com`.
 
-**Where the form notification goes:** `interiordesignconstructiondmv@gmail.com`
-and the owner's `interiordesignflooring@gmail.com`, straight to the inbox —
-*not* through info@. That is deliberate. info@ is a forwarder, so notifying it
-adds a hop, and forwarded mail is the kind that gets dropped for failing
-SPF/DMARC at the far end. The published address and the notification address do
-not have to be the same thing, and here they are better off not being.
+> **⚠ That forwarding destination is a dead account.** On 18 October a send to
+> `interiordesignconstructiondmv@gmail.com` returned `550-5.2.1 The email
+> account that you tried to reach is inactive`. Unless the routing rule has
+> been repointed since, every customer who emails the address printed on the
+> site is writing into a disabled mailbox. Repoint the rule to
+> `interiordesignflooring@gmail.com`. Nothing in the codebase can detect or
+> work around this; it is a Cloudflare Email Routing setting.
+
+**Where the form notification goes:** `interiordesignflooring@gmail.com`,
+straight to the inbox and *not* through info@. That is deliberate. info@ is a
+forwarder, so notifying it adds a hop, and forwarded mail is the kind that gets
+dropped for failing SPF/DMARC at the far end. The published address and the
+notification address do not have to be the same thing, and here they are better
+off not being: that separation is the only reason the estimate form kept
+working when the forwarder's destination died.
 
 ### 2z. Fallback — getting mail flowing with no DNS at all
 
@@ -204,12 +213,17 @@ by itself let Resend send.** Without a verified domain, Resend only sends from
 its own shared `onboarding@resend.dev`, and it will only deliver that to the
 address that owns the Resend account. So:
 
-1. Create the Resend account **using `interiordesignconstructiondmv@gmail.com`
-   as the account email.** This is the whole trick — sender and recipient are
+1. Create the Resend account **using whichever inbox the leads should land in
+   as the account email.** This is the whole trick: sender and recipient are
    then the same address Resend already trusts, and no DNS record is needed.
+   Do not use `interiordesignconstructiondmv@gmail.com`; that account is
+   inactive. The live Resend account is registered to a working address and
+   the domain is now verified, so this fallback is history rather than a step
+   anyone should need again.
 2. `RESEND_API_KEY` = the key. `NOTIFY_FROM` =
-   `Estimate Form <onboarding@resend.dev>`. `NOTIFY_TO` can be left unset; the
-   built-in default already covers both Gmail addresses.
+   `Estimate Form <onboarding@resend.dev>`. `NOTIFY_TO` must then be set to
+   that same account address: the built-in default will not do, because an
+   unverified sender can only reach the account owner's own inbox.
 3. Redeploy, submit the form once, confirm it arrives.
 
 Two honest limits of this arrangement, worth saying out loud to the client

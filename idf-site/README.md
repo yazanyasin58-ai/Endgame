@@ -616,13 +616,18 @@ Fraunces (display) over Public Sans (body), both Google Fonts.
 
 ## Known state
 
-- The intake form **submits**, to `/api/estimate`. Photographs go to R2 and the owner is
-  emailed at `interiordesignconstructiondmv@gmail.com` and the older
-  `interiordesignflooring@gmail.com`, with the photographs attached and reply-to
-  set to the customer. The site publishes `info@interiordesignconstructiondmv.com`,
-  which forwards to the first of those; the notification skips the forwarder and
-  goes straight to the inbox — `CLOUDFLARE.md` § 2 says why. `NOTIFY_TO` is a
-  comma-separated list, so changing recipients is a variable edit, not a deploy. None of it works until the bindings in `CLOUDFLARE.md`
+- The intake form **submits**, to `/api/estimate`, and this was verified end to end on
+  the live site on 18 October: R2 storage, the photograph attached, and the notification
+  delivered. The owner is emailed at `interiordesignflooring@gmail.com`, with reply-to
+  set to the customer. It used to also notify `interiordesignconstructiondmv@gmail.com`;
+  that Google account is inactive, the send hard-bounced, and Resend suppressed the
+  address, so it was removed from the default rather than left to bounce every lead and
+  damage the sending domain's reputation. The site publishes
+  `info@interiordesignconstructiondmv.com`, a forwarder that was pointed at that same
+  dead account, so check Cloudflare Email Routing before trusting it. The notification
+  deliberately skips the forwarder and goes straight to the inbox, and `CLOUDFLARE.md`
+  § 2 says why. `NOTIFY_TO` is a comma-separated list, so changing recipients is a
+  variable edit, not a deploy. None of it works until the bindings in `CLOUDFLARE.md`
   exist in the Pages project — the endpoint degrades one service at a time rather than
   failing whole, and refuses a submission carrying files it cannot store rather than
   accepting it and dropping them.
