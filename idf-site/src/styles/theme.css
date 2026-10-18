@@ -272,7 +272,7 @@ body.hp .hp-cf > .hp-textlink { margin-left: clamp(1.25rem, 4vw, 3.5rem); }
   cursor: grab;
 }
 .hp-cf-track::-webkit-scrollbar { display: none; }
-.hp-cf-track:focus-visible { outline: 2px solid var(--gold-bright); outline-offset: -4px; }
+.hp-cf-track:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: -4px; }
 .hp-cf-track.is-dragging { cursor: grabbing; scroll-snap-type: none; user-select: none; }
 .hp-cf-card {
   flex: 0 0 var(--cf-w);

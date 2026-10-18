@@ -49,6 +49,89 @@ export function initIntakeForms(): void {
       }
     };
 
+    /**
+     * Field validation.
+     *
+     * The form is `novalidate` on purpose: the browser's own bubbles are
+     * unstyleable, appear one at a time, and vanish on the next click. What
+     * replaced them was a single emptiness test, which meant `phone: "abc"`,
+     * an email with no `@` and a one-character address all submitted happily.
+     * The entire value of this form is a number somebody can call back, so a
+     * typo'd one is a lead that was paid for, counted, and is dead.
+     *
+     * The phone rule COUNTS DIGITS rather than matching a format, because
+     * customers type (571) 233-5133, 571.233.5133 and +1 571 233 5133 and all
+     * three are the same reachable number. Ten digits, or eleven starting
+     * with a 1, is the North American range.
+     *
+     * The email rule stays deliberately loose: something, an @, and a dot in
+     * the domain. Anything stricter starts rejecting addresses that deliver.
+     */
+    const digitsOf = (value: string) => value.replace(/\D/g, '');
+
+    type Field = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
+
+    /* Everything the customer fills in. The file input validates itself, and
+       the honeypot inside .ef-hp must never be looked at: it is meant to stay
+       empty, and a bot filling it is the signal, not an error to report. */
+    const fields = Array.from(form.querySelectorAll<Field>('input, select, textarea')).filter(
+      (field) => field.type !== 'file' && field.type !== 'hidden' && !field.closest('.ef-hp'),
+    );
+
+    const errorFor = (field: Field): string | null => {
+      const value = field.value.trim();
+      if (field.hasAttribute('required') && !value) return 'This one is needed.';
+      if (!value) return null;
+      if (field.type === 'tel') {
+        const digits = digitsOf(value);
+        const national = digits.length === 10;
+        const withCountry = digits.length === 11 && digits.startsWith('1');
+        if (!national && !withCountry) {
+          return 'That does not look like a number we can reach you on. Ten digits, area code included.';
+        }
+      }
+      if (field.type === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+        return 'That address is missing something. Check it for a typo.';
+      }
+      return null;
+    };
+
+    const errorId = (field: Field) => `${field.id}-err`;
+
+    const clearError = (field: Field) => {
+      field.removeAttribute('aria-invalid');
+      const el = document.getElementById(errorId(field));
+      if (el) {
+        el.hidden = true;
+        el.textContent = '';
+      }
+    };
+
+    const markError = (field: Field, message: string) => {
+      field.setAttribute('aria-invalid', 'true');
+      let el = document.getElementById(errorId(field));
+      if (!el) {
+        el = document.createElement('p');
+        el.className = 'ef-err';
+        el.id = errorId(field);
+        field.insertAdjacentElement('afterend', el);
+      }
+      el.textContent = message;
+      el.hidden = false;
+      /* Append rather than replace: several fields already carry a hint. */
+      const described = (field.getAttribute('aria-describedby') ?? '').split(/\s+/).filter(Boolean);
+      if (!described.includes(el.id)) {
+        field.setAttribute('aria-describedby', [...described, el.id].join(' '));
+      }
+    };
+
+    /* Clear as soon as they start fixing it. An error that outlives the
+       mistake trains people to ignore errors. */
+    for (const field of fields) {
+      field.addEventListener('input', () => clearError(field));
+      field.addEventListener('change', () => clearError(field));
+    }
+
     fileInput?.addEventListener('change', () => {
       if (!fileList) return;
       const files = Array.from(fileInput.files ?? []);
@@ -64,12 +147,27 @@ export function initIntakeForms(): void {
     form.addEventListener('submit', async (event) => {
       event.preventDefault();
 
-      const missing = Array.from(form.querySelectorAll<HTMLInputElement>('[required]')).find(
-        (field) => !field.value.trim(),
-      );
-      if (missing) {
-        show('Please fill in every field marked with a star.', 'error');
-        missing.focus();
+      for (const field of fields) clearError(field);
+
+      const bad: Array<{ field: Field; message: string }> = [];
+      for (const field of fields) {
+        const message = errorFor(field);
+        if (message) bad.push({ field, message });
+      }
+
+      if (bad.length) {
+        for (const { field, message } of bad) markError(field, message);
+        /* The summary names the count; each field carries its own reason.
+           One generic sentence for the whole form leaves the customer
+           hunting for which control it meant. */
+        show(
+          bad.length === 1
+            ? 'One field needs a look before this can send.'
+            : `${bad.length} fields need a look before this can send.`,
+          'error',
+        );
+        bad[0].field.focus();
+        bad[0].field.scrollIntoView({ block: 'center', behavior: 'smooth' });
         return;
       }
 

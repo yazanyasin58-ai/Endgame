@@ -384,7 +384,7 @@
   transition: border-color 240ms ease, background 240ms ease;
 }
 .ftf-hold:hover { border-color: var(--gold); background: rgb(8 7 5 / 0.75); }
-.ftf-hold:focus-visible { outline: 2px solid var(--gold-bright); outline-offset: 3px; }
+.ftf-hold:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 3px; }
 .ftf-hold-ring { width: 2.25rem; height: 2.25rem; flex: none; }
 .ftf-hold-ring svg { width: 100%; height: 100%; display: block; }
 .ftf-ring-bg { fill: none; stroke: rgb(246 241 231 / 0.22); stroke-width: 3; }

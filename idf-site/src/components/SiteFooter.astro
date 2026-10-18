@@ -24,9 +24,9 @@ import Logo from './Logo.astro';
 
     <div class="foot-cols">
       <div class="foot-col">
-        <h3 class="foot-head">Showroom</h3>
+        <h2 class="foot-head">Showroom</h2>
         <p>45431 Ruritan Circle, Suite 160<br />Sterling, VA 20164</p>
-        <h3 class="foot-head foot-head--spaced">Hours</h3>
+        <h2 class="foot-head foot-head--spaced">Hours</h2>
         <ul class="foot-hours">
           {
             hours.map((h) => (
@@ -39,7 +39,7 @@ import Logo from './Logo.astro';
         </ul>
       </div>
       <div class="foot-col">
-        <h3 class="foot-head">Contact</h3>
+        <h2 class="foot-head">Contact</h2>
         <p>
           <a href={business.phonePrimaryHref}>{business.phonePrimary}</a><br />
           <a href={business.phoneSecondaryHref}>{business.phoneSecondary}</a><br />
@@ -47,9 +47,9 @@ import Logo from './Logo.astro';
         </p>
       </div>
       <div class="foot-col">
-        <h3 class="foot-head">License</h3>
+        <h2 class="foot-head">License</h2>
         <p>{business.license}<br />Licensed &amp; Insured · Residential</p>
-        <h3 class="foot-head foot-head--spaced">Start here</h3>
+        <h2 class="foot-head foot-head--spaced">Start here</h2>
         <p>
           <a href="/estimate/">Request a free estimate</a><br />
           {propertyPaths.map((path) => (
@@ -62,7 +62,7 @@ import Logo from './Logo.astro';
     </div>
 
     <div class="foot-area">
-      <h3 class="foot-head">Service area</h3>
+      <h2 class="foot-head">Service area</h2>
       <p>{serviceArea.detail}</p>
       <ul class="foot-regions">
         {serviceArea.regions.map((r) => <li>{r}</li>)}

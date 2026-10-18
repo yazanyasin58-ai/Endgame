@@ -1,4 +1,8 @@
 ---
+/* The @font-face rules come first so the families are declared before any
+   rule below uses them. Self-hosted: see fonts.css for why, and for how to
+   regenerate them. */
+import '../styles/fonts.css';
 import '../styles/global.css';
 /* Motion and depth below the hero, on every page. Its selectors are anchored
    on body.hp so they hold regardless of where the bundle places it. */
@@ -18,7 +22,6 @@ import LeadPopup from '../components/LeadPopup.astro';
 interface Props {
   title: string;
   description: string;
-  fontsHref: string;
   bodyClass?: string;
   withCallbar?: boolean;
   /**
@@ -33,7 +36,6 @@ interface Props {
 const {
   title,
   description,
-  fontsHref,
   bodyClass = '',
   withCallbar = false,
   noindex = false,
@@ -66,9 +68,6 @@ const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : un
     <link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48" />
     <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="stylesheet" href={fontsHref} />
     {/* Every scroll entrance is scoped to this class, so nothing on the site
         is hidden unless a script is running to bring it back. Inline and in
         the head because it has to be set before the first paint: added any
