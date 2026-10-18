@@ -1,0 +1,18 @@
+{
+  "source": "https://platform.claude.com/docs/en/about-claude/pricing",
+  "checked": "2026-10-18",
+  "unit": "USD per million tokens (API list price, used only as a relative weight for plan-limit burn)",
+  "note": "First regex that matches the model id wins. Haiku 5.5 is tiered on prompt size (input + cache reads + cache writes).",
+  "models": [
+    { "match": "fable|mythos", "id": "claude-fable-5-1", "name": "Fable 5.1", "in": 10, "w5": 12.5, "w1h": 20, "read": 0.25, "out": 50 },
+    { "match": "opus", "id": "claude-opus-5-5", "name": "Opus 5.5", "in": 4, "w5": 5, "w1h": 8, "read": 0.2, "out": 20 },
+    { "match": "sonnet", "id": "claude-sonnet-5-5", "name": "Sonnet 5.5", "in": 2, "w5": 2.5, "w1h": 4, "read": 0.1, "out": 10 },
+    { "match": "haiku", "id": "claude-haiku-5-5", "name": "Haiku 5.5", "tierAt": 100000,
+      "low":  { "in": 0.1, "w5": 0.125, "w1h": 0.2, "read": 0.01, "out": 0.5 },
+      "high": { "in": 0.5, "w5": 0.625, "w1h": 1, "read": 0.05, "out": 2.5 } }
+  ],
+  "effortOutputMultiplier": {
+    "note": "Default output/thinking multiplier vs medium. Replaced by your own history when `history` has enough turns at that level.",
+    "low": 0.55, "medium": 1, "high": 1.6, "xhigh": 2.2, "max": 3
+  }
+}

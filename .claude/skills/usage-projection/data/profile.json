@@ -1,0 +1,137 @@
+{
+  "built": "2026-10-18T02:34:31.317Z",
+  "calls": 141,
+  "sessions": 7,
+  "baseContext": 117588,
+  "subagentBase": 15000,
+  "outPerCall": 416,
+  "effortMult": {
+    "low": 0.55,
+    "medium": 1,
+    "high": 1.71,
+    "xhigh": 2.2,
+    "max": 3
+  },
+  "effortLearnedFromHistory": [
+    "high"
+  ],
+  "groups": [
+    {
+      "model": "claude-opus-5-5",
+      "effort": "high",
+      "calls": 87,
+      "outPerCall": 544,
+      "outPerCallMean": 1138,
+      "writePerCall": 1143,
+      "contextPerCall": 185171,
+      "costPerCall": 0.0975
+    },
+    {
+      "model": "claude-opus-5-5",
+      "effort": "medium",
+      "calls": 48,
+      "outPerCall": 326,
+      "outPerCallMean": 665,
+      "writePerCall": 1625,
+      "contextPerCall": 127680,
+      "costPerCall": 0.1356
+    },
+    {
+      "model": "claude-fable-5-1",
+      "effort": "high",
+      "calls": 6,
+      "outPerCall": 281,
+      "outPerCallMean": 222,
+      "writePerCall": 1022,
+      "contextPerCall": 95591,
+      "costPerCall": 0.2254
+    }
+  ],
+  "tools": {
+    "Bash": {
+      "results": 68,
+      "medianTokens": 162,
+      "meanTokens": 299
+    },
+    "mcp__Claude_Browser__browser_batch": {
+      "results": 17,
+      "medianTokens": 15472,
+      "meanTokens": 17002
+    },
+    "mcp__ccd_turn__update_plan": {
+      "results": 14,
+      "medianTokens": 17,
+      "meanTokens": 15
+    },
+    "mcp__Claude_Browser__preview_start": {
+      "results": 5,
+      "medianTokens": 112,
+      "meanTokens": 97
+    },
+    "mcp__ccd_turn__wrap_up": {
+      "results": 5,
+      "medianTokens": 52,
+      "meanTokens": 50
+    },
+    "ToolSearch": {
+      "results": 4,
+      "medianTokens": 21,
+      "meanTokens": 102
+    },
+    "AskUserQuestion": {
+      "results": 4,
+      "medianTokens": 54,
+      "meanTokens": 54
+    },
+    "mcp__e6387499-e178-4c55-a425-cb7854e837a8__firecrawl_scrape": {
+      "results": 3,
+      "medianTokens": 882,
+      "meanTokens": 833
+    },
+    "mcp__Claude_Browser__preview_stop": {
+      "results": 2,
+      "medianTokens": 20,
+      "meanTokens": 20
+    },
+    "Write": {
+      "results": 2,
+      "medianTokens": 73,
+      "meanTokens": 57
+    },
+    "Skill": {
+      "results": 2,
+      "medianTokens": 11,
+      "meanTokens": 10
+    },
+    "SendUserFile": {
+      "results": 1,
+      "medianTokens": 66,
+      "meanTokens": 66
+    },
+    "mcp__ccd_directory__change_directory": {
+      "results": 1,
+      "medianTokens": 68,
+      "meanTokens": 68
+    },
+    "mcp__Claude_Browser__javascript_tool": {
+      "results": 1,
+      "medianTokens": 79,
+      "meanTokens": 79
+    },
+    "mcp__ccd_session_mgmt__set_remote_control": {
+      "results": 1,
+      "medianTokens": 30,
+      "meanTokens": 30
+    },
+    "mcp__ccd_session_mgmt__get_usage": {
+      "results": 1,
+      "medianTokens": 368,
+      "meanTokens": 368
+    },
+    "Edit": {
+      "results": 1,
+      "medianTokens": 44,
+      "meanTokens": 44
+    }
+  }
+}
