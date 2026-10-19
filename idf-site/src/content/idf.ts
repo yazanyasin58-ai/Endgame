@@ -920,7 +920,7 @@ export const features = {
    * on in a commit of its own before the endpoint stopped generating, and was
    * held back so the two ship together.
    */
-  chatAssistant: false,
+  chatAssistant: true,
 
   /**
    * Property management — the client's menu group 8.
