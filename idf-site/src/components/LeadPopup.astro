@@ -115,6 +115,32 @@ const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
     } catch { /* private mode: storage throws, so just show it */ }
 
     if (!blocked) {
+      /* Turnstile's script, which nothing else on this page necessarily loads.
+         EstimateForm and ListingForm each emit their own <script> tag, but
+         between them they cover four pages, and three of those are in SKIP.
+         So on 23 of the 24 pages this dialog actually opens on, the widget in
+         the markup below was never initialised: no cf-turnstile-response went
+         with the submission, and /api/estimate refused it with "we could not
+         verify that request came from a browser" — an error the visitor
+         cannot act on, on a form whose whole job is to catch a lead. Found on
+         19 October while putting the same check on /api/chat.
+
+         Injected from here rather than added as a static tag so the one page
+         that already has the script does not load api.js twice: a second copy
+         re-scans the document for .cf-turnstile and replaces window.turnstile,
+         which would put two widgets on the home page's estimate form. */
+      const widget = root.querySelector('.cf-turnstile');
+      if (
+        widget &&
+        !(window as unknown as { turnstile?: unknown }).turnstile &&
+        !document.querySelector('script[src*="challenges.cloudflare.com/turnstile"]')
+      ) {
+        const api = document.createElement('script');
+        api.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js';
+        api.async = true;
+        document.head.appendChild(api);
+      }
+
       const box = root.querySelector<HTMLElement>('.lp-box')!;
       const form = root.querySelector<HTMLFormElement>('[data-lp-form]')!;
       const status = root.querySelector<HTMLElement>('[data-lp-status]')!;
