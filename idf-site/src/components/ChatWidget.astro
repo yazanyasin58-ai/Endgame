@@ -21,6 +21,11 @@
  *    messages or 12,000 characters, which would surface as a 400 mid-chat.
  *    Trimming to the most recent turns here means a long conversation
  *    degrades by forgetting its oldest turns rather than by breaking.
+ *  - THE TURNSTILE CHECK HAPPENS ONCE, NOT PER MESSAGE. The endpoint trades a
+ *    verified token for a signed session good for 25 messages, and this file
+ *    carries that session. Asking the visitor to tick a box before each reply
+ *    would be the obvious reading of "put Turnstile on it" and would also be
+ *    unusable.
  *
  * The site is measured at 100 on accessibility and this must not be what
  * lowers it: the launcher reports its state, the panel is a labelled dialog,
@@ -38,9 +43,21 @@ const CHIPS = [
 ] as const;
 
 const GREETING = "Hi! I'm your AI assistant. How can I help with your project today?";
+
+/**
+ * The public half of the Turnstile pair, read at build time, exactly as
+ * EstimateForm does it. Absent in a local build, which is why the container
+ * below is conditional: the endpoint skips its own check when the secret half
+ * is missing, so the two stay in step rather than the widget rendering a
+ * challenge nothing verifies.
+ */
+const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
 ---
 
-<div class="chat" data-chat data-open="false">
+{/* The number rides on an attribute because the script below is a separate
+    module and cannot see this file's frontmatter. One source of truth either
+    way: it still comes from content/idf.ts. */}
+<div class="chat" data-chat data-open="false" data-phone={business.phonePrimary}>
   <button
     type="button"
     class="chat-launch"
@@ -91,6 +108,16 @@ const GREETING = "Hi! I'm your AI assistant. How can I help with your project to
         <span class="chat-sr">The assistant is typing</span>
       </div>
     </div>
+
+    {/* The challenge. Invisible unless Cloudflare wants a closer look at this
+        visitor, and placed above the composer so that when it does appear it
+        is in front of the person typing rather than at the bottom of a log
+        they have scrolled away from. Rendered explicitly from the script, on
+        first open: a widget created inside a display:none panel is the one
+        reliable way to get a challenge that never resolves. */}
+    {turnstileSiteKey && (
+      <div class="chat-gate" data-chat-turnstile data-sitekey={turnstileSiteKey}></div>
+    )}
 
     <form class="chat-form" data-chat-form>
       <label class="chat-sr" for="chat-input">Your message</label>
@@ -148,6 +175,130 @@ const GREETING = "Hi! I'm your AI assistant. How can I help with your project to
       return out;
     };
 
+    /* ---------- the abuse gate ----------
+
+       The endpoint verifies a human once and hands back a signed session that
+       admits twenty-five messages. So this side does three things: get one
+       Turnstile token when there is no session, carry the session on every
+       later message, and put the challenge back when the endpoint says the
+       session is finished. */
+
+    const gate = root.querySelector<HTMLElement>('[data-chat-turnstile]');
+    /** Signed by the endpoint. Opaque here, and never read, only echoed. */
+    let session: string | null = null;
+    let widgetId: string | undefined;
+    let token: string | null = null;
+    const waiting: ((value: string | null) => void)[] = [];
+
+    const settle = (value: string | null) => {
+      token = value;
+      for (const resolve of waiting.splice(0)) resolve(value);
+    };
+
+    const turnstile = () =>
+      (
+        window as unknown as {
+          turnstile?: {
+            render(el: Element, options: Record<string, unknown>): string;
+            reset(id?: string): void;
+          };
+        }
+      ).turnstile;
+
+    /* Injected on first open rather than sitting in every page's head. The
+       launcher is on all 28 pages and most visitors never press it, so a
+       third-party script on page load would be a measured performance cost
+       paid for a feature nobody used on that visit. */
+    let scriptAdded = false;
+    const loadTurnstile = () => {
+      if (scriptAdded || !gate) return;
+      scriptAdded = true;
+      /* Any page carrying the estimate form already loads this script for its
+         own widget, and a second copy is not harmless: api.js re-scans the
+         document for .cf-turnstile on load and replaces window.turnstile, so
+         two copies can double-render the form's widget. Reuse what is there.
+         This is also why the container above is .chat-gate rather than
+         .cf-turnstile: the implicit scan must not find it and render it into
+         a panel that is still display:none. */
+      if (turnstile() || document.querySelector('script[src*="challenges.cloudflare.com/turnstile"]')) {
+        return;
+      }
+      const el = document.createElement('script');
+      el.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+      el.async = true;
+      document.head.appendChild(el);
+    };
+
+    const renderGate = () => {
+      if (!gate || widgetId !== undefined) return;
+      const api = turnstile();
+      if (!api) return;
+      widgetId = api.render(gate, {
+        sitekey: gate.dataset.sitekey,
+        /* The same setting the estimate form uses: nothing is shown unless
+           this visitor actually needs challenging. */
+        appearance: 'interaction-only',
+        callback: settle,
+        'error-callback': () => settle(null),
+        'expired-callback': () => {
+          token = null;
+          api.reset(widgetId);
+        },
+      });
+    };
+
+    /** A token is single-use, so spending one means asking for the next. */
+    const refreshGate = () => {
+      token = null;
+      if (widgetId !== undefined) turnstile()?.reset(widgetId);
+    };
+
+    /**
+     * Load the script and put the challenge up, on open rather than on first
+     * send. For nearly everyone this is invisible and the token is simply
+     * waiting by the time they finish typing. For the visitor who does get
+     * challenged it is the difference between a checkbox that appears before
+     * they have typed anything and one that appears after they press send,
+     * underneath a row of typing dots, which reads as the thing having hung.
+     */
+    const primeGate = async (): Promise<boolean> => {
+      if (!gate) return false;
+      if (widgetId !== undefined) return true;
+
+      loadTurnstile();
+      const deadline = Date.now() + 12000;
+      while (!turnstile() && Date.now() < deadline) {
+        await new Promise((resolve) => setTimeout(resolve, 100));
+      }
+      renderGate();
+      return widgetId !== undefined;
+    };
+
+    /** The current token, or null if the challenge cannot produce one in time. */
+    const getToken = async (): Promise<string | null> => {
+      if (!gate) return null;
+      if (token) return token;
+      if (!(await primeGate())) return null;
+      if (token) return token;
+
+      const deadline = Date.now() + 12000;
+      return new Promise<string | null>((resolve) => {
+        waiting.push(resolve);
+        /* A challenge the visitor never finishes must not leave the widget
+           waiting forever with its typing dots running. */
+        setTimeout(
+          () => {
+            const index = waiting.indexOf(resolve);
+            if (index !== -1) {
+              waiting.splice(index, 1);
+              resolve(null);
+            }
+          },
+          Math.max(2000, deadline - Date.now()),
+        );
+      });
+    };
+
     const bubble = (text: string, kind: 'bot' | 'user' | 'error') => {
       const p = document.createElement('p');
       p.className = `chat-msg chat-msg-${kind}`;
@@ -169,6 +320,9 @@ const GREETING = "Hi! I'm your AI assistant. How can I help with your project to
       panel.hidden = false;
       launch.setAttribute('aria-expanded', 'true');
       input.focus();
+      /* Not awaited: the panel is already usable, and the challenge resolving
+         in the background is the point. */
+      void primeGate();
     };
 
     const close = () => {
@@ -196,22 +350,55 @@ const GREETING = "Hi! I'm your AI assistant. How can I help with your project to
       setBusy(true);
 
       try {
+        const body: Record<string, unknown> = { messages: trimmed() };
+
+        if (session) {
+          body.session = session;
+        } else if (gate) {
+          const fresh = await getToken();
+          if (!fresh) {
+            /* Two different failures, and telling them apart is the whole
+               value of the message: a challenge sitting there unanswered
+               needs a tick, and a challenge that never appeared needs a
+               different route entirely. */
+            bubble(
+              gate.getBoundingClientRect().height > 0
+                ? 'Please finish the quick human check just above, then send that again.'
+                : 'We could not confirm this is a browser. Please reload the page, use the estimate form, or call ' +
+                  `${root.dataset.phone ?? 'us'}.`,
+              'error',
+            );
+            return;
+          }
+          body.turnstileToken = fresh;
+          /* Spent the moment it is sent, whatever the endpoint makes of it. */
+          refreshGate();
+        }
+
         const res = await fetch('/api/chat', {
           method: 'POST',
           headers: { 'content-type': 'application/json' },
-          body: JSON.stringify({ messages: trimmed() }),
+          body: JSON.stringify(body),
         });
         /* Read the body before trusting the status: this endpoint returns a
            usable sentence in `error` on 400, 502 and 503, and showing that
            beats a generic failure the visitor cannot act on. */
         const data = (await res.json().catch(() => null)) as
-          | { ok?: boolean; reply?: string; error?: string }
+          | { ok?: boolean; reply?: string; error?: string; session?: string; verify?: boolean }
           | null;
 
         if (data?.ok && typeof data.reply === 'string') {
+          if (typeof data.session === 'string') session = data.session;
           bubble(data.reply, 'bot');
           history.push({ role: 'assistant', content: data.reply });
         } else {
+          /* The session is finished, or was never good. Drop it and let the
+             next message earn a new one, so the visitor's way out of this is
+             a tick box rather than a page reload. */
+          if (data?.verify) {
+            session = null;
+            refreshGate();
+          }
           bubble(
             data?.error ??
               'Something went wrong. Please use the estimate form or call us.',

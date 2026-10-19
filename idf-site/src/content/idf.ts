@@ -908,13 +908,19 @@ export const features = {
    * `googleReviews` is separate from its key: a binding going missing must
    * not be the thing that decides what the site shows.
    *
-   * Two things to settle before it goes on, neither of them code. The
-   * endpoint has no Turnstile check or rate limit, so a public launcher is a
-   * public URL that spends the client's money; and nobody has yet decided
-   * whether an assistant should generate answers at all on a site where the
-   * static copy is guarded against claiming insurance, quoting a price, or
-   * offering to handle a claim. Retrieval over the existing FAQ answers
-   * generates nothing and so cannot breach any of it.
+   * The abuse question is answered as of 19 October: the endpoint verifies a
+   * Turnstile token, trades it for a signed session worth 25 messages in 30
+   * minutes, and throttles per IP inside each isolate. It needs no new
+   * variable on the Pages project, only the TURNSTILE_SECRET and
+   * PUBLIC_TURNSTILE_SITE_KEY the estimate form already uses.
+   *
+   * What is still unsettled is not code. Nobody has yet decided whether an
+   * assistant should generate answers at all on a site whose static copy is
+   * guarded against claiming insurance, quoting a price, or offering to
+   * handle a claim. The system prompt forbids all three, but a prompt is not
+   * a build guard. Retrieval over the existing 53 FAQ answers generates
+   * nothing and so cannot breach any of it, and is the safer shape if the
+   * owner would rather not have text invented on their behalf.
    */
   chatAssistant: false,
 

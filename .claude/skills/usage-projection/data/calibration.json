@@ -1,0 +1,33 @@
+{
+  "samples": [
+    {
+      "at": "2026-10-18T02:34:31.394Z",
+      "percent": 37,
+      "spentUSD": 3.998,
+      "usdPerPercent": 0.10805
+    },
+    {
+      "at": "2026-10-18T03:01:45.791Z",
+      "percent": 55,
+      "spentUSD": 4.6868,
+      "usdPerPercent": 0.08521
+    }
+  ],
+  "weeklySamples": [
+    {
+      "at": "2026-10-18T02:34:31.394Z",
+      "percent": 56,
+      "spentUSD": 6.5082,
+      "usdPerPercent": 0.11622
+    },
+    {
+      "at": "2026-10-18T03:01:45.791Z",
+      "percent": 59,
+      "spentUSD": 7.1971,
+      "usdPerPercent": 0.12198
+    }
+  ],
+  "usdPerPercent": 0.10805,
+  "weeklyUsdPerPercent": 0.12198,
+  "fiveHourCapUSD": 10.8
+}
