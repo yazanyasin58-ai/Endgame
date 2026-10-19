@@ -585,12 +585,18 @@ export const countOn = [
  * is absent until JavaScript runs, and a headline statistic that pops in late
  * is worse than one that is a few months conservative.
  */
-const yearsTrading = new Date().getFullYear() - Number(business.established);
+const thisYear = new Date().getFullYear();
+const yearsTrading = thisYear - Number(business.established);
 
-if (String(yearsTrading) !== business.yearsInBusiness) {
+/* Skipped when the clock reads earlier than the founding year, which only
+   happens in one place: a Cloudflare Worker loading this module. Workers
+   freeze Date at the Unix epoch during startup, so /api/chat, which imports
+   this file through the FAQ catalog, saw 1970 and failed to publish on
+   19 October. The guard is a build check; the build still runs it. */
+if (thisYear >= Number(business.established) && String(yearsTrading) !== business.yearsInBusiness) {
   throw new Error(
     `business.yearsInBusiness says "${business.yearsInBusiness}" but ${business.established} ` +
-      `to ${new Date().getFullYear()} is ${yearsTrading}. A year has passed. Update ` +
+      `to ${thisYear} is ${yearsTrading}. A year has passed. Update ` +
       `yearsInBusiness to "${yearsTrading}" and check any prose that spells the number out.`,
   );
 }
