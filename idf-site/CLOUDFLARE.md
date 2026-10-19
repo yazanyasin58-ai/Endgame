@@ -32,11 +32,12 @@ So it can be switched on in three sittings rather than one. Do R2 first — that
 is the part that cannot be reconstructed if a submission is lost.
 
 There is a second Function, `functions/api/chat.ts`, which is the assistant.
-It is a separate route with a separate on-switch and nothing in this page's
-three services touches it. It needs an **AI** binding, it reuses the Turnstile
-keys below, and the whole of it is dormant until `features.chatAssistant` is
-turned on in `src/content/idf.ts`. See *The assistant endpoint uses the same
-two keys* in section 3.
+It is a separate route with a separate on-switch. It needs an **AI** binding,
+it reuses the Turnstile keys below, and it writes questions it has no approved
+answer for into the same R2 bucket, under `chat-unanswered/`. Nothing it does
+reaches the estimate form, and the whole of it is dormant until
+`features.chatAssistant` is turned on in `src/content/idf.ts`. See *The
+assistant endpoint uses the same two keys* in section 3.
 
 ---
 
@@ -572,6 +573,32 @@ it is not a global rate limit. The signed session is what actually bounds the
 spend, because getting past it costs a real Turnstile solve every 25 messages.
 If this endpoint ever carries real traffic, the proper fix is a Rate Limiting
 binding or a KV namespace, not a larger number here.
+
+### What the assistant says, and where the questions it cannot answer go
+
+The assistant runs in **retrieval mode**. The model is shown the site's
+approved questions, the ones on `/faq/` and on the twelve service pages, and
+returns one id. The endpoint replies with that answer exactly as the page
+carries it, and names the question it is answering. The model writes nothing a
+visitor reads, so it cannot quote a price, mention a deductible or offer to
+deal with an insurer, however it is asked.
+
+When nothing fits, the visitor gets a fixed reply pointing to the phone and the
+estimate form, and the question is written to R2:
+
+| | |
+|---|---|
+| Bucket | the `ESTIMATE_UPLOADS` binding the estimate form already uses — nothing new to add |
+| Key | `chat-unanswered/YYYY-MM/<timestamp>-<random>.json` |
+| Holds | the question, up to three earlier messages from the same visitor, the page it was asked on, and the model's raw output |
+| Does not hold | IP address or user agent |
+| Without the binding | the visitor still gets the fallback; the question is not kept, and the log says so |
+
+Read the queue in the dashboard under **R2 > the bucket > chat-unanswered/**.
+`scripts/r2-leads.mjs` lists `estimates/` only and does not show these. A
+question that turns up often is a candidate for a new FAQ answer: once one is
+approved and added to `src/content/faq.ts` or `service-faq.ts`, the next deploy
+can retrieve it, with no change to the endpoint.
 
 ## 3b. Google reviews — the live carousel feed
 
