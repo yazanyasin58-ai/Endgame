@@ -895,18 +895,12 @@ export const features = {
   /**
    * The floating AI assistant, the client's menu item 7.
    *
-   * BLOCKED, and the reason is not a legal question for once: the thing it
-   * talks to does not exist yet. /api/chat needs a Workers AI binding named
-   * AI on the Pages project, per environment, and until that is added the
-   * endpoint answers 503. A launcher that opens a chat window and apologises
-   * is worse than no launcher, so the whole widget stays out of the HTML
-   * rather than rendering a button that cannot work.
-   *
-   * To reach `true`: add the AI binding under Settings > Bindings for the
-   * environment, redeploy, confirm the endpoint answers, then flip this. The
-   * flag is separate from the binding on purpose, for the same reason
-   * `googleReviews` is separate from its key: a binding going missing must
-   * not be the thing that decides what the site shows.
+   * It needs a Workers AI binding named AI on the Pages project, per
+   * environment; without one /api/chat answers 503, and a launcher that opens
+   * a chat window and apologises is worse than no launcher. The flag is
+   * separate from the binding on purpose, for the same reason `googleReviews`
+   * is separate from its key: a binding going missing must not be the thing
+   * that decides what the site shows.
    *
    * The abuse question is answered as of 19 October: the endpoint verifies a
    * Turnstile token, trades it for a signed session worth 25 messages in 30
@@ -914,13 +908,17 @@ export const features = {
    * variable on the Pages project, only the TURNSTILE_SECRET and
    * PUBLIC_TURNSTILE_SITE_KEY the estimate form already uses.
    *
-   * What is still unsettled is not code. Nobody has yet decided whether an
-   * assistant should generate answers at all on a site whose static copy is
-   * guarded against claiming insurance, quoting a price, or offering to
-   * handle a claim. The system prompt forbids all three, but a prompt is not
-   * a build guard. Retrieval over the existing 53 FAQ answers generates
-   * nothing and so cannot breach any of it, and is the safer shape if the
-   * owner would rather not have text invented on their behalf.
+   * The content question is answered by retrieval mode. The open worry was
+   * that a generating assistant could say what the static copy is guarded
+   * against, a price, a deductible, an offer to handle a claim, and a system
+   * prompt is not a build guard. So it does not generate: the model returns
+   * the id of one of the 53 approved FAQ answers and the endpoint sends that
+   * answer verbatim, or a fixed fallback, and queues the unmatched question
+   * to R2 under chat-unanswered/ for the owners. See faq-catalog.ts.
+   *
+   * THIS FLAG MUST NOT REACH LIVE WITHOUT RETRIEVAL MODE. It was first turned
+   * on in a commit of its own before the endpoint stopped generating, and was
+   * held back so the two ship together.
    */
   chatAssistant: false,
 
