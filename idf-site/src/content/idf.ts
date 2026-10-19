@@ -27,18 +27,22 @@ export const business = {
   phoneSecondary: '703-430-8129',
   phoneSecondaryHref: 'tel:+17034308129',
   /**
-   * The address published on every page, and a Cloudflare Email Routing
-   * forwarder rather than a mailbox of its own.
+   * The address published on every page. Supplied by the client on 19 October
+   * and now a real mailbox rather than a forwarder, which is the point of it.
    *
-   * UNRESOLVED AS OF 18 OCTOBER, AND IT IS NOT A CODE PROBLEM. This forwarder
-   * was set up to deliver to interiordesignconstructiondmv@gmail.com, and that
-   * Google account is now inactive: a send to it on 18 October came back
-   * "550-5.2.1 The email account that you tried to reach is inactive". If the
-   * routing rule has not been repointed since, every customer who writes to
-   * the address this site publishes is writing into a dead mailbox, and unlike
-   * the estimate form there is nothing in this repository that can detect it.
-   * The rule lives in Cloudflare Email Routing, so only the owner can fix it,
-   * and the fix is to forward to interiordesignflooring@gmail.com instead.
+   * WHAT IT REPLACED, AND WHY THAT MATTERS. Until today this was
+   * info@interiordesignconstructiondmv.com, a Cloudflare Email Routing rule
+   * that forwarded to interiordesignconstructiondmv@gmail.com. That Google
+   * account is inactive: a send to it on 18 October came back "550-5.2.1 The
+   * email account that you tried to reach is inactive". So every customer who
+   * wrote to the address this site published was writing into a dead mailbox,
+   * and unlike the estimate form there was nothing in this repository that
+   * could detect it.
+   *
+   * A mailbox the client holds directly has no forwarding hop to break and no
+   * routing rule to drift, so this class of failure cannot recur here. The
+   * old forwarder is now the client's to retire or repoint; nothing in this
+   * repository refers to it any more.
    *
    * The estimate form deliberately does NOT notify this address, see
    * DEFAULT_NOTIFY_TO in functions/api/estimate.ts. Mail sent here takes an
@@ -47,7 +51,7 @@ export const business = {
    * inbox instead, which is the same place a human would read it anyway. That
    * choice is the only reason the form kept working when the forwarder broke.
    */
-  email: 'info@interiordesignconstructiondmv.com',
+  email: 'info.interiordesignflooring@gmail.com',
   license: 'Virginia Class A General Contractor #2705162130',
   licenseShort: 'Class A #2705162130',
   licenseNumber: '2705162130',
@@ -925,8 +929,14 @@ export const features = {
    * THIS FLAG MUST NOT REACH LIVE WITHOUT RETRIEVAL MODE. It was first turned
    * on in a commit of its own before the endpoint stopped generating, and was
    * held back so the two ship together.
+   *
+   * OFF ON MASTER UNTIL THE OWNER HAS TRIED IT. As of 19 October retrieval
+   * mode is merged but has not been seen answering against the real model,
+   * so the live site keeps the launcher hidden. The `chat-preview` branch
+   * carries it switched on for testing, at chat-preview.idf-site.pages.dev.
+   * Flip this to true on master once the answers there are right.
    */
-  chatAssistant: true,
+  chatAssistant: false,
 
   /**
    * Property management — the client's menu group 8.
