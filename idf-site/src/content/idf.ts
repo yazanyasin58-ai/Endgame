@@ -922,7 +922,7 @@ export const features = {
    * nothing and so cannot breach any of it, and is the safer shape if the
    * owner would rather not have text invented on their behalf.
    */
-  chatAssistant: false,
+  chatAssistant: true,
 
   /**
    * Property management — the client's menu group 8.
