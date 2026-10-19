@@ -929,8 +929,14 @@ export const features = {
    * THIS FLAG MUST NOT REACH LIVE WITHOUT RETRIEVAL MODE. It was first turned
    * on in a commit of its own before the endpoint stopped generating, and was
    * held back so the two ship together.
+   *
+   * OFF ON MASTER UNTIL THE OWNER HAS TRIED IT. As of 19 October retrieval
+   * mode is merged but has not been seen answering against the real model,
+   * so the live site keeps the launcher hidden. The `chat-preview` branch
+   * carries it switched on for testing, at chat-preview.idf-site.pages.dev.
+   * Flip this to true on master once the answers there are right.
    */
-  chatAssistant: true,
+  chatAssistant: false,
 
   /**
    * Property management — the client's menu group 8.
