@@ -15,9 +15,14 @@ import '../styles/theme.css';
 import '../styles/pages.css';
 /* Live motion, mostly for phones: see the map at the top of the file. */
 import '../styles/motion.css';
+/* The floating assistant, on every page. Loaded unconditionally because a
+   stylesheet import is static, but nothing it styles exists unless
+   features.chatAssistant is on. */
+import '../styles/chat.css';
 import { preLaunch } from '../lib/site';
 import { features } from '../content/idf';
 import LeadPopup from '../components/LeadPopup.astro';
+import ChatWidget from '../components/ChatWidget.astro';
 
 interface Props {
   title: string;
@@ -90,6 +95,11 @@ const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : un
     <slot />
 
     {features.promoPopup && <LeadPopup />}
+
+    {/* Mounted last so it sits above the page in source order as well as in
+        z-index, and gated so no launcher appears until the Workers AI
+        binding exists for /api/chat to reach. */}
+    {features.chatAssistant && <ChatWidget />}
 
     {/* Scroll entrances for every page. Deferred by Astro, which is correct:
         the finished state is already in the markup and this only adds the
