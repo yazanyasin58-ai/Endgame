@@ -181,7 +181,7 @@ if (command === 'list') {
       name: field(record, 'name', 'fullName'),
       phone: field(record, 'phone'),
       email: field(record, 'email'),
-      enquiry: field(record, 'enquiry'),
+      type: field(record, 'type', 'enquiry'),
       files: entry.files.length,
       hasRecord: Boolean(entry.record),
     });
@@ -192,12 +192,12 @@ if (command === 'list') {
   } else {
     console.log(
       pad('REFERENCE', 20) + pad('SUBMITTED', 22) + pad('NAME', 22) +
-      pad('PHONE', 16) + pad('EMAIL', 28) + pad('TYPE', 12) + 'FILES',
+      pad('PHONE', 16) + pad('EMAIL', 28) + pad('TYPE', 18) + 'FILES',
     );
     for (const row of rows) {
       console.log(
         pad(row.reference, 20) + pad(row.submitted.slice(0, 19), 22) + pad(row.name, 22) +
-        pad(row.phone, 16) + pad(row.email, 28) + pad(row.enquiry, 12) +
+        pad(row.phone, 16) + pad(row.email, 28) + pad(row.type, 18) +
         String(row.files) + (row.hasRecord ? '' : '  (NO submission.json)'),
       );
     }
