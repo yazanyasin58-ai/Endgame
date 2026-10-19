@@ -893,6 +893,32 @@ export const features = {
   googleReviews: true,
 
   /**
+   * The floating AI assistant, the client's menu item 7.
+   *
+   * BLOCKED, and the reason is not a legal question for once: the thing it
+   * talks to does not exist yet. /api/chat needs a Workers AI binding named
+   * AI on the Pages project, per environment, and until that is added the
+   * endpoint answers 503. A launcher that opens a chat window and apologises
+   * is worse than no launcher, so the whole widget stays out of the HTML
+   * rather than rendering a button that cannot work.
+   *
+   * To reach `true`: add the AI binding under Settings > Bindings for the
+   * environment, redeploy, confirm the endpoint answers, then flip this. The
+   * flag is separate from the binding on purpose, for the same reason
+   * `googleReviews` is separate from its key: a binding going missing must
+   * not be the thing that decides what the site shows.
+   *
+   * Two things to settle before it goes on, neither of them code. The
+   * endpoint has no Turnstile check or rate limit, so a public launcher is a
+   * public URL that spends the client's money; and nobody has yet decided
+   * whether an assistant should generate answers at all on a site where the
+   * static copy is guarded against claiming insurance, quoting a price, or
+   * offering to handle a claim. Retrieval over the existing FAQ answers
+   * generates nothing and so cannot breach any of it.
+   */
+  chatAssistant: false,
+
+  /**
    * Property management — the client's menu group 8.
    *
    * BLOCKED. Managing rental property for someone else for compensation is

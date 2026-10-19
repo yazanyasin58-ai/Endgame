@@ -68,7 +68,31 @@ interface ChatMessage {
   content: string;
 }
 
-const MODEL = '@cf/meta/llama-3.1-8b-instruct';
+/**
+ * Llama 3.3 70B, fp8-quantised, served from Cloudflare's own edge.
+ *
+ * Chosen on 19 October over the 8B models for the one axis that decides this
+ * endpoint: holding to prohibitions it has no incentive to hold to. 70B
+ * against 8B is a large jump there, and the rules in SYSTEM_PROMPT are the
+ * only thing standing between generated text and a licensing problem.
+ *
+ * Cost, from Cloudflare's published rates: $0.293 per M input tokens and
+ * $2.253 per M output. That is roughly three times Claude Haiku 5.5 per
+ * token, but Workers AI gives 10,000 free Neurons a day and this model bills
+ * 26,668 neurons per M input and 204,805 per M output, which at this site's
+ * plausible traffic absorbs most of the bill. Staying on the AI binding also
+ * means no second vendor and no API key to store and rotate, which is worth
+ * more here than the last margin of instruction-following.
+ *
+ * THE CONTEXT WINDOW IS 24,000 TOKENS. Not 128K, not 1M. The caps below sit
+ * comfortably inside it: 12,000 characters of history is roughly 3,000
+ * tokens, the system prompt is under 1,000, and MAX_TOKENS reserves 512 for
+ * the answer. That leaves a wide margin today and almost none of it is free
+ * for the taking. If anyone later feeds this endpoint retrieved content, the
+ * site's 53 FAQ answers being the obvious candidate, the budget has to be
+ * recounted against 24,000 rather than assumed to fit.
+ */
+const MODEL = '@cf/meta/llama-3.3-70b-instruct-fp8-fast';
 
 /**
  * Limits, and the reason they are not optional.
