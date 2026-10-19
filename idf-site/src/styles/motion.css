@@ -1,0 +1,352 @@
+/* ============================================================
+   Live motion, phone first.
+
+   On a desktop the page already moves: a scrubbed film, pointer spotlights,
+   hover lifts. On a phone almost none of that reaches anyone. There is no
+   film (the still hero takes its place), and there is no hover, so every
+   hover state on the site is invisible to a thumb. This file gives the phone
+   its own motion, built for touch, and carries the parts that make sense on
+   a desktop too.
+
+     phones ...... the hero still drifts, light passes over it, its copy
+                   rises in                        ("Zoom Parallax", Ken Burns)
+                   credentials run as a ticker            ("Logo Marquee")
+                   service cards stack as you scroll    ("Stacking Cards")
+                   the call button rings now and then  ("Ripple Buttons")
+     everywhere .. a ripple from the point you tap or click
+                                          ("Ripple Button", "Press Depth")
+                   the projects coverflow shows its place in the set
+                                                  (progress indicators)
+                   a blueprint house draws itself in the estimate band
+                                                         ("Line Draw SVG")
+                   a blueprint grid drifts behind every page head
+                                                         ("Animated Grid")
+
+   All of it is transform and opacity, so it stays on the compositor and off
+   the main thread, which is what keeps it smooth on a mid-range phone. All
+   of it stops under reduced motion, and every loop pauses on a hidden tab.
+
+   Anchored on body.hp, like the rest of the layer.
+   ============================================================ */
+
+/* ---- hero: a living still (phones, and anywhere the film is replaced) ---- */
+/* The static hero only displays where the film does not, by ScrubHero's own
+   gates, so none of this runs on a desktop with the film. */
+body.hp .sh-static { overflow: hidden; isolation: isolate; }
+.sh-static-media {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-color: var(--ink);
+  transform-origin: 60% 40%;
+  will-change: transform;
+}
+/* A band of late light passing over the house, every few seconds. It sits
+   under the scrim, so the copy's measured contrast is untouched. */
+.sh-static-media::after {
+  content: '';
+  position: absolute;
+  inset: -30%;
+  background: linear-gradient(105deg,
+    transparent 38%, rgb(255 214 140 / 0.22) 50%, transparent 62%);
+  transform: translateX(-60%);
+  mix-blend-mode: screen;
+}
+body.hp .sh-static .sh-scrim,
+body.hp .sh-static::before { z-index: 1; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .sh-static-media { animation: mo-kenburns 24s ease-in-out infinite alternate; }
+  .sh-static-media::after { animation: mo-sweep 9s ease-in-out 1.2s infinite; }
+  /* The copy arrives in order: line, headline, subline, buttons. */
+  body.hp .sh-static-copy > * {
+    animation: mo-rise 0.9s var(--pl-ease) both;
+  }
+  body.hp .sh-static-copy > :nth-child(1) { animation-delay: 0.15s; }
+  body.hp .sh-static-copy > :nth-child(2) { animation-delay: 0.3s; }
+  body.hp .sh-static-copy > :nth-child(3) { animation-delay: 0.5s; }
+  body.hp .sh-static-copy > :nth-child(4) { animation-delay: 0.65s; }
+}
+/* The house reveal, where the static hero plays it. Ken Burns and the
+   light sweep hold off while it runs, since the footage has its own camera
+   move, and come back once it rests on the finished house. */
+.sh-static-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+.sh-static-media.is-film .sh-static-video { opacity: 1; }
+body.hp .sh-static-media.is-film:not(.is-ended),
+body.hp .sh-static-media.is-film:not(.is-ended)::after { animation: none; }
+.sh-static-media.is-film::after { z-index: 1; }
+
+
+@keyframes mo-kenburns {
+  from { transform: scale(1.02) translate3d(0, 0, 0); }
+  to { transform: scale(1.14) translate3d(-2.5%, -2%, 0); }
+}
+@keyframes mo-sweep {
+  0%, 55% { transform: translateX(-60%); }
+  100% { transform: translateX(60%); }
+}
+@keyframes mo-rise {
+  from { opacity: 0; transform: translateY(22px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* ---- credentials ticker (phones) ----------------------------------------- */
+body.hp .pl-ticker .pl-ticker-dup { display: none; }
+@media (max-width: 767px) {
+  body.hp .pl-ticker {
+    position: relative;
+    padding-inline: 0;
+    overflow: hidden;
+  }
+  /* The edges fade into the band itself. A mask would fade the band too and
+     show the page behind it. */
+  body.hp .pl-ticker::before,
+  body.hp .pl-ticker::after {
+    content: '';
+    position: absolute;
+    z-index: 1;
+    inset-block: 0;
+    width: 12%;
+    pointer-events: none;
+    background: linear-gradient(90deg, var(--ink), transparent);
+  }
+  body.hp .pl-ticker::before { left: 0; }
+  body.hp .pl-ticker::after { right: 0; transform: scaleX(-1); }
+  .pl-ticker-track { display: flex; width: max-content; }
+  body.hp .pl-ticker ul { flex-wrap: nowrap; justify-content: flex-start; white-space: nowrap; }
+  body.hp .pl-ticker .pl-ticker-dup { display: flex; }
+  /* Every item carries the separator in ticker mode, the last included, so
+     the join between the two halves looks like every other gap. */
+  body.hp .pl-ticker li::after {
+    content: '\00B7';
+    color: var(--gold-bright);
+    margin-inline: 1.4rem;
+  }
+}
+@media (max-width: 767px) and (prefers-reduced-motion: no-preference) {
+  .pl-ticker-track { animation: mo-ticker 26s linear infinite; }
+}
+@media (max-width: 767px) and (prefers-reduced-motion: reduce) {
+  /* Still, it would be one long line running off the screen; let it wrap. */
+  body.hp .pl-ticker .pl-ticker-dup { display: none; }
+  body.hp .pl-ticker ul { flex-wrap: wrap; justify-content: center; white-space: normal; }
+  body.hp .pl-ticker li:last-child::after { content: none; }
+  body.hp .pl-ticker::before, body.hp .pl-ticker::after { content: none; }
+}
+@keyframes mo-ticker {
+  to { transform: translateX(-50%); }
+}
+
+/* ---- service cards stack as you scroll (phones) -------------------------- */
+/* Each card pins near the top and the next one slides up over it. Where the
+   engine can link one card's animation to the next card's arrival, the card
+   underneath also sinks back and dims, so the stack reads as a pile rather
+   than a list. Without that, the cards still stack. */
+@media (max-width: 639px) {
+  body.hp .hp-explore { gap: 1.25rem; }
+  body.hp .hp-explore > .hp-xgroup {
+    position: sticky;
+    top: 1rem;
+    box-shadow: 0 -14px 30px -22px rgb(14 24 40 / 0.45);
+  }
+  body.hp .hp-explore > .hp-xgroup:nth-child(2) { top: 1.6rem; }
+  body.hp .hp-explore > .hp-xgroup:nth-child(3) { top: 2.2rem; }
+  body.hp .hp-explore > .hp-xgroup:nth-child(4) { top: 2.8rem; }
+}
+@supports (timeline-scope: --a) and (animation-timeline: view()) {
+  @media (max-width: 639px) and (prefers-reduced-motion: no-preference) {
+    body.hp .hp-explore { timeline-scope: --st2, --st3, --st4; }
+    body.hp .hp-explore > .hp-xgroup:nth-child(2) { view-timeline: --st2 block; }
+    body.hp .hp-explore > .hp-xgroup:nth-child(3) { view-timeline: --st3 block; }
+    body.hp .hp-explore > .hp-xgroup:nth-child(4) { view-timeline: --st4 block; }
+    body.hp .hp-explore > .hp-xgroup:nth-child(1) .hp-xgroup-head,
+    body.hp .hp-explore > .hp-xgroup:nth-child(2) .hp-xgroup-head,
+    body.hp .hp-explore > .hp-xgroup:nth-child(3) .hp-xgroup-head {
+      animation: mo-sink linear both;
+      /* From the next card reaching mid-screen to it pinning on top. */
+      animation-range: cover 30% cover 60%;
+    }
+    body.hp .hp-explore > .hp-xgroup:nth-child(1) .hp-xgroup-head { animation-timeline: --st2; }
+    body.hp .hp-explore > .hp-xgroup:nth-child(2) .hp-xgroup-head { animation-timeline: --st3; }
+    body.hp .hp-explore > .hp-xgroup:nth-child(3) .hp-xgroup-head { animation-timeline: --st4; }
+  }
+}
+@keyframes mo-sink {
+  to { transform: scale(0.94); filter: brightness(0.6); }
+}
+
+/* ---- tap and click: a ripple from the point of contact -------------------- */
+/* polish.ts adds the ripple element; this is where it can appear. */
+body.hp :is(.hp-xlink, .faq-q, .callbar a, .sg-sub-inline a, .svc-more-list a,
+  .gal-filter-btn, .rc-arrow, .nf-list a, .sv-group .hp-pillar-link, .hp-pillar .hp-pillar-link) {
+  position: relative;
+  overflow: hidden;
+}
+.pl-ripple {
+  position: absolute;
+  z-index: 0;
+  width: var(--rs, 0px);
+  height: var(--rs, 0px);
+  margin: calc(var(--rs, 0px) / -2) 0 0 calc(var(--rs, 0px) / -2);
+  border-radius: 50%;
+  pointer-events: none;
+  background: currentColor;
+  opacity: 0.22;
+  transform: scale(0);
+  animation: mo-ripple 0.65s var(--pl-ease) forwards;
+}
+@keyframes mo-ripple {
+  to { transform: scale(1); opacity: 0; }
+}
+/* On touch, controls also press in, since nothing else answers a tap. */
+@media (hover: none) and (prefers-reduced-motion: no-preference) {
+  body.hp :is(.hp-btn, .ef-submit, .callbar a, .hp-section > .hp-textlink, .rc-arrow,
+    .gal-filter-btn, .svc-more-list a, .sg-sub-inline a) {
+    transition: transform 0.18s ease;
+  }
+  body.hp :is(.hp-btn, .ef-submit, .callbar a, .hp-section > .hp-textlink, .rc-arrow,
+    .gal-filter-btn, .svc-more-list a, .sg-sub-inline a):active {
+    transform: scale(0.96);
+  }
+  body.hp :is(.hp-xgroup, .rc-card, .re-item, .inv-card, .ab-count-item, .hp-cf-card):active {
+    transform: scale(0.985);
+    transition: transform 0.18s ease;
+  }
+}
+
+/* ---- the call button rings now and then (phones) ------------------------- */
+body.hp .callbar-call { gap: 0.6rem; }
+.callbar-icon {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 1.6rem;
+  height: 1.6rem;
+}
+.callbar-icon svg { width: 1.05rem; height: 1.05rem; position: relative; z-index: 1; }
+.callbar-icon::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1.5px solid currentColor;
+  opacity: 0;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .callbar-icon svg { animation: mo-ring 6s ease-in-out 2s infinite; transform-origin: 50% 60%; }
+  .callbar-icon::before { animation: mo-sonar 6s ease-out 2s infinite; }
+}
+@keyframes mo-ring {
+  0%, 82%, 100% { transform: rotate(0); }
+  84% { transform: rotate(-14deg); }
+  86% { transform: rotate(12deg); }
+  88% { transform: rotate(-10deg); }
+  90% { transform: rotate(8deg); }
+  92% { transform: rotate(0); }
+}
+@keyframes mo-sonar {
+  0%, 82% { transform: scale(0.6); opacity: 0; }
+  84% { opacity: 0.7; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+
+/* ---- coverflow progress dots --------------------------------------------- */
+.hp-cf-dots {
+  display: flex;
+  justify-content: center;
+  gap: 0.4rem;
+  margin: 0.5rem auto 0;
+  padding-inline: 1.25rem;
+}
+.hp-cf-dots[hidden] { display: none; }
+.hp-cf-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: rgb(246 241 231 / 0.35);
+  transition: width 0.45s var(--pl-ease), background-color 0.3s ease;
+}
+.hp-cf-dot.is-on { width: 22px; background: var(--gold-bright); }
+
+/* ---- blueprint house in the estimate band -------------------------------- */
+.bp {
+  display: block;
+  width: min(100%, 22rem);
+  height: auto;
+  margin: 0 0 1.5rem -0.25rem;
+  overflow: visible;
+}
+.bp-grid path {
+  fill: none;
+  stroke: rgb(226 192 107 / 0.10);
+  stroke-width: 0.6;
+}
+.bp-l {
+  stroke: var(--gold-bright);
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+.bp-dim { stroke: var(--stone); stroke-width: 0.9; }
+.bp-lights rect { fill: rgb(255 214 140 / 0.0); }
+
+/* Hidden until the band arrives, and only when a script is running to bring
+   it: without .js the drawing simply shows complete. */
+.js .bp-l { stroke-dasharray: 1; stroke-dashoffset: 1; }
+.js .hp-final.in .bp-l {
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 1.3s var(--pl-ease);
+  transition-delay: calc(var(--d) * 0.16s + 0.2s);
+}
+.js .hp-final.in .bp-lights rect {
+  fill: rgb(255 214 140 / 0.38);
+  transition: fill 1.2s ease 2s;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .js .hp-final.in .bp-lights rect:nth-child(2) { animation: mo-glow 7s ease-in-out 4s infinite; }
+}
+@keyframes mo-glow {
+  0%, 100% { fill: rgb(255 214 140 / 0.38); }
+  50% { fill: rgb(255 214 140 / 0.18); }
+}
+@media (max-width: 767px) {
+  .bp { width: min(100%, 18rem); margin-bottom: 1.25rem; }
+}
+
+/* ---- blueprint grid drifting behind every page head ---------------------- */
+body.hp main > .hp-pagehead { position: relative; isolation: isolate; overflow: hidden; }
+body.hp main > .hp-pagehead::before {
+  content: '';
+  position: absolute;
+  inset: -40px;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgb(226 192 107 / 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(226 192 107 / 0.07) 1px, transparent 1px);
+  background-size: 40px 40px;
+  -webkit-mask-image: radial-gradient(80% 90% at 85% 20%, #000, transparent 75%);
+          mask-image: radial-gradient(80% 90% at 85% 20%, #000, transparent 75%);
+}
+@media (prefers-reduced-motion: no-preference) {
+  body.hp main > .hp-pagehead::before { animation: mo-grid 18s linear infinite; }
+}
+@keyframes mo-grid {
+  to { transform: translate3d(40px, 40px, 0); }
+}
+
+/* ---- reduced motion: the finished state, nothing moving ------------------ */
+@media (prefers-reduced-motion: reduce) {
+  .js .bp-l { stroke-dashoffset: 0; transition: none; }
+  .js .bp-lights rect { fill: rgb(255 214 140 / 0.38); transition: none; }
+  .pl-ripple { display: none; }
+}

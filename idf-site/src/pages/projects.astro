@@ -1,0 +1,175 @@
+---
+/**
+ * Projects Completed.
+ *
+ * Driven by `gallery` in the content module — one entry per photograph the
+ * owner supplied. Each entry resolves its own file at build time and falls
+ * back to a reserved slot if the file is not in public/img/ yet, so this page
+ * is correct whether none, some, or all of the photography is in place.
+ *
+ * Captions describe the visible work only. The owner has named two projects,
+ * Great Falls and Maryland; nothing here invents a name, location, budget,
+ * square footage or date to sit under a photograph.
+ */
+import Page from '../layouts/Page.astro';
+import Placeholder from '../components/Placeholder.astro';
+import { business, gallery, projects, trustBar, cta } from '../content/idf';
+import { optionalImage } from '../lib/images';
+
+const named = projects.filter((p) => p.named);
+const items = gallery.map((g) => ({ ...g, src: optionalImage(`img/${g.slot}`) }));
+const awaiting = items.filter((i) => !i.src).length;
+
+/* Filter tabs, one per tag in the gallery, in the order they first appear,
+   each with its count. Derived from the data so a new tag gets a tab. */
+const tags = [...new Set(items.flatMap((i) => i.tags))];
+const countOf = (t: string) => items.filter((i) => (i.tags as readonly string[]).includes(t)).length;
+---
+
+<Page
+  title="Projects Completed — Interior Design Flooring"
+  description="Completed kitchens, baths, flooring, millwork, and exterior work by Interior Design Flooring, a Virginia Class A general contractor serving Northern Virginia since 1989."
+  heading="Projects completed"
+  standfirst="Kitchens, baths, flooring, millwork, and exterior work across Northern Virginia."
+  current="/projects/"
+>
+  <section class="hp-section hp-section--tight" aria-label="Completed projects">
+    {/* Filter tabs, after the animated tab bars in the 21st.dev catalogue: a
+        gold pill slides to the chosen tab. Added by script and hidden until
+        then, so without script the whole gallery simply shows. */}
+    <div class="gal-filter" data-gal-filter hidden>
+      <div class="gal-filter-bar" role="group" aria-label="Filter projects">
+        <span class="gal-filter-pill" aria-hidden="true"></span>
+        <button type="button" class="gal-filter-btn" data-tag="" aria-pressed="true">
+          All <span class="gal-filter-n">{items.length}</span>
+        </button>
+        {tags.map((t) => (
+          <button type="button" class="gal-filter-btn" data-tag={t} aria-pressed="false">
+            {t} <span class="gal-filter-n">{countOf(t)}</span>
+          </button>
+        ))}
+      </div>
+      <p class="hp-visually-hidden" aria-live="polite" data-gal-status></p>
+    </div>
+    <div class="gal">
+      {
+        items.map((item) => (
+          <figure
+            class:list={['gal-item', { 'gal-item--tall': item.ratio === '3 / 4' }]}
+            data-tags={item.tags.join('|')}
+          >
+            <Placeholder
+              ratio={item.ratio}
+              label={`Reserved — ${item.caption.toLowerCase()}`}
+              src={item.src}
+              alt={item.alt}
+              real
+              class="gal-ph"
+            />
+            <figcaption class="gal-cap">
+              <span class="gal-cap-name">{item.caption}</span>
+              <span class="gal-cap-detail">{item.detail}</span>
+              <span class="gal-tags">
+                {item.tags.map((t) => <span class="gal-tag">{t}</span>)}
+              </span>
+            </figcaption>
+          </figure>
+        ))
+      }
+    </div>
+
+    {
+      awaiting > 0 && (
+        <p class="hp-note">
+          {awaiting} of {items.length} photographs are not yet in the build. Each one holds
+          its space at the right proportion and appears the moment the file is dropped into
+          <code> public/img/</code>.
+        </p>
+      )
+    }
+  </section>
+
+  <script>
+    /**
+     * Gallery filter. Hides the items that do not carry the chosen tag, slides
+     * the pill to the chosen tab, and announces the count. The items are
+     * hidden with the `hidden` attribute, so a filtered-out photograph is out
+     * of the accessibility tree too, not just out of sight.
+     */
+    const wrap = document.querySelector<HTMLElement>('[data-gal-filter]');
+    const items = [...document.querySelectorAll<HTMLElement>('.gal-item[data-tags]')];
+    if (wrap && items.length) {
+      wrap.hidden = false;
+      const bar = wrap.querySelector<HTMLElement>('.gal-filter-bar')!;
+      const pill = wrap.querySelector<HTMLElement>('.gal-filter-pill')!;
+      const status = wrap.querySelector<HTMLElement>('[data-gal-status]')!;
+      const buttons = [...wrap.querySelectorAll<HTMLButtonElement>('.gal-filter-btn')];
+
+      const place = (btn: HTMLElement) => {
+        pill.style.width = `${btn.offsetWidth}px`;
+        pill.style.transform = `translateX(${btn.offsetLeft}px)`;
+      };
+
+      const choose = (btn: HTMLButtonElement) => {
+        const tag = btn.dataset.tag ?? '';
+        for (const b of buttons) b.setAttribute('aria-pressed', String(b === btn));
+        let shown = 0;
+        for (const it of items) {
+          const match = !tag || (it.dataset.tags ?? '').split('|').includes(tag);
+          it.hidden = !match;
+          if (match) {
+            shown++;
+            it.classList.remove('is-entering');
+            void it.offsetWidth; // restart the entrance
+            it.classList.add('is-entering');
+          }
+        }
+        place(btn);
+        status.textContent = `Showing ${shown} ${shown === 1 ? 'project' : 'projects'}${tag ? `: ${tag}` : ''}.`;
+      };
+
+      for (const b of buttons) b.addEventListener('click', () => choose(b));
+      requestAnimationFrame(() => {
+        bar.classList.add('is-ready');
+        place(buttons[0]);
+      });
+      addEventListener('resize', () => {
+        const on = buttons.find((b) => b.getAttribute('aria-pressed') === 'true');
+        if (on) place(on);
+      });
+    }
+  </script>
+
+  <section id="named" class="hp-section hp-section--tight" aria-labelledby="pr-named-h">
+    <h2 id="pr-named-h" class="hp-h2">Named projects</h2>
+    <p class="hp-sub">
+      Two projects the owner has confirmed by name. The fuller list is being compiled.
+    </p>
+    <ul class="pr-named">
+      {named.map((proj) => <li>{proj.name}</li>)}
+    </ul>
+  </section>
+
+  <section class="hp-trust" aria-label="Credentials">
+    <ul>
+      {trustBar.map((item) => <li>{item}</li>)}
+    </ul>
+  </section>
+
+  <section class="hp-final" aria-labelledby="pr-cta-h">
+    <div class="hp-final-inner hp-final-inner--single">
+      <div>
+        <h2 id="pr-cta-h" class="hp-final-heading">Want something like this?</h2>
+        <p class="hp-final-sub hp-italic">
+          A site visit first, then a written estimate within 24 hours.
+        </p>
+        <div class="hp-hero-actions">
+          <a class="hp-btn" href="/estimate/">{cta.primary}</a>
+          <a class="hp-call hp-call--light" href={business.phonePrimaryHref}>
+            or call {business.phonePrimary}
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</Page>

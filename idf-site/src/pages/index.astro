@@ -1,0 +1,36 @@
+---
+/**
+ * Homepage — Editorial Column, the direction the owner selected.
+ * Left-aligned and asymmetric. Fraunces over Public Sans, hairline rules
+ * under each heading, numbered pillars as full-width rows. Reads like a
+ * printed feature rather than a brochure.
+ *
+ * Shares HomeSections with the other variants; only the stylesheet and the
+ * type pairing differ, so content cannot drift between them.
+ */
+import Base from '../layouts/Base.astro';
+import '../styles/home.css';
+import '../styles/variant-b.css';
+import '../styles/scrub.css';
+import SiteNav from '../components/SiteNav.astro';
+import PromoBar from '../components/PromoBar.astro';
+import HomeSections from '../components/HomeSections.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import StickyCallBar from '../components/StickyCallBar.astro';
+import LocalBusinessSchema from '../components/LocalBusinessSchema.astro';
+
+---
+
+<Base
+  title="Interior Design Flooring: Custom Homes, Additions & Remodeling in Northern Virginia"
+  description="Virginia Class A general contractor, owner-run since 1989. Custom homes, additions, and remodeling in Northern Virginia. Written estimate within 24 hours of the site visit."
+  bodyClass="hp vb"
+  withCallbar
+>
+  <LocalBusinessSchema />
+  <PromoBar />
+  <SiteNav current="home" />
+  <HomeSections />
+  <SiteFooter />
+  <StickyCallBar />
+</Base>
