@@ -179,6 +179,37 @@ call about "my request from Tuesday" can be matched to a folder.
 Once the email in step 2 is working, the inbox is the day-to-day route and R2 is
 the backup — the copy that survives a deleted email.
 
+#### Listing everything at once
+
+The dashboard shows one folder at a time, which answers "find Tuesday's job"
+and not "who did we miss". `scripts/r2-leads.mjs` answers the second. It is
+operator tooling, never part of a build, and it is read-only: there is no
+delete in it, because a tool that can empty the only surviving copy of a
+customer enquiry should not be one flag away from doing so.
+
+Create a token at **R2 → API → Manage API tokens**, permission **Object Read
+only**, scoped to `idf-estimates`. That gives an Access Key ID, a Secret Access
+Key and an endpoint. Put them in the environment rather than on the command
+line, where they would be kept in shell history:
+
+```
+export R2_ACCOUNT_ID=...          # the hex string at the front of the endpoint
+export R2_ACCESS_KEY_ID=...
+export R2_SECRET_ACCESS_KEY=...   # shown once, at creation
+
+node scripts/r2-leads.mjs list             # every submission, oldest first
+node scripts/r2-leads.mjs list --json
+node scripts/r2-leads.mjs show IDF-...     # one record, and its files
+node scripts/r2-leads.mjs export ./out     # every record and photo to disk
+```
+
+It groups by folder rather than by `submission.json`, so a submission whose
+record failed to write but whose photos landed still appears, marked
+`(NO submission.json)`. That gap is the whole reason to look.
+
+Signing is left to `curl --aws-sigv4` rather than the AWS SDK, so the script
+has no dependencies. R2 speaks S3 with region `auto`.
+
 ---
 
 ## 2. Where estimates land, and how they get there
