@@ -256,6 +256,22 @@
   30%           { transform: translateY(-0.25rem); opacity: 1; }
 }
 
+/* ---------- the challenge ---------- */
+
+/* Turnstile runs in appearance: interaction-only, so for almost every visitor
+   this container holds a collapsed widget and must take up no room at all.
+   That is why the spacing is on the iframe rather than on the container: a
+   padded wrapper would leave a visible gap above the composer on every chat
+   that never needed challenging. */
+.chat-gate {
+  background: var(--paper);
+}
+.chat-gate iframe {
+  display: block;
+  max-width: 100%;
+  margin: 0.65rem auto 0;
+}
+
 /* ---------- composer ---------- */
 
 .chat-form {

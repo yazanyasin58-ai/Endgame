@@ -31,6 +31,13 @@ and works without it:
 So it can be switched on in three sittings rather than one. Do R2 first — that
 is the part that cannot be reconstructed if a submission is lost.
 
+There is a second Function, `functions/api/chat.ts`, which is the assistant.
+It is a separate route with a separate on-switch and nothing in this page's
+three services touches it. It needs an **AI** binding, it reuses the Turnstile
+keys below, and the whole of it is dormant until `features.chatAssistant` is
+turned on in `src/content/idf.ts`. See *The assistant endpoint uses the same
+two keys* in section 3.
+
 ---
 
 ## 0. The off switch
@@ -476,6 +483,64 @@ Two ways to confirm it is actually on:
 If it goes wrong, delete **both** variables and redeploy. That returns you to the
 "unset / unset" row — no spam check, but a working form. Never delete only the
 site key.
+
+### Who loads the Turnstile script, and the bug that came of it
+
+Turnstile needs `api.js` on the page before any widget on it can initialise.
+`EstimateForm` and `ListingForm` each emit their own `<script>` tag, which
+between them covers four pages: `/`, `/estimate/`, `/contact/` and
+`/list-your-home/`.
+
+The lead pop-up renders a widget on **every** page and skips only the last
+three of those. So from the day Turnstile was switched on until 19 October, on
+23 of the 24 pages where the pop-up opens, its widget was never initialised, no
+`cf-turnstile-response` went with the submission, and `/api/estimate` refused
+it with *"We could not verify that request came from a browser. Please reload
+and try again."* Reloading did not help, and the only page where the pop-up
+worked was the home page.
+
+Measured before the fix, with a Turnstile test key: on `/` the submission
+carried a 21-character token; on `/faq/` the hidden field did not exist at all.
+
+`LeadPopup.astro` now injects `api.js` itself if nothing else on the page has,
+which is also why it checks first: a second copy of that script re-scans the
+document for `.cf-turnstile` and replaces `window.turnstile`, which would put
+two widgets on the home page's estimate form.
+
+**If you add another component with a Turnstile widget, give it the same
+check.** A widget with no script is invisible and silent, and the failure
+appears at the Function as a rejected submission rather than anywhere near the
+page that caused it.
+
+### The assistant endpoint uses the same two keys
+
+`/api/chat` verifies a Turnstile token too, and it needs **nothing new** in the
+dashboard: it reads the same `TURNSTILE_SECRET`, and the widget reads the same
+`PUBLIC_TURNSTILE_SITE_KEY`. The "both or neither" table above applies
+unchanged.
+
+What differs is that a chat is many requests, and a Turnstile token is
+single-use. So the endpoint trades one verified token for a **signed session**:
+an HMAC over an expiry and a spent-message count, carried in the JSON body.
+
+| | |
+|---|---|
+| One Turnstile pass is worth | 25 messages |
+| A session lasts | 30 minutes |
+| After either runs out | the endpoint answers `403` with `verify: true`, and the widget puts the challenge back |
+| Signed with | `CHAT_SESSION_SECRET` if set, otherwise `TURNSTILE_SECRET` |
+
+`CHAT_SESSION_SECRET` is optional and there is no reason to set it unless you
+want to rotate the Turnstile keys without ending every chat open at that
+moment. If you do set it, make it a **Secret**, not Plaintext.
+
+There is also a per-IP throttle of 12 requests a minute, which returns `429`
+with a `Retry-After`. Be honest about what it is: it counts inside one Workers
+isolate, and Cloudflare runs many. It stops one source hammering the endpoint;
+it is not a global rate limit. The signed session is what actually bounds the
+spend, because getting past it costs a real Turnstile solve every 25 messages.
+If this endpoint ever carries real traffic, the proper fix is a Rate Limiting
+binding or a KV namespace, not a larger number here.
 
 ## 3b. Google reviews — the live carousel feed
 

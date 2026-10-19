@@ -26,7 +26,12 @@
  * live is the system prompt, and the only honest way to run this endpoint is to
  * treat that prompt as part of the product rather than as decoration.
  *
- * NOT YET SAFE TO EXPOSE PUBLICLY. See the note above `MAX_MESSAGES`.
+ * THE SECOND THING THAT MAKES IT DIFFERENT: every request here spends the
+ * client's money at an edge model. /api/estimate costs a mail send and a few
+ * kilobytes of R2; this costs tokens, from anyone on the internet, as fast as
+ * they can ask. The abuse gate below the system prompt is therefore not
+ * hardening added at the end, it is the condition on which the endpoint is
+ * allowed to be public at all.
  */
 
 /**
@@ -55,6 +60,24 @@ interface Env {
    * request rather than failing in a way that looks like a model problem.
    */
   AI?: AiBinding;
+
+  /**
+   * Turnstile secret key, the same one /api/estimate reads. Omit and the human
+   * check is skipped, matching that endpoint: a deployment without it still
+   * answers rather than refusing every visitor. The public half,
+   * PUBLIC_TURNSTILE_SITE_KEY, is read at build time by the widget, so the two
+   * halves have to be set or unset together. The table in CLOUDFLARE.md
+   * section 3 covers what each mismatch does, and it applies here too.
+   */
+  TURNSTILE_SECRET?: string;
+
+  /**
+   * Optional HMAC key for the chat session below. Unset, the Turnstile secret
+   * is used instead, which is why this endpoint needs nothing new added to the
+   * Pages project to be safe. Set it if the two jobs should ever have separate
+   * keys, for instance to rotate Turnstile without ending every open chat.
+   */
+  CHAT_SESSION_SECRET?: string;
 }
 
 interface PagesContext {
@@ -95,24 +118,59 @@ interface ChatMessage {
 const MODEL = '@cf/meta/llama-3.3-70b-instruct-fp8-fast';
 
 /**
- * Limits, and the reason they are not optional.
- *
- * Workers AI is billed, and this endpoint takes a conversation from anyone on
- * the internet and spends the client's money running it. Unlike /api/estimate
- * there is no Turnstile token in front of it yet, so these caps are the only
- * thing standing between a public URL and a bill. They bound the worst case;
- * they do not make it safe.
- *
- * BEFORE THIS GOES PUBLIC it needs the same Turnstile check the estimate form
- * uses, or a rate limit keyed on CF-Connecting-IP, or both. That is deliberately
- * not wired here: it would add a hard dependency on TURNSTILE_SECRET to an
- * endpoint nobody has pointed a UI at yet, and a guard that silently rejects
- * every request is worse than a guard that is visibly still to come.
+ * Limits on one request. These bound what a single call can cost; the gate
+ * further down bounds how many calls an unverified visitor gets to make.
  */
 const MAX_MESSAGES = 20;
 const MAX_CHARS_PER_MESSAGE = 4000;
 const MAX_CHARS_TOTAL = 12000;
 const MAX_TOKENS = 512;
+
+/**
+ * The verified-visitor session, and why the gate is shaped this way.
+ *
+ * A Turnstile token is single-use and expires in minutes. That is right for a
+ * form submitted once and useless for a chat of fifteen turns: asking the
+ * visitor to tick a box before every message is not a product. So the human
+ * check happens once, and what it issues is a session the client carries.
+ *
+ * The session is signed rather than stored. Both storage-backed shapes need a
+ * binding this Pages project does not have, a KV namespace or a Durable
+ * Object, and adding one is a deploy-config change rather than a code change,
+ * which on 18 October is exactly the class of change that cost a day. So the
+ * session holds its own expiry and its own spent-message count, and the HMAC is
+ * what makes those two numbers impossible for the client to edit.
+ *
+ * WHAT IT BUYS: one Turnstile pass admits at most SESSION_BUDGET model calls
+ * within SESSION_TTL_MS. A scripted caller has to solve a real challenge for
+ * every 25 messages, which is the cost that makes grinding this endpoint
+ * pointless. A genuine visitor never sees it: 25 messages is a long
+ * conversation and the challenge is interaction-only.
+ *
+ * WHAT IT DOES NOT BUY: this is not a global rate limit. Nothing here can
+ * count across isolates, so the throttle below is a partial answer and says so.
+ * If this endpoint ever carries real volume the fix is a Rate Limiting binding
+ * or KV, not a larger comment.
+ */
+const SESSION_TTL_MS = 30 * 60_000;
+const SESSION_BUDGET = 25;
+
+/**
+ * A per-IP throttle inside this isolate.
+ *
+ * Modest about what it is. Cloudflare runs many isolates across many colos and
+ * recycles them freely, so a flood spread across them is not fully counted.
+ * What it does catch is the common shape, one source hammering one endpoint
+ * fast, because those requests do land on the same warm isolate. It costs
+ * nothing and it is not load-bearing: the signed session is.
+ *
+ * The map is bounded so it cannot become the leak it is guarding against.
+ * Past THROTTLE_MAX_KEYS, stale entries are swept and, failing that, the whole
+ * map is dropped. Losing the counts is the correct failure.
+ */
+const THROTTLE_WINDOW_MS = 60_000;
+const THROTTLE_MAX_IN_WINDOW = 12;
+const THROTTLE_MAX_KEYS = 5000;
 
 /**
  * What the assistant is allowed to be.
@@ -161,12 +219,13 @@ const SYSTEM_PROMPT = [
   'answer than a confident guess, and it is the answer the owners would want.',
 ].join('\n');
 
-const json = (body: unknown, status = 200): Response =>
+const json = (body: unknown, status = 200, extra: Record<string, string> = {}): Response =>
   new Response(JSON.stringify(body), {
     status,
     headers: {
       'content-type': 'application/json; charset=utf-8',
       'cache-control': 'no-store',
+      ...extra,
     },
   });
 
@@ -220,12 +279,157 @@ const readMessages = (value: unknown): { messages: ChatMessage[] } | { error: st
   return { messages };
 };
 
+/* ------------------------------------------------------------------
+   The abuse gate.
+   ------------------------------------------------------------------ */
+
+const encoder = new TextEncoder();
+
+/** base64url, because a session goes in a JSON body and should not need escaping. */
+const toB64Url = (bytes: Uint8Array): string => {
+  let binary = '';
+  for (const byte of bytes) binary += String.fromCharCode(byte);
+  return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+};
+
+const fromB64Url = (text: string): Uint8Array | null => {
+  try {
+    const binary = atob(text.replace(/-/g, '+').replace(/_/g, '/'));
+    const out = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i += 1) out[i] = binary.charCodeAt(i);
+    return out;
+  } catch {
+    return null;
+  }
+};
+
+/** Constant time, so a signature cannot be found one byte at a time. */
+const sameBytes = (a: Uint8Array, b: Uint8Array): boolean => {
+  if (a.length !== b.length) return false;
+  let diff = 0;
+  for (let i = 0; i < a.length; i += 1) diff |= a[i] ^ b[i];
+  return diff === 0;
+};
+
+const sign = async (secret: string, body: string): Promise<Uint8Array> => {
+  const key = await crypto.subtle.importKey(
+    'raw',
+    encoder.encode(secret),
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign'],
+  );
+  return new Uint8Array(await crypto.subtle.sign('HMAC', key, encoder.encode(body)));
+};
+
+/** `spent` is how many model calls this session has already paid for. */
+const mintSession = async (secret: string, spent: number): Promise<string> => {
+  const body = toB64Url(encoder.encode(JSON.stringify({ n: spent, e: Date.now() + SESSION_TTL_MS })));
+  return `${body}.${toB64Url(await sign(secret, body))}`;
+};
+
+/**
+ * Read a session, or say why it cannot be used.
+ *
+ * Signature first, then the contents. An expiry read off an unverified payload
+ * is the client's number rather than ours, and the whole point of signing is
+ * that the client does not get to choose either of these two.
+ */
+const readSession = async (
+  secret: string,
+  value: unknown,
+): Promise<{ spent: number } | { error: 'absent' | 'invalid' | 'expired' | 'spent' }> => {
+  if (typeof value !== 'string' || value === '') return { error: 'absent' };
+
+  const [body, signature] = value.split('.');
+  if (!body || !signature) return { error: 'invalid' };
+
+  const given = fromB64Url(signature);
+  if (!given || !sameBytes(await sign(secret, body), given)) return { error: 'invalid' };
+
+  const decoded = fromB64Url(body);
+  if (!decoded) return { error: 'invalid' };
+
+  let claims: { n?: unknown; e?: unknown };
+  try {
+    claims = JSON.parse(new TextDecoder().decode(decoded)) as { n?: unknown; e?: unknown };
+  } catch {
+    return { error: 'invalid' };
+  }
+
+  if (typeof claims.n !== 'number' || typeof claims.e !== 'number') return { error: 'invalid' };
+  if (Date.now() > claims.e) return { error: 'expired' };
+  if (claims.n >= SESSION_BUDGET) return { error: 'spent' };
+
+  return { spent: claims.n };
+};
+
+/** Same call /api/estimate makes, kept separate rather than shared: a Pages
+    Function is its own bundle, and importing across them to save fifteen lines
+    buys a build-time coupling between two endpoints that fail independently. */
+const verifyTurnstile = async (
+  secret: string,
+  token: string,
+  ip: string | null,
+): Promise<boolean> => {
+  const body = new FormData();
+  body.append('secret', secret);
+  body.append('response', token);
+  if (ip) body.append('remoteip', ip);
+
+  const res = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+    method: 'POST',
+    body,
+  });
+  if (!res.ok) return false;
+  const result = (await res.json()) as { success?: boolean };
+  return result.success === true;
+};
+
+const recent = new Map<string, number[]>();
+
+const throttled = (ip: string | null): boolean => {
+  if (!ip) return false;
+  const now = Date.now();
+
+  if (recent.size > THROTTLE_MAX_KEYS) {
+    for (const [key, hits] of recent) {
+      if (hits.every((at) => now - at > THROTTLE_WINDOW_MS)) recent.delete(key);
+    }
+    if (recent.size > THROTTLE_MAX_KEYS) recent.clear();
+  }
+
+  const hits = (recent.get(ip) ?? []).filter((at) => now - at <= THROTTLE_WINDOW_MS);
+  hits.push(now);
+  recent.set(ip, hits);
+  return hits.length > THROTTLE_MAX_IN_WINDOW;
+};
+
 const handlePost = async (context: PagesContext): Promise<Response> => {
   const { request, env } = context;
 
   // Which services this deployment can actually see, on every request, for the
   // same reason estimate.ts does it: a missing binding is otherwise silent.
-  console.log('chat: ai=%s', env.AI ? 'bound' : 'MISSING');
+  console.log(
+    'chat: ai=%s turnstile=%s',
+    env.AI ? 'bound' : 'MISSING',
+    env.TURNSTILE_SECRET ? 'set' : 'missing',
+  );
+
+  const ip = request.headers.get('CF-Connecting-IP');
+
+  // First, because it is the only check that costs nothing: no body read, no
+  // crypto, no siteverify round trip.
+  if (throttled(ip)) {
+    return json(
+      {
+        ok: false,
+        error: 'That is a lot of messages at once. Please wait a moment and try again.',
+      },
+      429,
+      { 'retry-after': String(Math.ceil(THROTTLE_WINDOW_MS / 1000)) },
+    );
+  }
 
   if (!env.AI) {
     console.error(
@@ -253,6 +457,43 @@ const handlePost = async (context: PagesContext): Promise<Response> => {
   const read = readMessages((payload as { messages?: unknown }).messages);
   if ('error' in read) return json({ ok: false, error: read.error }, 400);
 
+  /* The human check, after validation on purpose: a malformed request should
+     not cost a siteverify round trip, and a real client's 400 should never be
+     ambiguous about which of the two things went wrong. */
+  const gateKey = env.CHAT_SESSION_SECRET ?? env.TURNSTILE_SECRET;
+  let session: string | undefined;
+
+  if (env.TURNSTILE_SECRET && gateKey) {
+    const body = payload as { session?: unknown; turnstileToken?: unknown };
+    const existing = await readSession(gateKey, body.session);
+
+    if ('spent' in existing) {
+      session = await mintSession(gateKey, existing.spent + 1);
+    } else {
+      const token = typeof body.turnstileToken === 'string' ? body.turnstileToken : '';
+      if (!token || !(await verifyTurnstile(env.TURNSTILE_SECRET, token, ip))) {
+        /* `verify: true` tells the widget to put the challenge back in front
+           of the visitor instead of showing a dead end. All three reasons are
+           recoverable by ticking a box, which is why they share the flag and
+           differ only in what the sentence says. */
+        return json(
+          {
+            ok: false,
+            verify: true,
+            error:
+              existing.error === 'spent'
+                ? 'Please confirm you are human to carry on chatting.'
+                : existing.error === 'expired'
+                  ? 'This conversation timed out. Please confirm you are human to carry on.'
+                  : 'We could not confirm that came from a browser. Please reload the page and try again.',
+          },
+          403,
+        );
+      }
+      session = await mintSession(gateKey, 1);
+    }
+  }
+
   try {
     const result = await env.AI.run(MODEL, {
       messages: [{ role: 'system', content: SYSTEM_PROMPT }, ...read.messages],
@@ -272,7 +513,9 @@ const handlePost = async (context: PagesContext): Promise<Response> => {
       );
     }
 
-    return json({ ok: true, reply, model: MODEL });
+    /* The session goes back only on success, so a model failure does not spend
+       one of the visitor's twenty-five. */
+    return json({ ok: true, reply, model: MODEL, ...(session ? { session } : {}) });
   } catch (err) {
     // The model call is the one part that can fail for reasons outside this
     // file: quota, a model rename, an upstream outage. Log the real thing and
