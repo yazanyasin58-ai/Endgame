@@ -936,7 +936,7 @@ export const features = {
    * carries it switched on for testing, at chat-preview.idf-site.pages.dev.
    * Flip this to true on master once the answers there are right.
    */
-  chatAssistant: false,
+  chatAssistant: true,
 
   /**
    * Property management — the client's menu group 8.
