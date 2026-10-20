@@ -4,49 +4,62 @@
  *
  * Mounted once in Base.astro behind features.chatAssistant, so it appears on
  * every page or on none. It talks to POST /api/chat, which runs in retrieval
- * mode: the model picks one of the site's approved FAQ answers and the
- * endpoint returns it word for word, or a fixed fallback when none fits.
- * Nothing shown in this panel is text a model wrote.
+ * mode: the model picks one of the site's approved answers (the FAQ, plus the
+ * assistant's own replies in chat-replies.ts) and the endpoint returns it word
+ * for word, or a fixed fallback when none fits. Nothing shown in this panel is
+ * text a model wrote.
  *
- * Three things here are deliberate and easy to undo by accident:
+ * Things here that are deliberate and easy to undo by accident:
  *
- *  - THE GREETING AND THE THREE CHIPS COST NOTHING. They are markup, not
- *    model output, and they are the only copy here not drawn from the FAQ.
- *  - EVERY ANSWER SAYS WHICH QUESTION IT ANSWERS. The endpoint returns the
- *    matched question and the page it lives on, and the reply shows both. A
- *    routing miss then reads as the right answer to a neighbouring question,
- *    which the visitor can see, rather than as the company saying something
- *    odd.
- *  - THE CHIPS SEND A SENTENCE, THEY DO NOT NAVIGATE. The brief asked for
- *    specific text per chip, so each submits its sentence as a normal user
- *    turn and the assistant answers it. That keeps one conversation rather
- *    than bouncing the visitor out of the widget.
+ *  - THERE IS ALWAYS A WAY BACK TO THE MAIN MENU. The client's first note on
+ *    the preview was being "stuck on that screen" after one question, and the
+ *    chat coming back exactly as it was after closing it. So the header has a
+ *    Main menu button, every reply ends with one, and reopening the panel
+ *    starts again from the menu.
+ *  - THE MENU COSTS NOTHING. Its four buttons answer from chat-replies.ts in
+ *    the page itself, with no request and no model call. Only typed messages
+ *    go to the endpoint.
+ *  - BOOKING HAPPENS IN THE CHAT. The client's second note: "I would like to
+ *    schedule an estimate" should be met with "leave your contact info". A
+ *    reply with action `lead` puts a three-field form in the conversation,
+ *    posted to /api/estimate as enquiry=chat, so it lands in the same inbox
+ *    and R2 bucket as every other lead.
  *  - HISTORY IS TRIMMED CLIENT-SIDE. The endpoint rejects more than 20
  *    messages or 12,000 characters, which would surface as a 400 mid-chat.
- *    Trimming to the most recent turns here means a long conversation
- *    degrades by forgetting its oldest turns rather than by breaking.
  *  - THE TURNSTILE CHECK HAPPENS ONCE, NOT PER MESSAGE. The endpoint trades a
  *    verified token for a signed session good for 25 messages, and this file
- *    carries that session. Asking the visitor to tick a box before each reply
- *    would be the obvious reading of "put Turnstile on it" and would also be
- *    unusable.
+ *    carries that session. The contact form spends one more token, because
+ *    /api/estimate checks its own.
  *
  * The site is measured at 100 on accessibility and this must not be what
  * lowers it: the launcher reports its state, the panel is a labelled dialog,
- * the log is a polite live region so replies are announced, Escape closes and
- * returns focus to the launcher, every control clears 44x44, and nothing is
- * painted at all until the `js` class lands on <html>.
+ * the log is a polite live region, replies that type themselves out are
+ * announced once in full rather than word by word, Escape closes and returns
+ * focus to the launcher, every control clears 44x44, and nothing is painted
+ * until the `js` class lands on <html>.
  */
 import { business } from '../content/idf';
+import { chatReplies } from '../content/chat-replies';
 
-/** Each chip's label and the sentence it submits, exactly as briefed. */
-const CHIPS = [
-  { emoji: '📄', label: 'Get Estimate', send: "I'd like to get an estimate for my project." },
-  { emoji: '🪟', label: 'Services', send: 'What remodeling and flooring services do you offer?' },
-  { emoji: '📅', label: 'Schedule Call', send: "I'd like to schedule a consultation call." },
-] as const;
+const reply = (id: string) => {
+  const found = chatReplies.find((r) => r.id === id && r.status === 'live');
+  if (!found) throw new Error(`ChatWidget: menu reply ${id} is missing or not live.`);
+  return { text: found.a.join('\n\n'), action: found.action ?? null, url: found.url ?? null };
+};
 
-const GREETING = "Hi! I'm your AI assistant. How can I help with your project today?";
+/**
+ * The main menu. `say` is what appears as the visitor's own message, so the
+ * conversation reads the same as if they had typed it; `reply` is answered in
+ * the page. The first three are the briefed chips, in their briefed order.
+ */
+const MENU = [
+  { icon: 'estimate', label: 'Get a free estimate', say: "I'd like to get an estimate for my project.", ...reply('chat-estimate-1') },
+  { icon: 'services', label: 'Our services', say: 'What remodeling and flooring services do you offer?', ...reply('chat-services-1') },
+  { icon: 'call', label: 'Schedule a call', say: "I'd like to schedule a consultation call.", ...reply('chat-callback-1') },
+  { icon: 'pin', label: 'Hours & location', say: 'Where are you, and when are you open?', ...reply('chat-hours-1') },
+];
+
+const GREETING = "Hi! I'm the Interior Design Flooring assistant. Pick an option below or ask me anything about your project.";
 
 /**
  * The public half of the Turnstile pair, read at build time, exactly as
@@ -58,10 +71,18 @@ const GREETING = "Hi! I'm your AI assistant. How can I help with your project to
 const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
 ---
 
-{/* The number rides on an attribute because the script below is a separate
-    module and cannot see this file's frontmatter. One source of truth either
-    way: it still comes from content/idf.ts. */}
-<div class="chat" data-chat data-open="false" data-phone={business.phonePrimary}>
+{/* The number rides on attributes because the script below is a separate
+    module and cannot see this file's frontmatter. */}
+<div
+  class="chat"
+  data-chat
+  data-open="false"
+  data-phone={business.phonePrimary}
+  data-phone-href={business.phonePrimaryHref}
+  data-sms-href={business.phonePrimarySms}
+  data-menu={JSON.stringify(MENU)}
+  data-greeting={GREETING}
+>
   <button
     type="button"
     class="chat-launch"
@@ -70,8 +91,10 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
     aria-controls="chat-panel"
   >
     <span class="chat-sr">Open the {business.name} assistant</span>
+    <span class="chat-launch-glow" aria-hidden="true"></span>
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
       <path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9.9 9.9 0 0 1-2.8-.4L3 21l1.6-4.6A8.2 8.2 0 0 1 3 11.5 8.4 8.4 0 0 1 12 3a8.4 8.4 0 0 1 9 8.5Z" stroke-linecap="round" stroke-linejoin="round"></path>
+      <path d="M12 7.6v.01M12 7.6l.9 2.5 2.5.9-2.5.9-.9 2.5-.9-2.5-2.5-.9 2.5-.9Z" stroke-width="1.4" stroke-linejoin="round"></path>
     </svg>
   </button>
 
@@ -84,29 +107,26 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
     hidden
   >
     <div class="chat-head">
-      <h2 id="chat-title">{business.name} AI Assistant</h2>
-      <button type="button" class="chat-close" data-chat-close>
+      <span class="chat-orb" aria-hidden="true"></span>
+      <div class="chat-head-text">
+        <h2 id="chat-title">{business.name}</h2>
+        <p class="chat-status"><span class="chat-status-dot" aria-hidden="true"></span>AI assistant · replies instantly</p>
+      </div>
+      <button type="button" class="chat-icon-btn" data-chat-home>
+        <span class="chat-sr">Back to the main menu</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+          <path d="M4 10.5 12 4l8 6.5V19a1 1 0 0 1-1 1h-4.5v-5.5h-5V20H5a1 1 0 0 1-1-1Z" stroke-linejoin="round"></path>
+        </svg>
+      </button>
+      <button type="button" class="chat-icon-btn" data-chat-close>
         <span class="chat-sr">Close the assistant</span>
-        <span aria-hidden="true">&#x2715;</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+          <path d="M6 6l12 12M18 6 6 18" stroke-linecap="round"></path>
+        </svg>
       </button>
     </div>
 
     <div class="chat-log" data-chat-log role="log" aria-live="polite" aria-label="Conversation">
-      <p class="chat-msg chat-msg-bot">{GREETING}</p>
-
-      <ul class="chat-chips" data-chat-chips>
-        {
-          CHIPS.map((chip) => (
-            <li>
-              <button type="button" class="chat-chip" data-chat-chip={chip.send}>
-                <span aria-hidden="true">{chip.emoji}</span>
-                {chip.label}
-              </button>
-            </li>
-          ))
-        }
-      </ul>
-
       <div class="chat-typing" data-chat-typing role="status" hidden>
         <span></span><span></span><span></span>
         <span class="chat-sr">The assistant is typing</span>
@@ -115,9 +135,8 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
 
     {/* The challenge. Invisible unless Cloudflare wants a closer look at this
         visitor, and placed above the composer so that when it does appear it
-        is in front of the person typing rather than at the bottom of a log
-        they have scrolled away from. Rendered explicitly from the script, on
-        first open: a widget created inside a display:none panel is the one
+        is in front of the person typing. Rendered explicitly from the script,
+        on first open: a widget created inside a display:none panel is the one
         reliable way to get a challenge that never resolves. */}
     {turnstileSiteKey && (
       <div class="chat-gate" data-chat-turnstile data-sitekey={turnstileSiteKey}></div>
@@ -131,39 +150,55 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
         name="message"
         type="text"
         autocomplete="off"
-        placeholder="Type your message..."
+        placeholder="Ask about your project…"
         data-chat-input
       />
       <button type="submit" class="chat-send" data-chat-send>
         <span class="chat-sr">Send</span>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true">
-          <path d="M4 12h15M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"></path>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M12 19V5M6 11l6-6 6 6" stroke-linecap="round" stroke-linejoin="round"></path>
         </svg>
       </button>
     </form>
 
-    <p class="chat-foot">Powered by AI &#183; {business.name}</p>
+    <p class="chat-foot">Answers come from {business.name}'s own approved information.</p>
   </div>
 </div>
 
 <script>
+  type Action = 'lead' | 'call' | 'menu' | null;
+  type MenuItem = { icon: string; label: string; say: string; text: string; action: Action; url: string | null };
+
+  const ICONS: Record<string, string> = {
+    estimate: '<path d="M7 3h7l5 5v13H7z M14 3v5h5 M10 13h6 M10 17h4" />',
+    services: '<path d="M4 20h16 M6 20V10l6-5 6 5v10 M10 20v-5h4v5" />',
+    call: '<path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a1 1 0 0 1-1 1A16 16 0 0 1 4 5a1 1 0 0 1 1-1Z" />',
+    pin: '<path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21Z M12 12a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z" />',
+  };
+
   const root = document.querySelector<HTMLElement>('[data-chat]');
   if (root) {
     const launch = root.querySelector<HTMLButtonElement>('[data-chat-launch]')!;
     const panel = root.querySelector<HTMLElement>('[data-chat-panel]')!;
     const closeBtn = root.querySelector<HTMLButtonElement>('[data-chat-close]')!;
+    const homeBtn = root.querySelector<HTMLButtonElement>('[data-chat-home]')!;
     const log = root.querySelector<HTMLElement>('[data-chat-log]')!;
-    const chips = root.querySelector<HTMLElement>('[data-chat-chips]')!;
     const typing = root.querySelector<HTMLElement>('[data-chat-typing]')!;
     const form = root.querySelector<HTMLFormElement>('[data-chat-form]')!;
     const input = root.querySelector<HTMLInputElement>('[data-chat-input]')!;
     const send = root.querySelector<HTMLButtonElement>('[data-chat-send]')!;
+    const menu = JSON.parse(root.dataset.menu ?? '[]') as MenuItem[];
+    const phone = root.dataset.phone ?? 'us';
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
-    /** The conversation as the endpoint wants it. The greeting is markup, not
-        a turn, so it is deliberately absent: the model does not need to be
-        told what it already said in static HTML. */
-    const history: { role: 'user' | 'assistant'; content: string }[] = [];
+    /** The conversation as the endpoint wants it. Menu answers are local and
+        are left out: the model only needs what the visitor typed. */
+    let history: { role: 'user' | 'assistant'; content: string }[] = [];
     let busy = false;
+    /** Bumped on every reset, so a reply still typing itself out into a
+        conversation that has since been cleared stops instead of reappearing. */
+    let epoch = 0;
+    const GREETING_TEXT = root.dataset.greeting ?? '';
 
     /* Mirrors the endpoint's own caps. Trimming here means a long
        conversation forgets its oldest turns instead of returning a 400. */
@@ -174,8 +209,6 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
       while (out.length > 1 && out.reduce((n, m) => n + m.content.length, 0) > MAX_CHARS_TOTAL) {
         out.shift();
       }
-      /* The endpoint requires the last turn to be the user's. Dropping from
-         the front can never break that, but a lone oversized turn would. */
       return out;
     };
 
@@ -303,38 +336,293 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
       });
     };
 
-    const bubble = (
-      text: string,
-      kind: 'bot' | 'user' | 'error',
-      source?: { question: string; url: string },
-    ) => {
-      const p = document.createElement('p');
-      p.className = `chat-msg chat-msg-${kind}`;
-      if (source) {
-        /* The approved question first, as a link to where the same answer
-           sits on the site. textContent throughout: the answer is ours, but
-           nothing here should be one edit away from injecting markup. */
-        const link = document.createElement('a');
-        link.className = 'chat-src';
-        link.href = source.url;
-        link.textContent = source.question;
-        p.append(link, document.createTextNode(text));
-      } else {
-        p.textContent = text;
-      }
-      log.insertBefore(p, typing);
+
+    /* ---------- drawing the conversation ---------- */
+
+    const scrollDown = () => {
       log.scrollTop = log.scrollHeight;
     };
+
+    /** Everything goes in above the typing dots, which always sit last. */
+    const place = (el: HTMLElement) => {
+      log.insertBefore(el, typing);
+      scrollDown();
+      return el;
+    };
+
+    const row = (kind: 'bot' | 'user' | 'error') => {
+      const wrap = document.createElement('div');
+      wrap.className = `chat-row chat-row-${kind}`;
+      if (kind !== 'user') {
+        const avatar = document.createElement('span');
+        avatar.className = 'chat-avatar';
+        avatar.setAttribute('aria-hidden', 'true');
+        wrap.append(avatar);
+      }
+      const p = document.createElement('div');
+      p.className = `chat-msg chat-msg-${kind}`;
+      wrap.append(p);
+      place(wrap);
+      return p;
+    };
+
+    const userSay = (text: string) => {
+      row('user').textContent = text;
+    };
+
+    const errorSay = (text: string) => {
+      row('error').textContent = text;
+    };
+
+    const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+    /**
+     * A reply, typed out a few words at a time. The words are approved text
+     * either way; the reveal is only so it reads as a conversation. A screen
+     * reader is handed the whole reply at once through a hidden copy, and the
+     * visible half is aria-hidden, so it is announced once rather than
+     * word by word. Reduced motion skips the reveal entirely.
+     */
+    const botSay = async (text: string, url: string | null = null, animate = true) => {
+      const mine = epoch;
+      const p = row('bot');
+      const spoken = document.createElement('span');
+      spoken.className = 'chat-sr';
+      spoken.textContent = text;
+      const shown = document.createElement('span');
+      shown.setAttribute('aria-hidden', 'true');
+      p.append(spoken, shown);
+
+      if (!animate || reducedMotion.matches) {
+        shown.textContent = text;
+      } else {
+        p.classList.add('is-typing');
+        const words = text.split(/(\s+)/);
+        const step = Math.min(30, 1100 / words.length);
+        for (const word of words) {
+          if (mine !== epoch) return false;
+          shown.textContent += word;
+          scrollDown();
+          await wait(step);
+        }
+        p.classList.remove('is-typing');
+      }
+
+      if (url) {
+        const more = document.createElement('a');
+        more.className = 'chat-more';
+        more.href = url;
+        more.textContent = 'Read more on the site';
+        p.append(more);
+      }
+      scrollDown();
+      return mine === epoch;
+    };
+
+    /** The row of options under a reply. Main menu is always one of them. */
+    const followUps = (action: Action) => {
+      const bar = document.createElement('div');
+      bar.className = 'chat-follow';
+
+      if (action === 'call') {
+        const call = document.createElement('a');
+        call.className = 'chat-pill chat-pill-strong';
+        call.href = root.dataset.phoneHref ?? '#';
+        call.textContent = `Call ${phone}`;
+        const text = document.createElement('a');
+        text.className = 'chat-pill';
+        text.href = root.dataset.smsHref ?? '#';
+        text.textContent = 'Send a text';
+        bar.append(call, text);
+      }
+
+      const home = document.createElement('button');
+      home.type = 'button';
+      home.className = 'chat-pill';
+      home.textContent = '← Main menu';
+      home.addEventListener('click', () => {
+        bar.remove();
+        showMenu(true);
+      });
+      bar.append(home);
+      place(bar);
+    };
+
+    const afterReply = (action: Action) => {
+      if (action === 'lead') leadForm();
+      if (action === 'menu') showMenu(true);
+      else followUps(action);
+    };
+
+    /** The main menu. `compact` is the shorter version offered mid-conversation. */
+    const showMenu = (compact = false) => {
+      const list = document.createElement('ul');
+      list.className = compact ? 'chat-menu is-compact' : 'chat-menu';
+      for (const item of menu) {
+        const li = document.createElement('li');
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'chat-menu-item';
+        button.innerHTML =
+          `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" ` +
+          `stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[item.icon] ?? ''}</svg>`;
+        button.append(document.createTextNode(item.label));
+        button.addEventListener('click', () => void pick(item, list));
+        li.append(button);
+        list.append(li);
+      }
+      place(list);
+    };
+
+    /** A menu choice: answered here, with no request and no model call. */
+    const pick = async (item: MenuItem, list: HTMLElement) => {
+      if (busy) return;
+      list.remove();
+      userSay(item.say);
+      const mine = epoch;
+      setBusy(true);
+      await wait(reducedMotion.matches ? 0 : 450);
+      setBusy(false);
+      if (mine !== epoch) return;
+      if (await botSay(item.text, item.url)) afterReply(item.action);
+    };
+
+    /* ---------- the in-chat contact form ---------- */
+
+    const field = (name: string, label: string, type: string, autocomplete: string, required: boolean) => {
+      const id = `chat-lead-${name}-${epoch}`;
+      const wrap = document.createElement('div');
+      wrap.className = 'chat-lead-field';
+      const l = document.createElement('label');
+      l.htmlFor = id;
+      l.textContent = required ? label : `${label} (optional)`;
+      const el = type === 'textarea' ? document.createElement('textarea') : document.createElement('input');
+      el.id = id;
+      el.name = name;
+      el.className = 'chat-lead-input';
+      if (el instanceof HTMLInputElement) el.type = type;
+      else el.rows = 2;
+      el.autocomplete = autocomplete as AutoFill;
+      el.required = required;
+      wrap.append(l, el);
+      return wrap;
+    };
+
+    const leadForm = () => {
+      const lead = document.createElement('form');
+      lead.className = 'chat-lead';
+      lead.noValidate = false;
+      lead.setAttribute('aria-label', 'Your contact details');
+
+      /* The same honeypot the other forms carry. Hidden from people and from
+         assistive tech; a bot that fills it gets a fake success. */
+      const trap = document.createElement('input');
+      trap.type = 'text';
+      trap.name = 'company';
+      trap.tabIndex = -1;
+      trap.autocomplete = 'off';
+      trap.className = 'chat-lead-trap';
+      trap.setAttribute('aria-hidden', 'true');
+
+      const submit = document.createElement('button');
+      submit.type = 'submit';
+      submit.className = 'chat-lead-submit';
+      submit.textContent = 'Send my details';
+
+      const status = document.createElement('p');
+      status.className = 'chat-lead-status';
+      status.setAttribute('role', 'status');
+
+      lead.append(
+        field('name', 'Name', 'text', 'name', true),
+        field('phone', 'Phone', 'tel', 'tel', true),
+        field('email', 'Email', 'email', 'email', true),
+        field('details', 'What is the project?', 'textarea', 'off', false),
+        trap,
+        submit,
+        status,
+      );
+
+      lead.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        if (!lead.reportValidity()) return;
+        submit.disabled = true;
+        status.textContent = 'Sending…';
+
+        const data = new FormData(lead);
+        data.set('enquiry', 'chat');
+        /* What they asked before deciding to leave their details is the most
+           useful thing the owner can read before calling back. */
+        const asked = history.filter((m) => m.role === 'user').map((m) => `- ${m.content}`);
+        const note = String(data.get('details') ?? '').trim();
+        data.set(
+          'details',
+          [note, `Sent from the chat assistant on ${location.pathname}.`, asked.length ? `Asked in the chat:\n${asked.join('\n')}` : '']
+            .filter(Boolean)
+            .join('\n\n'),
+        );
+
+        if (gate) {
+          const fresh = await getToken();
+          if (!fresh) {
+            status.textContent = `Please finish the quick human check below, then send again. Or call ${phone}.`;
+            submit.disabled = false;
+            return;
+          }
+          data.set('cf-turnstile-response', fresh);
+          refreshGate();
+        }
+
+        try {
+          const res = await fetch('/api/estimate', { method: 'POST', body: data });
+          const body = (await res.json().catch(() => null)) as { ok?: boolean; reference?: string; error?: string } | null;
+          if (body?.ok) {
+            const first = String(data.get('name') ?? '').trim().split(/\s+/)[0];
+            lead.remove();
+            await botSay(
+              `Thanks${first ? `, ${first}` : ''}! We have your details and Shawn or Nancy will be in touch soon.` +
+                (body.reference ? ` Your reference is ${body.reference}.` : ''),
+            );
+            followUps(null);
+          } else {
+            status.textContent = body?.error ?? `That did not send. Please call ${phone} instead.`;
+            submit.disabled = false;
+          }
+        } catch {
+          status.textContent = `That did not send. Please check your connection or call ${phone}.`;
+          submit.disabled = false;
+        }
+      });
+
+      place(lead);
+      /* Not on touch screens, where focusing a field throws the keyboard up
+         over the reply that explains what the form is for. */
+      if (window.matchMedia('(pointer: fine)').matches) lead.querySelector<HTMLInputElement>('input')?.focus();
+    };
+
+    /* ---------- open, close, start over ---------- */
 
     const setBusy = (next: boolean) => {
       busy = next;
       typing.hidden = !next;
       send.disabled = next;
       input.disabled = next;
-      if (next) log.scrollTop = log.scrollHeight;
+      if (next) scrollDown();
+    };
+
+    /** Back to the greeting and the menu. The session is kept: starting over
+        should not cost the visitor another human check. */
+    const reset = () => {
+      epoch += 1;
+      history = [];
+      for (const child of [...log.children]) if (child !== typing) child.remove();
+      setBusy(false);
+      void botSay(GREETING_TEXT, null, false);
+      showMenu();
     };
 
     const open = () => {
+      reset();
       root.dataset.open = 'true';
       panel.hidden = false;
       launch.setAttribute('aria-expanded', 'true');
@@ -349,25 +637,26 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
       panel.hidden = true;
       launch.setAttribute('aria-expanded', 'false');
       /* Focus has to go somewhere it can be seen, and the launcher is the
-         only thing left. Without this it lands on <body> and a keyboard user
-         starts again from the top of the page. */
+         only thing left. */
       launch.focus();
     };
+
+    /* ---------- typed messages ---------- */
 
     const ask = async (text: string) => {
       const message = text.trim();
       if (message === '' || busy) return;
 
-      /* One use only. The brief asks for the chips to go after the first
-         send, and leaving them would offer the same three questions on top
-         of an answer to one of them. */
-      chips.hidden = true;
+      /* Whatever menu is on screen is answered by typing instead. */
+      log.querySelectorAll('.chat-menu, .chat-follow').forEach((el) => el.remove());
 
-      bubble(message, 'user');
+      const mine = epoch;
+      userSay(message);
       history.push({ role: 'user', content: message });
       input.value = '';
       setBusy(true);
 
+      let after: Action | undefined;
       try {
         const body: Record<string, unknown> = { messages: trimmed() };
 
@@ -380,12 +669,10 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
                value of the message: a challenge sitting there unanswered
                needs a tick, and a challenge that never appeared needs a
                different route entirely. */
-            bubble(
+            errorSay(
               gate.getBoundingClientRect().height > 0
-                ? 'Please finish the quick human check just above, then send that again.'
-                : 'We could not confirm this is a browser. Please reload the page, use the estimate form, or call ' +
-                  `${root.dataset.phone ?? 'us'}.`,
-              'error',
+                ? 'Please finish the quick human check just below, then send that again.'
+                : `We could not confirm this is a browser. Please reload the page, use the estimate form, or call ${phone}.`,
             );
             return;
           }
@@ -400,30 +687,29 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
           body: JSON.stringify(body),
         });
         /* Read the body before trusting the status: this endpoint returns a
-           usable sentence in `error` on 400, 502 and 503, and showing that
-           beats a generic failure the visitor cannot act on. */
+           usable sentence in `error` on 400, 502 and 503. */
         const data = (await res.json().catch(() => null)) as
           | {
               ok?: boolean;
               reply?: string;
-              match?: { question?: unknown; url?: unknown } | null;
+              match?: { url?: unknown } | null;
+              action?: unknown;
               error?: string;
               session?: string;
               verify?: boolean;
             }
           | null;
 
+        if (mine !== epoch) return;
+        setBusy(false);
+
         if (data?.ok && typeof data.reply === 'string') {
           if (typeof data.session === 'string') session = data.session;
-          const match = data.match;
-          bubble(
-            data.reply,
-            'bot',
-            match && typeof match.question === 'string' && typeof match.url === 'string'
-              ? { question: match.question, url: match.url }
-              : undefined,
-          );
           history.push({ role: 'assistant', content: data.reply });
+          const url = typeof data.match?.url === 'string' ? data.match.url : null;
+          const action =
+            data.action === 'lead' || data.action === 'call' || data.action === 'menu' ? data.action : null;
+          if (await botSay(data.reply, url)) after = action;
         } else {
           /* The session is finished, or was never good. Drop it and let the
              next message earn a new one, so the visitor's way out of this is
@@ -432,34 +718,33 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
             session = null;
             refreshGate();
           }
-          bubble(
-            data?.error ??
-              'Something went wrong. Please use the estimate form or call us.',
-            'error',
-          );
+          errorSay(data?.error ?? `Something went wrong. Please use the estimate form or call ${phone}.`);
+          after = null;
         }
       } catch {
-        bubble(
-          'We could not reach the assistant. Please check your connection, use the estimate form, or call us.',
-          'error',
-        );
+        if (mine === epoch) {
+          errorSay(`We could not reach the assistant. Please check your connection, use the estimate form, or call ${phone}.`);
+          after = null;
+        }
       } finally {
-        setBusy(false);
-        input.focus();
+        if (mine === epoch) {
+          setBusy(false);
+          if (after !== undefined) afterReply(after);
+          if (!log.querySelector('.chat-lead')) input.focus();
+        }
       }
     };
 
     launch.addEventListener('click', open);
     closeBtn.addEventListener('click', close);
+    homeBtn.addEventListener('click', () => {
+      reset();
+      input.focus();
+    });
 
     form.addEventListener('submit', (event) => {
       event.preventDefault();
       void ask(input.value);
-    });
-
-    chips.addEventListener('click', (event) => {
-      const chip = (event.target as HTMLElement).closest<HTMLElement>('[data-chat-chip]');
-      if (chip) void ask(chip.dataset.chatChip ?? '');
     });
 
     document.addEventListener('keydown', (event) => {

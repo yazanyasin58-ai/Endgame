@@ -27,6 +27,7 @@ import { faqGroups } from './faq';
 import { serviceFaq } from './service-faq';
 import { servicePages } from './services-detail';
 import { assertSafeFaq } from './faq-safety';
+import { liveChatReplies, type ChatAction } from './chat-replies';
 
 export type CatalogEntry = {
   id: string;
@@ -34,13 +35,26 @@ export type CatalogEntry = {
   topic: string;
   q: string;
   a: string[];
-  /** Where the same answer can be read on the site. */
-  url: string;
+  /** Where the same answer can be read on the site, if anywhere. */
+  url?: string;
+  /** What the widget does after showing the reply. Chat replies only. */
+  action?: ChatAction;
 };
 
 const serviceTitle = new Map(servicePages.map((s) => [s.slug, s.title]));
 
 export const faqCatalog: CatalogEntry[] = [
+  /* First, so a visitor who wants to DO something (book, be called back, get
+     the number) meets the reply that does it before the FAQ entry that talks
+     about it. Only the live ones: see chat-replies.ts for the pending list. */
+  ...liveChatReplies.map((reply) => ({
+    id: reply.id,
+    topic: 'Talking to the assistant',
+    q: reply.q,
+    a: reply.a,
+    url: reply.url,
+    action: reply.action,
+  })),
   ...faqGroups.flatMap((group) =>
     group.items.map((item, index) => ({
       id: `faq-${group.id}-${index + 1}`,
