@@ -122,6 +122,10 @@ const REQUIRED_FIELDS = ['name', 'phone', 'email', 'address', 'type'] as const;
  */
 const REQUIRED_BY_ENQUIRY: Record<string, readonly string[]> = {
   popup: ['name', 'phone', 'email'],
+  /* The assistant's in-chat contact form: the same three, for the same reason.
+     The client asked for "provide your contact info and we'll send it over",
+     not an estimate form inside a chat bubble. */
+  chat: ['name', 'phone', 'email'],
 };
 
 const LABELS: Record<string, string> = {

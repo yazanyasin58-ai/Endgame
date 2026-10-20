@@ -2,37 +2,31 @@
    The floating assistant.
 
    Gated behind features.chatAssistant, so none of this renders until the
-   Workers AI binding exists. Styling notes that are not obvious:
+   flag is on. The look (October 2026 restyle) follows two 21st.dev patterns,
+   rebuilt here in plain CSS because the site is Astro with no React: the
+   "AI Assistant Interface" (an animated orb as the assistant's mark, and the
+   opening options as cards rather than a list) and "AI Message Bubble"
+   (an avatar on each assistant turn, a caret while a reply types out). The
+   palette stays the site's own ink, cream and gold.
 
    STACKING. The site already has a crowded bottom edge and a z-index order
    that means something: .callbar 80, .vswitch 90, the lead pop-up 200, the
-   skip link 300. The chat sits at 100, which puts it above the mobile call
-   bar and below the lead pop-up, so the pop-up covers the chat rather than
-   fighting it, and the skip link still wins over everything.
+   skip link 300. The chat sits at 100, above the mobile call bar and below
+   the lead pop-up.
 
    THE BOTTOM EDGE IS NOT EMPTY ON PHONES. .callbar is fixed to the bottom
-   below 768px at 3.5rem tall, and it is a conversion element: covering the
-   call and text buttons with a chat bubble would trade a phone call for a
-   worse channel. Below that breakpoint the launcher is lifted clear of it.
-   Above it the call bar is display:none and the launcher drops back down.
+   below 768px at 3.5rem tall, and it is a conversion element, so below that
+   breakpoint the launcher is lifted clear of it.
 
    NO JAVASCRIPT, NO LAUNCHER. Everything here is hidden until the `js` class
-   lands on <html>, the same gate reveal.css uses. A chat button that cannot
-   open is worse than no button, and this way it is never painted.
+   lands on <html>, the same gate reveal.css uses.
    ------------------------------------------------------------------ */
 
-/* Self-contained rather than reusing .hp-visually-hidden, which lives in
-   home.css and so is not guaranteed on every page this widget mounts to. */
-.chat-sr {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
-}
-
 .chat {
+  --chat-ink: var(--ink);
+  --chat-panel: #fffdf9;
+  --chat-line: rgb(20 17 13 / 0.1);
+  --chat-orb: conic-gradient(from 0deg, #e2c06b, #f6f1e7, #c8a24a, #856719, #e2c06b);
   position: fixed;
   z-index: 100;
   right: max(1rem, env(safe-area-inset-right, 0px));
@@ -46,7 +40,17 @@
   display: flex;
 }
 
-/* Clear of the mobile call bar, which is 3.5rem tall and only exists here. */
+/* Self-contained rather than reusing .hp-visually-hidden, which lives in
+   home.css and so is not guaranteed on every page this widget mounts to. */
+.chat-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
 @media (max-width: 767px) {
   body.with-callbar .chat {
     bottom: calc(3.5rem + 0.75rem + env(safe-area-inset-bottom, 0px));
@@ -56,33 +60,41 @@
 /* ---------- launcher ---------- */
 
 .chat-launch {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 3.5rem;
-  height: 3.5rem;
+  width: 3.75rem;
+  height: 3.75rem;
   padding: 0;
-  border: 1px solid var(--gold-deep);
+  border: 0;
   border-radius: 50%;
-  background: var(--ink);
+  background: var(--chat-ink);
   color: var(--gold-bright);
   cursor: pointer;
-  box-shadow: 0 6px 20px rgb(20 17 13 / 0.28);
-  transition: transform 160ms ease, background-color 160ms ease;
-  /* Dark ground, so the ring has to be the bright gold to clear 3:1. */
+  box-shadow: 0 10px 30px rgb(20 17 13 / 0.32), inset 0 0 0 1px rgb(226 192 107 / 0.45);
+  transition: transform 180ms ease;
   --focus-ring: var(--gold-bright);
 }
+/* A slow gold halo, so the launcher reads as alive without bouncing. */
+.chat-launch-glow {
+  position: absolute;
+  inset: -3px;
+  z-index: -1;
+  border-radius: 50%;
+  background: var(--chat-orb);
+  filter: blur(6px);
+  opacity: 0.55;
+  animation: chat-spin 6s linear infinite;
+}
 .chat-launch:hover {
-  background: var(--charcoal);
-  transform: translateY(-2px);
+  transform: translateY(-2px) scale(1.03);
 }
 .chat-launch svg {
-  width: 1.5rem;
-  height: 1.5rem;
+  width: 1.6rem;
+  height: 1.6rem;
   display: block;
 }
-/* The launcher stays mounted while the panel is open so focus has somewhere
-   to return to, but it must not be reachable or visible behind the card. */
 .chat[data-open='true'] .chat-launch {
   display: none;
 }
@@ -90,15 +102,17 @@
 /* ---------- panel ---------- */
 
 .chat-panel {
-  width: min(22rem, calc(100vw - 2rem));
-  max-height: min(32rem, calc(100dvh - 8rem));
+  width: min(24rem, calc(100vw - 2rem));
+  height: min(36rem, calc(100dvh - 7rem));
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  background: var(--paper);
-  border: 1px solid var(--rule, var(--stone));
-  border-radius: 0.75rem;
-  box-shadow: 0 18px 50px rgb(20 17 13 / 0.26);
+  background: var(--chat-panel);
+  border: 1px solid var(--chat-line);
+  border-radius: 1.25rem;
+  box-shadow: 0 24px 60px rgb(20 17 13 / 0.28), 0 2px 6px rgb(20 17 13 / 0.08);
+  transform-origin: bottom right;
+  animation: chat-in 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 .chat-panel[hidden] {
   display: none;
@@ -107,42 +121,81 @@
 .chat-head {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.85rem 0.9rem 0.85rem 1rem;
-  background: var(--ink);
+  gap: 0.7rem;
+  padding: 0.85rem 0.6rem 0.85rem 1rem;
+  background:
+    radial-gradient(120% 140% at 0% 0%, rgb(226 192 107 / 0.18), transparent 55%),
+    var(--chat-ink);
   color: var(--cream);
   --focus-ring: var(--gold-bright);
 }
-.chat-head h2 {
-  margin: 0;
+.chat-orb {
+  flex: none;
+  position: relative;
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 50%;
+  background: var(--chat-orb);
+  animation: chat-spin 8s linear infinite;
+  box-shadow: 0 0 18px rgb(226 192 107 / 0.45);
+}
+.chat-orb::after {
+  content: '';
+  position: absolute;
+  inset: 0.5rem;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fffaf0, rgb(246 241 231 / 0.2) 70%);
+}
+.chat-head-text {
   flex: 1;
   min-width: 0;
-  font-family: 'Fraunces', Georgia, serif;
-  font-size: 0.95rem;
-  font-weight: 600;
-  line-height: 1.25;
-  letter-spacing: -0.005em;
 }
-.chat-close {
+.chat-head h2 {
+  margin: 0;
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.chat-status {
+  margin: 0.15rem 0 0;
+  font-size: 0.75rem;
+  color: var(--stone);
+}
+.chat-status-dot {
+  display: inline-block;
+  width: 0.45rem;
+  height: 0.45rem;
+  margin-right: 0.35rem;
+  border-radius: 50%;
+  background: #7bc47f;
+  box-shadow: 0 0 0 3px rgb(123 196 127 / 0.2);
+  vertical-align: 0.05em;
+}
+.chat-icon-btn {
   flex: none;
   display: flex;
   align-items: center;
   justify-content: center;
   width: 2.75rem;
   height: 2.75rem;
-  margin: -0.5rem -0.35rem -0.5rem 0;
   padding: 0;
   border: 0;
+  border-radius: 0.6rem;
   background: transparent;
   color: var(--stone);
-  font-size: 1.1rem;
-  line-height: 1;
   cursor: pointer;
-  border-radius: 0.35rem;
 }
-.chat-close:hover {
+.chat-icon-btn:hover {
   color: var(--cream);
   background: rgb(246 241 231 / 0.1);
+}
+.chat-icon-btn svg {
+  width: 1.2rem;
+  height: 1.2rem;
 }
 
 /* ---------- messages ---------- */
@@ -152,88 +205,244 @@
   min-height: 7rem;
   overflow-y: auto;
   overscroll-behavior: contain;
-  padding: 1rem;
+  padding: 1rem 0.9rem;
   display: flex;
   flex-direction: column;
-  gap: 0.65rem;
+  gap: 0.7rem;
   font-size: 0.9375rem;
   line-height: 1.5;
+  background:
+    radial-gradient(90% 50% at 100% 0%, rgb(226 192 107 / 0.08), transparent 70%),
+    var(--chat-panel);
+}
+
+.chat-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.5rem;
+  animation: chat-rise 220ms ease-out;
+}
+.chat-row-user {
+  justify-content: flex-end;
+}
+.chat-avatar {
+  flex: none;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  background: var(--chat-orb);
+  box-shadow: inset 0 0 0 2px rgb(255 253 249 / 0.6);
+}
+.chat-row-error .chat-avatar {
+  background: #95382a;
 }
 
 .chat-msg {
-  max-width: 85%;
-  padding: 0.6rem 0.8rem;
-  border-radius: 0.65rem;
+  max-width: 82%;
+  padding: 0.65rem 0.85rem;
+  border-radius: 1rem;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
 .chat-msg-bot {
-  align-self: flex-start;
   background: var(--cream);
-  color: var(--body, var(--charcoal));
-  border: 1px solid var(--rule, #e0d6c3);
-  border-bottom-left-radius: 0.2rem;
+  color: var(--charcoal);
+  border: 1px solid var(--chat-line);
+  border-bottom-left-radius: 0.3rem;
 }
-/* The approved question a reply is answering, linked to where it sits on the
-   site. Its own line, so the answer under it reads as the answer to it. */
-.chat-src {
+/* The caret while a reply is typing itself out. */
+.chat-msg-bot.is-typing > span[aria-hidden]::after {
+  content: '';
+  display: inline-block;
+  width: 0.5ch;
+  height: 1em;
+  margin-left: 1px;
+  background: var(--gold-deep);
+  vertical-align: -0.12em;
+  animation: chat-caret 0.9s steps(1) infinite;
+}
+.chat-more {
   display: block;
-  margin-bottom: 0.35rem;
+  margin-top: 0.45rem;
+  font-size: 0.8125rem;
   font-weight: 600;
-  color: var(--ink);
+  color: var(--gold-deep);
   text-decoration: underline;
-  text-underline-offset: 0.15em;
+  text-underline-offset: 0.18em;
+  white-space: normal;
 }
 .chat-msg-user {
-  align-self: flex-end;
-  background: var(--ink);
+  background: var(--chat-ink);
   color: var(--cream);
-  border-bottom-right-radius: 0.2rem;
+  border-bottom-right-radius: 0.3rem;
 }
 .chat-msg-error {
-  align-self: flex-start;
   background: #f6e7e3;
   color: #95382a;
-  border: 1px solid #95382a;
-  border-bottom-left-radius: 0.2rem;
+  border: 1px solid #e2b3a9;
+  border-bottom-left-radius: 0.3rem;
 }
 
-/* ---------- quick actions ---------- */
+/* ---------- the main menu ---------- */
 
-.chat-chips {
+.chat-menu {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  margin: 0.1rem 0 0 2.25rem;
+  padding: 0;
+  list-style: none;
+  animation: chat-rise 260ms ease-out;
+}
+.chat-menu-item {
+  width: 100%;
+  min-height: 4.5rem;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  justify-content: space-between;
   gap: 0.4rem;
-  margin: 0.15rem 0 0;
-  padding: 0;
-  list-style: none;
-}
-.chat-chips[hidden] {
-  display: none;
-}
-.chat-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  min-height: 2.75rem;
-  padding: 0.45rem 0.9rem;
-  border: 1px solid var(--gold-deep);
-  border-radius: 999px;
-  background: var(--paper);
-  color: var(--charcoal);
+  padding: 0.7rem 0.75rem;
+  border: 1px solid var(--chat-line);
+  border-radius: 0.85rem;
+  background: #fff;
+  color: var(--ink);
   font: inherit;
-  font-size: 0.875rem;
+  font-size: 0.84rem;
+  font-weight: 600;
+  line-height: 1.25;
   text-align: left;
   cursor: pointer;
-  transition: background-color 140ms ease;
+  box-shadow: 0 1px 2px rgb(20 17 13 / 0.05);
+  transition: border-color 140ms ease, transform 140ms ease, box-shadow 140ms ease;
 }
-.chat-chip:hover {
-  background: var(--cream);
+.chat-menu-item svg {
+  width: 1.3rem;
+  height: 1.3rem;
+  color: var(--gold-deep);
 }
-.chat-chip:disabled {
-  opacity: 0.5;
+.chat-menu-item:hover {
+  border-color: var(--gold);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgb(133 103 25 / 0.14);
+}
+/* Mid-conversation the menu is a row of pills, not a wall of cards. */
+.chat-menu.is-compact {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.chat-menu.is-compact .chat-menu-item {
+  min-height: 2.75rem;
+  flex-direction: row;
+  align-items: center;
+  padding: 0.4rem 0.8rem;
+  border-radius: 999px;
+}
+.chat-menu.is-compact .chat-menu-item svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.chat-follow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-left: 2.25rem;
+  animation: chat-rise 260ms ease-out;
+}
+.chat-pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  padding: 0.4rem 0.9rem;
+  border: 1px solid var(--chat-line);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--charcoal);
+  font: inherit;
+  font-size: 0.84rem;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+}
+.chat-pill:hover {
+  border-color: var(--gold);
+}
+.chat-pill-strong {
+  background: var(--chat-ink);
+  color: var(--cream);
+  border-color: var(--chat-ink);
+}
+.chat-pill-strong:hover {
+  background: var(--charcoal);
+}
+
+/* ---------- the contact form ---------- */
+
+.chat-lead {
+  margin-left: 2.25rem;
+  padding: 0.85rem;
+  display: grid;
+  gap: 0.55rem;
+  background: #fff;
+  border: 1px solid var(--chat-line);
+  border-radius: 0.9rem;
+  box-shadow: 0 6px 18px rgb(20 17 13 / 0.07);
+  animation: chat-rise 260ms ease-out;
+}
+.chat-lead-field label {
+  display: block;
+  margin-bottom: 0.2rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--charcoal);
+}
+.chat-lead-input {
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0.5rem 0.7rem;
+  border: 1px solid rgb(20 17 13 / 0.2);
+  border-radius: 0.6rem;
+  background: var(--chat-panel);
+  color: var(--ink);
+  font: inherit;
+  font-size: 1rem; /* 16px, so iOS does not zoom into the field */
+  resize: vertical;
+}
+.chat-lead-input:focus {
+  border-color: var(--gold-deep);
+}
+.chat-lead-trap {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+}
+.chat-lead-submit {
+  min-height: 2.75rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--chat-ink);
+  color: var(--cream);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.chat-lead-submit:hover:not(:disabled) {
+  background: var(--charcoal);
+}
+.chat-lead-submit:disabled {
+  opacity: 0.55;
   cursor: default;
+}
+.chat-lead-status {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--charcoal);
+}
+.chat-lead-status:empty {
+  display: none;
 }
 
 /* ---------- typing indicator ---------- */
@@ -242,39 +451,33 @@
   align-self: flex-start;
   display: flex;
   gap: 0.25rem;
-  padding: 0.7rem 0.85rem;
+  margin-left: 2.25rem;
+  padding: 0.75rem 0.9rem;
   background: var(--cream);
-  border: 1px solid var(--rule, #e0d6c3);
-  border-radius: 0.65rem;
-  border-bottom-left-radius: 0.2rem;
+  border: 1px solid var(--chat-line);
+  border-radius: 1rem;
+  border-bottom-left-radius: 0.3rem;
 }
 .chat-typing[hidden] {
   display: none;
 }
 .chat-typing span {
-  width: 0.4rem;
-  height: 0.4rem;
+  width: 0.42rem;
+  height: 0.42rem;
   border-radius: 50%;
-  background: var(--gray);
+  background: var(--gold-deep);
   animation: chat-bounce 1.1s infinite ease-in-out;
 }
 .chat-typing span:nth-child(2) { animation-delay: 0.15s; }
 .chat-typing span:nth-child(3) { animation-delay: 0.3s; }
 
-@keyframes chat-bounce {
-  0%, 60%, 100% { transform: translateY(0); opacity: 0.45; }
-  30%           { transform: translateY(-0.25rem); opacity: 1; }
-}
-
 /* ---------- the challenge ---------- */
 
 /* Turnstile runs in appearance: interaction-only, so for almost every visitor
    this container holds a collapsed widget and must take up no room at all.
-   That is why the spacing is on the iframe rather than on the container: a
-   padded wrapper would leave a visible gap above the composer on every chat
-   that never needed challenging. */
+   The spacing is on the iframe rather than the container for that reason. */
 .chat-gate {
-  background: var(--paper);
+  background: var(--chat-panel);
 }
 .chat-gate iframe {
   display: block;
@@ -287,22 +490,30 @@
 .chat-form {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.7rem 0.75rem;
-  border-top: 1px solid var(--rule, #e0d6c3);
-  background: var(--paper);
+  gap: 0.4rem;
+  margin: 0.6rem 0.75rem 0.35rem;
+  padding: 0.25rem 0.25rem 0.25rem 0.4rem;
+  border: 1px solid rgb(20 17 13 / 0.16);
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 2px 8px rgb(20 17 13 / 0.06);
+  transition: border-color 140ms ease, box-shadow 140ms ease;
+}
+.chat-form:focus-within {
+  border-color: var(--gold-deep);
+  box-shadow: 0 0 0 3px rgb(200 162 74 / 0.22);
 }
 .chat-input {
   flex: 1;
   min-width: 0;
   min-height: 2.75rem;
-  padding: 0.5rem 0.75rem;
-  border: 1px solid var(--rule-strong, var(--stone));
-  border-radius: 999px;
-  background: #fff;
+  padding: 0.5rem 0.6rem;
+  border: 0;
+  outline: none;
+  background: transparent;
   color: var(--ink);
   font: inherit;
-  font-size: 0.9375rem;
+  font-size: 1rem;
 }
 .chat-input::placeholder {
   color: var(--gray);
@@ -316,9 +527,9 @@
   width: 2.75rem;
   height: 2.75rem;
   padding: 0;
-  border: 1px solid var(--gold-deep);
+  border: 0;
   border-radius: 50%;
-  background: var(--ink);
+  background: var(--chat-ink);
   color: var(--gold-bright);
   cursor: pointer;
   --focus-ring: var(--gold-deep);
@@ -331,33 +542,81 @@
   cursor: default;
 }
 .chat-send svg {
-  width: 1.1rem;
-  height: 1.1rem;
+  width: 1.15rem;
+  height: 1.15rem;
   display: block;
 }
 
 .chat-foot {
   margin: 0;
-  padding: 0 0.75rem 0.7rem;
-  background: var(--paper);
+  padding: 0 0.75rem 0.65rem;
   color: var(--gray);
   font-size: 0.6875rem;
   text-align: center;
 }
 
+/* ---------- phones ---------- */
+
+/* Below 480px the panel takes the whole screen: a floating card with a
+   keyboard under it leaves a few lines to read. */
+@media (max-width: 480px) {
+  body .chat[data-open='true'] {
+    inset: 0;
+    z-index: 110;
+  }
+  .chat-panel {
+    width: 100vw;
+    height: 100dvh;
+    border-radius: 0;
+    border: 0;
+  }
+  .chat-head {
+    padding-top: max(0.85rem, env(safe-area-inset-top, 0px));
+  }
+  .chat-foot {
+    padding-bottom: max(0.65rem, env(safe-area-inset-bottom, 0px));
+  }
+}
+
 /* ---------- motion ---------- */
 
+@keyframes chat-spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes chat-in {
+  from { opacity: 0; transform: translateY(10px) scale(0.97); }
+}
+@keyframes chat-rise {
+  from { opacity: 0; transform: translateY(6px); }
+}
+@keyframes chat-caret {
+  50% { opacity: 0; }
+}
+@keyframes chat-bounce {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.45; }
+  30%           { transform: translateY(-0.25rem); opacity: 1; }
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .chat-launch-glow,
+  .chat-orb,
+  .chat-panel,
+  .chat-row,
+  .chat-menu,
+  .chat-follow,
+  .chat-lead {
+    animation: none;
+  }
   .chat-launch,
-  .chat-chip,
-  .chat-send {
+  .chat-menu-item,
+  .chat-form {
     transition: none;
   }
-  .chat-launch:hover {
+  .chat-launch:hover,
+  .chat-menu-item:hover {
     transform: none;
   }
-  /* The dots still need to read as "working", so they fade rather than move:
-     an indicator that stops entirely looks like a hung request. */
+  /* The dots still need to read as "working", so they fade rather than move. */
   .chat-typing span {
     animation: chat-fade 1.4s infinite ease-in-out;
   }

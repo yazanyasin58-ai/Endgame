@@ -99,8 +99,15 @@ const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
   const DELAY = 6000;
   const SKIP = ['/estimate/', '/contact/', '/list-your-home/'];
 
+  /* Not on phones. Agreed with the client on 20 October: a full-screen offer
+     arriving six seconds into a visit is friction on a small screen, where
+     the sticky call bar already carries the same call to action. Same 768px
+     breakpoint as the call bar. Read once at load, so turning a tablet does
+     not spring the dialog on someone mid-page. */
+  const MOBILE = window.matchMedia('(max-width: 767px)').matches;
+
   const root = document.querySelector<HTMLElement>('[data-lead-popup]');
-  if (root && !SKIP.includes(location.pathname)) {
+  if (root && !MOBILE && !SKIP.includes(location.pathname)) {
     let blocked = false;
     try {
       /* The old key cannot be read as either state: it was set both by closing

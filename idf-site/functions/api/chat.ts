@@ -240,6 +240,11 @@ const ROUTING_PROMPT = [
   'entry covers (a price, a date, a timescale), or when the message is not a',
   'question about the company. Earlier messages are context only, for working out',
   'what words like "it" or "that" refer to. Never return an id that is not listed.',
+  '',
+  'Entries whose id starts with "chat-" are things the visitor wants to DO or say',
+  '(book an estimate, be called back, get the phone number, say hello or thanks).',
+  'Prefer one of those over an FAQ entry when the visitor is asking for the action',
+  'rather than asking a question about it.',
 ].join('\n');
 
 /**
@@ -649,7 +654,10 @@ const handlePost = async (context: PagesContext): Promise<Response> => {
   return json({
     ok: true,
     reply: (match ? match.a : noMatchReply).join('\n\n'),
-    match: match ? { id: match.id, question: match.q, url: match.url } : null,
+    match: match ? { id: match.id, question: match.q, url: match.url ?? null } : null,
+    /* What the widget should offer next: the contact form, call buttons, or
+       the main menu. Absent for a plain answer. */
+    action: match?.action ?? null,
     model: MODEL,
     ...(session ? { session } : {}),
   });
