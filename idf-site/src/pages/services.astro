@@ -4,6 +4,31 @@ import Page from '../layouts/Page.astro';
 import Placeholder from '../components/Placeholder.astro';
 import { business, serviceGroups, insuranceRestoration, gallery, cta } from '../content/idf';
 import { optionalImage } from '../lib/images';
+import { servicePages } from '../content/services-detail';
+import { serviceImageSet } from '../content/service-images';
+
+/* The groups below are the owner's own list, so their wording stays. Where an
+   item has a detail page of its own it links there; the rest stay plain text
+   rather than pointing somewhere approximate. Every one of the twelve pages is
+   also reachable from the cards further down, so none depends on this map.
+   Added after the second-opinion audit (21 Oct) found the hub linked to
+   nothing but the estimate form. */
+const itemPage: Record<string, string> = {
+  Kitchens: 'kitchen-remodeling',
+  Bathrooms: 'bathroom-remodeling',
+  Basements: 'basement-remodeling',
+  Additions: 'home-additions',
+  'Full home renovations': 'home-remodeling',
+  Flooring: 'flooring',
+  'Interior finishes': 'painting-drywall',
+  'Siding, gutters, fascia, and trim': 'roofing-siding',
+  'Insurance restoration': 'insurance-claim-repairs',
+  'Mold remediation': 'water-damage-mold',
+  'Water and structural repair': 'water-damage-mold',
+};
+const slugs = new Set(servicePages.map((p) => p.slug));
+const itemHref = (item: string) =>
+  itemPage[item] && slugs.has(itemPage[item]) ? `/services/${itemPage[item]}/` : undefined;
 
 // Exterior work underway — the closest of the photographs to what a storm or
 // water loss actually looks like being repaired. Optional on purpose: a
@@ -52,13 +77,40 @@ const groupPhoto = (id: string) => {
             )}
             <h2 class="sv-title">{g.title}</h2>
             <ul class="sv-items">
-              {g.items.map((i) => <li>{i}</li>)}
+              {g.items.map((i) => (
+                <li>{itemHref(i) ? <a class="sv-item-link" href={itemHref(i)}>{i}</a> : i}</li>
+              ))}
             </ul>
             <a class="hp-pillar-link" href="/estimate/">Start an estimate</a>
           </article>
         ))
       }
     </div>
+  </section>
+
+  {/* All twelve detail pages, as the same picture cards each service page ends
+      with, so the hub is a way in rather than a dead end. */}
+  <section class="hp-section hp-section--tight svc-more" aria-labelledby="sv-all-h">
+    <h2 class="hp-h2" id="sv-all-h">Every service in detail</h2>
+    <ul class="svc-cards">
+      {servicePages.map((s) => (
+        <li>
+          <a class="svc-card" href={`/services/${s.slug}/`}>
+            <span class="svc-card-media">
+              <img
+                src={serviceImageSet(s.slug).card}
+                alt=""
+                width="640"
+                height="427"
+                loading="lazy"
+                decoding="async"
+              />
+            </span>
+            <span class="svc-card-label">{s.label}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
   </section>
 
   <section class="hp-section hp-section--tight ir-section" id="insurance-restoration">

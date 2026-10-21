@@ -419,14 +419,19 @@
 /* The form's base styling assumes the charcoal ground it sits on for the
    homepage; a blocked slot inside it has to opt into the dark palette too. */
 .hp .ef { --blocked-fg: var(--stone); --blocked-bg: var(--charcoal); }
+/* Labels were 11px with 0.14em tracking, small enough to strain on the forms
+   the business most needs filled in (second-opinion audit, 21 Oct). 13px and
+   half the tracking keeps the uppercase drafting voice and reads easily.
+   The 44px floor brings the selects up from 42px to the comfortable touch
+   target; text inputs were already about that tall. */
 .hp .ef-label {
-  font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.14em;
+  font-size: 0.8125rem; font-weight: 600; letter-spacing: 0.07em;
   text-transform: uppercase; color: var(--stone);
 }
 .hp .ef-input {
   background: rgb(251 248 242 / 0.06); border: 1px solid rgb(251 248 242 / 0.25);
   border-radius: 0.4rem; color: var(--cream); font-family: inherit;
-  font-size: 0.9375rem; padding: 0.65rem 0.8rem;
+  font-size: 0.9375rem; padding: 0.65rem 0.8rem; min-height: 44px;
 }
 /* The border tint stays as the soft cue a mouse user gets. It is not enough on
    its own: on the two paper forms the focused border is --gold on white, which
@@ -851,6 +856,11 @@
 }
 @media (max-width: 560px) { .sv-items { columns: 1; } }
 .sv-items li { padding-block: 0.25rem; break-inside: avoid; }
+.sv-item-link {
+  color: var(--charcoal); text-decoration: underline;
+  text-decoration-color: var(--gold-deep); text-underline-offset: 3px;
+}
+.sv-item-link:hover { color: var(--gold-deep); }
 
 /* ---------- project gallery ---------- */
 .gal { display: grid; gap: 2.5rem 2rem; grid-template-columns: 1fr; }
@@ -1379,6 +1389,15 @@
   .hp-est-form .ef-status[data-kind='error'] {
     border-left-color: #A84420; color: var(--ink);
   }
+  /* The upload control, the one part of this form the light-ground overrides
+     missed. "No file chosen" kept the charcoal band's --stone, 2.39:1 on paper
+     (second-opinion audit, 21 Oct), and the button kept --gold-bright. Same
+     answer /contact/ already uses. Covers /estimate/ and /list-your-home/. */
+  .hp-est-form .ef-file { color: var(--gray); }
+  .hp-est-form .ef-file::file-selector-button {
+    color: var(--gold-deep); border-color: var(--gold-deep);
+  }
+  .hp-est-form .ef-filelist { color: var(--gold-deep); }
 
 /* ---------- live Google reviews: the aggregate line ----------
    Shown only when /api/reviews succeeds, which is the same moment the cards

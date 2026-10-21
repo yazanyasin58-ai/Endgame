@@ -106,8 +106,11 @@ const countOf = (t: string) => items.filter((i) => (i.tags as readonly string[])
       const buttons = [...wrap.querySelectorAll<HTMLButtonElement>('.gal-filter-btn')];
 
       const place = (btn: HTMLElement) => {
+        // Top and height as well as left and width: on phones the tabs wrap
+        // onto two rows, so the chosen one may sit on the second.
         pill.style.width = `${btn.offsetWidth}px`;
-        pill.style.transform = `translateX(${btn.offsetLeft}px)`;
+        pill.style.height = `${btn.offsetHeight}px`;
+        pill.style.transform = `translate(${btn.offsetLeft}px, ${btn.offsetTop}px)`;
       };
 
       const choose = (btn: HTMLButtonElement) => {
