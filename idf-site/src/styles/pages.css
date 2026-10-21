@@ -465,6 +465,22 @@ body.hp .hp-est-intro {
 @media (min-width: 1024px) {
   body.hp .hp-est-intro { position: sticky; top: 6.5rem; }
 }
+/* The stacked layout (phones and portrait tablets): steps after the form, a
+   tighter intro, and the offer cut to its headline, since the promo bar at
+   the top of the page already carries the "ask us for details" line. Brings
+   the first field from 856px to about 490px at 390 wide. */
+body.hp .hp-est-next-h { font-size: 1.6rem; }
+@media (max-width: 1023px) {
+  body.hp .hp-est--estimate { gap: 1.75rem; }
+  body.hp .hp-est-wide { display: none; }
+  body.hp .hp-est--estimate .hp-est-intro:not(.hp-est-next) .hp-est-sub { font-size: 1rem; margin-top: 0.6rem; }
+  body.hp .hp-est--estimate .hp-est-intro:not(.hp-est-next) .hp-est-promo { margin-top: 1.1rem; padding: 0.7rem 1rem; }
+  body.hp .hp-est--estimate .hp-est-intro:not(.hp-est-next) .hp-est-promo :is(br, span) { display: none; }
+  body.hp .hp-est-next .hp-est-steps { margin-top: 1rem; }
+}
+@media (min-width: 1024px) {
+  body.hp .hp-est-next { display: none; }
+}
 body.hp .hp-est-h1 {
   font-family: 'Fraunces', serif;
   font-weight: 300;
