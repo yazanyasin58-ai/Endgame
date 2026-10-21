@@ -20,7 +20,7 @@ import '../styles/motion.css';
    features.chatAssistant is on. */
 import '../styles/chat.css';
 import { preLaunch } from '../lib/site';
-import { features } from '../content/idf';
+import { features, business } from '../content/idf';
 import LeadPopup from '../components/LeadPopup.astro';
 import ChatWidget from '../components/ChatWidget.astro';
 
@@ -36,6 +36,11 @@ interface Props {
    * quietly expose them.
    */
   noindex?: boolean;
+  /**
+   * Root-relative path of the social preview image (og:image), from
+   * public/og/ — see scripts/make-og.sh. Pages without one get the brand card.
+   */
+  ogImage?: string;
 }
 
 const {
@@ -44,6 +49,7 @@ const {
   bodyClass = '',
   withCallbar = false,
   noindex = false,
+  ogImage = '/og/default.jpg',
 } = Astro.props;
 
 /**
@@ -52,6 +58,13 @@ const {
  * none, so this stays absent until the domain exists.
  */
 const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : undefined;
+
+/**
+ * Link-card tags for texts, Facebook, Nextdoor and the like. The image has to
+ * be an absolute URL, so like the canonical it waits for a real origin; the
+ * text tags do not need one and are always emitted.
+ */
+const ogImageUrl = Astro.site ? new URL(ogImage, Astro.site).href : undefined;
 ---
 
 <!doctype html>
@@ -67,6 +80,15 @@ const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : un
       ) : null
     }
     {canonical && <link rel="canonical" href={canonical} />}
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={business.name} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    {canonical && <meta property="og:url" content={canonical} />}
+    {ogImageUrl && <meta property="og:image" content={ogImageUrl} />}
+    {ogImageUrl && <meta property="og:image:width" content="1200" />}
+    {ogImageUrl && <meta property="og:image:height" content="630" />}
+    <meta name="twitter:card" content={ogImageUrl ? 'summary_large_image' : 'summary'} />
     {/* The logo's centre gable. The full lockup is 3:1 and turns to mush at
         favicon size, so the tab icon is the mark's central element on the
         brand cream — same artwork, legible at 16px. */}
@@ -107,10 +129,14 @@ const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : un
     <script>
       import { initReveal } from '../scripts/reveal';
       import { initPolish } from '../scripts/polish';
+      import { initTracking } from '../scripts/track';
       /* Polish first: it splits headings into words, and those words have to
          exist before reveal.ts adds the `.in` that sets them moving. */
       initPolish();
       initReveal();
+      /* Lead counting: contact-link taps and the visit's first page. See
+         the note at the top of track.ts. */
+      initTracking();
     </script>
   </body>
 </html>

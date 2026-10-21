@@ -112,6 +112,12 @@ const TEXT_FIELDS = [
   'financing',
   'details',
   'source',
+  // Where the lead came from, added by src/scripts/track.ts: the page the
+  // form was sent from, the first page of the visit, and the site that sent
+  // the visitor. Last, so they sit under the customer's own answers.
+  'page',
+  'landing',
+  'referrer',
 ] as const;
 
 const REQUIRED_FIELDS = ['name', 'phone', 'email', 'address', 'type'] as const;
@@ -144,6 +150,9 @@ const LABELS: Record<string, string> = {
   financing: 'Wants financing info',
   details: 'Details',
   source: 'Heard about us via',
+  page: 'Sent from page',
+  landing: 'First page visited',
+  referrer: 'Arrived from',
 };
 
 function json(body: unknown, status = 200): Response {

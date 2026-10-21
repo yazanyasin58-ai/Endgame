@@ -77,6 +77,8 @@ const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
 </div>
 
 <script>
+  import { track, withSource } from '../scripts/track';
+
   /**
    * Two keys, and the difference between them is the whole behaviour.
    *
@@ -204,9 +206,10 @@ const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
         status.textContent = 'Sending…';
         button.disabled = true;
         try {
-          const res = await fetch('/api/estimate', { method: 'POST', body: new FormData(form) });
+          const res = await fetch('/api/estimate', { method: 'POST', body: withSource(new FormData(form)) });
           const data = await res.json().catch(() => ({ ok: false }));
           if (data.ok) {
+            track('form', 'popup');
             status.className = 'lp-status is-ok';
             status.textContent = 'Thank you. We will call you back.';
             rememberConverted();
