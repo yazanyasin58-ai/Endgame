@@ -132,15 +132,29 @@
   display: block; font-size: 0.5625rem; font-weight: 600; letter-spacing: 0.16em;
   text-transform: uppercase; color: var(--gray); margin-top: 0.2rem;
 }
-/* On a narrow header the mark, the name and the strapline cannot all sit on
-   one line: the strapline wraps and the bar grows to 81px, crowding the menu
-   button. The mark carries the strapline's own type anyway, so below 768px
-   the name alone rides beside it and the strapline drops. */
+/* Phones. The name used to wrap to three lines at 390px (four at 320) with
+   the strapline hidden, so the header was 83px tall and a visitor never saw
+   that the company does more than floors (second-opinion audit, 21 Oct). Now
+   the name holds one line with "Construction & Remodeling" under it, the
+   founding year dropping to make room. To pay for that the menu button drops
+   its "Menu" word below 480px and keeps the burger; its accessible name was
+   always the aria-label, not the word. Under 375px the name may take two
+   lines, never more. */
 @media (max-width: 767px) {
-  .logo { gap: 0.55rem; }
-  .logo-mark { height: 2.15rem; }
-  .logo-name { font-size: 1.05rem; }
-  .logo-lockup { display: none; }
+  .logo { gap: 0.5rem; min-width: 0; }
+  .logo-mark { height: 1.75rem; }
+  .logo-name { font-size: 1.02rem; white-space: nowrap; }
+  .logo-lockup { font-size: 0.5625rem; letter-spacing: 0.08em; margin-top: 0.15rem; white-space: nowrap; }
+  .logo-est { display: none; }
+}
+@media (max-width: 479px) {
+  body.hp .sg-toggle-words { display: none; }
+  body.hp .sg-toggle { padding-left: 0.4rem; }
+}
+@media (max-width: 374px) {
+  .logo-mark { height: 1.5rem; }
+  .logo-name { white-space: normal; }
+  .logo-lockup { letter-spacing: 0.05em; }
 }
 .hp-nav-links { display: none; gap: 1.75rem; }
 @media (min-width: 900px) { .hp-nav-links { display: flex; } }
@@ -454,6 +468,18 @@
 .hp .ef-submit:hover { background: var(--gold-bright); }
 .hp .ef-note { margin-top: 1rem; color: var(--stone); }
 .hp .ef-optional { text-transform: none; letter-spacing: 0.02em; }
+/* A single tick-box row (financing). Body-size sentence case rather than the
+   uppercase label style: it reads as a question to the customer, not a field
+   heading. 44px tall so the whole row is the touch target. */
+.hp .ef-check {
+  display: flex; align-items: center; gap: 0.7rem; min-height: 44px;
+  font-size: 0.9375rem; color: inherit; cursor: pointer;
+}
+.hp .ef-check input {
+  flex: none; width: 1.15rem; height: 1.15rem; margin: 0;
+  accent-color: var(--gold-deep); cursor: pointer;
+}
+.hp .ef-check .ef-optional { font-size: 0.8125rem; opacity: 0.8; }
 .hp .ef-hint {
   margin: 0.15rem 0 0.6rem; font-size: 0.8438rem; line-height: 1.6; color: var(--stone);
 }
