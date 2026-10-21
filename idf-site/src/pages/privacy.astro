@@ -14,7 +14,10 @@
  *   maps           -> the Google Maps iframe on / and /contact/
  *   reviews        -> functions/api/reviews.ts, server side, no visitor data
  *   storage        -> localStorage in PromoBar.astro and LeadPopup.astro
- *   analytics      -> none. There is no analytics script on this site.
+ *   analytics      -> Cloudflare Web Analytics, switched on in the Pages
+ *                     project and injected at the edge (see public/_headers)
+ *   lead counting  -> src/scripts/track.ts and functions/api/event.ts
+ *   lead source    -> the page/landing/referrer fields in functions/api/estimate.ts
  *
  * If any of those change, this page changes with them. It should also be read
  * by the company's attorney before launch; it is accurate, but accurate is not
@@ -43,8 +46,9 @@ import { business, legalUpdated } from '../content/idf';
       <h2>What we collect</h2>
       <p>
         We collect information in one way only: you type it into a form on this site
-        and send it to us. We do not buy contact lists, and there is no analytics or
-        advertising tracker on this website.
+        and send it to us. We do not buy contact lists, and there is no advertising
+        tracker on this website. We do keep simple, anonymous visit counts, described
+        below.
       </p>
       <p>The forms ask for some or all of the following, depending on which one you use:</p>
       <ul>
@@ -58,6 +62,11 @@ import { business, legalUpdated } from '../content/idf';
         Our server also records the IP address and browser user-agent the submission
         arrived from, alongside the submission itself. That is there so we can tell a
         real enquiry from an automated one.
+      </p>
+      <p>
+        Each submission also notes which page of this site you sent it from, the first
+        page you visited, and the website that sent you here, if any (for example, a
+        search engine). That tells us which parts of the site are useful to people.
       </p>
       <p>
         We do not ask for, and you should not send us, your date of birth, social
@@ -96,6 +105,12 @@ import { business, legalUpdated } from '../content/idf';
           includes your IP address.
         </li>
         <li>
+          <strong>Cloudflare Web Analytics</strong> counts page views, which pages are
+          visited, and roughly how fast they load. It does not use cookies, does not
+          follow you across other websites, and gives us totals rather than a record
+          of any one person.
+        </li>
+        <li>
           <strong>Cloudflare Turnstile</strong> checks that a form was sent by a person
           rather than a script. It runs in your browser when you use a form.
         </li>
@@ -116,15 +131,23 @@ import { business, legalUpdated } from '../content/idf';
 
       <h2>Cookies and browser storage</h2>
       <p>
-        We do not set advertising or analytics cookies, because we do not run
-        advertising or analytics on this site.
+        We do not set advertising or analytics cookies. We run no advertising on this
+        site, and the visit counting we do use works without cookies.
       </p>
       <p>
-        We do use your browser's local storage for two small conveniences: remembering
-        that you closed the offer bar at the top of the page, and remembering that you
-        closed the offer pop-up. Both are a single yes/no value stored in your own
-        browser. They are never sent to us and never leave your device. Clearing your
-        browsing data removes them.
+        When you tap one of our phone, text, or email links, or send a form, your
+        browser tells our server which kind of contact it was and which page you were
+        on. Nothing that identifies you is included: no name, no number, no IP address
+        is stored with it. We use the totals to see which pages lead people to get in
+        touch.
+      </p>
+      <p>
+        We do use your browser's own storage for a few small things: remembering that
+        you closed the offer bar at the top of the page, remembering that you closed
+        the offer pop-up, and, for the length of your visit, the first page you landed
+        on and the website that sent you, so a form you send can mention them. The
+        first two never leave your device. The last is sent to us only as part of a
+        form you choose to submit. Clearing your browsing data removes all of them.
       </p>
       <p>
         Cloudflare and Google may set their own cookies as part of the security check
