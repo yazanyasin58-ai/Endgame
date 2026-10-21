@@ -47,7 +47,15 @@
  * allowed to be public at all.
  */
 
-import { faqCatalog, faqById, noMatchReply, type CatalogEntry } from '../../src/content/faq-catalog';
+import {
+  faqCatalog,
+  faqById,
+  noMatchReply,
+  noMatchReplyEs,
+  spanishFor,
+  type CatalogEntry,
+} from '../../src/content/faq-catalog';
+import { englishOnlyNote } from '../../src/content/chat-es';
 
 /**
  * The Workers AI binding, declared here rather than pulled from
@@ -282,7 +290,7 @@ const readRoute = (raw: string): CatalogEntry | null => {
  */
 const queueUnanswered = async (
   bucket: R2Bucket,
-  record: { question: string; earlier: string[]; page: string | null; modelOutput: string },
+  record: { question: string; earlier: string[]; page: string | null; modelOutput: string; lang: string },
 ): Promise<void> => {
   const now = new Date();
   const stamp = now.toISOString().replace(/[:.]/g, '-');
@@ -529,6 +537,10 @@ const handlePost = async (context: PagesContext): Promise<Response> => {
   }
 
   const read = readMessages((payload as { messages?: unknown }).messages);
+  /* Which language to answer in. Only the reply changes: the model routes a
+     Spanish question to the same id as its English twin, and the endpoint
+     sends that id's stored translation. Anything else reads as English. */
+  const lang = (payload as { lang?: unknown }).lang === 'es' ? 'es' : 'en';
   if ('error' in read) return json({ ok: false, error: read.error }, 400);
 
   /* The human check, after validation on purpose: a malformed request should
@@ -639,6 +651,7 @@ const handlePost = async (context: PagesContext): Promise<Response> => {
           earlier,
           page,
           modelOutput: raw.slice(0, 200),
+          lang,
         }).catch((err) => console.error('Could not queue an unanswered question', err)),
       );
     } else {
@@ -651,13 +664,27 @@ const handlePost = async (context: PagesContext): Promise<Response> => {
   /* The session goes back only on success, so a model failure does not spend
      one of the visitor's twenty-five. `reply` keeps the shape the widget has
      always read; `match` says which approved answer it is, or null. */
+  let reply: string[];
+  if (!match) {
+    reply = lang === 'es' ? noMatchReplyEs : noMatchReply;
+  } else if (lang === 'es') {
+    /* No translation yet: the English, said to be English, rather than a
+       translation nobody approved. */
+    reply = spanishFor(match.id)?.a ?? [englishOnlyNote, ...match.a];
+  } else {
+    reply = match.a;
+  }
+
   return json({
     ok: true,
-    reply: (match ? match.a : noMatchReply).join('\n\n'),
+    reply: reply.join('\n\n'),
+    lang,
     match: match ? { id: match.id, question: match.q, url: match.url ?? null } : null,
     /* What the widget should offer next: the contact form, call buttons, or
-       the main menu. Absent for a plain answer. */
-    action: match?.action ?? null,
+       the main menu. Null for a plain answer. No match offers the contact
+       form, so a question the bot cannot answer becomes a callback instead
+       of a dead end. */
+    action: match ? (match.action ?? null) : 'lead',
     model: MODEL,
     ...(session ? { session } : {}),
   });

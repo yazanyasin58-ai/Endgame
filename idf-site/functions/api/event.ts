@@ -25,7 +25,11 @@ interface PagesContext {
   env: Env;
 }
 
-const KINDS = new Set(['call', 'text', 'email', 'form']);
+const KINDS = new Set(['call', 'text', 'email', 'form', 'chat']);
+/* What the assistant reports, as `chat` events: opened, a question answered
+   or not, a menu or page-question tap, a rating, and the language switch.
+   Never the question itself. */
+const CHAT_LABELS = new Set(['open', 'answered', 'unanswered', 'menu', 'page-question', 'up', 'down', 'spanish']);
 const FORM_LABELS = new Set(['estimate', 'popup', 'chat', 'listing', '']);
 
 const noContent = () => new Response(null, { status: 204, headers: { 'cache-control': 'no-store' } });
@@ -49,7 +53,16 @@ export const onRequest = async ({ request, env }: PagesContext): Promise<Respons
   const rawLabel = String(body.label ?? '').toLowerCase();
   // The listing form's enquiry is "Property listing". Anything else unknown
   // folds into "other", so the label can never carry what a visitor typed.
-  const label = FORM_LABELS.has(rawLabel) ? rawLabel : rawLabel.includes('listing') ? 'listing' : 'other';
+  const label =
+    kind === 'chat'
+      ? CHAT_LABELS.has(rawLabel)
+        ? rawLabel
+        : 'other'
+      : FORM_LABELS.has(rawLabel)
+        ? rawLabel
+        : rawLabel.includes('listing')
+          ? 'listing'
+          : 'other';
 
   // Anything malformed is dropped quietly. A 204 either way, so a script
   // probing the endpoint learns nothing from the answer.

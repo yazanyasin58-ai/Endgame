@@ -28,6 +28,7 @@ import { serviceFaq } from './service-faq';
 import { servicePages } from './services-detail';
 import { assertSafeFaq } from './faq-safety';
 import { liveChatReplies, type ChatAction } from './chat-replies';
+import { answersEs, noMatchReplyEs } from './chat-es';
 
 export type CatalogEntry = {
   id: string;
@@ -75,6 +76,9 @@ export const faqCatalog: CatalogEntry[] = [
   ),
 ];
 
+/** The Spanish for an entry, or null when it has not been translated yet. */
+export const spanishFor = (id: string): { q: string; a: string[] } | null => answersEs[id] ?? null;
+
 export const faqById: ReadonlyMap<string, CatalogEntry> = new Map(
   faqCatalog.map((entry) => [entry.id, entry]),
 );
@@ -89,10 +93,23 @@ export const faqById: ReadonlyMap<string, CatalogEntry> = new Map(
  */
 export const noMatchReply: string[] = [
   'I do not have an approved answer to that one, and I would rather not guess.',
-  `Shawn and Nancy can answer it directly on ${business.phonePrimary}, or you can use the free estimate form on this site.`,
+  `Want Shawn or Nancy to answer it? Leave your number below and they will call you back, or call ${business.phonePrimary}.`,
 ];
 
+export { noMatchReplyEs };
+
 /* ---------------------------------------------------------------- guards */
+
+/* A Spanish key that names nothing means the English questions were reordered
+   or renamed and the translations now sit on the wrong answers. */
+const strayEs = Object.keys(answersEs).filter((id) => !faqById.has(id));
+if (strayEs.length) {
+  throw new Error(`chat-es: translations for ids that are not in the catalog: ${strayEs.join(', ')}`);
+}
+const untranslated = faqCatalog.filter((entry) => !answersEs[entry.id]).map((entry) => entry.id);
+if (untranslated.length) {
+  console.warn(`chat-es: no Spanish yet for ${untranslated.join(', ')}; the assistant shows English for these.`);
+}
 
 if (faqById.size !== faqCatalog.length) {
   throw new Error('faq-catalog: two entries share an id. A group id and a service slug collide.');

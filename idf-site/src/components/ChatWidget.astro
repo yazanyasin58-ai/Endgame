@@ -7,59 +7,261 @@
  * mode: the model picks one of the site's approved answers (the FAQ, plus the
  * assistant's own replies in chat-replies.ts) and the endpoint returns it word
  * for word, or a fixed fallback when none fits. Nothing shown in this panel is
- * text a model wrote.
+ * text a model wrote, in either language.
  *
  * Things here that are deliberate and easy to undo by accident:
  *
  *  - THERE IS ALWAYS A WAY BACK TO THE MAIN MENU. The client's first note on
- *    the preview was being "stuck on that screen" after one question, and the
- *    chat coming back exactly as it was after closing it. So the header has a
- *    Main menu button, every reply ends with one, and reopening the panel
- *    starts again from the menu.
- *  - THE MENU COSTS NOTHING. Its four buttons answer from chat-replies.ts in
- *    the page itself, with no request and no model call. Only typed messages
- *    go to the endpoint.
- *  - BOOKING HAPPENS IN THE CHAT. The client's second note: "I would like to
- *    schedule an estimate" should be met with "leave your contact info". A
- *    reply with action `lead` puts a three-field form in the conversation,
- *    posted to /api/estimate as enquiry=chat, so it lands in the same inbox
- *    and R2 bucket as every other lead.
+ *    the preview was being "stuck on that screen". So the header has a Main
+ *    menu button, every reply ends with one, and reopening the panel starts
+ *    again from the menu.
+ *  - THE MENU COSTS NOTHING. Its buttons, and the page's own questions on a
+ *    service page, answer from approved text in the page itself, with no
+ *    request and no model call. Only typed messages go to the endpoint.
+ *  - BOOKING HAPPENS IN THE CHAT. A reply with action `lead` puts a short form
+ *    in the conversation, posted to /api/estimate as enquiry=chat. A question
+ *    the assistant cannot answer, and an answer rated unhelpful, both lead to
+ *    the same form, so a miss becomes a callback rather than a dead end.
+ *  - SPANISH IS A SWITCH, NOT A TRANSLATOR. Every Spanish word here is stored
+ *    text (chat-es.ts and STRINGS below). The language follows the browser on
+ *    first open and the visitor's choice after that, for the rest of the visit.
+ *  - AFTER HOURS IS WORKED OUT FROM THE PUBLISHED HOURS, in Eastern time, so it
+ *    never says anything the hours on the contact page do not.
  *  - HISTORY IS TRIMMED CLIENT-SIDE. The endpoint rejects more than 20
  *    messages or 12,000 characters, which would surface as a 400 mid-chat.
  *  - THE TURNSTILE CHECK HAPPENS ONCE, NOT PER MESSAGE. The endpoint trades a
- *    verified token for a signed session good for 25 messages, and this file
- *    carries that session. The contact form spends one more token, because
- *    /api/estimate checks its own.
+ *    verified token for a signed session good for 25 messages. The contact
+ *    form spends one more token, because /api/estimate checks its own.
  *
  * The site is measured at 100 on accessibility and this must not be what
  * lowers it: the launcher reports its state, the panel is a labelled dialog,
  * the log is a polite live region, replies that type themselves out are
- * announced once in full rather than word by word, Escape closes and returns
- * focus to the launcher, every control clears 44x44, and nothing is painted
- * until the `js` class lands on <html>.
+ * announced once in full, Escape closes and returns focus to the launcher,
+ * every control clears 44x44, and nothing is painted until the `js` class
+ * lands on <html>.
  */
-import { business } from '../content/idf';
+import { business, hours, formFields } from '../content/idf';
 import { chatReplies } from '../content/chat-replies';
+import { answersEs } from '../content/chat-es';
+import { faqCatalog } from '../content/faq-catalog';
+import { servicePages } from '../content/services-detail';
+
+type Lang = 'en' | 'es';
+type Pair = Record<Lang, string>;
 
 const reply = (id: string) => {
   const found = chatReplies.find((r) => r.id === id && r.status === 'live');
   if (!found) throw new Error(`ChatWidget: menu reply ${id} is missing or not live.`);
-  return { text: found.a.join('\n\n'), action: found.action ?? null, url: found.url ?? null };
+  const es = answersEs[id];
+  return {
+    text: { en: found.a.join('\n\n'), es: (es?.a ?? found.a).join('\n\n') } as Pair,
+    action: found.action ?? null,
+    url: found.url ?? null,
+  };
 };
 
 /**
  * The main menu. `say` is what appears as the visitor's own message, so the
- * conversation reads the same as if they had typed it; `reply` is answered in
+ * conversation reads the same as if they had typed it; `text` is answered in
  * the page. The first three are the briefed chips, in their briefed order.
  */
 const MENU = [
-  { icon: 'estimate', label: 'Get a free estimate', say: "I'd like to get an estimate for my project.", ...reply('chat-estimate-1') },
-  { icon: 'services', label: 'Our services', say: 'What remodeling and flooring services do you offer?', ...reply('chat-services-1') },
-  { icon: 'call', label: 'Schedule a call', say: "I'd like to schedule a consultation call.", ...reply('chat-callback-1') },
-  { icon: 'pin', label: 'Hours & location', say: 'Where are you, and when are you open?', ...reply('chat-hours-1') },
+  {
+    icon: 'estimate',
+    label: { en: 'Get a free estimate', es: 'Presupuesto gratis' },
+    say: { en: "I'd like to get an estimate for my project.", es: 'Quisiera un presupuesto para mi proyecto.' },
+    ...reply('chat-estimate-1'),
+  },
+  {
+    icon: 'services',
+    label: { en: 'Our services', es: 'Nuestros servicios' },
+    say: { en: 'What remodeling and flooring services do you offer?', es: '¿Qué servicios de remodelación y pisos ofrecen?' },
+    ...reply('chat-services-1'),
+  },
+  {
+    icon: 'call',
+    label: { en: 'Schedule a call', es: 'Agendar una llamada' },
+    say: { en: "I'd like to schedule a consultation call.", es: 'Quisiera agendar una llamada de consulta.' },
+    ...reply('chat-callback-1'),
+  },
+  {
+    icon: 'pin',
+    label: { en: 'Hours & location', es: 'Horario y ubicación' },
+    say: { en: 'Where are you, and when are you open?', es: '¿Dónde están y cuál es su horario?' },
+    ...reply('chat-hours-1'),
+  },
 ];
 
-const GREETING = "Hi! I'm the Interior Design Flooring assistant. Pick an option below or ask me anything about your project.";
+/**
+ * On a service page, that page's own approved questions go at the top of the
+ * menu. A visitor reading about basements is most likely asking about
+ * basements, and these answer without a model call.
+ */
+const slug = Astro.url.pathname.match(/^\/services\/([^/]+)\/?$/)?.[1] ?? null;
+const pageService = slug ? servicePages.find((s) => s.slug === slug) : undefined;
+const PAGE = pageService
+  ? {
+      title: { en: pageService.title, es: pageService.title } as Pair,
+      items: faqCatalog
+        .filter((e) => e.id.startsWith(`${slug}-`) && /^\d+$/.test(e.id.slice(slug!.length + 1)))
+        .map((e) => ({
+          q: { en: e.q, es: answersEs[e.id]?.q ?? e.q } as Pair,
+          text: { en: e.a.join('\n\n'), es: (answersEs[e.id]?.a ?? e.a).join('\n\n') } as Pair,
+          url: e.url ?? null,
+        })),
+    }
+  : null;
+
+/** Type-of-work options for the chat form: the estimate form's own list. */
+const TYPES_ES: Record<string, string> = {
+  'New Build': 'Construcción nueva',
+  Addition: 'Ampliación',
+  'Full Renovation': 'Renovación completa',
+  'Kitchen or Bath': 'Cocina o baño',
+  Basement: 'Sótano',
+  Exterior: 'Exterior',
+  Flooring: 'Pisos',
+  Other: 'Otro',
+};
+const TYPES = formFields.typeOfWork.map((value) => ({ value, label: { en: value, es: TYPES_ES[value] ?? value } }));
+
+/**
+ * The published hours as minutes after midnight per weekday (0 = Sunday), for
+ * the after-hours line. Parsed from `hours` rather than restated, so the two
+ * cannot disagree. A day "by appointment" has no opening.
+ */
+const WEEKDAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+const toMinutes = (t: string) => {
+  const m = t.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+  if (!m) throw new Error(`ChatWidget: cannot read the time "${t}" in hours.`);
+  return ((Number(m[1]) % 12) + (m[3].toUpperCase() === 'PM' ? 12 : 0)) * 60 + Number(m[2]);
+};
+const SCHEDULE: ({ open: number; close: number; label: string } | null)[] = WEEKDAYS.map(() => null);
+for (const h of hours) {
+  const [from, to = from] = h.days.split(/\s*–\s*/).map((d) => WEEKDAYS.indexOf(d));
+  if (from < 0 || to < 0) throw new Error(`ChatWidget: cannot read the days "${h.days}" in hours.`);
+  if (!('open' in h)) continue;
+  for (let d = from; d <= to; d += 1) SCHEDULE[d] = { open: toMinutes(h.open), close: toMinutes(h.close), label: h.open };
+}
+
+/** Everything the panel says that is not an approved answer. */
+const STRINGS = {
+  en: {
+    greeting: "Hi! I'm the Interior Design Flooring assistant. Pick an option below or ask me anything about your project.",
+    status: 'AI assistant · replies instantly',
+    placeholder: 'Ask about your project…',
+    foot: `Answers come from ${business.name}'s own approved information.`,
+    open: `Open the ${business.name} assistant`,
+    home: 'Back to the main menu',
+    close: 'Close the assistant',
+    send: 'Send',
+    message: 'Your message',
+    conversation: 'Conversation',
+    typing: 'The assistant is typing',
+    lang: 'ES',
+    langLabel: 'Cambiar a español',
+    menu: '← Main menu',
+    call: `Call ${business.phonePrimary}`,
+    text: 'Send a text',
+    more: 'Read more on the site',
+    pageHeading: 'About this page',
+    helpful: 'Was this helpful?',
+    yes: 'Yes, this helped',
+    no: 'No, this did not help',
+    rated: 'Thanks for letting us know.',
+    sorry: "Sorry that wasn't the answer you needed. Leave your details and Shawn or Nancy will answer it directly.",
+    formLabel: 'Your contact details',
+    name: 'Name',
+    phone: 'Phone',
+    email: 'Email',
+    type: 'Type of work',
+    choose: 'Choose one',
+    details: 'What is the project?',
+    photos: 'Photos',
+    photosHint: 'Up to 8 photos, 10 MB each',
+    optional: '(optional)',
+    submit: 'Send my details',
+    sending: 'Sending…',
+    thanks: 'Thanks{name}! We have your details and Shawn or Nancy will be in touch soon.',
+    reference: 'Your reference is {ref}.',
+    closed: "We're closed right now. We open again {when}, and we'll be in touch after that.",
+    today: 'today at {time}',
+    tomorrow: 'tomorrow at {time}',
+    onDay: 'on {day} at {time}',
+    days: WEEKDAYS,
+    tooManyFiles: 'Please attach 8 photos or fewer.',
+    humanCheck: 'Please finish the quick human check just below, then send that again.',
+    humanCheckForm: 'Please finish the quick human check below, then send again. Or call {phone}.',
+    notBrowser: 'We could not confirm this is a browser. Please reload the page, use the estimate form, or call {phone}.',
+    generic: 'Something went wrong. Please use the estimate form or call {phone}.',
+    network: 'We could not reach the assistant. Please check your connection, use the estimate form, or call {phone}.',
+    sendFail: 'That did not send. Please call {phone} instead.',
+    sendNetwork: 'That did not send. Please check your connection or call {phone}.',
+  },
+  es: {
+    greeting: '¡Hola! Soy el asistente de Interior Design Flooring. Elija una opción o pregúnteme lo que quiera sobre su proyecto.',
+    status: 'Asistente con IA · responde al instante',
+    placeholder: 'Pregunte sobre su proyecto…',
+    foot: `Las respuestas provienen de la información aprobada por ${business.name}.`,
+    open: `Abrir el asistente de ${business.name}`,
+    home: 'Volver al menú principal',
+    close: 'Cerrar el asistente',
+    send: 'Enviar',
+    message: 'Su mensaje',
+    conversation: 'Conversación',
+    typing: 'El asistente está escribiendo',
+    lang: 'EN',
+    langLabel: 'Switch to English',
+    menu: '← Menú principal',
+    call: `Llamar al ${business.phonePrimary}`,
+    text: 'Enviar un mensaje',
+    more: 'Leer más en el sitio (en inglés)',
+    pageHeading: 'Sobre esta página',
+    helpful: '¿Le fue útil?',
+    yes: 'Sí, me ayudó',
+    no: 'No, no me ayudó',
+    rated: 'Gracias por decírnoslo.',
+    sorry: 'Lamentamos que no fuera la respuesta que necesitaba. Deje sus datos y Shawn o Nancy le responderán directamente.',
+    formLabel: 'Sus datos de contacto',
+    name: 'Nombre',
+    phone: 'Teléfono',
+    email: 'Correo electrónico',
+    type: 'Tipo de trabajo',
+    choose: 'Elija uno',
+    details: '¿De qué se trata el proyecto?',
+    photos: 'Fotos',
+    photosHint: 'Hasta 8 fotos, 10 MB cada una',
+    optional: '(opcional)',
+    submit: 'Enviar mis datos',
+    sending: 'Enviando…',
+    thanks: '¡Gracias{name}! Tenemos sus datos y Shawn o Nancy se pondrán en contacto pronto.',
+    reference: 'Su número de referencia es {ref}.',
+    closed: 'En este momento estamos cerrados. Abrimos de nuevo {when}, y nos pondremos en contacto después.',
+    today: 'hoy a las {time}',
+    tomorrow: 'mañana a las {time}',
+    onDay: 'el {day} a las {time}',
+    days: ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'],
+    tooManyFiles: 'Adjunte 8 fotos o menos.',
+    humanCheck: 'Complete la verificación rápida de abajo y vuelva a enviar.',
+    humanCheckForm: 'Complete la verificación rápida de abajo y vuelva a enviar. O llame al {phone}.',
+    notBrowser: 'No pudimos confirmar que esto es un navegador. Recargue la página, use el formulario de presupuesto o llame al {phone}.',
+    generic: 'Algo salió mal. Use el formulario de presupuesto o llame al {phone}.',
+    network: 'No pudimos conectar con el asistente. Revise su conexión, use el formulario de presupuesto o llame al {phone}.',
+    sendFail: 'No se pudo enviar. Llame al {phone}.',
+    sendNetwork: 'No se pudo enviar. Revise su conexión o llame al {phone}.',
+  },
+};
+
+const CONFIG = {
+  phone: business.phonePrimary,
+  phoneHref: business.phonePrimaryHref,
+  smsHref: business.phonePrimarySms,
+  menu: MENU,
+  page: PAGE,
+  types: TYPES,
+  schedule: SCHEDULE,
+  strings: STRINGS,
+};
 
 /**
  * The public half of the Turnstile pair, read at build time, exactly as
@@ -69,20 +271,13 @@ const GREETING = "Hi! I'm the Interior Design Flooring assistant. Pick an option
  * challenge nothing verifies.
  */
 const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
+const t = STRINGS.en;
 ---
 
-{/* The number rides on attributes because the script below is a separate
-    module and cannot see this file's frontmatter. */}
-<div
-  class="chat"
-  data-chat
-  data-open="false"
-  data-phone={business.phonePrimary}
-  data-phone-href={business.phonePrimaryHref}
-  data-sms-href={business.phonePrimarySms}
-  data-menu={JSON.stringify(MENU)}
-  data-greeting={GREETING}
->
+{/* Everything the script needs rides on one attribute, because the script is
+    a separate module and cannot see this file's frontmatter. Static text is
+    English in the markup and swapped by data-i18n when Spanish is chosen. */}
+<div class="chat" data-chat data-open="false" data-config={JSON.stringify(CONFIG)}>
   <button
     type="button"
     class="chat-launch"
@@ -90,7 +285,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
     aria-expanded="false"
     aria-controls="chat-panel"
   >
-    <span class="chat-sr">Open the {business.name} assistant</span>
+    <span class="chat-sr" data-i18n="open">{t.open}</span>
     <span class="chat-launch-glow" aria-hidden="true"></span>
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
       <path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9.9 9.9 0 0 1-2.8-.4L3 21l1.6-4.6A8.2 8.2 0 0 1 3 11.5 8.4 8.4 0 0 1 12 3a8.4 8.4 0 0 1 9 8.5Z" stroke-linecap="round" stroke-linejoin="round"></path>
@@ -110,26 +305,27 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
       <span class="chat-orb" aria-hidden="true"></span>
       <div class="chat-head-text">
         <h2 id="chat-title">{business.name}</h2>
-        <p class="chat-status"><span class="chat-status-dot" aria-hidden="true"></span>AI assistant · replies instantly</p>
+        <p class="chat-status"><span class="chat-status-dot" aria-hidden="true"></span><span data-i18n="status">{t.status}</span></p>
       </div>
+      <button type="button" class="chat-lang" data-chat-lang lang="es" aria-label={t.langLabel}>{t.lang}</button>
       <button type="button" class="chat-icon-btn" data-chat-home>
-        <span class="chat-sr">Back to the main menu</span>
+        <span class="chat-sr" data-i18n="home">{t.home}</span>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
           <path d="M4 10.5 12 4l8 6.5V19a1 1 0 0 1-1 1h-4.5v-5.5h-5V20H5a1 1 0 0 1-1-1Z" stroke-linejoin="round"></path>
         </svg>
       </button>
       <button type="button" class="chat-icon-btn" data-chat-close>
-        <span class="chat-sr">Close the assistant</span>
+        <span class="chat-sr" data-i18n="close">{t.close}</span>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
           <path d="M6 6l12 12M18 6 6 18" stroke-linecap="round"></path>
         </svg>
       </button>
     </div>
 
-    <div class="chat-log" data-chat-log role="log" aria-live="polite" aria-label="Conversation">
+    <div class="chat-log" data-chat-log role="log" aria-live="polite" aria-label={t.conversation}>
       <div class="chat-typing" data-chat-typing role="status" hidden>
         <span></span><span></span><span></span>
-        <span class="chat-sr">The assistant is typing</span>
+        <span class="chat-sr" data-i18n="typing">{t.typing}</span>
       </div>
     </div>
 
@@ -143,55 +339,101 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
     )}
 
     <form class="chat-form" data-chat-form>
-      <label class="chat-sr" for="chat-input">Your message</label>
+      <label class="chat-sr" for="chat-input" data-i18n="message">{t.message}</label>
       <input
         class="chat-input"
         id="chat-input"
         name="message"
         type="text"
         autocomplete="off"
-        placeholder="Ask about your project…"
+        placeholder={t.placeholder}
         data-chat-input
       />
       <button type="submit" class="chat-send" data-chat-send>
-        <span class="chat-sr">Send</span>
+        <span class="chat-sr" data-i18n="send">{t.send}</span>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
           <path d="M12 19V5M6 11l6-6 6 6" stroke-linecap="round" stroke-linejoin="round"></path>
         </svg>
       </button>
     </form>
 
-    <p class="chat-foot">Answers come from {business.name}'s own approved information.</p>
+    <p class="chat-foot" data-i18n="foot">{t.foot}</p>
   </div>
 </div>
 
 <script>
   import { track, withSource } from '../scripts/track';
 
+  type Lang = 'en' | 'es';
+  type Pair = Record<Lang, string>;
   type Action = 'lead' | 'call' | 'menu' | null;
-  type MenuItem = { icon: string; label: string; say: string; text: string; action: Action; url: string | null };
+  type MenuItem = { icon: string; label: Pair; say: Pair; text: Pair; action: Action; url: string | null };
+  type PageItem = { q: Pair; text: Pair; url: string | null };
+  type Strings = Record<string, string> & { days: string[] };
+  type Config = {
+    phone: string;
+    phoneHref: string;
+    smsHref: string;
+    menu: MenuItem[];
+    page: { title: Pair; items: PageItem[] } | null;
+    types: { value: string; label: Pair }[];
+    schedule: ({ open: number; close: number; label: string } | null)[];
+    strings: Record<Lang, Strings>;
+  };
 
   const ICONS: Record<string, string> = {
     estimate: '<path d="M7 3h7l5 5v13H7z M14 3v5h5 M10 13h6 M10 17h4" />',
     services: '<path d="M4 20h16 M6 20V10l6-5 6 5v10 M10 20v-5h4v5" />',
     call: '<path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a1 1 0 0 1-1 1A16 16 0 0 1 4 5a1 1 0 0 1 1-1Z" />',
     pin: '<path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21Z M12 12a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z" />',
+    up: '<path d="M7 11v9H4v-9z M7 11l4-7c1.5 0 2.5 1 2.2 2.6L12.6 10H19a2 2 0 0 1 2 2.3l-1.2 6A2 2 0 0 1 17.8 20H7" />',
+    down: '<path d="M7 13V4H4v9z M7 13l4 7c1.5 0 2.5-1 2.2-2.6L12.6 14H19a2 2 0 0 0 2-2.3l-1.2-6A2 2 0 0 0 17.8 4H7" />',
   };
+  const icon = (name: string, size = 1.7) =>
+    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${size}" ` +
+    `stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[name] ?? ''}</svg>`;
+
+  const LANG_KEY = 'idf-chat-lang';
 
   const root = document.querySelector<HTMLElement>('[data-chat]');
   if (root) {
+    const config = JSON.parse(root.dataset.config ?? '{}') as Config;
     const launch = root.querySelector<HTMLButtonElement>('[data-chat-launch]')!;
     const panel = root.querySelector<HTMLElement>('[data-chat-panel]')!;
     const closeBtn = root.querySelector<HTMLButtonElement>('[data-chat-close]')!;
     const homeBtn = root.querySelector<HTMLButtonElement>('[data-chat-home]')!;
+    const langBtn = root.querySelector<HTMLButtonElement>('[data-chat-lang]')!;
     const log = root.querySelector<HTMLElement>('[data-chat-log]')!;
     const typing = root.querySelector<HTMLElement>('[data-chat-typing]')!;
     const form = root.querySelector<HTMLFormElement>('[data-chat-form]')!;
     const input = root.querySelector<HTMLInputElement>('[data-chat-input]')!;
     const send = root.querySelector<HTMLButtonElement>('[data-chat-send]')!;
-    const menu = JSON.parse(root.dataset.menu ?? '[]') as MenuItem[];
-    const phone = root.dataset.phone ?? 'us';
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    /* The visitor's choice for this visit, else the browser's language. */
+    let lang: Lang = 'en';
+    try {
+      const saved = sessionStorage.getItem(LANG_KEY);
+      lang = saved === 'es' || saved === 'en' ? saved : navigator.language?.toLowerCase().startsWith('es') ? 'es' : 'en';
+    } catch {
+      lang = navigator.language?.toLowerCase().startsWith('es') ? 'es' : 'en';
+    }
+    /** A string in the current language, with {placeholders} filled. */
+    const s = (key: string, vars: Record<string, string> = {}) =>
+      (config.strings[lang][key] ?? config.strings.en[key] ?? '').replace(/\{(\w+)\}/g, (_, k) => vars[k] ?? '');
+
+    /** Put the static markup into the current language. */
+    const applyLang = () => {
+      panel.lang = lang;
+      root.querySelectorAll<HTMLElement>('[data-i18n]').forEach((el) => {
+        el.textContent = s(el.dataset.i18n!);
+      });
+      input.placeholder = s('placeholder');
+      log.setAttribute('aria-label', s('conversation'));
+      langBtn.textContent = s('lang');
+      langBtn.lang = lang === 'en' ? 'es' : 'en';
+      langBtn.setAttribute('aria-label', s('langLabel'));
+    };
 
     /** The conversation as the endpoint wants it. Menu answers are local and
         are left out: the model only needs what the visitor typed. */
@@ -200,7 +442,6 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
     /** Bumped on every reset, so a reply still typing itself out into a
         conversation that has since been cleared stops instead of reappearing. */
     let epoch = 0;
-    const GREETING_TEXT = root.dataset.greeting ?? '';
 
     /* Mirrors the endpoint's own caps. Trimming here means a long
        conversation forgets its oldest turns instead of returning a 400. */
@@ -212,6 +453,43 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
         out.shift();
       }
       return out;
+    };
+
+    /* ---------- after hours ---------- */
+
+    /** Now, as a weekday and minutes after midnight, in the showroom's time zone. */
+    const easternNow = () => {
+      const parts = new Intl.DateTimeFormat('en-US', {
+        timeZone: 'America/New_York',
+        weekday: 'short',
+        hour: 'numeric',
+        minute: 'numeric',
+        hourCycle: 'h23',
+      }).formatToParts(new Date());
+      const get = (type: string) => parts.find((p) => p.type === type)?.value ?? '';
+      const day = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].indexOf(get('weekday'));
+      return { day, minutes: Number(get('hour')) * 60 + Number(get('minute')) };
+    };
+
+    /** A line saying when the showroom next opens, or null while it is open. */
+    const closedNote = (): string | null => {
+      const now = easternNow();
+      if (now.day < 0) return null;
+      const today = config.schedule[now.day];
+      if (today && now.minutes >= today.open && now.minutes < today.close) return null;
+      for (let ahead = 0; ahead < 7; ahead += 1) {
+        const day = (now.day + ahead) % 7;
+        const slot = config.schedule[day];
+        if (!slot || (ahead === 0 && now.minutes >= slot.open)) continue;
+        const when =
+          ahead === 0
+            ? s('today', { time: slot.label })
+            : ahead === 1
+              ? s('tomorrow', { time: slot.label })
+              : s('onDay', { day: config.strings[lang].days[day], time: slot.label });
+        return s('closed', { when });
+      }
+      return null;
     };
 
     /* ---------- the abuse gate ----------
@@ -339,6 +617,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
     };
 
 
+
     /* ---------- drawing the conversation ---------- */
 
     const scrollDown = () => {
@@ -346,7 +625,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
     };
 
     /** Everything goes in above the typing dots, which always sit last. */
-    const place = (el: HTMLElement) => {
+    const place = <T extends HTMLElement>(el: T): T => {
       log.insertBefore(el, typing);
       scrollDown();
       return el;
@@ -382,8 +661,9 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
      * A reply, typed out a few words at a time. The words are approved text
      * either way; the reveal is only so it reads as a conversation. A screen
      * reader is handed the whole reply at once through a hidden copy, and the
-     * visible half is aria-hidden, so it is announced once rather than
-     * word by word. Reduced motion skips the reveal entirely.
+     * visible half is aria-hidden, so it is announced once rather than word by
+     * word. Reduced motion skips the reveal entirely. Resolves false when the
+     * conversation was reset underneath it.
      */
     const botSay = async (text: string, url: string | null = null, animate = true) => {
       const mine = epoch;
@@ -414,7 +694,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
         const more = document.createElement('a');
         more.className = 'chat-more';
         more.href = url;
-        more.textContent = 'Read more on the site';
+        more.textContent = s('more');
         p.append(more);
       }
       scrollDown();
@@ -429,19 +709,19 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
       if (action === 'call') {
         const call = document.createElement('a');
         call.className = 'chat-pill chat-pill-strong';
-        call.href = root.dataset.phoneHref ?? '#';
-        call.textContent = `Call ${phone}`;
+        call.href = config.phoneHref;
+        call.textContent = s('call');
         const text = document.createElement('a');
         text.className = 'chat-pill';
-        text.href = root.dataset.smsHref ?? '#';
-        text.textContent = 'Send a text';
+        text.href = config.smsHref;
+        text.textContent = s('text');
         bar.append(call, text);
       }
 
       const home = document.createElement('button');
       home.type = 'button';
       home.className = 'chat-pill';
-      home.textContent = '← Main menu';
+      home.textContent = s('menu');
       home.addEventListener('click', () => {
         bar.remove();
         showMenu(true);
@@ -456,65 +736,170 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
       else followUps(action);
     };
 
+    /**
+     * "Was this helpful?" under an answer the model routed to. A thumbs-down
+     * says sorry and offers the contact form, so a wrong match still ends in
+     * a callback. Both are stored for the weekly digest.
+     */
+    const rate = (id: string, question: string) => {
+      const bar = document.createElement('div');
+      bar.className = 'chat-rate';
+      const label = document.createElement('span');
+      label.textContent = s('helpful');
+      bar.append(label);
+
+      const vote = (value: 'up' | 'down') => {
+        track('chat', value);
+        void fetch('/api/chat-feedback', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ vote: value, id, question, page: location.pathname, lang }),
+          keepalive: true,
+        }).catch(() => {});
+        bar.replaceChildren(document.createTextNode(s('rated')));
+        if (value === 'down') {
+          log.querySelectorAll('.chat-follow').forEach((el) => el.remove());
+          void botSay(s('sorry')).then((still) => {
+            if (still) {
+              leadForm();
+              followUps(null);
+            }
+          });
+        }
+      };
+
+      for (const value of ['up', 'down'] as const) {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'chat-rate-btn';
+        button.innerHTML = icon(value, 1.6);
+        button.setAttribute('aria-label', s(value === 'up' ? 'yes' : 'no'));
+        button.addEventListener('click', () => vote(value));
+        bar.append(button);
+      }
+      place(bar);
+    };
+
     /** The main menu. `compact` is the shorter version offered mid-conversation. */
     const showMenu = (compact = false) => {
+      if (!compact && config.page && config.page.items.length) {
+        const block = document.createElement('div');
+        block.className = 'chat-page';
+        const heading = document.createElement('p');
+        heading.className = 'chat-page-heading';
+        heading.textContent = `${s('pageHeading')}: ${config.page.title[lang]}`;
+        const list = document.createElement('ul');
+        for (const item of config.page.items) {
+          const li = document.createElement('li');
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.className = 'chat-page-q';
+          button.textContent = item.q[lang];
+          button.addEventListener('click', () => {
+            track('chat', 'page-question');
+            void answerLocally(item.q[lang], item.text[lang], item.url, null, block);
+          });
+          li.append(button);
+          list.append(li);
+        }
+        block.append(heading, list);
+        place(block);
+      }
+
       const list = document.createElement('ul');
       list.className = compact ? 'chat-menu is-compact' : 'chat-menu';
-      for (const item of menu) {
+      for (const item of config.menu) {
         const li = document.createElement('li');
         const button = document.createElement('button');
         button.type = 'button';
         button.className = 'chat-menu-item';
-        button.innerHTML =
-          `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" ` +
-          `stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[item.icon] ?? ''}</svg>`;
-        button.append(document.createTextNode(item.label));
-        button.addEventListener('click', () => void pick(item, list));
+        button.innerHTML = icon(item.icon);
+        button.append(document.createTextNode(item.label[lang]));
+        button.addEventListener('click', () => {
+          track('chat', 'menu');
+          void answerLocally(item.say[lang], item.text[lang], item.url, item.action, list);
+        });
         li.append(button);
         list.append(li);
       }
       place(list);
     };
 
-    /** A menu choice: answered here, with no request and no model call. */
-    const pick = async (item: MenuItem, list: HTMLElement) => {
+    /** A menu or page-question choice: answered here, with no request and no
+        model call. Booking replies get the after-hours line when it applies. */
+    const answerLocally = async (say: string, text: string, url: string | null, action: Action, from: HTMLElement) => {
       if (busy) return;
-      list.remove();
-      userSay(item.say);
+      log.querySelectorAll('.chat-menu, .chat-page, .chat-follow').forEach((el) => el.remove());
+      from.remove();
+      userSay(say);
       const mine = epoch;
       setBusy(true);
       await wait(reducedMotion.matches ? 0 : 450);
       setBusy(false);
       if (mine !== epoch) return;
-      if (await botSay(item.text, item.url)) afterReply(item.action);
+      const late = action === 'lead' ? closedNote() : null;
+      if (await botSay(late ? `${text}\n\n${late}` : text, url)) afterReply(action);
     };
 
     /* ---------- the in-chat contact form ---------- */
 
-    const field = (name: string, label: string, type: string, autocomplete: string, required: boolean) => {
-      const id = `chat-lead-${name}-${epoch}`;
+    const labelled = (control: HTMLElement & { id: string }, text: string, optional = false) => {
       const wrap = document.createElement('div');
       wrap.className = 'chat-lead-field';
       const l = document.createElement('label');
-      l.htmlFor = id;
-      l.textContent = required ? label : `${label} (optional)`;
+      l.htmlFor = control.id;
+      l.textContent = optional ? `${text} ${s('optional')}` : text;
+      wrap.append(l, control);
+      return wrap;
+    };
+
+    const textField = (name: string, type: string, autocomplete: string, required: boolean) => {
       const el = type === 'textarea' ? document.createElement('textarea') : document.createElement('input');
-      el.id = id;
+      el.id = `chat-lead-${name}-${epoch}`;
       el.name = name;
       el.className = 'chat-lead-input';
       if (el instanceof HTMLInputElement) el.type = type;
       else el.rows = 2;
       el.autocomplete = autocomplete as AutoFill;
       el.required = required;
-      wrap.append(l, el);
-      return wrap;
+      return el;
     };
 
     const leadForm = () => {
+      if (log.querySelector('.chat-lead')) return;
       const lead = document.createElement('form');
       lead.className = 'chat-lead';
-      lead.noValidate = false;
-      lead.setAttribute('aria-label', 'Your contact details');
+      lead.setAttribute('aria-label', s('formLabel'));
+
+      const type = document.createElement('select');
+      type.id = `chat-lead-type-${epoch}`;
+      type.name = 'type';
+      type.className = 'chat-lead-input';
+      const none = document.createElement('option');
+      none.value = '';
+      none.textContent = s('choose');
+      type.append(none);
+      for (const option of config.types) {
+        const el = document.createElement('option');
+        /* The English value goes to the owner's inbox whatever the visitor
+           reads, so every lead sorts the same way. */
+        el.value = option.value;
+        el.textContent = option.label[lang];
+        type.append(el);
+      }
+
+      const photos = document.createElement('input');
+      photos.id = `chat-lead-photos-${epoch}`;
+      photos.name = 'photos';
+      photos.type = 'file';
+      photos.multiple = true;
+      photos.accept = 'image/*,.heic,.heif,.pdf';
+      photos.className = 'chat-lead-file';
+      const photoField = labelled(photos, s('photos'), true);
+      const hint = document.createElement('p');
+      hint.className = 'chat-lead-hint';
+      hint.textContent = s('photosHint');
+      photoField.append(hint);
 
       /* The same honeypot the other forms carry. Hidden from people and from
          assistive tech; a bot that fills it gets a fake success. */
@@ -529,17 +914,19 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
       const submit = document.createElement('button');
       submit.type = 'submit';
       submit.className = 'chat-lead-submit';
-      submit.textContent = 'Send my details';
+      submit.textContent = s('submit');
 
       const status = document.createElement('p');
       status.className = 'chat-lead-status';
       status.setAttribute('role', 'status');
 
       lead.append(
-        field('name', 'Name', 'text', 'name', true),
-        field('phone', 'Phone', 'tel', 'tel', true),
-        field('email', 'Email', 'email', 'email', true),
-        field('details', 'What is the project?', 'textarea', 'off', false),
+        labelled(textField('name', 'text', 'name', true), s('name')),
+        labelled(textField('phone', 'tel', 'tel', true), s('phone')),
+        labelled(textField('email', 'email', 'email', true), s('email')),
+        labelled(type, s('type'), true),
+        labelled(textField('details', 'textarea', 'off', false), s('details'), true),
+        photoField,
         trap,
         submit,
         status,
@@ -548,11 +935,16 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
       lead.addEventListener('submit', async (event) => {
         event.preventDefault();
         if (!lead.reportValidity()) return;
+        if ((photos.files?.length ?? 0) > 8) {
+          status.textContent = s('tooManyFiles');
+          return;
+        }
         submit.disabled = true;
-        status.textContent = 'Sending…';
+        status.textContent = s('sending');
 
         const data = new FormData(lead);
         data.set('enquiry', 'chat');
+        if (lang === 'es') data.set('lang', 'es');
         /* What they asked before deciding to leave their details is the most
            useful thing the owner can read before calling back. */
         const asked = history.filter((m) => m.role === 'user').map((m) => `- ${m.content}`);
@@ -567,7 +959,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
         if (gate) {
           const fresh = await getToken();
           if (!fresh) {
-            status.textContent = `Please finish the quick human check below, then send again. Or call ${phone}.`;
+            status.textContent = s('humanCheckForm', { phone: config.phone });
             submit.disabled = false;
             return;
           }
@@ -582,17 +974,26 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
             track('form', 'chat');
             const first = String(data.get('name') ?? '').trim().split(/\s+/)[0];
             lead.remove();
+            const late = closedNote();
             await botSay(
-              `Thanks${first ? `, ${first}` : ''}! We have your details and Shawn or Nancy will be in touch soon.` +
-                (body.reference ? ` Your reference is ${body.reference}.` : ''),
+              [
+                s('thanks', { name: first ? `, ${first}` : '' }),
+                body.reference ? s('reference', { ref: body.reference }) : '',
+                late ?? '',
+              ]
+                .filter(Boolean)
+                .join(' '),
             );
+            log.querySelectorAll('.chat-follow').forEach((el) => el.remove());
             followUps(null);
           } else {
-            status.textContent = body?.error ?? `That did not send. Please call ${phone} instead.`;
+            /* The endpoint's own sentence is English; better than nothing,
+               and it names the field that needs fixing. */
+            status.textContent = body?.error ?? s('sendFail', { phone: config.phone });
             submit.disabled = false;
           }
         } catch {
-          status.textContent = `That did not send. Please check your connection or call ${phone}.`;
+          status.textContent = s('sendNetwork', { phone: config.phone });
           submit.disabled = false;
         }
       });
@@ -620,7 +1021,8 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
       history = [];
       for (const child of [...log.children]) if (child !== typing) child.remove();
       setBusy(false);
-      void botSay(GREETING_TEXT, null, false);
+      applyLang();
+      void botSay(s('greeting'), null, false);
       showMenu();
     };
 
@@ -630,6 +1032,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
       panel.hidden = false;
       launch.setAttribute('aria-expanded', 'true');
       input.focus();
+      track('chat', 'open');
       /* Not awaited: the panel is already usable, and the challenge resolving
          in the background is the point. */
       void primeGate();
@@ -651,7 +1054,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
       if (message === '' || busy) return;
 
       /* Whatever menu is on screen is answered by typing instead. */
-      log.querySelectorAll('.chat-menu, .chat-follow').forEach((el) => el.remove());
+      log.querySelectorAll('.chat-menu, .chat-page, .chat-follow, .chat-rate').forEach((el) => el.remove());
 
       const mine = epoch;
       userSay(message);
@@ -660,8 +1063,9 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
       setBusy(true);
 
       let after: Action | undefined;
+      let rated: string | null = null;
       try {
-        const body: Record<string, unknown> = { messages: trimmed() };
+        const body: Record<string, unknown> = { messages: trimmed(), lang };
 
         if (session) {
           body.session = session;
@@ -674,8 +1078,8 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
                different route entirely. */
             errorSay(
               gate.getBoundingClientRect().height > 0
-                ? 'Please finish the quick human check just below, then send that again.'
-                : `We could not confirm this is a browser. Please reload the page, use the estimate form, or call ${phone}.`,
+                ? s('humanCheck')
+                : s('notBrowser', { phone: config.phone }),
             );
             return;
           }
@@ -695,7 +1099,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
           | {
               ok?: boolean;
               reply?: string;
-              match?: { url?: unknown } | null;
+              match?: { id?: unknown; url?: unknown } | null;
               action?: unknown;
               error?: string;
               session?: string;
@@ -709,10 +1113,18 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
         if (data?.ok && typeof data.reply === 'string') {
           if (typeof data.session === 'string') session = data.session;
           history.push({ role: 'assistant', content: data.reply });
+          const id = typeof data.match?.id === 'string' ? data.match.id : null;
+          track('chat', id ? 'answered' : 'unanswered');
           const url = typeof data.match?.url === 'string' ? data.match.url : null;
           const action =
             data.action === 'lead' || data.action === 'call' || data.action === 'menu' ? data.action : null;
-          if (await botSay(data.reply, url)) after = action;
+          const late = action === 'lead' ? closedNote() : null;
+          if (await botSay(late ? `${data.reply}\n\n${late}` : data.reply, url)) {
+            after = action;
+            /* Rate real answers only: a greeting or a "thanks" has nothing
+               to get wrong, and the no-match reply is already a miss. */
+            if (id && !id.startsWith('chat-')) rated = id;
+          }
         } else {
           /* The session is finished, or was never good. Drop it and let the
              next message earn a new one, so the visitor's way out of this is
@@ -721,17 +1133,18 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
             session = null;
             refreshGate();
           }
-          errorSay(data?.error ?? `Something went wrong. Please use the estimate form or call ${phone}.`);
+          errorSay(data?.error ?? s('generic', { phone: config.phone }));
           after = null;
         }
       } catch {
         if (mine === epoch) {
-          errorSay(`We could not reach the assistant. Please check your connection, use the estimate form, or call ${phone}.`);
+          errorSay(s('network', { phone: config.phone }));
           after = null;
         }
       } finally {
         if (mine === epoch) {
           setBusy(false);
+          if (rated) rate(rated, message);
           if (after !== undefined) afterReply(after);
           if (!log.querySelector('.chat-lead')) input.focus();
         }
@@ -744,6 +1157,17 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
       reset();
       input.focus();
     });
+    langBtn.addEventListener('click', () => {
+      lang = lang === 'en' ? 'es' : 'en';
+      try {
+        sessionStorage.setItem(LANG_KEY, lang);
+      } catch {
+        /* The switch still works for this panel; it just will not be remembered. */
+      }
+      if (lang === 'es') track('chat', 'spanish');
+      reset();
+      langBtn.focus();
+    });
 
     form.addEventListener('submit', (event) => {
       event.preventDefault();
@@ -753,5 +1177,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
     document.addEventListener('keydown', (event) => {
       if (event.key === 'Escape' && root.dataset.open === 'true') close();
     });
+
+    applyLang();
   }
 </script>
