@@ -107,6 +107,9 @@ const TEXT_FIELDS = [
   'propertyType',
   'budget',
   'timeframe',
+  // A tick-box on the estimate form: "Yes" when ticked, absent otherwise. The
+  // financing page used to ask people to mention it in the details box.
+  'financing',
   'details',
   'source',
 ] as const;
@@ -138,6 +141,7 @@ const LABELS: Record<string, string> = {
   propertyType: 'Property type',
   budget: 'Budget range',
   timeframe: 'Timeframe',
+  financing: 'Wants financing info',
   details: 'Details',
   source: 'Heard about us via',
 };

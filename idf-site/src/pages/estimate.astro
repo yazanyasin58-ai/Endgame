@@ -23,7 +23,7 @@ import { business, processSteps, trustBar, promo } from '../content/idf';
   <SiteNav current="estimate" />
 
   <main id="main" tabindex="-1">
-    <section class="hp-est">
+    <section class="hp-est hp-est--estimate">
       <div class="hp-est-intro">
         <h1 class="hp-est-h1">Request a free estimate.</h1>
         <p class="hp-est-sub hp-italic">
@@ -34,6 +34,34 @@ import { business, processSteps, trustBar, promo } from '../content/idf';
           <strong>{promo.headline}</strong><br />
           <span>{promo.detail}</span>
         </p>
+        <div class="hp-est-wide">
+          <ol class="hp-est-steps">
+            {
+              processSteps.map((step) => (
+                <li class:list={[{ 'is-featured': 'featured' in step && step.featured }]}>
+                  <span>{step.number}</span> {step.title}
+                </li>
+              ))
+            }
+          </ol>
+          <a class="hp-call" href={business.phonePrimaryHref}>
+            Prefer to talk? {business.phonePrimary}
+          </a>
+        </div>
+      </div>
+
+      <div class="hp-est-form">
+        <EstimateForm idPrefix="est" />
+      </div>
+
+      {/* Below 1024px the columns stack, and the five steps above the form
+          pushed its first field 856px down a phone (second-opinion audit,
+          21 Oct). There the steps come after the form instead, in a card of
+          their own. Two copies rather than one moved by CSS, because the
+          desktop card is sticky and cannot be split; only one is ever
+          displayed, so a screen reader meets the steps once. */}
+      <aside class="hp-est-intro hp-est-next" aria-labelledby="est-next-h">
+        <h2 class="hp-est-h1 hp-est-next-h" id="est-next-h">What happens next</h2>
         <ol class="hp-est-steps">
           {
             processSteps.map((step) => (
@@ -46,11 +74,7 @@ import { business, processSteps, trustBar, promo } from '../content/idf';
         <a class="hp-call" href={business.phonePrimaryHref}>
           Prefer to talk? {business.phonePrimary}
         </a>
-      </div>
-
-      <div class="hp-est-form">
-        <EstimateForm idPrefix="est" />
-      </div>
+      </aside>
     </section>
 
     <section class="hp-trust" aria-label="Credentials">

@@ -448,3 +448,24 @@
 body.paused *,
 body.paused *::before,
 body.paused *::after { animation-play-state: paused !important; }
+
+/* Skip link: top right of the stage, below where the sticky header sits.
+   Not the bottom: on arrival the promo bar and header push the stage down,
+   so its bottom edge starts below the fold and the link would be invisible
+   at exactly the moment it is most useful. The caption bands keep to the
+   left column, so the right is clear. */
+.sh-skip {
+  position: absolute; z-index: 3;
+  right: clamp(1.5rem, 4vw, 3rem); top: 6.5rem;
+  display: inline-flex; align-items: center; gap: 0.45rem; min-height: 44px;
+  padding: 0 1.15rem;
+  border: 1px solid rgb(246 241 231 / 0.45); border-radius: 999px;
+  background: rgb(10 9 6 / 0.45);
+  color: var(--cream); text-decoration: none;
+  font-family: var(--sh-mono); font-size: 0.75rem; font-weight: 500;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  backdrop-filter: blur(6px);
+  transition: background-color 0.25s ease, border-color 0.25s ease;
+}
+.sh-skip:hover { background: rgb(10 9 6 / 0.7); border-color: var(--gold-bright); }
+.sh-skip:focus-visible { outline: 2px solid var(--gold-bright); outline-offset: 3px; }
