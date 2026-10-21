@@ -34,9 +34,17 @@ interface Props {
 
 const { title, description, heading, standfirst, current, noindex, crumbs = [], image } = Astro.props;
 
+/* The header photograph doubles as the link-card image. scripts/make-og.sh
+   writes a 1200x630 JPEG for every /img/…-2400.webp at the matching /og/
+   path; anything that does not fit that pattern falls back to the brand card. */
+const ogImage =
+  image && /^\/img\/.+-2400\.webp$/.test(image.src)
+    ? image.src.replace(/^\/img\//, '/og/').replace(/-2400\.webp$/, '.jpg')
+    : undefined;
+
 ---
 
-<Base title={title} description={description} bodyClass="hp vb" withCallbar noindex={noindex}>
+<Base title={title} description={description} bodyClass="hp vb" withCallbar noindex={noindex} ogImage={ogImage}>
   <PromoBar />
   <SiteNav current={current} />
   <main id="main" tabindex="-1">
