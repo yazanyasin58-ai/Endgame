@@ -24,7 +24,7 @@
  * the same as sufficient for every jurisdiction the company may later sell in.
  */
 import Page from '../layouts/Page.astro';
-import { business, legalUpdated } from '../content/idf';
+import { business, legalUpdated, features } from '../content/idf';
 ---
 
 <Page
@@ -68,6 +68,21 @@ import { business, legalUpdated } from '../content/idf';
         page you visited, and the website that sent you here, if any (for example, a
         search engine). That tells us which parts of the site are useful to people.
       </p>
+      {features.chatAssistant && (
+        <>
+          <h3>The website assistant</h3>
+          <p>
+            The chat assistant answers from our own approved answers. When it has no
+            answer, it saves the question you typed and the page you asked it on, so we
+            can write one. If you rate an answer as helpful or not, we save the question,
+            the answer it gave, and your rating. None of this is linked to your name,
+            your IP address, or any other way of identifying you. We also count how often
+            the assistant is opened and used, in the same anonymous way as the visit
+            counts below. If you leave your details in the chat, they are handled exactly
+            like any other form.
+          </p>
+        </>
+      )}
       <p>
         We do not ask for, and you should not send us, your date of birth, social
         security number, bank or card details, or income and employment information.
@@ -115,7 +130,8 @@ import { business, legalUpdated } from '../content/idf';
           rather than a script. It runs in your browser when you use a form.
         </li>
         <li>
-          <strong>Resend</strong> delivers the notification emails to us.
+          <strong>Resend</strong> delivers the notification emails to us and, where we
+          send one, the confirmation email to you.
         </li>
         <li>
           <strong>Google Maps</strong> is embedded on our home and contact pages so you

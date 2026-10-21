@@ -81,3 +81,31 @@ export function assertNoDuplicateQuestions(
     }
   }
 }
+
+/**
+ * The same two rules for the Spanish translations the assistant can show.
+ * A regex written for English passes Spanish untouched, so the translation of
+ * a safe answer could drift into "we negotiate your claim" and nothing would
+ * notice. Same shape as the English rule: talk of negotiating or settling a
+ * claim is allowed only alongside the public-adjusting disclaimer.
+ */
+const CLAIM_HANDLING_ES =
+  /\b(negoci|liquid|gestion|tramit|maximiz|pele)\w*\b[^.]{0,50}\breclam\w*|\breclam\w*\b[^.]{0,50}\b(negoci|liquid|maximiz)\w*/i;
+
+export function assertSafeFaqEs(items: readonly QA[], where: string): void {
+  for (const item of items) {
+    if (!item.a.length || item.a.some((p) => !p.trim())) {
+      throw new Error(`${where}: empty Spanish answer for "${item.q}"`);
+    }
+    const whole = [item.q, ...item.a].join(' ');
+    if (CLAIM_HANDLING_ES.test(whole) && !/ajust(e|ador)\w* públic/i.test(whole)) {
+      throw new Error(
+        `${where}: the Spanish for "${item.q}" raises negotiating or settling an insurance claim ` +
+          `without the public-adjusting disclaimer ("ajuste público"). See assertSafeFaq.`,
+      );
+    }
+    if (/\bdeducible\b/i.test(whole)) {
+      throw new Error(`${where}: the Spanish for "${item.q}" mentions a deductible, which must never appear.`);
+    }
+  }
+}

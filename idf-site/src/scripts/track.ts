@@ -71,7 +71,7 @@ export function withSource(body: FormData): FormData {
   return body;
 }
 
-export type LeadEvent = 'call' | 'text' | 'email' | 'form';
+export type LeadEvent = 'call' | 'text' | 'email' | 'form' | 'chat';
 
 /**
  * Reports one event. sendBeacon because a tap on tel: can hand the page to
