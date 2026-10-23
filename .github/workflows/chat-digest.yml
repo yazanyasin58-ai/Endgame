@@ -1,0 +1,33 @@
+name: Chat digest
+
+# Once a week, ask the site to email the questions its assistant could not
+# answer and the answers visitors rated unhelpful. The work happens in
+# idf-site/functions/api/chat-digest.ts; this only supplies the schedule,
+# which Cloudflare Pages Functions do not have.
+#
+# Needs a repository secret CHAT_DIGEST_TOKEN equal to DIGEST_TOKEN in the
+# Pages project. Optional repository variable SITE_URL (defaults to the live
+# domain). Skips quietly until the secret exists, so it never fails the repo.
+
+on:
+  schedule:
+    # Mondays 13:00 UTC: 9 AM Eastern in summer, 8 AM in winter.
+    - cron: '0 13 * * 1'
+  workflow_dispatch:
+
+jobs:
+  digest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Request the digest
+        env:
+          TOKEN: ${{ secrets.CHAT_DIGEST_TOKEN }}
+          SITE_URL: ${{ vars.SITE_URL || 'https://interiordesignconstructiondmv.com' }}
+        run: |
+          if [ -z "$TOKEN" ]; then
+            echo "CHAT_DIGEST_TOKEN is not set; skipping."
+            exit 0
+          fi
+          curl --fail-with-body -sS -X POST \
+            -H "authorization: Bearer $TOKEN" \
+            "$SITE_URL/api/chat-digest"

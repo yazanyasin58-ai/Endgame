@@ -15,6 +15,8 @@
  * silently dropping a customer. See CLOUDFLARE.md for what to set where.
  */
 
+import { business } from '../../src/content/idf';
+
 interface R2Bucket {
   put(key: string, value: ArrayBuffer | string, options?: unknown): Promise<unknown>;
 }
@@ -26,6 +28,13 @@ interface Env {
   TURNSTILE_SECRET?: string;
   /** Resend API key. Omit and nothing is emailed — submissions land in R2 only. */
   RESEND_API_KEY?: string;
+  /**
+   * "on" to email the customer a short receipt with their reference number
+   * after any form sends. Off unless set, because it is the only mail this
+   * site sends to someone outside the company, and the owner approves its
+   * wording (CUSTOMER_RECEIPT below) before it goes out under their name.
+   */
+  CONFIRM_CUSTOMER?: string;
   /**
    * Where the notification goes. A comma-separated list — every address on it
    * gets the same email. Defaults to the new company address plus the owner's
@@ -107,8 +116,20 @@ const TEXT_FIELDS = [
   'propertyType',
   'budget',
   'timeframe',
+  // A tick-box on the estimate form: "Yes" when ticked, absent otherwise. The
+  // financing page used to ask people to mention it in the details box.
+  'financing',
   'details',
   'source',
+  // "es" when the visitor was using the chat in Spanish, so whoever calls
+  // back knows before they dial. Absent otherwise.
+  'lang',
+  // Where the lead came from, added by src/scripts/track.ts: the page the
+  // form was sent from, the first page of the visit, and the site that sent
+  // the visitor. Last, so they sit under the customer's own answers.
+  'page',
+  'landing',
+  'referrer',
 ] as const;
 
 const REQUIRED_FIELDS = ['name', 'phone', 'email', 'address', 'type'] as const;
@@ -138,8 +159,13 @@ const LABELS: Record<string, string> = {
   propertyType: 'Property type',
   budget: 'Budget range',
   timeframe: 'Timeframe',
+  financing: 'Wants financing info',
   details: 'Details',
   source: 'Heard about us via',
+  lang: 'Chat language (es = Spanish)',
+  page: 'Sent from page',
+  landing: 'First page visited',
+  referrer: 'Arrived from',
 };
 
 function json(body: unknown, status = 200): Response {
@@ -182,6 +208,44 @@ function subjectLine(fields: Record<string, string>, reference: string): string 
   const who = clean(fields.name, 60) || 'New enquiry';
   const what = clean(fields.type, 40);
   return what ? `${kind} — ${who} — ${what}` : `${kind} — ${who} — ${reference}`;
+}
+
+/**
+ * The receipt a customer gets when CONFIRM_CUSTOMER is on. Fixed wording for
+ * the owner to approve, in English or Spanish to match the chat. It promises a
+ * call and nothing else: no time, no price, no visit date.
+ */
+const CUSTOMER_RECEIPT = {
+  en: {
+    subject: (ref: string) => `We received your request (${ref})`,
+    body: (first: string, ref: string) => [
+      `Hi${first ? ` ${first}` : ''},`,
+      `Thank you for contacting ${business.name}. We have your request, and Shawn or Nancy will be in touch to arrange a time.`,
+      `Your reference is ${ref}. If anything is urgent, call or text ${business.phonePrimary}.`,
+      `${business.name} · ${business.address}`,
+    ],
+  },
+  es: {
+    subject: (ref: string) => `Recibimos su solicitud (${ref})`,
+    body: (first: string, ref: string) => [
+      `Hola${first ? ` ${first}` : ''}:`,
+      `Gracias por comunicarse con ${business.name}. Recibimos su solicitud, y Shawn o Nancy se pondrán en contacto para coordinar una hora.`,
+      `Su número de referencia es ${ref}. Si es urgente, llame o envíe un mensaje de texto al ${business.phonePrimary}.`,
+      `${business.name} · ${business.address}`,
+    ],
+  },
+};
+
+function customerReceipt(fields: Record<string, string>, reference: string): { subject: string; html: string } {
+  const copy = fields.lang === 'es' ? CUSTOMER_RECEIPT.es : CUSTOMER_RECEIPT.en;
+  const first = escapeHtml(fields.name.split(/\s+/)[0] ?? '');
+  return {
+    subject: copy.subject(reference),
+    html:
+      `<div style="font-family:system-ui,sans-serif;font-size:15px;line-height:1.5;color:#14110D">` +
+      copy.body(first, reference).map((line) => `<p>${line}</p>`).join('') +
+      `</div>`,
+  };
 }
 
 function escapeHtml(value: string): string {
@@ -415,6 +479,28 @@ const handlePost = async (context: PagesContext): Promise<Response> => {
     // The customer should not wait on the mail API, and a mail failure must not
     // fail a submission already durably in R2.
     context.waitUntil(send.catch((err) => console.error('Resend threw', err)));
+
+    if (env.CONFIRM_CUSTOMER === 'on') {
+      const receipt = customerReceipt(fields, reference);
+      const confirm = fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${env.RESEND_API_KEY}`,
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({
+          from,
+          to: [fields.email],
+          // Replies go to the company inbox, not back to the sending address.
+          reply_to: to[0],
+          subject: receipt.subject,
+          html: receipt.html,
+        }),
+      }).then(async (res) => {
+        if (!res.ok) console.error('Resend receipt failed', res.status, await res.text());
+      });
+      context.waitUntil(confirm.catch((err) => console.error('Resend receipt threw', err)));
+    }
   } else {
     console.warn(`No RESEND_API_KEY set — ${reference} stored but nobody was emailed.`);
   }

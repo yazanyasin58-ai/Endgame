@@ -555,6 +555,119 @@
   text-align: center;
 }
 
+/* ---------- language switch ---------- */
+
+.chat-lang {
+  flex: none;
+  min-width: 2.75rem;
+  height: 2.75rem;
+  padding: 0 0.5rem;
+  border: 1px solid rgb(246 241 231 / 0.25);
+  border-radius: 0.6rem;
+  background: transparent;
+  color: var(--cream);
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+}
+.chat-lang:hover {
+  background: rgb(246 241 231 / 0.1);
+}
+
+/* ---------- this page's questions ---------- */
+
+.chat-page {
+  margin-left: 2.25rem;
+  animation: chat-rise 260ms ease-out;
+}
+.chat-page-heading {
+  margin: 0 0 0.35rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gold-deep);
+}
+.chat-page ul {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.chat-page-q {
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0.5rem 0.8rem;
+  border: 1px solid var(--chat-line);
+  border-left: 3px solid var(--gold);
+  border-radius: 0.6rem;
+  background: #fff;
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.84rem;
+  text-align: left;
+  cursor: pointer;
+}
+.chat-page-q:hover {
+  border-color: var(--gold);
+}
+
+/* ---------- was this helpful ---------- */
+
+.chat-rate {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin: -0.3rem 0 0 2.25rem;
+  font-size: 0.78rem;
+  color: var(--gray);
+}
+.chat-rate span {
+  margin-right: 0.15rem;
+}
+.chat-rate-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--gray);
+  cursor: pointer;
+}
+.chat-rate-btn:hover {
+  color: var(--gold-deep);
+  background: rgb(200 162 74 / 0.12);
+}
+.chat-rate-btn svg {
+  width: 1.05rem;
+  height: 1.05rem;
+}
+
+/* ---------- form extras ---------- */
+
+select.chat-lead-input {
+  appearance: auto;
+}
+.chat-lead-file {
+  width: 100%;
+  min-height: 2.75rem;
+  font: inherit;
+  font-size: 0.84rem;
+}
+.chat-lead-hint {
+  margin: 0.15rem 0 0;
+  font-size: 0.72rem;
+  color: var(--gray);
+}
+
 /* ---------- phones ---------- */
 
 /* Below 480px the panel takes the whole screen: a floating card with a
@@ -604,6 +717,7 @@
   .chat-row,
   .chat-menu,
   .chat-follow,
+  .chat-page,
   .chat-lead {
     animation: none;
   }

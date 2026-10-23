@@ -704,6 +704,43 @@ populated rather than assuming.
 
 ---
 
+## 3c. Lead counting — which pages bring calls and estimates
+
+Cloudflare Web Analytics (on in the Pages project) counts page views, but it
+cannot count events. Two additions cover what it misses. Neither stores
+anything that identifies a visitor; the privacy policy describes both.
+
+**On every estimate email, with no setup.** The form adds three lines under
+the customer's answers: *Sent from page*, *First page visited* and *Arrived
+from* (for example `www.google.com`). Reading the inbox is enough to see
+where leads come from.
+
+**Counts of taps and sends, one binding to add.** Every tap on a call, text or
+email link, and every form that sends, is posted to `/api/event`
+(`functions/api/event.ts`). It is written to Workers Analytics Engine if the
+binding exists, and only logged if it does not.
+
+1. Pages project → **Settings → Bindings → Add → Analytics Engine**.
+2. Variable name **`LEAD_EVENTS`**, dataset **`idf_lead_events`**.
+3. Add it to **Production**, then redeploy (an existing deployment keeps the
+   bindings it was built with).
+
+To read the totals, query the dataset with the SQL API. It needs the account
+ID and an API token with *Account Analytics: Read*:
+
+```sh
+curl "https://api.cloudflare.com/client/v4/accounts/$ACCOUNT_ID/analytics_engine/sql" \
+  -H "Authorization: Bearer $API_TOKEN" \
+  --data "SELECT blob2 AS page, blob1 AS kind, SUM(_sample_interval) AS taps
+          FROM idf_lead_events
+          WHERE timestamp > NOW() - INTERVAL '30' DAY
+          GROUP BY page, kind ORDER BY taps DESC"
+```
+
+`blob1` is the kind (`call`, `text`, `email`, `form`), `blob2` the page, and
+`blob3` which form (`estimate`, `popup`, `chat`, `listing`). Data is kept for
+three months.
+
 ## 4. Testing it
 
 Submit the real form on the deployed URL — not a local build, since none of the

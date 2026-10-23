@@ -84,6 +84,15 @@ const f = (name: string) => `${idPrefix}-${name}`;
         {formFields.timeframe.map((t) => <option value={t}>{t}</option>)}
       </select>
     </div>
+    {/* The financing page sends people here with ?financing=1, which ticks
+        this on arrival. Before it existed, that page could only ask them to
+        remember to mention financing in the details box. */}
+    <div class="ef-field ef-field--full">
+      <label class="ef-check" for={f('financing')}>
+        <input type="checkbox" id={f('financing')} name="financing" value="Yes" data-ef-financing />
+        <span>I'd like to hear about financing options <span class="ef-optional">(optional)</span></span>
+      </label>
+    </div>
     <div class="ef-field ef-field--full">
       <label class="ef-label" for={f('details')}>Project details</label>
       <textarea class="ef-input ef-textarea" id={f('details')} name="details" rows="4"></textarea>
@@ -155,4 +164,11 @@ const f = (name: string) => `${idPrefix}-${name}`;
 <script>
   import { initIntakeForms } from '../scripts/intake-form';
   initIntakeForms();
+
+  // Arriving from the financing page: tick the box for them.
+  if (new URLSearchParams(location.search).get('financing') === '1') {
+    for (const box of document.querySelectorAll<HTMLInputElement>('[data-ef-financing]')) {
+      box.checked = true;
+    }
+  }
 </script>

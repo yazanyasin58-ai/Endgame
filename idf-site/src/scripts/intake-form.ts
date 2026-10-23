@@ -10,6 +10,8 @@
  * in the same request. A failure says what failed and leaves every field
  * filled in — re-typing an intake form is how a lead is lost.
  */
+import { track, withSource } from './track';
+
 export function initIntakeForms(): void {
   document.querySelectorAll<HTMLFormElement>('form.ef').forEach((form) => {
     if (form.dataset.efReady) return;
@@ -177,10 +179,11 @@ export function initIntakeForms(): void {
       show('Sending your request…', 'busy');
 
       try {
-        const response = await fetch(form.action, { method: 'POST', body: new FormData(form) });
+        const response = await fetch(form.action, { method: 'POST', body: withSource(new FormData(form)) });
         const result = await response.json().catch(() => ({}));
 
         if (response.ok && result.ok) {
+          track('form', String(new FormData(form).get('enquiry') || 'estimate'));
           form.reset();
           if (fileList) fileList.hidden = true;
           const template =
