@@ -1,0 +1,307 @@
+---
+/**
+ * /chat-answers/: the chat questionnaire for the owner, as a page he can open
+ * from a text message on his phone. No account, no sign-in. Answers save in
+ * the phone's own storage while he works and are sent to /api/owner-answers,
+ * which stores them in R2 and emails them.
+ *
+ * Unlisted: noindex here, left out of the sitemap through neverIndex, and
+ * disallowed in robots.txt. Standalone markup rather than the Base layout, so
+ * no navigation, pop-up or chat widget competes with the form.
+ */
+import '../styles/fonts.css';
+import { business } from '../content/idf';
+import { ownerSections } from '../content/owner-questions';
+
+const data = JSON.stringify({ phone: business.phonePrimary, sections: ownerSections });
+---
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Chat questions for Interior Design Flooring</title>
+<link rel="icon" href="/favicon.ico" sizes="any" />
+<style is:global>
+  :root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+
+  /* Layout: a dark showroom band opens the page, then one column of questions.
+     Each question shows the customer's message and the chat's reply as it will appear, updating as he types.
+     Palette taken from the IDF site: near-black, warm paper, brass gold. */
+  :root{
+    --paper:#FBF8F2; --card:#FFFFFF; --ink:#14110D; --body:#3A342A; --muted:#6E6558; --rule:#E6DDCB; --rule-strong:#C9BCA1;
+    --band:#14110D; --band-ink:#F4EFE4; --band-muted:#B9AF9D;
+    --gold:#856719; --brass:#C8A24A; --gold-soft:#F5ECD2;
+    --bubble-cust:#ECE6DA; --bubble-bot:#14110D; --bubble-bot-ink:#F7F2E7; --blank:#FFF7DD;
+    --ok:#4A6438; --ok-bg:#E6EEDD; --skip:#6E6558;
+    --display:'Fraunces',Georgia,'Times New Roman',serif;
+    --text:'Public Sans',system-ui,-apple-system,sans-serif;
+    --mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;
+  }
+  @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+    --paper:#16140F; --card:#1E1B15; --ink:#F4EFE4; --body:#D3CBBC; --muted:#9A9182; --rule:#332E24; --rule-strong:#4A4335;
+    --band:#0E0C09; --band-ink:#F4EFE4; --band-muted:#A79E8E;
+    --gold:#D4B063; --brass:#D9B65E; --gold-soft:#342C1B;
+    --bubble-cust:#2B271F; --bubble-bot:#F1EBDD; --bubble-bot-ink:#14110D; --blank:#3B321B;
+    --ok:#A3C088; --ok-bg:#1F2A18; --skip:#9A9182; color-scheme:dark}}
+  :root[data-theme="dark"]{
+    --paper:#16140F; --card:#1E1B15; --ink:#F4EFE4; --body:#D3CBBC; --muted:#9A9182; --rule:#332E24; --rule-strong:#4A4335;
+    --band:#0E0C09; --band-ink:#F4EFE4; --band-muted:#A79E8E;
+    --gold:#D4B063; --brass:#D9B65E; --gold-soft:#342C1B;
+    --bubble-cust:#2B271F; --bubble-bot:#F1EBDD; --bubble-bot-ink:#14110D; --blank:#3B321B;
+    --ok:#A3C088; --ok-bg:#1F2A18; --skip:#9A9182; color-scheme:dark}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--body);font-family:var(--text);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+  body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--band)}
+  .in{max-width:46rem;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+
+  .band{background:var(--band);color:var(--band-ink)}
+  .band .in{padding-block:clamp(2rem,6vw,3.5rem) 2rem}
+  .brand{font-family:var(--mono);font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:var(--brass);margin:0 0 1rem}
+  h1{font-family:var(--display);font-weight:400;font-size:clamp(2rem,6vw,3.1rem);line-height:1.05;margin:0;text-wrap:balance;letter-spacing:-.01em}
+  h1 em{font-style:italic;color:var(--brass)}
+  .lede{color:var(--band-muted);max-width:56ch;margin:1rem 0 0;font-size:1.02rem}
+  .how{display:grid;grid-template-columns:repeat(auto-fit,minmax(12rem,1fr));gap:1rem;margin:1.6rem 0 0;padding:0;list-style:none}
+  .how li{border-top:1px solid #3A342A;padding-top:.7rem;font-size:.9rem;color:var(--band-muted)}
+  .how b{display:block;color:var(--band-ink);font-weight:600;margin-bottom:.15rem}
+
+  .bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--paper);border-bottom:1px solid var(--rule)}
+  .bar .in{display:flex;align-items:center;gap:1rem;padding-block:.7rem}
+  .prog{flex:1;min-width:0}
+  .prog-top{display:flex;justify-content:space-between;gap:.5rem;font-size:.8rem;color:var(--muted)}
+  .prog-top b{color:var(--ink);font-weight:600}
+  .track{height:6px;background:var(--rule);border-radius:3px;overflow:hidden;margin-top:.35rem}
+  .track i{display:block;height:100%;background:var(--brass);transition:width .3s}
+  .saved{font-family:var(--mono);font-size:.7rem;color:var(--muted);white-space:nowrap}
+  .sections{display:flex;gap:.4rem;overflow-x:auto;padding-bottom:.7rem;scrollbar-width:thin}
+  .sections a{flex:none;font-size:.8rem;text-decoration:none;color:var(--body);border:1px solid var(--rule-strong);border-radius:999px;padding:.25rem .7rem;white-space:nowrap}
+  .sections a.full{border-color:var(--ok);color:var(--ok)}
+
+  main .in{padding-block:1.5rem 4rem}
+  section{margin-top:2.5rem;scroll-margin-top:7rem}
+  h2{font-family:var(--display);font-weight:600;color:var(--ink);font-size:1.6rem;margin:0;letter-spacing:-.005em}
+  .sec-sub{color:var(--muted);margin:.3rem 0 1rem;font-size:.95rem}
+  .q{background:var(--card);border:1px solid var(--rule);border-radius:10px;padding:1.1rem;margin-top:1rem;display:flex;flex-direction:column;gap:.85rem}
+  .q.done{border-color:var(--ok)}
+  .q-head{display:flex;justify-content:space-between;align-items:baseline;gap:.75rem}
+  .num{font-family:var(--mono);font-size:.72rem;color:var(--muted)}
+  .tag{font-size:.72rem;font-weight:600;padding:.15rem .5rem;border-radius:999px;background:var(--ok-bg);color:var(--ok)}
+  .tag.skip{background:transparent;color:var(--skip);border:1px solid var(--rule-strong)}
+  .chat{display:flex;flex-direction:column;gap:.5rem}
+  .cust{align-self:flex-start;max-width:85%;background:var(--bubble-cust);color:var(--ink);border-radius:14px 14px 14px 4px;padding:.55rem .85rem;font-weight:500}
+  .bot{align-self:flex-end;max-width:92%;background:var(--bubble-bot);color:var(--bubble-bot-ink);border-radius:14px 14px 4px 14px;padding:.6rem .9rem;line-height:1.7}
+  .bot.muted{opacity:.55;font-style:italic}
+  .bot input{font:inherit;font-size:.95rem;color:var(--ink);background:var(--blank);border:0;border-bottom:2px solid var(--brass);border-radius:3px;padding:.05rem .35rem;width:9ch;min-width:5ch;max-width:100%}
+  .bot input:focus{outline:2px solid var(--brass);outline-offset:1px}
+  .hint{font-size:.85rem;color:var(--muted);margin:0}
+  .modes{display:flex;flex-wrap:wrap;gap:.4rem}
+  .mode{appearance:none;font:inherit;font-size:.86rem;cursor:pointer;border:1px solid var(--rule-strong);background:transparent;color:var(--body);padding:.4rem .8rem;border-radius:999px}
+  .mode:hover{border-color:var(--gold)}
+  .mode[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+  textarea{width:100%;font:inherit;font-size:.95rem;color:var(--ink);background:var(--paper);border:1px solid var(--rule-strong);border-radius:8px;padding:.6rem .7rem;resize:vertical;min-height:4.5rem}
+  textarea:focus,.mode:focus-visible,.btn:focus-visible,.sections a:focus-visible{outline:2px solid var(--brass);outline-offset:2px}
+
+  .finish{margin-top:3rem;border-top:2px solid var(--ink);padding-top:1.5rem;display:flex;flex-direction:column;gap:.8rem;align-items:flex-start}
+  .finish h2{font-size:1.4rem}
+  .btn{appearance:none;font:inherit;font-weight:600;cursor:pointer;border:1px solid var(--ink);background:var(--ink);color:var(--paper);padding:.7rem 1.2rem;border-radius:8px}
+  .btn.ghost{background:transparent;color:var(--ink)}
+  .row{display:flex;gap:.6rem;flex-wrap:wrap}
+  #copyout{min-height:10rem;font-family:var(--mono);font-size:.78rem}
+  .note{color:var(--muted);font-size:.9rem;margin:0;max-width:60ch}
+  @media (prefers-reduced-motion:reduce){.track i{transition:none}}
+
+  .who{display:flex;flex-direction:column;gap:.25rem;font-size:.85rem;color:var(--muted)}
+  .who input{font:inherit;font-size:1rem;color:var(--ink);background:var(--card);border:1px solid var(--rule-strong);border-radius:8px;padding:.5rem .7rem;width:min(20rem,100%)}
+  .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+  .btn:disabled{opacity:.6;cursor:wait}
+
+</style>
+</head>
+<body>
+
+
+<header class="band"><div class="in">
+  <p class="brand">Interior Design Flooring · Website chat</p>
+  <h1>How should the chat <em>answer</em> your customers?</h1>
+  <p class="lede">Shawn, the chat on the new website only ever says what you approve, word for word. These are the 49 questions customers are most likely to type that it can't answer yet. Your answers become its replies.</p>
+  <ul class="how">
+    <li><b>Fill in the blanks</b>Each reply is drafted. Type into the highlighted gaps and you'll see the reply exactly as customers will.</li>
+    <li><b>Or write your own</b>Rewrite any reply in your own words. Two or three short sentences is plenty.</li>
+    <li><b>Skip what you'd rather discuss</b>Pick "Have them call us" and the chat hands that customer your phone number.</li>
+  </ul>
+</div></header>
+
+<div class="bar"><div class="in" style="flex-direction:column;align-items:stretch;gap:.5rem">
+  <div style="display:flex;gap:1rem;align-items:center">
+    <div class="prog"><div class="prog-top"><span><b id="donecount">0</b> of 49 answered</span><span id="mins">about 20 minutes</span></div>
+      <div class="track"><i id="trackfill" style="width:0%"></i></div></div>
+    <span class="saved" id="saved"></span>
+  </div>
+  <nav class="sections" id="sections" aria-label="Sections"></nav>
+</div></div>
+
+<main><div class="in" id="main"></div>
+  <div class="in">
+    <div class="finish">
+      <h2>All done?</h2>
+      <p class="note" id="finishnote">Your answers save on this phone as you go, so you can stop and come back to this link. Send whenever you like, even part way through. You can send again later and the newest answers count.</p>
+      <label class="who" for="who">Your name <input id="who" name="who" type="text" value="Shawn" autocomplete="name"></label>
+      <div class="hp" aria-hidden="true"><label for="website">Leave this empty <input id="website" name="website" type="text" tabindex="-1" autocomplete="off"></label></div>
+      <div class="row">
+        <button class="btn" id="finishbtn" type="button">Send my answers</button>
+        <button class="btn ghost" id="copybtn" type="button">Copy my answers</button>
+      </div>
+      <textarea id="copyout" hidden readonly></textarea>
+    </div>
+  </div>
+</main>
+
+
+<script type="application/json" id="owner-data" set:html={data}></script>
+<script>
+
+const DATA = JSON.parse(document.getElementById('owner-data').textContent);
+const PHONE = DATA.phone;
+const S = DATA.sections;
+const ALL = S.flatMap(s => s.qs.map(q => ({...q, sec:s.k})));
+const qid = n => 'q' + String(n).padStart(2,'0');
+let st = {};   // qid -> {mode:'draft'|'alt'|'own'|'skip', blanks:[], own:'', reply:'', at}
+
+
+function esc(t){ const d=document.createElement('div'); d.textContent=t??''; return d.innerHTML }
+function blanksIn(d){ return (d.match(/___/g)||[]).length }
+function compose(q, s){
+  if (!s || !s.mode) return '';
+  if (s.mode === 'skip') return '';
+  if (s.mode === 'alt') return q.alt;
+  if (s.mode === 'own') return (s.own||'').trim();
+  let i = 0; return q.d.replace(/___/g, () => (s.blanks||[])[i++] || '___');
+}
+function isDone(q){
+  const s = st[qid(q.n)]; if (!s || !s.mode) return false;
+  if (s.mode === 'skip' || s.mode === 'alt') return true;
+  if (s.mode === 'own') return !!(s.own||'').trim();
+  const b = blanksIn(q.d); return b === 0 || (s.blanks||[]).filter(x => (x||'').trim()).length === b;
+}
+function loadLocal(){ try{ st = JSON.parse(localStorage.getItem('idf-quiz')||'{}') }catch{} }
+function saveLocal(){ try{ localStorage.setItem('idf-quiz', JSON.stringify(st)) }catch{} }
+function saved(msg){ document.getElementById('saved').textContent = msg }
+
+const timers = {};
+function persist(id){
+  const q = ALL.find(x => qid(x.n) === id);
+  st[id].reply = compose(q, st[id]); st[id].question = q.q; st[id].at = new Date().toISOString();
+  saveLocal(); progress(); paintCard(q);
+  dirty();
+}
+
+function cardHtml(q){
+  const id = qid(q.n), s = st[id] || {};
+  const n = blanksIn(q.d);
+  let i = 0;
+  const draft = q.d.split('___').map((part, k, arr) => esc(part) + (k < arr.length-1
+     ? `<input type="text" id="${id}-b${k}" data-id="${id}" data-k="${k}" aria-label="Blank ${k+1}" value="${esc((s.blanks||[])[k]||'')}" size="${Math.max(6,((s.blanks||[])[k]||'').length+1)}">` : '')).join('');
+  const fullBlank = q.d.trim() === '___';
+  const modes = [];
+  if (!fullBlank) modes.push(['draft', n ? 'Fill in this reply' : 'Use this reply']);
+  if (q.alt) modes.push(['alt', 'Use the shorter reply']);
+  modes.push(['own', fullBlank ? 'Write the reply' : 'Write my own']);
+  modes.push(['skip', 'Have them call us']);
+  const m = s.mode || (fullBlank ? 'own' : 'draft');
+  let bot;
+  if (m === 'skip') bot = `<div class="bot muted">Good question. Shawn or Nancy can answer that best. Call or text ${PHONE}, or leave your number and they'll call you back.</div>`;
+  else if (m === 'alt') bot = `<div class="bot">${esc(q.alt)}</div>`;
+  else if (m === 'own') bot = `<div class="bot${(s.own||'').trim()?'':' muted'}" id="${id}-prev">${esc((s.own||'').trim() || 'Your reply will show here.')}</div>`;
+  else bot = `<div class="bot">${draft}</div>`;
+  const tag = isDone(q) ? (m === 'skip' ? '<span class="tag skip">Phone call</span>' : '<span class="tag">Answered</span>') : '';
+  return `<div class="q-head"><span class="num">Question ${q.n} of 49</span>${tag}</div>
+    <div class="chat"><div class="cust">${esc(q.q)}</div>${bot}</div>
+    ${q.h ? `<p class="hint">${esc(q.h)}</p>` : ''}
+    ${m === 'own' ? `<textarea id="${id}-own" data-id="${id}" placeholder="Type the reply customers should see">${esc(s.own||'')}</textarea>` : ''}
+    <div class="modes" role="group" aria-label="How to answer question ${q.n}">${modes.map(([k,l]) =>
+      `<button type="button" class="mode" data-id="${id}" data-m="${k}" aria-pressed="${s.mode ? s.mode===k : false}">${l}</button>`).join('')}</div>`;
+}
+function wire(card){
+  card.querySelectorAll('.mode').forEach(b => b.onclick = () => {
+    const id = b.dataset.id; st[id] = {...(st[id]||{}), mode:b.dataset.m}; persist(id);
+    const f = card.querySelector('textarea, input'); if (f && b.dataset.m !== 'skip' && b.dataset.m !== 'alt') f.focus();
+  });
+  card.querySelectorAll('input').forEach(inp => {
+    inp.oninput = () => { inp.size = Math.max(6, inp.value.length + 1);
+      const id = inp.dataset.id; const s = st[id] = {...(st[id]||{}), mode:'draft'};
+      s.blanks = [...(s.blanks||[])]; s.blanks[+inp.dataset.k] = inp.value; quiet(id) };
+  });
+  card.querySelectorAll('textarea').forEach(t => {
+    t.oninput = () => { const id = t.dataset.id; st[id] = {...(st[id]||{}), mode:'own', own:t.value};
+      const p = document.getElementById(id+'-prev'); if (p){ p.textContent = t.value.trim() || 'Your reply will show here.'; p.classList.toggle('muted', !t.value.trim()) }
+      quiet(id) };
+  });
+}
+// typing: save without redrawing the card, so the cursor stays put
+function quiet(id){
+  const q = ALL.find(x => qid(x.n) === id);
+  st[id].reply = compose(q, st[id]); st[id].question = q.q; st[id].at = new Date().toISOString();
+  saveLocal(); progress();
+  const card = document.getElementById('card-'+id); card.classList.toggle('done', isDone(q));
+  const tagSlot = card.querySelector('.q-head'); const want = isDone(q);
+  const tag = tagSlot.querySelector('.tag'); if (want && !tag) tagSlot.insertAdjacentHTML('beforeend','<span class="tag">Answered</span>'); if (!want && tag) tag.remove();
+  card.querySelectorAll('.mode').forEach(b => b.setAttribute('aria-pressed', b.dataset.m === st[id].mode));
+  dirty();
+}
+function paintCard(q){
+  const id = qid(q.n), card = document.getElementById('card-'+id);
+  card.innerHTML = cardHtml(q); card.classList.toggle('done', isDone(q)); wire(card);
+}
+function render(){
+  document.getElementById('main').innerHTML = S.map(s => `<section id="${s.k}" aria-labelledby="h-${s.k}">
+     <h2 id="h-${s.k}">${esc(s.t)}</h2>${s.sub ? `<p class="sec-sub">${esc(s.sub)}</p>` : ''}
+     ${s.qs.map(q => `<article class="q" id="card-${qid(q.n)}"></article>`).join('')}</section>`).join('');
+  ALL.forEach(paintCard); progress();
+}
+function progress(){
+  const done = ALL.filter(isDone).length;
+  document.getElementById('donecount').textContent = done;
+  document.getElementById('trackfill').style.width = (100*done/ALL.length) + '%';
+  const left = ALL.length - done;
+  document.getElementById('mins').textContent = left === 0 ? 'all answered' : left > 30 ? 'about 20 minutes' : left > 10 ? 'about 10 minutes' : 'nearly there';
+  document.getElementById('sections').innerHTML = S.map(s => { const d = s.qs.filter(isDone).length;
+    return `<a href="#${s.k}" class="${d===s.qs.length?'full':''}">${esc(s.t.split(' and ')[0].split(',')[0])} ${d}/${s.qs.length}</a>` }).join('');
+}
+function asText(){
+  return ['IDF chat questionnaire answers', ''].concat(ALL.map(q => {
+    const s = st[qid(q.n)] || {};
+    const a = !s.mode ? '(not answered)' : s.mode === 'skip' ? '(have them call us)' : compose(q, s);
+    return `${q.n}. ${q.q}\n   ${a}`; })).join('\n');
+}
+document.getElementById('copybtn').onclick = async () => {
+  const out = document.getElementById('copyout'), txt = asText(); out.value = txt;
+  try { await navigator.clipboard.writeText(txt); document.getElementById('copybtn').textContent = 'Copied'; out.hidden = true }
+  catch { out.hidden = false; out.select() }
+};
+function dirty(){ saved('Saved'); const b = document.getElementById('finishbtn'); if (b.dataset.sent) { b.textContent = 'Send my updated answers'; } }
+document.getElementById('finishbtn').onclick = async () => {
+  const note = document.getElementById('finishnote'), btn = document.getElementById('finishbtn');
+  const answers = {};
+  for (const q of ALL) { const id = qid(q.n), s = st[id]; if (s && s.mode && isDone(q)) answers[id] = { mode: s.mode, reply: compose(q, s) }; }
+  if (!Object.keys(answers).length) { note.textContent = 'Answer at least one question first.'; return; }
+  btn.disabled = true; btn.textContent = 'Sending…';
+  try {
+    const res = await fetch('/api/owner-answers', { method: 'POST', headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ answers, name: document.getElementById('who').value, website: document.getElementById('website').value }) });
+    const out = await res.json().catch(() => ({}));
+    if (!res.ok || !out.ok) throw new Error(out.error || 'Send failed');
+    btn.dataset.sent = '1'; btn.textContent = 'Sent';
+    note.textContent = `Thank you. ${out.answered} answers were sent. You can come back to this link any time, change anything, and send again.`;
+    saved('Sent');
+  } catch (e) {
+    btn.textContent = 'Send my answers';
+    note.textContent = (e && e.message && e.message !== 'Send failed' ? e.message + ' ' : 'That did not go through. ') + 'Your answers are still saved on this phone. Try again, or press "Copy my answers" and text them instead.';
+  } finally { btn.disabled = false; }
+};
+
+loadLocal(); render(); saved(Object.keys(st).length ? 'Saved' : 'Saves as you go');
+
+</script>
+</body>
+</html>

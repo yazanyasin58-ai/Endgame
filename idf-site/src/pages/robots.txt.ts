@@ -15,6 +15,8 @@ export const GET = () => {
         '',
         '# Not cleared for publication — see features.realEstate.',
         'Disallow: /real-estate/',
+        '# The owner\'s chat questionnaire, shared by text only.',
+        'Disallow: /chat-answers/',
         '',
         ...(siteUrl ? [`Sitemap: ${new URL('/sitemap.xml', siteUrl).href}`, ''] : []),
       ].join('\n');
