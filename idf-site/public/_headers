@@ -49,3 +49,18 @@
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: geolocation=(), microphone=(), camera=(), payment=(), usb=()
   Cross-Origin-Opener-Policy: same-origin
+
+# Caching. Pages' default is max-age=0, so every repeat visit re-asks for
+# every stylesheet, font and photo. /_astro/ files carry a content hash in
+# their names, so a changed file is a new URL and they can be kept for a year.
+# Fonts, photos and link-card images are not hashed, so a week: long enough
+# that a returning visitor loads nothing twice, short enough that a replaced
+# photo shows within days. /hero/ is deliberately left alone.
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable
+/fonts/*
+  Cache-Control: public, max-age=604800
+/img/*
+  Cache-Control: public, max-age=604800
+/og/*
+  Cache-Control: public, max-age=604800

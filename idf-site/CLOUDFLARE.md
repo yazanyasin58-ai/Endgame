@@ -32,11 +32,12 @@ So it can be switched on in three sittings rather than one. Do R2 first — that
 is the part that cannot be reconstructed if a submission is lost.
 
 There is a second Function, `functions/api/chat.ts`, which is the assistant.
-It is a separate route with a separate on-switch and nothing in this page's
-three services touches it. It needs an **AI** binding, it reuses the Turnstile
-keys below, and the whole of it is dormant until `features.chatAssistant` is
-turned on in `src/content/idf.ts`. See *The assistant endpoint uses the same
-two keys* in section 3.
+It is a separate route with a separate on-switch. It needs an **AI** binding,
+it reuses the Turnstile keys below, and it writes questions it has no approved
+answer for into the same R2 bucket, under `chat-unanswered/`. Nothing it does
+reaches the estimate form, and the whole of it is dormant until
+`features.chatAssistant` is turned on in `src/content/idf.ts`. See *The
+assistant endpoint uses the same two keys* in section 3.
 
 ---
 
@@ -573,6 +574,32 @@ spend, because getting past it costs a real Turnstile solve every 25 messages.
 If this endpoint ever carries real traffic, the proper fix is a Rate Limiting
 binding or a KV namespace, not a larger number here.
 
+### What the assistant says, and where the questions it cannot answer go
+
+The assistant runs in **retrieval mode**. The model is shown the site's
+approved questions, the ones on `/faq/` and on the twelve service pages, and
+returns one id. The endpoint replies with that answer exactly as the page
+carries it, and names the question it is answering. The model writes nothing a
+visitor reads, so it cannot quote a price, mention a deductible or offer to
+deal with an insurer, however it is asked.
+
+When nothing fits, the visitor gets a fixed reply pointing to the phone and the
+estimate form, and the question is written to R2:
+
+| | |
+|---|---|
+| Bucket | the `ESTIMATE_UPLOADS` binding the estimate form already uses — nothing new to add |
+| Key | `chat-unanswered/YYYY-MM/<timestamp>-<random>.json` |
+| Holds | the question, up to three earlier messages from the same visitor, the page it was asked on, and the model's raw output |
+| Does not hold | IP address or user agent |
+| Without the binding | the visitor still gets the fallback; the question is not kept, and the log says so |
+
+Read the queue in the dashboard under **R2 > the bucket > chat-unanswered/**.
+`scripts/r2-leads.mjs` lists `estimates/` only and does not show these. A
+question that turns up often is a candidate for a new FAQ answer: once one is
+approved and added to `src/content/faq.ts` or `service-faq.ts`, the next deploy
+can retrieve it, with no change to the endpoint.
+
 ## 3b. Google reviews — the live carousel feed
 
 Optional. With this unconfigured the carousel shows the curated reviews in
@@ -676,6 +703,43 @@ after adding the key is to call `/api/reviews` and confirm the fields are
 populated rather than assuming.
 
 ---
+
+## 3c. Lead counting — which pages bring calls and estimates
+
+Cloudflare Web Analytics (on in the Pages project) counts page views, but it
+cannot count events. Two additions cover what it misses. Neither stores
+anything that identifies a visitor; the privacy policy describes both.
+
+**On every estimate email, with no setup.** The form adds three lines under
+the customer's answers: *Sent from page*, *First page visited* and *Arrived
+from* (for example `www.google.com`). Reading the inbox is enough to see
+where leads come from.
+
+**Counts of taps and sends, one binding to add.** Every tap on a call, text or
+email link, and every form that sends, is posted to `/api/event`
+(`functions/api/event.ts`). It is written to Workers Analytics Engine if the
+binding exists, and only logged if it does not.
+
+1. Pages project → **Settings → Bindings → Add → Analytics Engine**.
+2. Variable name **`LEAD_EVENTS`**, dataset **`idf_lead_events`**.
+3. Add it to **Production**, then redeploy (an existing deployment keeps the
+   bindings it was built with).
+
+To read the totals, query the dataset with the SQL API. It needs the account
+ID and an API token with *Account Analytics: Read*:
+
+```sh
+curl "https://api.cloudflare.com/client/v4/accounts/$ACCOUNT_ID/analytics_engine/sql" \
+  -H "Authorization: Bearer $API_TOKEN" \
+  --data "SELECT blob2 AS page, blob1 AS kind, SUM(_sample_interval) AS taps
+          FROM idf_lead_events
+          WHERE timestamp > NOW() - INTERVAL '30' DAY
+          GROUP BY page, kind ORDER BY taps DESC"
+```
+
+`blob1` is the kind (`call`, `text`, `email`, `form`), `blob2` the page, and
+`blob3` which form (`estimate`, `popup`, `chat`, `listing`). Data is kept for
+three months.
 
 ## 4. Testing it
 

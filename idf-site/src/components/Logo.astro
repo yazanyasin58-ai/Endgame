@@ -34,6 +34,6 @@ const markSrc = optionalImage('img/logo-mark');
   {markSrc && <img class="logo-mark" src={markSrc} alt="" />}
   <span class="logo-text">
     <span class="logo-name">{business.name}</span>
-    <span class="logo-lockup">{business.lockup} &middot; Est. {business.established}</span>
+    <span class="logo-lockup">{business.lockup}<span class="logo-est"> &middot; Est. {business.established}</span></span>
   </span>
 </a>
