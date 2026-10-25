@@ -36,4 +36,4 @@ export const siteUrl = (import.meta.env.SITE as string | undefined) ?? undefined
  * excluded from the sitemap; each page also sets its own noindex, so removing
  * the pre-launch block cannot expose them.
  */
-export const neverIndex = ['/real-estate/'];
+export const neverIndex = ['/real-estate/', '/chat-answers/'];
