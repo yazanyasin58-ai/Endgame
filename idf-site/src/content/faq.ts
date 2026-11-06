@@ -4,8 +4,8 @@
  * Asked for on the client's master list, item 6: "a professional
  * expandable/collapsible FAQ area", with the offer that we draft generic
  * construction and real estate questions for their review if they have not
- * written their own. These are that draft. THE CLIENT HAS NOT APPROVED THEM
- * YET, so treat every answer as provisional wording, not as settled copy.
+ * written their own. These are that draft, which the owner approved as
+ * written on 6 November 2026.
  *
  * THE RULE EVERY ANSWER HAD TO PASS: it may only state something the site
  * already states somewhere else, approved. An FAQ is the easiest place on a
@@ -17,9 +17,9 @@
  *     is the kind of sentence that belongs in a contract, not here.
  *   - No prices, and nothing implying a price holds. The signed estimate
  *     governs that.
- *   - No claim of being insured or bonded. It is the single most expected
- *     line in a contractor FAQ and there is no approved source for it, so it
- *     is absent. If the client supplies the carrier and the limits, add it.
+ *   - Insurance: the owner said on 6 Nov 2026 to keep "Licensed & Insured"
+ *     and to answer coverage questions with "contact us for more details".
+ *     No carrier or limits are published, and nothing says "bonded".
  *   - Nothing about negotiating or settling insurance claims. That is public
  *     adjusting, licensed separately in Virginia, and it is also a verbatim
  *     client instruction. There is a build-time guard for it below.
@@ -87,7 +87,7 @@ export const faqGroups: FaqGroup[] = [
         q: 'Do you offer a military or veteran discount?',
         home: true,
         a: [
-          'Yes. Mention it when you get in touch and we will go through it with you.',
+          'Yes. Mention it when you get in touch and we will go through it with you. It cannot be combined with the first-project offer.',
         ],
       },
       {

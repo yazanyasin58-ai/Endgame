@@ -55,7 +55,7 @@ const promoHeadline = 'Hasta un 25% de descuento en su primer proyecto';
 const promoFine =
   'Los descuentos están sujetos a la revisión del proyecto y pueden variar según el tamaño, ' +
   'el alcance, el tipo de trabajo, los materiales y otros factores aplicables. ' +
-  'Pueden aplicarse restricciones.';
+  'Pueden aplicarse restricciones. No se puede combinar con el descuento para militares y veteranos.';
 
 /** Spanish for every approved answer, keyed by catalog id. `q` is what the
     visitor sees on a menu button or page question; the model never reads it. */
@@ -89,6 +89,21 @@ export const answersEs: Record<string, QA> = {
   'chat-phone-1': {
     q: '¿Cuál es su teléfono?',
     a: [`Puede llamar o enviar un mensaje de texto al ${business.phonePrimary}, o escribir a ${business.email}.`],
+  },
+  'chat-insured-1': {
+    q: '¿Tienen seguro?',
+    a: ['Sí, tenemos licencia y seguro. Comuníquese con nosotros para más detalles sobre nuestra cobertura.'],
+  },
+  'chat-mddc-1': {
+    q: '¿Tienen licencia en Maryland o D. C.?',
+    a: ['Sí. Tenemos licencia para trabajar en Washington D. C., Maryland y Virginia. Comuníquese con nosotros si necesita los datos de la licencia para su proyecto.'],
+  },
+  'chat-emergency-1': {
+    q: '¿Atienden emergencias por daños de agua?',
+    a: [
+      `Atendemos llamadas en horario de oficina y no tenemos una línea de emergencia las 24 horas. Nuestro horario es: ${hoursLineEs}`,
+      'Fuera de ese horario, deje sus datos y le devolveremos la llamada en cuanto abramos.',
+    ],
   },
   'chat-hours-1': {
     q: '¿Cuál es su horario?',
@@ -136,7 +151,7 @@ export const answersEs: Record<string, QA> = {
   },
   'faq-estimates-5': {
     q: '¿Tienen descuento para militares o veteranos?',
-    a: ['Sí. Menciónelo cuando se comunique con nosotros y lo revisaremos con usted.'],
+    a: ['Sí. Menciónelo cuando se comunique con nosotros y lo revisaremos con usted. No se puede combinar con la oferta del primer proyecto.'],
   },
   'faq-estimates-6': {
     q: '¿Se puede financiar un proyecto?',

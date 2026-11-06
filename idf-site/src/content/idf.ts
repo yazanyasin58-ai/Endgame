@@ -24,6 +24,8 @@ export const business = {
   phonePrimary: '571-233-5133',
   phonePrimaryHref: 'tel:+15712335133',
   phonePrimarySms: 'sms:+15712335133',
+  /* Not shown anywhere since 6 Nov 2026: the owner uses one number for
+     everything, phonePrimary. Kept so it is on record. */
   phoneSecondary: '703-430-8129',
   phoneSecondaryHref: 'tel:+17034308129',
   /**
@@ -61,21 +63,20 @@ export const business = {
 } as const;
 
 /**
- * COMMERCIAL REMOVED, TEMPORARILY. The owner's commercial classification has
- * lapsed; renewal is submitted and paid but not yet granted. Advertising
- * commercial contracting without the classification is advertising work the
- * company is not currently licensed to take, which is the same exposure as
- * the real estate page.
+ * Commercial is back. It came off in September while the owner's commercial
+ * classification renewal was pending; the owner confirmed on 6 November 2026
+ * that the renewal has come through, so 'Residential & Commercial' and the
+ * commercial entries below were restored together. If the classification ever
+ * lapses again, take all of them off together.
  *
- * Restore 'Residential & Commercial' here, and the commercial entries marked
- * with the same note below, once the renewal comes through. Real estate
- * commercial is a different thing and is untouched — see `realEstate`.
+ * "Licensed & Insured" stays on the owner's instruction (6 Nov). Coverage
+ * details are not published; the chat and the FAQ say to contact us for them.
  */
 export const trustBar = [
   'Licensed & Insured',
   'Class A #2705162130',
   'Since 1989',
-  'Residential',
+  'Residential & Commercial',
 ] as const;
 
 export const pillars = [
@@ -95,8 +96,7 @@ export const pillars = [
     id: 'transform',
     number: '03',
     title: 'TRANSFORM',
-    // 'Commercial Construction' removed pending the classification renewal.
-    services: ['Basements', 'Interior & Exterior Remodeling', 'Additions'],
+    services: ['Basements', 'Interior & Exterior Remodeling', 'Commercial Construction'],
   },
 ] as const;
 
@@ -271,15 +271,14 @@ export const formFields = {
     'Kitchen or Bath',
     'Basement',
     'Exterior',
-    // 'Commercial' removed pending the classification renewal.
+    'Commercial',
     'Flooring',
     'Other',
   ],
   /**
    * Budget bands. These are qualifying ranges for the intake form, not price
    * claims — nothing on the site states what any kind of work costs. The
-   * owner has not set the band edges yet, so these are provisional and must
-   * be confirmed before launch.
+   * owner approved these bands as they are on 6 November 2026.
    */
   budget: [
     'Under $25,000',
@@ -772,9 +771,9 @@ export const legalUpdated = '21 October 2026';
  * scoped to new customers exactly as it was. The owner changed the percentage
  * and did not mention eligibility, so eligibility was not changed.
  *
- * TWO THINGS ARE STILL MISSING and should be asked for before this runs long:
- * an end date, and whether it combines with the military and veteran discount.
- * "Restrictions may apply" is doing that work at the moment, which is thin.
+ * The owner confirmed on 6 November 2026 that it does NOT combine with the
+ * military and veteran discount, and the last sentence of `fine` says so. No
+ * end date has been given, so none is shown.
  */
 export const promo = {
   headline: 'Up to 25% off your first project',
@@ -782,7 +781,7 @@ export const promo = {
   fine:
     'Discounts are subject to project review and may vary based on project size, ' +
     'scope, type of work, materials, and other applicable factors. ' +
-    'Restrictions may apply.',
+    'Restrictions may apply. Cannot be combined with the military and veteran discount.',
   cta: 'Request a Free Estimate',
   // Phone label. The bar sits above the fold and the full label crowds the
   // headline off the line at 375px.
@@ -820,13 +819,11 @@ export const blocked = {} as const;
  * intake form (DC/VA/MD) and the older marketing line ("Serving Northern
  * Virginia"). The intake form was right.
  *
- * OPEN QUESTION, raised with the owner and not settled here. The company holds
- * a Virginia Class A license, which is the only license number on this site.
- * Contracting in the other two jurisdictions is licensed separately —
- * Maryland through the MHIC, the District through its own home improvement
- * contractor license. Advertising work in a jurisdiction without holding its
- * license is the same class of exposure as the real estate page. If those
- * licenses do not exist, this should come back to Virginia only.
+ * Licensing, settled 6 November 2026: the owner confirmed the company holds
+ * its Maryland and DC contractor licenses as well as the Virginia Class A.
+ * On his instruction the Maryland and DC numbers are not published; the site
+ * keeps the DC, Maryland and Virginia headline, and the Virginia number stays
+ * the only one shown.
  */
 export const serviceArea = {
   short: 'Washington, DC, Maryland & Virginia',
@@ -1284,8 +1281,11 @@ export const serviceGroups = [
     title: 'Interior & exterior',
     items: ['Flooring', 'Interior finishes', 'Siding, gutters, fascia, and trim', 'Exterior remodeling'],
   },
-  // The Commercial group (renovations, tenant fit-outs, retail and office)
-  // is removed pending the classification renewal. Restore it here.
+  {
+    id: 'commercial',
+    title: 'Commercial',
+    items: ['Commercial renovations', 'Tenant fit-outs', 'Retail and office'],
+  },
   {
     id: 'restoration',
     title: 'Restoration',

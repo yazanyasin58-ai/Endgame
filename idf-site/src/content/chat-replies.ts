@@ -157,16 +157,16 @@ export const chatReplies: ChatReply[] = [
   {
     id: 'chat-insured-1',
     q: 'Are you insured / bonded?',
-    a: ['[CONFIRM] Yes. We carry general liability insurance with ___ and can provide a certificate on request.'],
-    status: 'pending',
-    needs: 'Punch list S1: the insurance carrier and limits, or approval to say nothing about insurance.',
+    a: ['Yes, we are licensed and insured. Contact us for more details on our coverage.'],
+    status: 'live',
+    action: 'call',
   },
   {
     id: 'chat-mddc-1',
     q: 'Are you licensed in Maryland / DC?',
-    a: ['[CONFIRM] Yes. Our Maryland MHIC number is ___ and our DC licence is ___.'],
-    status: 'pending',
-    needs: 'Punch list S2: MHIC and DC licence numbers, or narrow the service area to Virginia.',
+    a: ['Yes. We are licensed to work in Washington, DC, Maryland, and Virginia. Contact us if you need the license details for your project.'],
+    status: 'live',
+    action: 'call',
   },
   {
     id: 'chat-flooring-types-1',
@@ -234,9 +234,13 @@ export const chatReplies: ChatReply[] = [
   {
     id: 'chat-emergency-1',
     q: 'Do you do emergency water damage service / 24-hour response?',
-    a: ['[CONFIRM] ___'],
-    status: 'pending',
-    needs: 'Do they respond out of hours to water damage? If so, what number and what hours?',
+    a: [
+      `We take calls during business hours and do not run a 24-hour emergency line. Our hours are: ${hoursLine}`,
+      'Outside those hours, leave your details and we will call you back as soon as we open.',
+    ],
+    status: 'live',
+    action: 'lead',
+    url: '/services/water-damage-mold/',
   },
   {
     id: 'chat-asbestos-1',
