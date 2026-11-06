@@ -933,8 +933,12 @@ export const features = {
    * so the live site keeps the launcher hidden. The `chat-preview` branch
    * carries it switched on for testing, at chat-preview.idf-site.pages.dev.
    * Flip this to true on master once the answers there are right.
+   *
+   * ON, 6 November 2026, on Yaz's instruction, after Shawn tried it on
+   * chat-preview and his 49 questionnaire answers went in. The Spanish
+   * answers are still marked unreviewed (chat-es.ts `reviewed`).
    */
-  chatAssistant: false,
+  chatAssistant: true,
 
   /**
    * Property management — the client's menu group 8.
@@ -1109,6 +1113,10 @@ export const realEstateLicense = {
     licenseNumber: '0225273319',
   },
   /**
+   * 6 Nov 2026: the owner says Sameer's agent license is active and this firm
+   * license is NOT, for now. It is not shown anywhere on the site; keep it
+   * that way until it is active again.
+   *
    * The firm's own license. A different series from the 0225 salesperson
    * numbers, consistent with a firm license — worth confirming once on the
    * DPOR lookup, since publishing a wrong number is worse than publishing none.
