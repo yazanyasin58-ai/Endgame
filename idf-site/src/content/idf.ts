@@ -1109,6 +1109,10 @@ export const realEstateLicense = {
     licenseNumber: '0225273319',
   },
   /**
+   * 6 Nov 2026: the owner says Sameer's agent license is active and this firm
+   * license is NOT, for now. It is not shown anywhere on the site; keep it
+   * that way until it is active again.
+   *
    * The firm's own license. A different series from the 0225 salesperson
    * numbers, consistent with a firm license — worth confirming once on the
    * DPOR lookup, since publishing a wrong number is worse than publishing none.
