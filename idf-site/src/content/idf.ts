@@ -772,8 +772,8 @@ export const legalUpdated = '21 October 2026';
  * and did not mention eligibility, so eligibility was not changed.
  *
  * The owner confirmed on 6 November 2026 that it does NOT combine with the
- * military and veteran discount, and the last sentence of `fine` says so. No
- * end date has been given, so none is shown.
+ * military and veteran discount, and that it runs to the end of the year
+ * (questionnaire, 6 Nov). `fine` says both.
  */
 export const promo = {
   headline: 'Up to 25% off your first project',
@@ -781,7 +781,8 @@ export const promo = {
   fine:
     'Discounts are subject to project review and may vary based on project size, ' +
     'scope, type of work, materials, and other applicable factors. ' +
-    'Restrictions may apply. Cannot be combined with the military and veteran discount.',
+    'Restrictions may apply. Cannot be combined with the military and veteran discount. ' +
+    'Offer ends 31 December 2026.',
   cta: 'Request a Free Estimate',
   // Phone label. The bar sits above the fold and the full label crowds the
   // headline off the line at 375px.
