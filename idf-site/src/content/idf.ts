@@ -933,8 +933,12 @@ export const features = {
    * so the live site keeps the launcher hidden. The `chat-preview` branch
    * carries it switched on for testing, at chat-preview.idf-site.pages.dev.
    * Flip this to true on master once the answers there are right.
+   *
+   * ON, 6 November 2026, on Yaz's instruction, after Shawn tried it on
+   * chat-preview and his 49 questionnaire answers went in. The Spanish
+   * answers are still marked unreviewed (chat-es.ts `reviewed`).
    */
-  chatAssistant: false,
+  chatAssistant: true,
 
   /**
    * Property management — the client's menu group 8.
