@@ -44,6 +44,10 @@ const daysEs = (days: string): string => {
   return text.charAt(0).toUpperCase() + text.slice(1);
 };
 
+const intakeReplyEs = [
+  `Buena pregunta. Nuestro equipo de atención puede responderla mejor. Llame o envíe un mensaje de texto al ${business.phonePrimary}, o deje su número y le devolverán la llamada.`,
+];
+
 const hoursLineEs =
   hours
     .map((h) => `${daysEs(h.days)}: ${'note' in h ? 'con cita previa' : hoursLabel(h)}`)
@@ -55,7 +59,8 @@ const promoHeadline = 'Hasta un 25% de descuento en su primer proyecto';
 const promoFine =
   'Los descuentos están sujetos a la revisión del proyecto y pueden variar según el tamaño, ' +
   'el alcance, el tipo de trabajo, los materiales y otros factores aplicables. ' +
-  'Pueden aplicarse restricciones.';
+  'Pueden aplicarse restricciones. No se puede combinar con el descuento para militares y veteranos. ' +
+  'La oferta termina el 31 de diciembre de 2026.';
 
 /** Spanish for every approved answer, keyed by catalog id. `q` is what the
     visitor sees on a menu button or page question; the model never reads it. */
@@ -89,6 +94,126 @@ export const answersEs: Record<string, QA> = {
   'chat-phone-1': {
     q: '¿Cuál es su teléfono?',
     a: [`Puede llamar o enviar un mensaje de texto al ${business.phonePrimary}, o escribir a ${business.email}.`],
+  },
+  'chat-price-1': {
+    q: '¿Cuánto cuesta el piso, una cocina o un baño? ¿Precio por pie cuadrado?',
+    a: ['Cada precio sale del presupuesto por escrito después de nuestra visita, para que refleje su espacio y sus materiales reales. El presupuesto es gratis.'],
+  },
+  'chat-small-jobs-1': {
+    q: '¿Hacen trabajos pequeños o reparaciones? ¿Hay un tamaño mínimo?',
+    a: [`Ningún trabajo es demasiado pequeño ni demasiado grande. Llame o envíe un mensaje de texto al ${business.phonePrimary} y le responderemos lo antes posible.`],
+  },
+  'chat-deposit-1': {
+    q: '¿Piden un depósito? ¿Qué formas de pago aceptan? ¿Cuándo se paga el resto?',
+    a: ['Algunos trabajos requieren un depósito antes de empezar, según el proyecto.', 'Aceptamos todas las formas de pago. El saldo se paga por etapas según su contrato, y los detalles se acuerdan con usted antes de empezar el proyecto.'],
+  },
+  'chat-offer-1': {
+    q: '¿Cuándo termina la oferta del 25%? ¿Se puede combinar con el descuento militar?',
+    a: ['La oferta del primer proyecto es válida hasta fin de año. No se puede combinar con el descuento para militares y veteranos.'],
+  },
+  'chat-price-match-1': {
+    q: '¿Pueden igualar o mejorar otro presupuesto?',
+    a: ['Damos prioridad a la calidad del trabajo, así que no garantizamos igualar un presupuesto. Trabajaremos con usted para encontrar un precio que funcione para ambos. Cuéntenos sobre el otro presupuesto y lo conversamos.'],
+  },
+  'chat-visit-time-1': {
+    q: '¿Qué tan pronto pueden venir a hacer la visita del presupuesto?',
+    a: ['Nos comunicamos con usted en cuanto recibimos su solicitud y programamos la visita a una hora que le convenga, normalmente dentro de 7 días.'],
+  },
+  'chat-photo-estimate-1': {
+    q: '¿Pueden hacer un presupuesto con fotos o una videollamada?',
+    a: ['Sin medidas y sin ver el espacio es difícil ser exactos, pero podemos darle una idea aproximada con fotos antes de la visita. El presupuesto por escrito llega después de la visita en persona.'],
+  },
+  'chat-start-1': {
+    q: '¿Qué tan pronto pueden empezar?',
+    a: ['La mayoría de los proyectos empiezan entre 1 y 3 semanas después de firmar, según los materiales.'],
+  },
+  'chat-weekends-1': {
+    q: '¿Trabajan de noche o los fines de semana?',
+    a: ['Sí, cuando el contrato y el calendario lo requieren. Cumplimos los plazos que acordamos con usted sin dejar de lado la calidad del trabajo.'],
+  },
+  'chat-crews-1': {
+    q: '¿Los trabajadores son empleados suyos? ¿Tienen verificación de antecedentes?',
+    a: ['Sí. Desde el equipo en la obra hasta la oficina, todos son parte de nuestro propio equipo, y todos tienen verificación de antecedentes.'],
+  },
+  'chat-furniture-1': {
+    q: '¿Mueven los muebles y los electrodomésticos?',
+    a: ['Sí. Nos encargamos de todo de principio a fin. Si tiene preguntas, llámenos o escríbanos y le responderemos lo antes posible.'],
+  },
+  'chat-disposal-1': {
+    q: '¿Quitan y desechan el piso viejo?',
+    a: ['Sí. El retiro y la eliminación están incluidos en el contrato.'],
+  },
+  'chat-samples-1': {
+    q: '¿Pueden traer muestras a mi casa? ¿Dónde puedo ver muestras?',
+    a: ['Visite nuestra sala de exposición en Sterling para ver las muestras en persona y conversar sobre su proyecto.'],
+  },
+  'chat-design-1': {
+    q: '¿Ayudan con el diseño o a elegir materiales?',
+    a: ['Sí. Las selecciones se hacen con usted en la sala de exposición o en la obra, y nuestro equipo le ayuda a imaginar el resultado si no está seguro de lo que quiere.'],
+  },
+  'chat-spanish-1': {
+    q: '¿Hablan español?',
+    a: ['Este chat puede responder en español. Para una llamada en español, deje su número y la coordinaremos.'],
+  },
+  'chat-years-1': {
+    q: '¿Cuánto tiempo llevan en el negocio?',
+    a: ['Desde 1989. Shawn y Nancy Waziri dirigen la empresa desde el primer día.'],
+  },
+  'chat-reviews-1': {
+    q: '¿Dónde puedo leer sus reseñas?',
+    a: ['Hay reseñas de clientes en nuestra página de inicio, y allí mismo un enlace a todas nuestras reseñas y comentarios en Google.'],
+  },
+  'chat-follow-up-1': {
+    q: 'Ya recibí un presupuesto. ¿Cómo doy seguimiento?',
+    a: [`Llame o envíe un mensaje de texto al ${business.phonePrimary} con su número de referencia y seguiremos desde ahí.`],
+  },
+  'chat-problem-1': {
+    q: 'Tengo un problema con un trabajo que terminaron.',
+    a: [`Lamentamos oírlo. Llame al ${business.phonePrimary} o deje sus datos aquí y Shawn o Nancy le devolverán la llamada.`],
+  },
+  'chat-text-photos-1': {
+    q: '¿Puedo enviarles fotos de mi proyecto por mensaje de texto?',
+    a: [`Sí. Envíelas al ${business.phonePrimary}, o añádalas en el formulario de presupuesto.`],
+  },
+  'chat-vendor-1': {
+    q: 'Vendo marketing, SEO o software. ¿Con quién hablo?',
+    a: [`Gracias. Escriba a ${business.email} y le responderemos si nos interesa.`],
+  },
+  'chat-kitchen-time-1': { q: '¿Cuánto tarda una cocina o un baño?', a: intakeReplyEs },
+  'chat-flooring-time-1': { q: '¿Cuánto tarda la instalación de un piso?', a: intakeReplyEs },
+  'chat-bonded-1': { q: '¿Tienen fianza (bonded)?', a: intakeReplyEs },
+  'chat-warranty-1': { q: '¿Ofrecen garantía sobre su trabajo?', a: intakeReplyEs },
+  'chat-lead-safe-1': { q: '¿Tienen certificación de seguridad contra el plomo (EPA RRP)?', a: intakeReplyEs },
+  'chat-flooring-types-1': { q: '¿Qué tipos o marcas de piso manejan?', a: intakeReplyEs },
+  'chat-own-materials-1': { q: '¿Puedo comprar mis propios materiales?', a: intakeReplyEs },
+  'chat-over-existing-1': { q: '¿Se puede poner el piso nuevo sobre el que ya tengo?', a: intakeReplyEs },
+  'chat-recommend-1': { q: '¿Qué piso recomiendan para un sótano o una cocina?', a: intakeReplyEs },
+  'chat-materials-only-1': { q: '¿Venden materiales sin instalación?', a: intakeReplyEs },
+  'chat-live-in-1': { q: '¿Puedo quedarme en mi casa durante la obra?', a: intakeReplyEs },
+  'chat-dust-1': { q: '¿Cómo manejan el polvo y la limpieza?', a: intakeReplyEs },
+  'chat-pets-1': { q: 'Tengo mascotas. ¿Es un problema?', a: intakeReplyEs },
+  'chat-be-home-1': { q: '¿Tengo que estar en casa mientras trabajan?', a: intakeReplyEs },
+  'chat-updates-1': { q: '¿Cómo me entero de cómo va el trabajo?', a: intakeReplyEs },
+  'chat-architect-1': { q: '¿Pueden trabajar con mi arquitecto o diseñador?', a: intakeReplyEs },
+  'chat-hoa-1': { q: '¿Pueden ayudar con la aprobación de la HOA?', a: intakeReplyEs },
+  'chat-asbestos-1': { q: '¿Quitan techos de popcorn? ¿Y asbesto o pintura con plomo?', a: intakeReplyEs },
+  'chat-referral-1': { q: '¿Tienen un programa de referidos?', a: intakeReplyEs },
+  'chat-hiring-1': { q: '¿Están contratando?', a: intakeReplyEs },
+  'chat-subcontractor-1': { q: 'Soy subcontratista y busco trabajo.', a: intakeReplyEs },
+  'chat-insured-1': {
+    q: '¿Tienen seguro?',
+    a: ['Sí, tenemos licencia y seguro. Comuníquese con nosotros para más detalles sobre nuestra cobertura.'],
+  },
+  'chat-mddc-1': {
+    q: '¿Tienen licencia en Maryland o D. C.?',
+    a: ['Sí. Tenemos licencia para trabajar en Washington D. C., Maryland y Virginia. Comuníquese con nosotros si necesita los datos de la licencia para su proyecto.'],
+  },
+  'chat-emergency-1': {
+    q: '¿Atienden emergencias por daños de agua?',
+    a: [
+      `Atendemos llamadas en horario de oficina y no tenemos una línea de emergencia las 24 horas. Nuestro horario es: ${hoursLineEs}`,
+      'Fuera de ese horario, deje sus datos y le devolveremos la llamada en cuanto abramos.',
+    ],
   },
   'chat-hours-1': {
     q: '¿Cuál es su horario?',
@@ -136,7 +261,7 @@ export const answersEs: Record<string, QA> = {
   },
   'faq-estimates-5': {
     q: '¿Tienen descuento para militares o veteranos?',
-    a: ['Sí. Menciónelo cuando se comunique con nosotros y lo revisaremos con usted.'],
+    a: ['Sí. Menciónelo cuando se comunique con nosotros y lo revisaremos con usted. No se puede combinar con la oferta del primer proyecto.'],
   },
   'faq-estimates-6': {
     q: '¿Se puede financiar un proyecto?',

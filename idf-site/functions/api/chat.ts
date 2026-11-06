@@ -19,8 +19,9 @@
  *     the static copy with a build guard.
  *   - A deductible must never be mentioned. Also a build guard elsewhere.
  *   - Nothing may imply a price holds. The signed estimate governs that.
- *   - No claim of being insured or bonded. There is no approved source for one,
- *     which is why the FAQ is silent on it.
+ *   - Nothing about insurance beyond the approved reply (licensed and insured,
+ *     contact us for details), approved by the owner on 6 Nov 2026. Never a
+ *     carrier, limits or "bonded".
  *
  * A build guard cannot reach generated text. So this endpoint does not
  * generate any: it runs in RETRIEVAL MODE. The model is shown the site's

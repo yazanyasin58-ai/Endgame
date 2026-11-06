@@ -269,7 +269,7 @@ export const servicePages: ServicePage[] = [
       'Documenting the damage and the work for your records',
     ],
     notes:
-      'Where an insurer is involved we will document the damage and write our estimate for your file. We do not negotiate or settle insurance claims — in Virginia that is public adjusting and it is licensed separately.',
+      'We take calls during business hours and do not run a 24-hour emergency line. Where an insurer is involved we will document the damage and write our estimate for your file. We do not negotiate or settle insurance claims — in Virginia that is public adjusting and it is licensed separately.',
   },
   {
     slug: 'insurance-claim-repairs',
