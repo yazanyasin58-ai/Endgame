@@ -75,9 +75,7 @@ const agent = realEstateLicense.agent;
               <p class="re-credential">
                 <span class="re-credential-name">{agent.name}</span>
                 <span class="re-credential-line">{agent.title}</span>
-                {/* License number held back: on 6 Nov 2026 the owner said one of the two
-                    DPOR numbers (agent and firm) is not active, without saying which.
-                    Put this line back once the agent's is confirmed active. */}
+                <span class="re-credential-line">Virginia license {agent.licenseNumber}</span>
                 <span class="re-credential-line">{realEstateLicense.firmName}</span>
               </p>
             )}
