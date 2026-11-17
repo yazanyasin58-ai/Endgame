@@ -49,8 +49,12 @@ export function applyLiveFigures(data: LiveFigureData): void {
  * doing the fetch already — the carousel calls `applyLiveFigures` directly
  * with the response it has, so nothing fetches twice.
  */
+let fetched = false;
+
 export function fetchAndApplyLiveFigures(): void {
-  if (!document.querySelector('[data-live-figure]')) return;
+  /* The footer and the About page both call this; one request is enough. */
+  if (fetched || !document.querySelector('[data-live-figure]')) return;
+  fetched = true;
   fetch('/api/reviews', { headers: { accept: 'application/json' } })
     .then((res) => (res.ok ? res.json() : null))
     .then((data) => {
