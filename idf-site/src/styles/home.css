@@ -639,6 +639,8 @@
   display: inline-block; padding-block: 0.3rem;
 }
 .hp .foot-col p { line-height: 1.9; }
+.hp .foot-services { list-style: none; margin: 0; padding: 0; }
+.hp .foot .foot-services a { padding-block: 0.15rem; }
 .hp .foot a:hover { color: var(--cream); }
 .hp .foot-blocked {
   margin-top: 2.25rem; display: grid; gap: 0.6rem; max-width: 40rem;

@@ -2,6 +2,7 @@
 import { business, hours, hoursLabel, serviceArea, writeReviewUrl, googleSnapshot, propertyPaths, features } from '../content/idf';
 import SocialLinks from './SocialLinks.astro';
 import Logo from './Logo.astro';
+import { serviceMenu } from '../content/services-detail';
 ---
 
 <footer class="foot">
@@ -37,14 +38,20 @@ import Logo from './Logo.astro';
             ))
           }
         </ul>
-      </div>
-      <div class="foot-col">
-        <h2 class="foot-head">Contact</h2>
+        <h2 class="foot-head foot-head--spaced">Contact</h2>
         <p>
           <a href={business.phonePrimaryHref}>{business.phonePrimary}</a><br />
           <a href={`mailto:${business.email}`}>{business.email}</a>
         </p>
       </div>
+      {/* Every service page linked from every page, so search engines and
+          visitors can reach each one from anywhere on the site. */}
+      <nav class="foot-col" aria-label="Services">
+        <h2 class="foot-head">Services</h2>
+        <ul class="foot-services">
+          {serviceMenu.map((s) => <li><a href={s.href}>{s.label}</a></li>)}
+        </ul>
+      </nav>
       <div class="foot-col">
         <h2 class="foot-head">License</h2>
         <p>{business.license}<br />Licensed &amp; Insured · Residential &amp; Commercial</p>
