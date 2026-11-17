@@ -1,5 +1,5 @@
 ---
-import { business, hours, hoursLabel, serviceArea, writeReviewUrl, googleSnapshot, propertyPaths } from '../content/idf';
+import { business, hours, hoursLabel, serviceArea, writeReviewUrl, googleSnapshot, propertyPaths, features } from '../content/idf';
 import SocialLinks from './SocialLinks.astro';
 import Logo from './Logo.astro';
 ---
@@ -16,7 +16,7 @@ import Logo from './Logo.astro';
           <span class="foot-review-g" aria-hidden="true">G</span>
           <span class="foot-review-text">
             Review us on Google
-            <span class="foot-review-sub">{googleSnapshot.rating} from {googleSnapshot.total} reviews</span>
+            <span class="foot-review-sub"><span data-live-figure={features.googleReviews ? 'googleRating' : null}>{googleSnapshot.rating}</span> from <span data-live-figure={features.googleReviews ? 'googleTotal' : null}>{googleSnapshot.total}</span> reviews</span>
           </span>
         </a>
       </div>
@@ -85,3 +85,10 @@ import Logo from './Logo.astro';
       footer clips it so it can never widen the page. */}
   <p class="pl-foot-mark rv" aria-hidden="true">{business.name}</p>
 </footer>
+
+<script>
+  /* The footer is on every page, so it keeps its Google rating and count in
+     step with the live figures even where no carousel fetches them. */
+  import { fetchAndApplyLiveFigures } from '../scripts/live-figures';
+  fetchAndApplyLiveFigures();
+</script>
