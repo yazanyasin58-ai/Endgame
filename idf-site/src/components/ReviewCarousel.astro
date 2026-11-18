@@ -192,13 +192,25 @@ const {
       toggle.textContent = 'Read more';
       toggle.setAttribute('aria-expanded', 'false');
       box.after(toggle);
-
-      toggle.addEventListener('click', () => {
-        const open = box.classList.toggle('is-clamped') === false;
-        toggle.textContent = open ? 'Read less' : 'Read more';
-        toggle.setAttribute('aria-expanded', String(open));
-      });
     };
+
+    /*
+     * One delegated listener instead of one per button. The drifting strip
+     * shows copies of every card (see the marquee below), and a copy's
+     * Read more is a plain span with no listener of its own, so a
+     * per-button handler left every copied card's Read more dead. Visitors
+     * see the copies about half the time, which is why some worked and some
+     * did not. Listening on the track covers originals and copies alike.
+     */
+    track.addEventListener('click', (event) => {
+      const toggle = (event.target as Element | null)?.closest<HTMLElement>('.rc-more');
+      if (!toggle) return;
+      const box = toggle.previousElementSibling as HTMLElement | null;
+      if (!box?.matches('[data-rc-quote]')) return;
+      const open = box.classList.toggle('is-clamped') === false;
+      toggle.textContent = open ? 'Read less' : 'Read more';
+      if (toggle instanceof HTMLButtonElement) toggle.setAttribute('aria-expanded', String(open));
+    });
 
     const scanCards = () =>
       wrap.querySelectorAll<HTMLElement>('[data-rc-quote]').forEach(setupReadMore);
